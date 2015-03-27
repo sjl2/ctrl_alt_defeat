@@ -1,0 +1,36 @@
+body {
+	background-image: url('curtains.jpg');
+}
+
+h1, #query, #path, #info {
+	background-color: white;
+	border: ridge;
+	border-color: gold; 
+}
+
+#wrapper {
+	margin:0px; 
+	position: absolute;
+	left: 200px;
+	top: 155px;
+}
+
+#query {
+	padding: 5px;
+}
+
+#query * {
+	margin-bottom: 5px;
+	width: 70%;
+	font-size: 20px; 
+}
+
+#list, #list2 {
+	width: 476px;
+	resize: none;
+}
+
+input {
+	width: 100%;
+	resize: none;
+}
