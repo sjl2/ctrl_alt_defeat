@@ -57,7 +57,7 @@ public class BoxScore {
   }
 
   public Map<Player, GameStats> getStats() {
-    return stats;
+    return playerStats;
   }
 
 }
