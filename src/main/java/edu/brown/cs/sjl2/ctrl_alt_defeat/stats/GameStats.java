@@ -1,6 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
-public class PlayerGameStats {
+public class GameStats {
   private int minutesPlayed;
   private int twoPointers;
   private int twoPointersA;

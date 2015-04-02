@@ -2,12 +2,13 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 import java.util.Map;
 
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerGameStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
 public class BoxScore {
-  private Map<Player, PlayerGameStats> stats;
+  private Map<Player, GameStats> playerStats;
+  private Map<Team, GameStats> teamStats;
 
-  public PlayerGameStats getPlayerStats(Player p) {
+  public GameStats getPlayerStats(Player p) {
     return null;
   }
 
@@ -55,8 +56,8 @@ public class BoxScore {
     return -1;
   }
 
-  public Map<Player, PlayerGameStats> getStats() {
-    return stats;
+  public Map<Player, GameStats> getStats() {
+    return playerStats;
   }
 
 }

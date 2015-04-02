@@ -2,7 +2,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats.basketballstats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerGameStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class Block implements Stat {
@@ -10,13 +10,13 @@ public class Block implements Stat {
   private Player player;
 
   @Override
-  public void execute(PlayerGameStats ps) {
+  public void execute(GameStats ps) {
     int blocks = ps.getBlocks();
     ps.setBlocks(blocks + 1);
   }
 
   @Override
-  public void undo(PlayerGameStats ps) {
+  public void undo(GameStats ps) {
     int blocks = ps.getBlocks();
     ps.setBlocks(blocks - 1);
   }
