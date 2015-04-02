@@ -17,8 +17,11 @@ public class Bench {
   public void setTeam(Team team) {
     this.team = team;
   }
-  public void sub(Player pIn, Player pOut) {
-    players.remove(pIn);
-    players.add(pOut);
+  public void sub(Player pIn, Player pOut) throws ScoreboardException {
+    if (players.remove(pIn)) {
+      players.add(pOut);
+    } else {
+      throw new ScoreboardException("Illegal substitution: player subbing in not found");
+    }
   }
 }

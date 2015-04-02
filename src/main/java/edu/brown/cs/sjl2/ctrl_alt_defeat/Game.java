@@ -8,6 +8,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Scoreboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
@@ -23,6 +24,13 @@ public class Game {
   private List<Stat> stats;
   private RuleSet rules;
   
+  public Game(Team home, Team away) {
+    this.homeTeam = home;
+    this.awayTeam = away;
+    this.lineup = new Lineup();
+    this.scoreboard = createScoreboard();
+  }
+  
   public Player getPlayerAtPosition(Location pos) {return null;}
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
@@ -30,10 +38,10 @@ public class Game {
   public BoxScore getAwayBoxScore() {
     return awayBoxScore;
   }
-  private Scoreboard createScoreBoard() {
+  private Scoreboard createScoreboard() {
     return new Scoreboard(rules);
   }
-  public void subPlayer(int idIn, int idOut, boolean home) {
+  public void subPlayer(int idIn, int idOut, boolean home) throws ScoreboardException {
     Lineup l = lineup;
     Bench b;
     Team t;
@@ -42,14 +50,14 @@ public class Game {
       t = homeTeam;
     } else {
       b = awayBench;
-      t = homeTeam;
+      t = awayTeam;
     }
     
     l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
     b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
   }
-  public void takeTimeout(Boolean home) {
-    
+  public void takeTimeout(Boolean home) throws ScoreboardException {
+    scoreboard.takeTimeout(home);
   }
   public void flipPossession() {
     scoreboard.flipPossession();
