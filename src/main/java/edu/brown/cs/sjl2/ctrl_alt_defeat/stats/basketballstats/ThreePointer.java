@@ -2,7 +2,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats.basketballstats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerGameStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class ThreePointer implements Stat {
@@ -10,13 +10,13 @@ public class ThreePointer implements Stat {
   private Player player;
 
   @Override
-  public void execute(PlayerGameStats ps) {
+  public void execute(GameStats ps) {
     ps.setThreePointers(ps.getThreePointers() + 1);
     ps.setThreePointersA(ps.getThreePointersA() + 1);
   }
 
   @Override
-  public void undo(PlayerGameStats ps) {
+  public void undo(GameStats ps) {
     ps.setThreePointers(ps.getThreePointers() - 1);
     ps.setThreePointersA(ps.getThreePointersA() - 1);
   }
