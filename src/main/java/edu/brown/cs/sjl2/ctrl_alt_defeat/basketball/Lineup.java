@@ -1,6 +1,8 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 import java.util.Map;
+
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Position;
 
 public class Lineup {
   private Map<Position, Player> players;

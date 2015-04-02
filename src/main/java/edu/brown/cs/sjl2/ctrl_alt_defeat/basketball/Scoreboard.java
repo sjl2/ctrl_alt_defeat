@@ -1,4 +1,4 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 public class Scoreboard {
   private int milliseconds;
@@ -13,6 +13,20 @@ public class Scoreboard {
   private int homeFouls;
   private int awayFouls;
   
+  public Scoreboard(RuleSet l) {
+    this.milliseconds = 0;
+    this.seconds = 0;
+    this.minutes = 0;
+    this.quarter = 1;
+    this.homeScore = 0;
+    this.awayScore = 0;
+    this.homeTO = l.timeouts();
+    this.awayTO = l.timeouts();
+    this.possession = true;
+    this.awayFouls = 0;
+    this.homeFouls = 0;
+  }
+
   public int getMS() {
     return milliseconds;
   }

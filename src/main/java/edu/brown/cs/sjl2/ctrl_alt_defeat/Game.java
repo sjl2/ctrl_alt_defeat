@@ -2,6 +2,15 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import java.util.List;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Scoreboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
+
 public class Game {
   private Team homeTeam;
   private Team awayTeam;
@@ -13,6 +22,7 @@ public class Game {
   private BoxScore homeBoxScore;
   private BoxScore awayBoxScore;
   private List<Stat> stats;
+  private RuleSet rules;
   
   public Player getPlayerAtPosition(Position pos) {return null;}
   public BoxScore getHomeBoxScore() {
@@ -22,7 +32,7 @@ public class Game {
     return awayBoxScore;
   }
   private Scoreboard createScoreBoard() {
-    return null;
+    return new Scoreboard(rules);
   }
   public void subPlayer(int idIn, int idOut) {}
   public void takeTimeout(Boolean home) {}
@@ -32,6 +42,12 @@ public class Game {
   public void addStat(Stat s) {}
   public List<Player> getTopPlayers(int n) {
     return null;
+  }
+  public RuleSet getRules() {
+    return rules;
+  }
+  public void setRules(RuleSet rules) {
+    this.rules = rules;
   }
   
 }

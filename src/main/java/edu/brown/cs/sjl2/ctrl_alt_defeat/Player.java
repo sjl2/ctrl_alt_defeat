@@ -1,5 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
+
 public class Player {
   private int id;
   private String name;

@@ -1,4 +1,4 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 import java.util.List;
 
