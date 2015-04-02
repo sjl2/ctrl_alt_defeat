@@ -14,7 +14,6 @@ public class PlayerGameStats {
   private int stl;
   private int blk;
   private int tov;
-  private int pf;
   private int offensiveFouls;
   private int defensiveFouls;
   private int technicalFouls;
@@ -124,14 +123,6 @@ public class PlayerGameStats {
     this.tov = tov;
   }
 
-  public int getPersonalFouls() {
-    return pf;
-  }
-
-  public void setPersonalFouls(int pf) {
-    this.pf = pf;
-  }
-
   public int getOffensiveFouls() {
     return offensiveFouls;
   }
@@ -165,7 +156,23 @@ public class PlayerGameStats {
     return threePointersA + twoPointersA;
   }
 
-  public double getFieldGoalPercentage() {
-    return  getFieldGoals() / (double) getFieldGoalsAttempted();
+  public double getTwoPointPercentage() {
+    return  twoPointers / (double) twoPointersA;
+  }
+
+  public double getThreePointPercentage() {
+    return  threePointers / (double) threePointersA;
+  }
+
+  public double getFreeThrowPercentage() {
+    return freeThrows / (double) freeThrowsA;
+  }
+
+  public int getRebounds() {
+    return orb + drb;
+  }
+
+  public int getPersonalFouls() {
+    return offensiveFouls + defensiveFouls;
   }
 }

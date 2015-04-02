@@ -11,13 +11,11 @@ public class DefensiveFoul implements Stat {
 
   @Override
   public void execute(PlayerGameStats ps) {
-    ps.setPersonalFouls(ps.getPersonalFouls() + 1);
     ps.setDefensiveFouls(ps.getDefensiveFouls() + 1);
   }
 
   @Override
   public void undo(PlayerGameStats ps) {
-    ps.setPersonalFouls(ps.getPersonalFouls() - 1);
     ps.setDefensiveFouls(ps.getDefensiveFouls() - 1);
   }
 
