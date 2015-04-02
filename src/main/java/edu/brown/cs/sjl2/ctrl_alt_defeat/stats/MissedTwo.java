@@ -1,22 +1,20 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat.stats.basketballstats;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
-public class TechnicalFoul implements Stat {
+public class MissedTwo implements Stat {
   private Location pos;
   private Player player;
 
   @Override
   public void execute(GameStats ps) {
-    ps.setTechnicalFouls(ps.getTechnicalFouls() + 1);
+    ps.setTwoPointersA(ps.getTwoPointersA() + 1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setTechnicalFouls(ps.getTechnicalFouls() - 1);
+    ps.setTwoPointersA(ps.getTwoPointersA() - 1);
   }
 
   @Override
