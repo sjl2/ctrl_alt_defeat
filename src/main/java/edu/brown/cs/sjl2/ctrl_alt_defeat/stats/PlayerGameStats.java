@@ -157,10 +157,15 @@ public class PlayerGameStats {
     this.technicalFouls = technicalFouls;
   }
 
-  public getFieldGoals() {
-    return getThreePointers() + twoPointers;
+  public int getFieldGoals() {
+    return threePointers + twoPointers;
   }
-  public double getFieldGoalPercentage() {
 
+  public int getFieldGoalsAttempted() {
+    return threePointersA + twoPointersA;
+  }
+
+  public double getFieldGoalPercentage() {
+    return  getFieldGoals() / (double) getFieldGoalsAttempted();
   }
 }
