@@ -74,5 +74,21 @@ public class Scoreboard {
   public void flipPossession() {
     this.possession = !possession;
   }
+  
+  public void takeTimeout(Boolean home) throws ScoreboardException {
+    if (home) {
+      if (homeTO == 0) {
+        throw new ScoreboardException("Home team is out of timeouts");
+      } else {
+        homeTO--;
+      }
+    } else {
+      if (awayTO == 0) {
+        throw new ScoreboardException("Away team is out of timeouts");
+      } else {
+        awayTO--;
+      }
+    }
+  }
 
 }
