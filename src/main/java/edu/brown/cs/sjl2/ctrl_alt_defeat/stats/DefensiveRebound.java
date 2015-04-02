@@ -1,9 +1,7 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat.stats.basketballstats;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class DefensiveRebound implements Stat {
   private Location pos;
@@ -11,12 +9,12 @@ public class DefensiveRebound implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setDefensiveRebound(ps.getDefensiveRebound() + 1);
+    ps.setDefensiveRebounds(ps.getDefensiveRebounds() + 1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setDefensiveRebound(ps.getDefensiveRebound() - 1);
+    ps.setDefensiveRebounds(ps.getDefensiveRebounds() - 1);
   }
 
   @Override

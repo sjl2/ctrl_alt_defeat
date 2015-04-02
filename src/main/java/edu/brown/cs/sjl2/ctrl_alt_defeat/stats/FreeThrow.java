@@ -1,27 +1,27 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat.stats.basketballstats;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
-public class OffensiveRebound implements Stat {
+public class FreeThrow implements Stat {
   private Location pos;
   private Player player;
 
   @Override
   public void execute(GameStats ps) {
-    ps.setOffensiveRebounds(ps.getOffensiveRebounds() + 1);
+    ps.setFreeThrowsA(ps.getFreeThrowsA() + 1);
+    ps.setFreeThrows(ps.getFreeThrows() + 1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setOffensiveRebounds(ps.getOffensiveRebounds() - 1);
+    ps.setFreeThrowsA(ps.getFreeThrowsA() - 1);
+    ps.setFreeThrows(ps.getFreeThrows() - 1);
   }
 
   @Override
   public Location getPosition() {
-    return pos;
+     return pos;
   }
 
   @Override

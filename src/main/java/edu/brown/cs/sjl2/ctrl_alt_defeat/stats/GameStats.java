@@ -1,23 +1,45 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 public class GameStats {
-  private int minutesPlayed;
-  private int twoPointers;
-  private int twoPointersA;
-  private int threePointers;
-  private int threePointersA;
-  private int freeThrows;
-  private int freeThrowsA;
-  private int orb;
-  private int drb;
-  private int ast;
-  private int stl;
-  private int blk;
-  private int tov;
-  private int offensiveFouls;
-  private int defensiveFouls;
-  private int technicalFouls;
+  private int minutesPlayed = 0;
+  private int twoPointers = 0;
+  private int twoPointersA = 0;
+  private int threePointers = 0;
+  private int threePointersA = 0;
+  private int freeThrows = 0;
+  private int freeThrowsA = 0;
+  private int orb = 0;
+  private int drb = 0;
+  private int ast = 0;
+  private int stl = 0;
+  private int blk = 0;
+  private int tov = 0;
+  private int offensiveFouls = 0;
+  private int defensiveFouls = 0;
+  private int technicalFouls = 0;
 
+  public GameStats copy() {
+    GameStats copy = new GameStats();
+
+    copy.setMinutesPlayed(minutesPlayed);
+    copy.setTwoPointers(twoPointers);
+    copy.setTwoPointersA(twoPointersA);
+    copy.setThreePointers(threePointers);
+    copy.setThreePointersA(threePointersA);
+    copy.setFreeThrows(freeThrows);
+    copy.setFreeThrowsA(freeThrowsA);
+    copy.setOffensiveRebounds(orb);
+    copy.setDefensiveRebounds(drb);
+    copy.setAssists(ast);
+    copy.setSteals(stl);
+    copy.setBlocks(blk);
+    copy.setTurnovers(tov);
+    copy.setOffensiveFouls(offensiveFouls);
+    copy.setDefensiveFouls(defensiveFouls);
+    copy.setTechnicalFouls(technicalFouls);
+
+    return copy;
+  }
 
   public int getMinutesPlayed() {
     return minutesPlayed;
@@ -31,7 +53,7 @@ public class GameStats {
     return twoPointers;
   }
 
-  public void setTwoPointers(int twoPoints) {
+  void setTwoPointers(int twoPoints) {
     this.twoPointers = twoPoints;
   }
 
@@ -39,7 +61,7 @@ public class GameStats {
     return twoPointersA;
   }
 
-  public void setTwoPointersA(int twoPointsA) {
+  void setTwoPointersA(int twoPointsA) {
     this.twoPointersA = twoPointsA;
   }
 
@@ -47,7 +69,7 @@ public class GameStats {
     return threePointers;
   }
 
-  public void setThreePointers(int threePoints) {
+  void setThreePointers(int threePoints) {
     this.threePointers = threePoints;
   }
 
@@ -55,7 +77,7 @@ public class GameStats {
     return threePointersA;
   }
 
-  public void setThreePointersA(int threePointsA) {
+  void setThreePointersA(int threePointsA) {
     this.threePointersA = threePointsA;
   }
 
@@ -63,7 +85,7 @@ public class GameStats {
     return freeThrows;
   }
 
-  public void setFreeThrows(int freeThrows) {
+  void setFreeThrows(int freeThrows) {
     this.freeThrows = freeThrows;
   }
 
@@ -71,7 +93,7 @@ public class GameStats {
     return freeThrowsA;
   }
 
-  public void setFreeThrowsA(int freeThrowsA) {
+  void setFreeThrowsA(int freeThrowsA) {
     this.freeThrowsA = freeThrowsA;
   }
 
@@ -79,15 +101,15 @@ public class GameStats {
     return orb;
   }
 
-  public void setOffensiveRebounds(int orb) {
+  void setOffensiveRebounds(int orb) {
     this.orb = orb;
   }
 
-  public int getDefensiveRebound() {
+  public int getDefensiveRebounds() {
     return drb;
   }
 
-  public void setDefensiveRebound(int drb) {
+  void setDefensiveRebounds(int drb) {
     this.drb = drb;
   }
 
@@ -95,7 +117,7 @@ public class GameStats {
     return ast;
   }
 
-  public void setAssists (int ast) {
+  void setAssists (int ast) {
     this.ast = ast;
   }
 
@@ -103,7 +125,7 @@ public class GameStats {
     return stl;
   }
 
-  public void setSteals(int stl) {
+  void setSteals(int stl) {
     this.stl = stl;
   }
 
@@ -111,7 +133,7 @@ public class GameStats {
     return blk;
   }
 
-  public void setBlocks(int blk) {
+  void setBlocks(int blk) {
     this.blk = blk;
   }
 
@@ -119,7 +141,7 @@ public class GameStats {
     return tov;
   }
 
-  public void setTurnovers(int tov) {
+  void setTurnovers(int tov) {
     this.tov = tov;
   }
 
@@ -128,7 +150,7 @@ public class GameStats {
   }
 
 
-  public void setOffensiveFouls(int offensiveFoul) {
+  void setOffensiveFouls(int offensiveFoul) {
     this.offensiveFouls = offensiveFoul;
   }
 
@@ -136,7 +158,7 @@ public class GameStats {
     return defensiveFouls;
   }
 
-  public void setDefensiveFouls(int defensiveFoul) {
+  void setDefensiveFouls(int defensiveFoul) {
     this.defensiveFouls = defensiveFoul;
   }
 
@@ -144,7 +166,7 @@ public class GameStats {
     return technicalFouls;
   }
 
-  public void setTechnicalFouls(int technicalFouls) {
+  void setTechnicalFouls(int technicalFouls) {
     this.technicalFouls = technicalFouls;
   }
 
