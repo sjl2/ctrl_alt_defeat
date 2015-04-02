@@ -67,10 +67,10 @@ public class Game {
     stats.add(0, s);
     if (s.getPlayer().getTeam().getId() == homeTeam.getId()) {
       s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
-      s.execute(homeBoxScore.getTeamStats().get(homeTeam));
+      s.execute(homeBoxScore.getTeamStats());
     } else if (s.getPlayer().getTeam().getId() == awayTeam.getId()) {
       s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
-      s.execute(awayBoxScore.getTeamStats().get(awayTeam));
+      s.execute(awayBoxScore.getTeamStats());
     } else {
       System.out.println("ruh roh");
     }
@@ -80,10 +80,10 @@ public class Game {
     Stat s = stats.remove(0);
     if (s.getPlayer().getTeam().getId() == homeTeam.getId()) {
       s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
-      s.undo(homeBoxScore.getTeamStats().get(homeTeam));
+      s.undo(homeBoxScore.getTeamStats());
     } else if (s.getPlayer().getTeam().getId() == awayTeam.getId()) {
       s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
-      s.undo(awayBoxScore.getTeamStats().get(awayTeam));
+      s.undo(awayBoxScore.getTeamStats());
     } else {
       System.out.println("ruh roh");
     }
