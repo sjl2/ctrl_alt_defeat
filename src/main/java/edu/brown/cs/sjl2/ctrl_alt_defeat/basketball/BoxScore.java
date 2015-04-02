@@ -16,12 +16,5 @@ public class BoxScore {
     return teamStats.copy();
   }
 
-  public Map<Team, GameStats> getTeamStats() {
-    return teamStats;
-  }
-
-  public void setTeamStats(Map<Team, GameStats> teamStats) {
-    this.teamStats = teamStats;
-  }
 
 }
