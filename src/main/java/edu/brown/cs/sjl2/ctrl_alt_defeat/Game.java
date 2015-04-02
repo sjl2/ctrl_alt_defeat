@@ -30,6 +30,7 @@ public class Game {
     this.lineup = new Lineup();
     this.scoreboard = createScoreboard();
   }
+ 
   
   public Player getPlayerAtPosition(Location pos) {return null;}
   public BoxScore getHomeBoxScore() {
@@ -62,7 +63,31 @@ public class Game {
   public void flipPossession() {
     scoreboard.flipPossession();
   }
-  public void addStat(Stat s) {}
+  public void addStat(Stat s) {
+    stats.add(0, s);
+    if (s.getPlayer().getTeam().getId() == homeTeam.getId()) {
+      s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
+      s.execute(homeBoxScore.getTeamStats().get(homeTeam));
+    } else if (s.getPlayer().getTeam().getId() == awayTeam.getId()) {
+      s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
+      s.execute(awayBoxScore.getTeamStats().get(awayTeam));
+    } else {
+      System.out.println("ruh roh");
+    }
+  }
+  
+  public void undoStat() {
+    Stat s = stats.remove(0);
+    if (s.getPlayer().getTeam().getId() == homeTeam.getId()) {
+      s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
+      s.undo(homeBoxScore.getTeamStats().get(homeTeam));
+    } else if (s.getPlayer().getTeam().getId() == awayTeam.getId()) {
+      s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
+      s.undo(awayBoxScore.getTeamStats().get(awayTeam));
+    } else {
+      System.out.println("ruh roh");
+    }
+  }
   public List<Player> getTopPlayers(int n) {
     //da fuq
     return null;

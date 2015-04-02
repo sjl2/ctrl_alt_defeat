@@ -60,4 +60,12 @@ public class BoxScore {
     return playerStats;
   }
 
+  public Map<Team, GameStats> getTeamStats() {
+    return teamStats;
+  }
+
+  public void setTeamStats(Map<Team, GameStats> teamStats) {
+    this.teamStats = teamStats;
+  }
+
 }
