@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class Team {
@@ -9,6 +10,7 @@ public class Team {
   private String secondary;
   private Map<Integer, Player> playerIds;
   private Map<String, Player> playerNames;
+
   public int getId() {
     return id;
   }
@@ -27,14 +29,17 @@ public class Team {
   public void setPrimary(String primary) {
     this.primary = primary;
   }
-  
+
   public Player getPlayerById(int id) {
     return playerIds.get(id);
   }
-  
+
   public Player getPlayerByName(String name) {
     return playerNames.get(name);
   }
-  
-  
+  public Collection<Player> getPlayers() {
+    return playerIds.values();
+  }
+
+
 }
