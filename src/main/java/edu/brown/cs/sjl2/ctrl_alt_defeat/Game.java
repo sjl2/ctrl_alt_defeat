@@ -14,8 +14,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 public class Game {
   private Team homeTeam;
   private Team awayTeam;
-  private Lineup homeLineup;
-  private Lineup awayLineup;
+  private Lineup lineup;
   private Bench homeBench;
   private Bench awayBench;
   private Scoreboard scoreboard;
@@ -34,8 +33,24 @@ public class Game {
   private Scoreboard createScoreBoard() {
     return new Scoreboard(rules);
   }
-  public void subPlayer(int idIn, int idOut) {}
-  public void takeTimeout(Boolean home) {}
+  public void subPlayer(int idIn, int idOut, boolean home) {
+    Lineup l = lineup;
+    Bench b;
+    Team t;
+    if (home) {
+      b = homeBench;
+      t = homeTeam;
+    } else {
+      b = awayBench;
+      t = homeTeam;
+    }
+    
+    l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
+    b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
+  }
+  public void takeTimeout(Boolean home) {
+    
+  }
   public void flipPossession() {
     scoreboard.flipPossession();
   }

@@ -17,4 +17,8 @@ public class Bench {
   public void setTeam(Team team) {
     this.team = team;
   }
+  public void sub(Player pIn, Player pOut) {
+    players.remove(pIn);
+    players.add(pOut);
+  }
 }
