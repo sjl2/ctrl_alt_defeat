@@ -15,36 +15,39 @@ public class PlayerGameStats {
   private int blk;
   private int tov;
   private int pf;
-  
-  
+  private int offensiveFouls;
+  private int defensiveFouls;
+  private int technicalFouls;
+
+
   public int getMinutesPlayed() {
     return minutesPlayed;
   }
   public void setMinutesPlayed(int minutesPlayed) {
     this.minutesPlayed = minutesPlayed;
   }
-  public int getTwoPoints() {
+  public int getTwoPointers() {
     return twoPoints;
   }
-  public void setTwoPoints(int twoPoints) {
+  public void setTwoPointers(int twoPoints) {
     this.twoPoints = twoPoints;
   }
-  public int getTwoPointsA() {
+  public int getTwoPointersA() {
     return twoPointsA;
   }
-  public void setTwoPointsA(int twoPointsA) {
+  public void setTwoPointersA(int twoPointsA) {
     this.twoPointsA = twoPointsA;
   }
-  public int getThreePoints() {
+  public int getThreePointers() {
     return threePoints;
   }
-  public void setThreePoints(int threePoints) {
+  public void setThreePointers(int threePoints) {
     this.threePoints = threePoints;
   }
-  public int getThreePointsA() {
+  public int getThreePointersA() {
     return threePointsA;
   }
-  public void setThreePointsA(int threePointsA) {
+  public void setThreePointersA(int threePointsA) {
     this.threePointsA = threePointsA;
   }
   public int getFreeThrows() {
@@ -59,28 +62,64 @@ public class PlayerGameStats {
   public void setFreeThrowsA(int freeThrowsA) {
     this.freeThrowsA = freeThrowsA;
   }
-  public int getOrb() {
+  public int getOffensiveRebounds() {
     return orb;
   }
-  public void setOrb(int orb) {
+  public void setOffensiveRebounds(int orb) {
     this.orb = orb;
   }
-  public int getDrb() {
+  public int getDefensiveRebound() {
     return drb;
   }
-  public void setDrb(int drb) {
+  public void setDefensiveRebound(int drb) {
     this.drb = drb;
   }
-  public int getAst() {
+  public int getAssists() {
     return ast;
   }
-  public void setAst(int ast) {
+  public void setAssists (int ast) {
     this.ast = ast;
   }
-  public int getStl() {
+  public int getSteals() {
     return stl;
   }
-  public void setStl(int stl) {
+  public void setSteals(int stl) {
     this.stl = stl;
+  }
+  public int getBlocks() {
+    return blk;
+  }
+  public void setBlocks(int blk) {
+    this.blk = blk;
+  }
+  public int getTurnovers() {
+    return tov;
+  }
+  public void setTurnovers(int tov) {
+    this.tov = tov;
+  }
+  public int getPersonalFouls() {
+    return pf;
+  }
+  public void setPersonalFouls(int pf) {
+    this.pf = pf;
+  }
+  public int getOffensiveFouls() {
+    return offensiveFouls;
+  }
+  public void setOffensiveFouls(int offensiveFoul) {
+    this.offensiveFouls = offensiveFoul;
+  }
+  public int getDefensiveFouls() {
+    return defensiveFouls;
+  }
+  public void setDefensiveFouls(int defensiveFoul) {
+    this.defensiveFouls = defensiveFoul;
+  }
+  public int getTechnicalFouls() {
+    return technicalFouls;
+  }
+  public void setTechnicalFouls(int technicalFouls) {
+    this.technicalFouls = technicalFouls;
   }
 }

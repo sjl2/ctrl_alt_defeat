@@ -5,20 +5,20 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerGameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
-public class ThreePointer implements Stat {
+public class DefensiveFoul implements Stat {
   private Position pos;
   private Player player;
 
   @Override
   public void execute(PlayerGameStats ps) {
-    ps.setThreePointers(ps.getThreePointers() + 1);
-    ps.setThreePointersA(ps.getThreePointersA() + 1);
+    ps.setPersonalFouls(ps.getPersonalFouls() + 1);
+    ps.setDefensiveFouls(ps.getDefensiveFouls() + 1);
   }
 
   @Override
   public void undo(PlayerGameStats ps) {
-    ps.setThreePointers(ps.getThreePointers() - 1);
-    ps.setThreePointersA(ps.getThreePointersA() - 1);
+    ps.setPersonalFouls(ps.getPersonalFouls() - 1);
+    ps.setDefensiveFouls(ps.getDefensiveFouls() - 1);
   }
 
   @Override

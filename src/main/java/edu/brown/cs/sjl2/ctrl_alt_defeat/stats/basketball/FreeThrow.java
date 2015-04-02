@@ -5,25 +5,25 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerGameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
-public class ThreePointer implements Stat {
+public class FreeThrow implements Stat {
   private Position pos;
   private Player player;
 
   @Override
   public void execute(PlayerGameStats ps) {
-    ps.setThreePointers(ps.getThreePointers() + 1);
-    ps.setThreePointersA(ps.getThreePointersA() + 1);
+    ps.setFreeThrowsA(ps.getFreeThrowsA() + 1);
+    ps.setFreeThrows(ps.getFreeThrows() + 1);
   }
 
   @Override
   public void undo(PlayerGameStats ps) {
-    ps.setThreePointers(ps.getThreePointers() - 1);
-    ps.setThreePointersA(ps.getThreePointersA() - 1);
+    ps.setFreeThrowsA(ps.getFreeThrowsA() - 1);
+    ps.setFreeThrows(ps.getFreeThrows() - 1);
   }
 
   @Override
   public Position getPosition() {
-    return pos;
+     return pos;
   }
 
   @Override

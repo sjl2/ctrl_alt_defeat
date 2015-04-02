@@ -2,33 +2,31 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats.basketball;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Position;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerGameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class MissedThree implements Stat {
+  private Position pos;
+  private Player player;
 
   @Override
-  public void execute(PlayerStats ps) {
-    // TODO Auto-generated method stub
-
+  public void execute(PlayerGameStats ps) {
+    ps.setThreePointersA(ps.getThreePointersA() + 1);
   }
 
   @Override
-  public void undo(PlayerStats ps) {
-    // TODO Auto-generated method stub
-
+  public void undo(PlayerGameStats ps) {
+    ps.setThreePointersA(ps.getThreePointersA() - 1);
   }
 
   @Override
   public Position getPosition() {
-    // TODO Auto-generated method stub
-    return null;
+    return pos;
   }
 
   @Override
   public Player getPlayer() {
-    // TODO Auto-generated method stub
-    return null;
+    return player;
   }
 
 }

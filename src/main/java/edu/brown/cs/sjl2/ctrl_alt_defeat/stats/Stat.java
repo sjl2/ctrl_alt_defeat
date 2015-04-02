@@ -5,9 +5,9 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public interface Stat {
 
-  void execute(PlayerStats ps);
+  void execute(PlayerGameStats ps);
 
-  void undo(PlayerStats ps);
+  void undo(PlayerGameStats ps);
 
   Position getPosition();
 
