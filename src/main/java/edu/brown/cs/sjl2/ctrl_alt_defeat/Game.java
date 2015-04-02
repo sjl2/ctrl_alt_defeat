@@ -23,7 +23,7 @@ public class Game {
   private List<Stat> stats;
   private RuleSet rules;
   
-  public Player getPlayerAtPosition(Position pos) {return null;}
+  public Player getPlayerAtPosition(Location pos) {return null;}
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
   }

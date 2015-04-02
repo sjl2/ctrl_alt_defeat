@@ -1,10 +1,10 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
-public class Position {
+public class Location {
   private double x;
   private double y;
 
-  Position(double x, double y) {
+  Location(double x, double y) {
     this.x = x;
     this.y = y;
   }
