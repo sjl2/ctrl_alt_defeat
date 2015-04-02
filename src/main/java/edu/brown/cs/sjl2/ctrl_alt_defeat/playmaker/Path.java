@@ -28,7 +28,7 @@ public class Path {
   }
   
   public void moveLocationAtTime(Location loc, double time) {
-    // WHAT IS THIS FUNCTION DOING?
+    // WHAT IS THIS FUNCTION DOING???
   }
   
   public int size() {
