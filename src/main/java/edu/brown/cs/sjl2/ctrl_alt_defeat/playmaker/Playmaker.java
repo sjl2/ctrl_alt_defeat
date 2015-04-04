@@ -5,15 +5,16 @@ import java.util.HashMap;
 public class Playmaker {
   
   private HashMap<String, Play> plays;
-  
+
+	public static final double FRAME_RATE = 30.0;
+	
   public Playmaker() {
     this.plays = new HashMap<>();
   }
 
-  public void createPlay(String name) {
-    Play p = new Play(name);
-    plays.put(name, p);
-  }
+	public void putPlay(Play play) {
+		plays.put(play.getName(), play);
+	}
 
   public Play getPlay(String name) {
     return plays.get(name);
@@ -22,9 +23,8 @@ public class Playmaker {
   public void deletePlay(String name) {
     plays.remove(name);
   }
-  
-  public boolean savePlay(Play play) {
-    return false;
-    // AS IN SAVE TO DATABASE?
-  }
+
+	/*
+		Save play method will be in Database class
+	*/
 }

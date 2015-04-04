@@ -23,12 +23,13 @@ public class Play {
     return paths.get(pos);
   }
 
-  public void setLocationForPosition(BasketballPosition pos, Location loc, double time) {
+  public void setLocationForPosition(BasketballPosition pos, Location loc, int index) {
     Path p = paths.get(pos);
-    p.setLocationAtTime(loc, time);
+    p.setLocationAtIndex(loc, index);
   }
 
   public void moveLocationForPosition(BasketballPosition pos, Location loc, double time) {
-    // WHAT DOES THIS METHOD DO???
+		Path p = paths.get(pos);
+    p.moveLocationAtIndex(loc, index);
   }
 }
