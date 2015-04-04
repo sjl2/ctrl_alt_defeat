@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
@@ -8,7 +9,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 public class Play {
 
   private String name;
-  private HashMap<BasketballPosition, Path> paths;
+  private Map<BasketballPosition, Path> paths;
 
   public Play(String name) {
     this.name = name;
@@ -28,7 +29,7 @@ public class Play {
     p.setLocationAtIndex(loc, index);
   }
 
-  public void moveLocationForPosition(BasketballPosition pos, Location loc, double time) {
+  public void moveLocationForPosition(BasketballPosition pos, Location loc, int index) {
 		Path p = paths.get(pos);
     p.moveLocationAtIndex(loc, index);
   }

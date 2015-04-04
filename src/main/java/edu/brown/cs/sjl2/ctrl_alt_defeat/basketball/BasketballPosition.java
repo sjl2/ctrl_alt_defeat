@@ -1,13 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 public enum BasketballPosition {
-	private String positionName;
-
-	public BasketballPosition(String name) {
-		positionName = name;
-	}
-	
-  HomePG("Home Point Guard"),
+	HomePG("Home Point Guard"),
 	HomeSG("Home Shooting Guard"),
 	HomeSF("Home Small Forward"),
 	HomePF("Home Power Forward"),
@@ -16,5 +10,11 @@ public enum BasketballPosition {
 	AwaySG("Home Shooting Guard"),
 	AwaySF("Home Small Forward"),
 	AwayPF("Home Power Forward"),
-	AwayC("Home Center")
+	AwayC("Home Center");
+	
+	private String positionName;
+
+	BasketballPosition(String name) {
+		positionName = name;
+	}
 }

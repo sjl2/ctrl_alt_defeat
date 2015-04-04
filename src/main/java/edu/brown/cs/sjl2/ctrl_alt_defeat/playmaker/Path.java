@@ -10,7 +10,7 @@ public class Path {
   private List<Location> path;
   
   public Path() {
-    this.path = new HashMap<Double, Location>();
+    this.path = new LinkedList<>();
   }
 
   public Location getLocationAtTime(double time) throws IndexOutOfBoundsException {
@@ -34,6 +34,7 @@ public class Path {
 				path.add(loc);
 			}
 		}
+	}
   
   public void moveLocationAtIndex(Location loc, int index) throws IndexOutOfBoundsException {
 		path.set(index, path.get(index).add(loc));
