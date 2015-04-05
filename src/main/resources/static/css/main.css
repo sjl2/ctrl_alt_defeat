@@ -1,5 +1,24 @@
 body {
-	background-image: url('curtains.jpg');
+	background-color:#ADD8E6;
+}
+
+#canvas_container {
+    width: 1000px;
+    height: 570px;
+    margin: 100px auto;
+    outline: #000000 solid thick;
+}
+
+#control {
+    width: 1000px;
+    height: 150px;
+    margin: 0px auto;
+    text-align: center;
+}
+
+#current_frame {
+    width: 30px;
+    text-align: center;
 }
 
 h1, #query, #path, #info {

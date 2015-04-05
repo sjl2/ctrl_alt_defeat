@@ -45,6 +45,7 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
+		Spark.get("/playmaker", new PlaymakerHandler(), freeMarker);
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -74,6 +75,15 @@ public class GUIManager {
         ImmutableMap.of("title", "Bacon",
           "movieDB", db);
       return new ModelAndView(variables, "query.ftl");
+    }
+  }
+
+	private class PlaymakerHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request req, Response res) {
+      Map<String, Object> variables =
+        ImmutableMap.of("title", "Ctrl Alt Defeat: Playmaker");
+      return new ModelAndView(variables, "playmaker.ftl");
     }
   }
 
