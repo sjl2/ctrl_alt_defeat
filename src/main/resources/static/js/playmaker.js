@@ -99,11 +99,10 @@ window.onload = function() {
 	tokens[i] = t;
     }
 
-//    var ballLoc = Location(width / 2, height / 2);
-//    var t = Token(circ, ballLoc);
-//    console.log(t.location);
-//    circ.drag(onmove, onstart, onend, t, t, t);
-//    tokens[11] = t;
+    var ballLoc = Location(width / 2, height / 2);
+    var t = Token(circ, ballLoc);
+    circ.drag(onmove, onstart, onend, t, t, t);
+    tokens[10] = t;
 
     $("#previous_frame").on("click", function() {
 	if(currentFrame > 0) {
@@ -171,7 +170,7 @@ function onstart(x, y, event) {
     intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
 }
 
-function onmove(dx, dy, x, y, event) {
+function onmove(dx, dy, x, y, event) {//TODO limit drag to court graphic
     this.translate(dx - this.dx, dy - this.dy);
     this.dx = dx;
     this.dy = dy;
@@ -183,7 +182,7 @@ function onend(event) {
 }
 
 function updatePath() {
-    grabbedToken.path[currentFrame] = grabbedToken.location.copy();
+    grabbedToken.path[currentFrame + 1] = grabbedToken.location.copy();
     setFrame(currentFrame + 1);
     if(currentFrame > maxFrame) {
 	maxFrame = currentFrame;
