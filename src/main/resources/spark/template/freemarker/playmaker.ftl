@@ -1,5 +1,12 @@
 <#assign content>
 
+  <div id="load_column">
+    <table id="plays"></table>
+  </div>
+  <div id="save">
+    <input type="text" id="play_name"></input>
+    <button id="save_play">Save Play</button>
+  </div>
   <div id="canvas_container"></div>
   <div id="control">
     <button id="first_frame">First Frame</button>

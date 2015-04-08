@@ -1,17 +1,36 @@
 body {
-	background-color:#ADD8E6;
+    background-color:#ADD8E6;
 }
 
 #canvas_container {
-    width: 1000px;
-    height: 570px;
-    margin: 100px auto;
+    width: 50%;
+    position: relative;
+    margin: 0px auto;
     outline: #000000 solid thick;
 }
 
+#play_name {
+    width: 150px;
+}
+
+#save {
+    width: 50%;
+    text-align: right;
+    margin: 0px auto;
+    position: relative;
+}
+
+#load_column {
+    float: left;
+    background-color: #555555;
+    width: 20%;
+    overflow: auto;
+}
+
 #control {
-    width: 1000px;
-    height: 150px;
+    width: 50%;
+    height: 100px;
+    position: relative;
     margin: 0px auto;
     text-align: center;
 }

@@ -12,10 +12,11 @@ var height = 0;
 
 var radius = 25;
 
+var courtTopLeftCorner;
+var courtBottomRightCorner;
+
 var paper;
 var circ;
-
-var anim;
 
 var angle = 0;
 
@@ -62,15 +63,27 @@ function Token(circle, location) {
 }
 
 window.onload = function() {
+    var loadColumn = $("#load_column");
+    loadColumn.css("height", window.innerHeight);
+
     var container = $("#canvas_container");
     width = container.width();
-    height = container.height();
-    anim = {
-	cx:width/2,
-	cy:height/2,
-    };
+    height = Math.floor(width / 1.75);
+    container.css("height", height);
+    var containerTop = ((window.innerHeight - height) / 2);
+    container.css("top", containerTop);
+
+    var control = $("#control");
+    control.css("top", containerTop + 20);
+
+    var save_area = $("#save");
+    save_area.css("top", containerTop - 20);
+
     var offset = container.offset();
     paper = Raphael(offset.left, offset.top, width, height);
+
+    courtTopLeftCorner = Location(offset.left, offset.top);
+    courtBottomRightCorner = Location(offset.left + container.width(), offset.top + container.height());
 
     var court = paper.image("images/Basketball-Court.png", 0, 0, width, height);
     circ = paper.circle(width / 2, height / 2, radius);
@@ -99,56 +112,75 @@ window.onload = function() {
 	tokens[i] = t;
     }
 
-    var ballLoc = Location(width / 2, height / 2);
+    var ballLoc = Location(width / 2, height / 2);//TODO make ball follow player
     var t = Token(circ, ballLoc);
     circ.drag(onmove, onstart, onend, t, t, t);
     tokens[10] = t;
 
     $("#previous_frame").on("click", function() {
-	if(currentFrame > 0) {
+	if(playing) {
+	    stop();
+	} else if(currentFrame > 0) {
 	    setFrame(currentFrame - 1);
 	}
     });
 
     $("#next_frame").on("click", function() {
-	if(currentFrame < maxFrame) {
+	if(playing) {
+	    stop();
+	} else if(currentFrame < maxFrame) {
 	    setFrame(currentFrame + 1);
 	}
     });
 
     $("#first_frame").on("click", function() {
-	setFrame(0);
+	if(playing) {
+	    stop();
+	} else {
+	    setFrame(0);
+	}
     });
 
     $("#last_frame").on("click", function() {
-	setFrame(maxFrame);
+	if(playing) {
+	    stop();
+	} else {
+	    setFrame(maxFrame);
+	}
     });
 
     $("#go_frame").on("click", function() {
-	var frame = Number($("#go_frame")[0].value);
-	if(frame < 0) {
-	    setFrame(0);
-	} else if(frame > maxFrame) {
-	    setFrame(maxFrame);
+	if(playing) {
+	    stop();
 	} else {
-	    setFrame(frame);
+	    var frame = Number($("#current_frame")[0].value);
+	    if(frame < 0) {
+		setFrame(0);
+	    } else if(frame > maxFrame) {
+		setFrame(maxFrame);
+	    } else {
+		setFrame(frame);
+	    }
 	}
     });
 
     $("#play").on("click", function() {
-	if(currentFrame < maxFrame) {
-	    play();
+	if(!playing) {
+	    if(currentFrame < maxFrame) {
+		play();
+	    }
 	}
     });
 
     $("#stop").on("click", function() {
-	stop();
+	if(playing) {
+	    stop();
+	}
     });
 
 }
 
 function setFrame(frame) {
-    stop();
     currentFrame = frame;
     $("#current_frame")[0].value = currentFrame;
     for(i = 0; i < tokens.length; i++) {
@@ -171,21 +203,60 @@ function onstart(x, y, event) {
 }
 
 function onmove(dx, dy, x, y, event) {//TODO limit drag to court graphic
-    this.translate(dx - this.dx, dy - this.dy);
-    this.dx = dx;
-    this.dy = dy;
+    var insideX = true;
+    var insideY = true;
+    if(x < courtTopLeftCorner.x) {
+	insideX = false;
+	this.translate(-this.location.x, 0);
+    } else if(x > courtBottomRightCorner.x) {
+	insideX = false;
+	this.translate(width - this.location.x, 0);
+    } 
+    if(y < courtTopLeftCorner.y) {
+	insideY = false;
+	this.translate(0, -this.location.y);
+    } else if(y > courtBottomRightCorner.y) {
+	insideY = false;
+	this.translate(0, height - this.location.y);
+    } 
+    
+    if(insideX){
+	this.translate(dx - this.dx, 0);
+	this.dx = dx;
+    }
+    if(insideY) {
+	this.translate(0, dy - this.dy);
+	this.dy = dy;
+    }
 }
 
 function onend(event) {
     window.clearInterval(intervalVar);
+    var prevPath = grabbedToken.path;
+    grabbedToken.path = [];
+    for (i = 0; i <= currentFrame; i++) {
+	grabbedToken.path[i] = prevPath[i];
+    }
     grabbedToken = undefined;
+    maxFrame = 0;
+    for(i = 0; i < tokens.length; i++) {
+	if(tokens[i].path.length - 1 > maxFrame) {
+	    maxFrame = tokens[i].path.length - 1;
+	}
+    }
 }
 
 function updatePath() {
-    grabbedToken.path[currentFrame + 1] = grabbedToken.location.copy();
     setFrame(currentFrame + 1);
+    grabbedToken.path[currentFrame] = grabbedToken.location.copy();
     if(currentFrame > maxFrame) {
 	maxFrame = currentFrame;
+	for(i = 0; i < tokens.length; i++) {
+	    var t = tokens[i];
+	    if(t.path[currentFrame] == undefined) {
+		t.path[currentFrame] = t.path[currentFrame - 1];
+	    }
+	}
     }
 }
 
@@ -194,6 +265,10 @@ function play() {
 	playing = true;
 	playTime = currentFrame / FRAME_RATE;
 	playIntervalVar = window.setInterval(stepAnimation, 1000.0 / (FRAME_RATE * playSpeed));
+	for(i = 0; i < tokens.length; i++) {
+	    var t = tokens[i]
+	    t.circle.undrag();
+	}
     }
 }
 
@@ -201,29 +276,35 @@ function stop() {
     if(playing == true) {
 	playing = false;
 	window.clearInterval(playIntervalVar);
+	for(i = 0; i < tokens.length; i++) {
+	    var t = tokens[i]
+	    t.circle.drag(onmove, onstart, onend, t, t, t);
+	}
     }
 }
 
 function stepAnimation() {
-    for(i = 0; i < tokens.length; i++) {
-	var t = tokens[i];
-	var nextLoc;
-	if(currentFrame >= t.path.length) {
-	    nextLoc = t.path[t.path.length - 1];
-	} else {
-	    nextLoc = t.path[currentFrame];
+    if(playing) {
+	for(i = 0; i < tokens.length; i++) {
+	    var t = tokens[i];
+	    var nextLoc;
+	    if(currentFrame >= t.path.length) {
+		nextLoc = t.path[t.path.length - 1];
+	    } else {
+		nextLoc = t.path[currentFrame];
+	    }
+	    t.circle.animate({cx:nextLoc.x, cy:nextLoc.y},
+			     1000.0 / (FRAME_RATE * playSpeed),
+			     "linear",
+			     undefined);
 	}
-	t.circle.animate({cx:nextLoc.x, cy:nextLoc.y},
-			 playSpeed / FRAME_RATE,
-			 "linear",
-			 undefined);
-    }
 
-    if(currentFrame >= maxFrame - 1) {
-	window.clearInterval(playIntervalVar);
+	if(currentFrame >= maxFrame - 1) {
+	    stop();
+	}
+	currentFrame++;
+	$("#current_frame")[0].value = currentFrame;
+	playTime += (playSpeed / FRAME_RATE)
     }
-    currentFrame++;
-    $("#current_frame")[0].value = currentFrame;
-    playTime += (playSpeed / FRAME_RATE)
 }
 
