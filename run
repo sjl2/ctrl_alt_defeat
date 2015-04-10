@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/bin/sh
 
 # To run our code, we must have it in our classpath.
 # We use $(ls target/*.jar) instead of target/stars-1.0.jar so that

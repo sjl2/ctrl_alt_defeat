@@ -17,4 +17,12 @@ public enum BasketballPosition {
 	BasketballPosition(String name) {
 		positionName = name;
 	}
+
+	/**
+	 * Getter for name.
+	 * @return String, representing 
+	 */
+	public String getName() {
+	  return positionName;
+	}
 }
