@@ -8,7 +8,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 public class PlayerFactory {
 
   private DBManager database;
-  private Map<String, Player> players;
+  private Map<Integer, Player> players;
 
   /**
    * Factory object for players to ensure that there is only one object for a
@@ -25,7 +25,7 @@ public class PlayerFactory {
    * @param id The id of a player
    * @return Returns the player object corresponding to the id.
    */
-  public Player getPlayer(String id) {
+  public Player getPlayer(int id) {
     Player p = players.get(id);
     return p != null ? p : database.getPlayer(id);
   }

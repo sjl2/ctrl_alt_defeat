@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 
@@ -188,8 +189,55 @@ public class DBManager {
     }
   }
 
-  public Player getPlayer(String id) {
-    String query = "SELECT p.name,  "
-    return null;
+  public Player getPlayer(int id) {
+    String query = "SELECT person.name, player.team, player.number "
+        + "FROM person, player "
+        + "WHERE player.id = ?;";
+
+    Player player = null;
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, id);
+      ResultSet rs = prep.executeQuery();
+
+      if (rs.next()) {
+        String name = rs.getString("person.name");
+        int team = rs.getInt("player.team");
+        int number = rs.getInt("player.number");
+
+        player = new Player(id, name, number, team);
+      }
+    } catch (SQLException e) {
+      String message = "Retrieve player " + id + " from the database.";
+      throw new RuntimeException(message);
+    }
+
+    return player;
+  }
+
+  public Team getTeam(int id) {
+    String query = "SELECT team.name, team.color1, team.color2 "
+        + "FROM team "
+        + "WHERE team.id = ?;";
+
+    Team team = null;
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, id);
+      ResultSet rs = prep.executeQuery();
+
+      if (rs.next()) {
+        String name = rs.getString("team.name");
+        String color1 = rs.getString("team.color1");
+        String color2 = rs.getString("team.color2");
+
+        team = new Team(id, name, color1, color2);
+      }
+    } catch (SQLException e) {
+      String message = "Retrieve team " + id + " from the database.";
+      throw new RuntimeException(message);
+    }
+
+    return team;
   }
 }

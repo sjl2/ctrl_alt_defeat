@@ -23,6 +23,8 @@ public class Game {
   private BoxScore awayBoxScore;
   private List<Stat> stats;
   private RuleSet rules;
+  private PlayerFactory pf;
+  private TeamFactory tf;
 
   public Game(Team home, Team away) {
     this.homeTeam = home;
@@ -76,8 +78,14 @@ public class Game {
     }
   }
 
-  public void addStatByID(String statID, String playerID) {
-    Stat s = new Stat()
+  public void addStatByID(int statID, int playerID) {
+    //Player p = pf.getPlayer(playerID);
+
+    // TODO Make only one player
+    // Fix the Teams
+    // Sync up team with the database
+    // Handlers
+    // Front End
   }
 
   public void addStatByID(String statID, String playerID, double[] location) {
