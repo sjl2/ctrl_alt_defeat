@@ -1,7 +1,10 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+
+import edu.brown.cs.sjl2.ctrl_alt_defeat.PlayerFactory;
 
 public class Team {
   private int id;
@@ -10,29 +13,41 @@ public class Team {
   private String secondary;
   private Map<Integer, Player> playerIds;
   private Map<String, Player> playerNames;
+  private PlayerFactory pf;
+
+  public Team(
+      int id,
+      String name,
+      String primary,
+      String secondary,
+      PlayerFactory pf) {
+
+    this.id = id;
+    this.name =  name;
+    this.primary = primary;
+    this.secondary = secondary;
+    this.pf = pf;
+
+    playerIds = new HashMap<>();
+    playerNames = new HashMap<>();
+
+
+  }
 
   public int getId() {
     return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public String getPrimary() {
     return primary;
   }
 
-  public void setPrimary(String primary) {
-    this.primary = primary;
+  public String getSecondary() {
+    return secondary;
   }
 
   public Player getPlayerById(int id) {
@@ -47,13 +62,8 @@ public class Team {
     return playerIds.values();
   }
 
-  public String getSecondary() {
-    return secondary;
-  }
 
-  public void setSecondary(String secondary) {
-    this.secondary = secondary;
-  }
+
 
 
 }

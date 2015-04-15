@@ -1,8 +1,11 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class PlayerFactory {
@@ -28,6 +31,17 @@ public class PlayerFactory {
   public Player getPlayer(int id) {
     Player p = players.get(id);
     return p != null ? p : database.getPlayer(id);
+  }
+
+  public Collection<Player> getTeamPlayers(int teamID) {
+    Collection<Player> players = new ArrayList<>();
+    Collection<Integer> ids = database.getTeamPlayers(teamID);
+
+    for (int id : ids)  {
+      players.add(getPlayer(id));
+    }
+
+    return players;
   }
 
 }

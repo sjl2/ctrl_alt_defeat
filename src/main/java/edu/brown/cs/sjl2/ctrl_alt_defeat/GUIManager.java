@@ -51,6 +51,7 @@ public class GUIManager {
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
 		Spark.get("/playmaker", new PlaymakerHandler(), freeMarker);
+		Spark.post("/add/stat", new AddStat());
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -100,10 +101,10 @@ public class GUIManager {
 
       String statID = qm.value("stat");
       String playerID = qm.value("player");
-      Double x = GSON.fromJson(qm.value("x"), Double.class);
-      Double y = GSON.fromJson(qm.value("y"), Double.class);
+      int x = GSON.fromJson(qm.value("x"), Integer.class);
+      int y = GSON.fromJson(qm.value("y"), Integer.class);
 
-      double[] location = new double[] { x, y };
+      int[] location = new int[] { x, y };
 
       game.addStatByID(statID, playerID, location);
 

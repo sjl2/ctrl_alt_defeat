@@ -6,10 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Team;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.PlayerFactory;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 
@@ -144,7 +147,9 @@ public class DBManager {
 
     for (int i = 0; i < length; i++) {
       try (PreparedStatement prep = conn.prepareStatement(
-          "SELECT frame, x, y FROM play_detail WHERE play = ? AND position = ?;")) {
+          "SELECT frame, x, y "
+          + "FROM play_detail "
+          + "WHERE play = ? AND position = ?;")) {
 
         prep.setInt(1, id);
         prep.setString(2, bballPositions[i].getName());
@@ -208,14 +213,15 @@ public class DBManager {
         player = new Player(id, name, number, team);
       }
     } catch (SQLException e) {
-      String message = "Retrieve player " + id + " from the database.";
+      String message = "Could not retrieve player " + id + " from the "
+          + "database.";
       throw new RuntimeException(message);
     }
 
     return player;
   }
 
-  public Team getTeam(int id) {
+  public Team getTeam(int id, PlayerFactory pf) {
     String query = "SELECT team.name, team.color1, team.color2 "
         + "FROM team "
         + "WHERE team.id = ?;";
@@ -231,13 +237,37 @@ public class DBManager {
         String color1 = rs.getString("team.color1");
         String color2 = rs.getString("team.color2");
 
-        team = new Team(id, name, color1, color2);
+        team = new Team(id, name, color1, color2, pf);
       }
     } catch (SQLException e) {
-      String message = "Retrieve team " + id + " from the database.";
+      String message = "Could not retrieve team " + id + " from the database.";
       throw new RuntimeException(message);
     }
 
     return team;
+  }
+
+  public Collection<Integer> getTeamPlayers(int teamID) {
+    String query = "SELECT id "
+        + "FROM player "
+        + "WHERE team = ?;";
+
+    Collection<Integer> players = new ArrayList<>();
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, teamID);
+      ResultSet rs = prep.executeQuery();
+
+      while (rs.next()) {
+        players.add(rs.getInt("id"));
+      }
+
+    } catch (SQLException e) {
+      String message = "Could not retrieve players for team " + teamID + " from"
+          + " the database.";
+      throw new RuntimeException(message);
+    }
+
+    return players;
   }
 }

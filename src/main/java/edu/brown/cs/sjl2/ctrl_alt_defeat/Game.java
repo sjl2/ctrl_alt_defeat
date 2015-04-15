@@ -59,18 +59,21 @@ public class Game {
     l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
     b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
   }
+
   public void takeTimeout(Boolean home) throws ScoreboardException {
     scoreboard.takeTimeout(home);
   }
+
   public void flipPossession() {
     scoreboard.flipPossession();
   }
+
   public void addStat(Stat s) {
     stats.add(0, s);
-    if (s.getPlayer().getTeam().getId() == homeTeam.getId()) {
+    if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(homeBoxScore.getTeamStats());
-    } else if (s.getPlayer().getTeam().getId() == awayTeam.getId()) {
+    } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
       s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(awayBoxScore.getTeamStats());
     } else {
@@ -79,25 +82,22 @@ public class Game {
   }
 
   public void addStatByID(int statID, int playerID) {
-    //Player p = pf.getPlayer(playerID);
+    Player p = pf.getPlayer(playerID);
 
-    // TODO Make only one player
-    // Fix the Teams
-    // Sync up team with the database
     // Handlers
     // Front End
   }
 
-  public void addStatByID(String statID, String playerID, double[] location) {
+  public void addStatByID(String statID, String playerID, int[] location) {
 
   }
 
   public void undoStat() {
     Stat s = stats.remove(0);
-    if (s.getPlayer().getTeam().getId() == homeTeam.getId()) {
+    if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(homeBoxScore.getTeamStats());
-    } else if (s.getPlayer().getTeam().getId() == awayTeam.getId()) {
+    } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
       s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(awayBoxScore.getTeamStats());
     } else {
@@ -105,7 +105,7 @@ public class Game {
     }
   }
   public List<Player> getTopPlayers(int n) {
-    //da fuq
+    // TODO da fuq
     return null;
   }
   public RuleSet getRules() {
