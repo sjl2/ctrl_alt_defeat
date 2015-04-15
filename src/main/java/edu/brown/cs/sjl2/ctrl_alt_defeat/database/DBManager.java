@@ -51,7 +51,7 @@ public class DBManager {
    */
   public int generatePlayID() {
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT Max(id) FROM plays;")) {
+        "SELECT Max(id) FROM play;")) {
 
       ResultSet rs = prep.executeQuery();
       if (rs.next()) {
@@ -89,7 +89,7 @@ public class DBManager {
     int length = bballPositions.length;
 
     try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO play_details VALUES(?, ?, ?, ?, ?);")) {
+        "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
 
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
@@ -116,7 +116,7 @@ public class DBManager {
 
   private void saveToPlaysTable(int id, String name, int numFrames) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO plays VALUES(?, ?, ?);")) {
+        "INSERT INTO play VALUES(?, ?, ?);")) {
 
       prep.setInt(1, id);
       prep.setString(2, name);
@@ -143,7 +143,7 @@ public class DBManager {
 
     for (int i = 0; i < length; i++) {
       try (PreparedStatement prep = conn.prepareStatement(
-          "SELECT frame, x, y FROM play_details WHERE play = ? AND position = ?;")) {
+          "SELECT frame, x, y FROM play_detail WHERE play = ? AND position = ?;")) {
 
         prep.setInt(1, id);
         prep.setString(2, bballPositions[i].getName());
@@ -168,7 +168,7 @@ public class DBManager {
 
   private Play getPlayMetaData(int id) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name, numFrames FROM plays WHERE id = ?")) {
+        "SELECT name, numFrames FROM play WHERE id = ?")) {
       prep.setInt(1, id);
       ResultSet rs = prep.executeQuery();
 
@@ -189,7 +189,7 @@ public class DBManager {
   }
 
   public Player getPlayer(String id) {
-    // TODO Auto-generated method stub
+    String query = "SELECT p.name,  "
     return null;
   }
 }
