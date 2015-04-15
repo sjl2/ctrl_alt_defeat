@@ -14,18 +14,23 @@ public class Team {
   public int getId() {
     return id;
   }
+
   public void setId(int id) {
     this.id = id;
   }
+
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
+
   public String getPrimary() {
     return primary;
   }
+
   public void setPrimary(String primary) {
     this.primary = primary;
   }
@@ -37,8 +42,17 @@ public class Team {
   public Player getPlayerByName(String name) {
     return playerNames.get(name);
   }
+
   public Collection<Player> getPlayers() {
     return playerIds.values();
+  }
+
+  public String getSecondary() {
+    return secondary;
+  }
+
+  public void setSecondary(String secondary) {
+    this.secondary = secondary;
   }
 
 

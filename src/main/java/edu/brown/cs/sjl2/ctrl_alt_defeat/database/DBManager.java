@@ -8,12 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 
 public class DBManager {
   private Connection conn;
-  
+
   /**
    * Constructor for DBManager class, sets up connection.
    * @param path - String representing path to db file
@@ -30,20 +31,20 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-  
+
   /**
    * Call any time there is an error or you are done with the DBManager.
    */
   public void close() {
     try {
       if (conn != null) {
-        conn.close(); 
+        conn.close();
       }
     } catch (SQLException e) {
       throw new RuntimeException("ERROR: Unable to close connection.");
     }
   }
-  
+
   /**
    * Generates new PlayID's, always one greater than the existing max id.
    * @return int, new play ID to be used.
@@ -105,14 +106,14 @@ public class DBManager {
       }
 
       prep.executeBatch();
-      
+
 
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
     }
   }
-  
+
   private void saveToPlaysTable(int id, String name, int numFrames) {
     try (PreparedStatement prep = conn.prepareStatement(
         "INSERT INTO plays VALUES(?, ?, ?);")) {
@@ -143,11 +144,11 @@ public class DBManager {
     for (int i = 0; i < length; i++) {
       try (PreparedStatement prep = conn.prepareStatement(
           "SELECT frame, x, y FROM play_details WHERE play = ? AND position = ?;")) {
-        
+
         prep.setInt(1, id);
         prep.setString(2, bballPositions[i].getName());
         ResultSet rs = prep.executeQuery();
-        
+
         Location[] path = new Location[numFrames];
         while (rs.next()) {
           Location loc = new Location(rs.getInt("x"), rs.getInt("y"));
@@ -164,7 +165,7 @@ public class DBManager {
     play.setPaths(paths);
     return play;
   }
-  
+
   private Play getPlayMetaData(int id) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT name, numFrames FROM plays WHERE id = ?")) {
@@ -185,5 +186,10 @@ public class DBManager {
       close();
       throw new RuntimeException(e);
     }
+  }
+
+  public Player getPlayer(String id) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

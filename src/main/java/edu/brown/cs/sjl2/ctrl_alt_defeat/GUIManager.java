@@ -11,8 +11,10 @@ import com.google.gson.Gson;
 
 import spark.ExceptionHandler;
 import spark.ModelAndView;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -24,6 +26,9 @@ public class GUIManager {
   private int port = 8585;
   private final static int STATUS = 500;
   private final static Gson GSON = new Gson();
+
+  private Dashboard dash;
+  private Game game;
 
   public GUIManager(File db) {
     this.db = db;
@@ -86,6 +91,27 @@ public class GUIManager {
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
+
+	private class AddStat implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+
+      String statID = qm.value("stat");
+      String playerID = qm.value("player");
+      Double x = GSON.fromJson(qm.value("x"), Double.class);
+      Double y = GSON.fromJson(qm.value("y"), Double.class);
+
+      double[] location = new double[] { x, y };
+
+      game.addStatByID(statID, playerID, location);
+
+
+      return null;
+    }
+
+	}
 
   /**
    * Handler for printing exceptions. Allows for easier debugging by having any

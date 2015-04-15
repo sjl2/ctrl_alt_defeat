@@ -23,15 +23,15 @@ public class Game {
   private BoxScore awayBoxScore;
   private List<Stat> stats;
   private RuleSet rules;
-  
+
   public Game(Team home, Team away) {
     this.homeTeam = home;
     this.awayTeam = away;
     this.lineup = new Lineup();
     this.scoreboard = createScoreboard();
   }
- 
-  
+
+
   public Player getPlayerAtPosition(Location pos) {return null;}
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
@@ -53,7 +53,7 @@ public class Game {
       b = awayBench;
       t = awayTeam;
     }
-    
+
     l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
     b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
   }
@@ -75,7 +75,15 @@ public class Game {
       System.out.println("ruh roh");
     }
   }
-  
+
+  public void addStatByID(String statID, String playerID) {
+    Stat s = new Stat()
+  }
+
+  public void addStatByID(String statID, String playerID, double[] location) {
+
+  }
+
   public void undoStat() {
     Stat s = stats.remove(0);
     if (s.getPlayer().getTeam().getId() == homeTeam.getId()) {
@@ -98,5 +106,8 @@ public class Game {
   public void setRules(RuleSet rules) {
     this.rules = rules;
   }
-  
+
+
+
+
 }
