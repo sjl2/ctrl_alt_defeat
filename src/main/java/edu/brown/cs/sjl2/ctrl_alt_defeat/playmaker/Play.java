@@ -4,35 +4,26 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 
 public class Play {
 
-  private int id;
   private String name;
   private int numFrames;
   private Location[][] paths;
 
-  public Play(int id, String name, int numFrames, Location[][] paths) {
-    this.id = id;
+  public Play(String name, int numFrames, Location[][] paths) {
     this.name = name;
     this.numFrames = numFrames;
     this.paths = paths;
   }
 
-  public Play(int id, String name, int numFrames) {
-    this.id = id;
+  public Play(String name, int numFrames) {
     this.name = name;
     this.numFrames = numFrames;
   }
 
-  public int getID() {
-    return this.id;
-  }
   public String getName() {
     return this.name;
   }
   public int getNumFrames() {
     return this.numFrames;
-  }
-  public boolean isNewPlay() {
-    return this.id == -1;
   }
   public Location[][] getPaths() {
     return this.paths;
