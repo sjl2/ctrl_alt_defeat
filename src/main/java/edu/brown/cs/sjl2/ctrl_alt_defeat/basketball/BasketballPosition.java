@@ -10,8 +10,9 @@ public enum BasketballPosition {
 	AwaySG("Home Shooting Guard"),
 	AwaySF("Home Small Forward"),
 	AwayPF("Home Power Forward"),
-	AwayC("Home Center");
-	
+	AwayC("Home Center"),
+	Ball("Ball");
+
 	private String positionName;
 
 	BasketballPosition(String name) {
