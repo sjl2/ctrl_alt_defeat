@@ -362,7 +362,18 @@ function save(playName) {
 
 function load(data) {
     var play = data.play;
-    console.log(play);
+    var paths = play.paths;
+    console.log(paths);
+    for(i = 0; i < paths.length; i++) {
+	var path = paths[i];
+	tokens[i].path = [];
+	for(j = 0; j < path.length; j++) {
+	    var loc = Location(path[j].x, path[j].y);
+	    tokens[i].path[j] = loc;
+	}
+    }
+    maxFrame = play.numFrames - 1;
+    setFrame(0);
 }
 
 function updateLoadBar(data) {
@@ -374,7 +385,9 @@ function updateLoadBar(data) {
 	row.innerHTML = "<span id=\"" + plays[i] + "\">" + plays[i] + "</span>";
 	$("#" + plays[i]).on("click", function() {
 	    $.get("/playmaker/load",
-		  plays[i],
+		  {
+		      name: this.id
+		  },
 		  load,
 		  "json");
 	});
