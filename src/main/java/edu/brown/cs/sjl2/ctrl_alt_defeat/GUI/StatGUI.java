@@ -33,6 +33,6 @@ public class StatGUI {
 
       return null;
     }
-
+  }
 
 }

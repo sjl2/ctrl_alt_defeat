@@ -86,7 +86,7 @@ public class Game {
   }
 
 
-  public void addStatByID(String statID, int playerID, int[] location) {
+  public void addStatByID(String statID, int playerID, Location location) {
     Player p = pf.getPlayer(playerID);
     addStat(sf.getStat(statID, p, location));
   }
