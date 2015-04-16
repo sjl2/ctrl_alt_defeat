@@ -31,7 +31,7 @@ public class Dashboard {
   }
 
   private Game newGame(Team home, Team away) {
-    return new Game(home, away, pf, sf);
+    return new Game(home, away, pf, sf, db);
   }
 
   public void startGame(Boolean home, int opponentID)
