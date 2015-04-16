@@ -80,7 +80,7 @@ public class GUIManager {
    */
   private class FrontHandler implements TemplateViewRoute {
     @Override
-    public ModelAndView handle(Request req, Response res) {
+    public ModelAndView handle(Request rsubleq, Response res) {
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
       return new ModelAndView(variables, "query.ftl");

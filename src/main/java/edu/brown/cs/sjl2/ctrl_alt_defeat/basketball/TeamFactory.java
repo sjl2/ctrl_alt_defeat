@@ -11,7 +11,7 @@ public class TeamFactory {
   private Map<Integer, Team> teams;
   private PlayerFactory pf;
 
-  TeamFactory(DBManager db, PlayerFactory pf) {
+  public TeamFactory(DBManager db, PlayerFactory pf) {
     this.database = db;
     this.teams = new HashMap<>();
     this.pf = pf;

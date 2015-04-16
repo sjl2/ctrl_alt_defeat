@@ -2,6 +2,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class StatFactory {
 

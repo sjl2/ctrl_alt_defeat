@@ -27,14 +27,15 @@ public class Game {
   private List<Stat> stats;
   private RuleSet rules;
   private PlayerFactory pf;
-  private TeamFactory tf;
   private StatFactory sf;
 
-  public Game(Team home, Team away) {
+  public Game(Team home, Team away, PlayerFactory pf, StatFactory sf) {
     this.homeTeam = home;
     this.awayTeam = away;
     this.lineup = new Lineup();
     this.scoreboard = createScoreboard();
+    this.pf = pf;
+    this.sf = sf;
   }
 
 
@@ -87,7 +88,6 @@ public class Game {
     }
   }
 
-
   public void addStatByID(String statID, int playerID, Location location) {
     Player p = pf.getPlayer(playerID);
     addStat(sf.getStat(statID, p, location));
@@ -102,7 +102,9 @@ public class Game {
       s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(awayBoxScore.getTeamStats());
     } else {
-      System.out.println("ruh roh");
+      String message = "Cannot undo stat for " + s.getPlayer() + " because "
+          + "they are not on either team.";
+      throw new RuntimeException(message);
     }
   }
 

@@ -17,7 +17,7 @@ public class PlayerFactory {
    * player.
    * @param db The database manager needed to query for a player
    */
-  PlayerFactory(DBManager db) {
+  public PlayerFactory(DBManager db) {
     this.database = db;
     this.players = new HashMap<>();
   }

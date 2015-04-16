@@ -22,6 +22,6 @@
   </div>
 
   <script src="js/playmaker.js"></script>
-
+  <link rel="stylesheet" href="css/playmaker.css">
 </#assign>
 <#include "main.ftl">
