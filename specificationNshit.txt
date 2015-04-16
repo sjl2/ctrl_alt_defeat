@@ -16,3 +16,14 @@ Back End: Parses play info, sends back map from play id to name:
 	(So that you can display the full list of plays to the user after saving)
 
 Load Handler --
+
+Front End: Send the id of the play you want:
+	id : "14"
+
+Back End: Parses id, retrieves from the DB, responds with:
+	"play" : {
+				id : "14"
+				name: "Pick and Roll"
+				numFrames : "50"
+				paths : <Stringified Location[][]>
+			 }
