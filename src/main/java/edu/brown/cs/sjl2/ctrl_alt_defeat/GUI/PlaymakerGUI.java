@@ -67,7 +67,7 @@ public class PlaymakerGUI {
       Location[][] paths = new Location[numBasketballPlayers][];
       for (int position = 0; position < numBasketballPlayers; position++) {
         Location[] path = new Location[numFrames];
-        for (int frame = 0; frame < paths[position].length; frame++) {
+        for (int frame = 0; frame < numFrames; frame++) {
           int x = jsonPaths[position][frame][0];
           int y = jsonPaths[position][frame][1];
           path[frame] = new Location(x, y);

@@ -25,6 +25,10 @@ var tokens = [];
 var intervalVar;
 var grabbedToken;
 
+var edittingPlayName = "";
+
+var existingPlays = [];
+
 function Location(x, y) {
     return {
 	x: x,
@@ -181,6 +185,20 @@ window.onload = function() {
 	}
     });
 
+    $("#save_play").on("click", function() {
+	console.log("test");
+	var playName = $("#play_name")[0].value;
+	if(playName != ""){
+	    if(existingPlays[playName] == undefined) {//saving play with name that doesn't exist 
+		save(playName);
+	    } else if(edittingPlayName == playName) {//saving the play that is currently being editted
+		save(playName);
+	    } else if(confirm("Play " + playName + " already exists. Do you want to overwrite it?")){//Trying to overwrite another play
+		save(playName);
+	    }
+	}
+    });
+
 }
 
 function setFrame(frame) {
@@ -312,6 +330,34 @@ function stepAnimation() {
 }
 
 function save(playName) {
-    $.post(");
+    var paths = [];
+    for(i = 0; i < tokens.length; i++) {
+	var tokenPath = tokens[i].path;
+	var path = [];
+	for(j = 0; j < tokenPath.length; j++) {
+	    path[j] = [Math.round(tokenPath[j].x),
+		       Math.round(tokenPath[j].y)];
+	}
+	paths[i] = path;
+    }
+    var data = {
+	name: playName,
+	numFrames: maxFrame,
+	paths: JSON.stringify(paths)
+    };
+    $.post("/playmaker/save",
+	   data,
+	   updateLoadBar,
+	   "json");
+    edittingPlayName = playName;
+}
+
+function updateLoadBar(data) {
+    var table = $("#plays")[0];
+    for(i = 0; i < data.length; i++) {
+	var row = table.insertRow();
+	row.innerHTML = data[i];
+	existingPlays[data[i]] = 1;
+    }
 }
 
