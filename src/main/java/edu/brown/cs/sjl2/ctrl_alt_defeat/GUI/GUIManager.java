@@ -101,7 +101,7 @@ public class GUIManager {
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
 
-      int statID = GSON.fromJson(qm.value("stat"), Integer.class);
+      String statID = qm.value("stat");
       int playerID = GSON.fromJson(qm.value("player"), Integer.class);
       int x = GSON.fromJson(qm.value("x"), Integer.class);
       int y = GSON.fromJson(qm.value("y"), Integer.class);

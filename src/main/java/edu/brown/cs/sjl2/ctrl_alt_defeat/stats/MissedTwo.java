@@ -7,6 +7,11 @@ public class MissedTwo implements Stat {
   private Location pos;
   private Player player;
 
+  public MissedTwo(Location pos, Player player) {
+    this.pos = pos;
+    this.player = player;
+  }
+
   @Override
   public void execute(GameStats ps) {
     ps.setTwoPointersA(ps.getTwoPointersA() + 1);

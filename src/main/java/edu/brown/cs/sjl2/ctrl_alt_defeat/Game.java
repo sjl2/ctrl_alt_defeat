@@ -86,7 +86,7 @@ public class Game {
   }
 
 
-  public void addStatByID(int statID, int playerID, int[] location) {
+  public void addStatByID(String statID, int playerID, int[] location) {
     Player p = pf.getPlayer(playerID);
     addStat(sf.getStat(statID, p, location));
   }
@@ -103,13 +103,16 @@ public class Game {
       System.out.println("ruh roh");
     }
   }
+
   public List<Player> getTopPlayers(int n) {
     // TODO da fuq
     return null;
   }
+
   public RuleSet getRules() {
     return rules;
   }
+
   public void setRules(RuleSet rules) {
     this.rules = rules;
   }

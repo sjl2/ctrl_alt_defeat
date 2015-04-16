@@ -8,7 +8,7 @@ public class Block implements Stat {
   private Location pos;
   private Player player;
 
-  public Block(Location pos, Player player) {
+  public Block(Player player, Location pos) {
     this.pos = pos;
     this.player = player;
   }
