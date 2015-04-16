@@ -16,13 +16,6 @@ public class Play {
     this.paths = paths;
   }
 
-  public Play(String name, int numFrames, Location[][] paths) {
-    this.id = -1;
-    this.name = name;
-    this.numFrames = numFrames;
-    this.paths = paths;
-  }
-
   public Play(int id, String name, int numFrames) {
     this.id = id;
     this.name = name;
