@@ -5,12 +5,16 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public class Block implements Stat {
 
+  private int id;
   private Location pos;
   private Player player;
+  private int period;
 
-  public Block(Player player, Location pos) {
+  public Block(int id, Player player, Location pos, int period) {
+    this.id = id;
     this.pos = pos;
     this.player = player;
+    this.period = period;
   }
 
   @Override
@@ -34,5 +38,16 @@ public class Block implements Stat {
   public Player getPlayer() {
     return player;
   }
+
+  @Override
+  public int getID() {
+    return id;
+  }
+
+  @Override
+  public int getPeriod() {
+    return period;
+  }
+
 
 }

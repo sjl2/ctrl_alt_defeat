@@ -6,52 +6,67 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class StatFactory {
 
-  public Stat getStat(String statID, Player p, Location location) {
+  private DBManager db;
+  private int gameID;
+
+  public StatFactory(DBManager db, int gameID) {
+    this.db = db;
+    this.gameID = gameID;
+  }
+
+  public Stat getStat(String statID, Player p, Location location, int period) {
+    int id = db.getNextID("stat");
+
     Stat s = null;
 
     switch (statID) {
       case "Block":
-        s = new Block(p, location);
+        s = new Block(id, p, location, period);
         break;
       case "DefensiveFoul":
-        s = new DefensiveFoul(p, location);
+        s = new DefensiveFoul(id, p, location, period);
         break;
       case "FreeThrow":
-        s = new FreeThrow(p, location);
+        s = new FreeThrow(id, p, location, period);
         break;
       case "MissedFreeThrow":
-        s = new MissedFreeThrow(p, location);
+        s = new MissedFreeThrow(id, p, location, period);
         break;
       case "MissedTwo":
-        s = new MissedTwo(p, location);
+        s = new MissedTwo(id, p, location, period);
         break;
       case "MissedThree":
-        s = new MissedThree(p, location);
+        s = new MissedThree(id, p, location, period);
         break;
       case "OffensiveFoul":
-        s = new OffensiveFoul(p, location);
+        s = new OffensiveFoul(id, p, location, period);
         break;
       case "OffensiveRebound":
-        s = new OffensiveRebound(p, location);
+        s = new OffensiveRebound(id, p, location, period);
+        break;
+      case "DefensiveRebound":
+        s = new DefensiveRebound(id, p, location, period);
         break;
       case "Steal":
-        s = new Steal(p, location);
+        s = new Steal(id, p, location, period);
         break;
       case "TechnicalFoul":
-        s = new TechnicalFoul(p, location);
+        s = new TechnicalFoul(id, p, location, period);
         break;
       case "ThreePointer":
-        s = new ThreePointer(p, location);
+        s = new ThreePointer(id, p, location, period);
         break;
       case "Turnover":
-        s = new Turnover(p, location);
+        s = new Turnover(id, p, location, period);
         break;
       case "TwoPointer":
-        s = new TwoPointer(p, location);
+        s = new TwoPointer(id, p, location, period);
         break;
       default:
         throw new RuntimeException("Unrecognized statID \"" + statID + "\".");
     }
+
+    db.store(gameID, statID, s);
 
     return s;
   }

@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
@@ -8,7 +9,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Scoreboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
@@ -16,34 +16,48 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class Game {
+  private static final String TABLE = "game";
+
   private int id;
   private Team homeTeam;
   private Team awayTeam;
   private Lineup lineup;
   private Bench homeBench;
   private Bench awayBench;
-  private Scoreboard scoreboard;
   private BoxScore homeBoxScore;
   private BoxScore awayBoxScore;
+
+  private int period;
+  private int homeScore;
+  private int awayScore;
+  private int homeTO;
+  private int awayTO;
+  private boolean possession;
+  private int homeFouls;
+  private int awayFouls;
+
   private List<Stat> stats;
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
   private DBManager db;
 
-  public Game(Team home, Team away, PlayerFactory pf, StatFactory sf, DBManager db) {
-    this.id = db.getNextGameID();
+  public Game(Team home, Team away, PlayerFactory pf, DBManager db) {
+    this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
     this.homeBoxScore = new BoxScore(true, home);
     this.awayBoxScore = new BoxScore(false, away);
     this.lineup = new Lineup();
-    this.scoreboard = createScoreboard();
+    this.stats = new ArrayList<>();
     this.pf = pf;
-    this.sf = sf;
+    this.sf = new StatFactory(db, id);
     this.db = db;
   }
 
+  public int getID() {
+    return id;
+  }
 
   public Player getPlayerAtPosition(Location pos) {return null;}
 
@@ -53,9 +67,7 @@ public class Game {
   public BoxScore getAwayBoxScore() {
     return awayBoxScore;
   }
-  private Scoreboard createScoreboard() {
-    return new Scoreboard(rules);
-  }
+
   public void subPlayer(int idIn, int idOut, boolean home) throws ScoreboardException {
     Lineup l = lineup;
     Bench b;
@@ -72,12 +84,40 @@ public class Game {
     b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
   }
 
-  public void takeTimeout(Boolean home) throws ScoreboardException {
-    scoreboard.takeTimeout(home);
+  public void takeTimeout(Boolean home) throws GameException {
+    if (home) {
+      if (homeTO == 0) {
+        throw new GameException("Home team is out of timeouts");
+      } else {
+        homeTO--;
+      }
+    } else {
+      if (awayTO == 0) {
+        throw new GameException("Away team is out of timeouts");
+      } else {
+        awayTO--;
+      }
+    }
+  }
+
+  public void incrementPeriod() throws GameException {
+    if (this.period == rules.periods()) {
+      throw new GameException("Cannot increment, game is already in period " + this.period + "!");
+    } else {
+      this.period++;
+    }
+  }
+
+  public void decrementPeriod() throws GameException {
+    if (this.period == 1) {
+      throw new GameException("Cannot decrement, game is already in the first period!");
+    } else {
+      this.period--;
+    }
   }
 
   public void flipPossession() {
-    scoreboard.flipPossession();
+    this.possession = !possession;
   }
 
   public void addStat(Stat s) throws GameException {
@@ -85,9 +125,13 @@ public class Game {
     if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(homeBoxScore.getTeamStats());
+      homeScore = homeBoxScore.getScore();
+      homeFouls = homeBoxScore.getFouls();
     } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
       s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(awayBoxScore.getTeamStats());
+      awayScore = awayBoxScore.getScore();
+      awayFouls = awayBoxScore.getFouls();
     } else {
       String message = "Cannot add stat for " + s.getPlayer() + " because they "
           + "are not on either team.";
@@ -101,7 +145,7 @@ public class Game {
       throws GameException {
 
     Player p = pf.getPlayer(playerID);
-    addStat(sf.getStat(statID, p, location));
+    addStat(sf.getStat(statID, p, location, period));
   }
 
   public void undoStat() throws GameException {
@@ -109,9 +153,13 @@ public class Game {
     if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(homeBoxScore.getTeamStats());
+      homeScore = homeBoxScore.getScore();
+      homeFouls = homeBoxScore.getFouls();
     } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
       s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(awayBoxScore.getTeamStats());
+      awayScore = awayBoxScore.getScore();
+      awayFouls = awayBoxScore.getFouls();
     } else {
       String message = "Cannot undo stat for " + s.getPlayer() + " because "
           + "they are not on either team.";
@@ -139,8 +187,22 @@ public class Game {
   public void storeGame() {
     db.store(id, homeBoxScore);
     db.store(id, awayBoxScore);
-    db.store(id, stats);
   }
 
+  public int getHomeScore() {
+    return homeScore;
+  }
+
+  public int getAwayScore() {
+    return awayScore;
+  }
+
+  public int getHomeFouls() {
+    return homeFouls;
+  }
+
+  public int getAwayFouls() {
+    return awayFouls;
+  }
 
 }

@@ -6,10 +6,14 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 public class FreeThrow implements Stat {
   private Location pos;
   private Player player;
+  private int id;
+  private int period;
 
-  public FreeThrow(Player player, Location pos) {
+  public FreeThrow(int id, Player player, Location pos, int period) {
+    this.id = id;
     this.pos = pos;
     this.player = player;
+    this.period = period;
   }
 
   @Override
@@ -32,6 +36,16 @@ public class FreeThrow implements Stat {
   @Override
   public Player getPlayer() {
     return player;
+  }
+
+  @Override
+  public int getID() {
+    return id;
+  }
+
+  @Override
+  public int getPeriod() {
+    return period;
   }
 
 }

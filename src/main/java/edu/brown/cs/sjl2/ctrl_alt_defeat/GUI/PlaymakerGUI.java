@@ -101,7 +101,7 @@ public class PlaymakerGUI {
       return GSON.toJson(variables);
     }
   }
-  
+
   /**
    * Loads list of play names for playmaker sidebar.
    * @author awainger

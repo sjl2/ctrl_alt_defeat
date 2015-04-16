@@ -23,7 +23,6 @@ public class Dashboard {
 
     pf = new PlayerFactory(db);
     tf = new TeamFactory(db, pf);
-    sf = new StatFactory();
   }
 
   public Game getGame() {
@@ -31,7 +30,7 @@ public class Dashboard {
   }
 
   private Game newGame(Team home, Team away) {
-    return new Game(home, away, pf, sf, db);
+    return new Game(home, away, pf, db);
   }
 
   public void startGame(Boolean home, int opponentID)
