@@ -22,7 +22,6 @@ public class PlaymakerGUI {
 
   private static final Gson GSON = new Gson();
 
-
   /**
    * @param dbManager
    * @author awainger
@@ -39,16 +38,15 @@ public class PlaymakerGUI {
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Ctrl Alt Defeat: Playmaker");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle",
+          "Ctrl Alt Defeat: Playmaker");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
 
-
   /**
-   * Save handler, parses play, saves to database, returns list of
-   * play ids and names to front end.
+   * Save handler, parses play, saves to database, returns list of play ids and
+   * names to front end.
    *
    * @author awainger
    */
@@ -61,7 +59,7 @@ public class PlaymakerGUI {
       int numFrames = Integer.parseInt(qm.value("numFrames"));
       String jsonString = qm.value("paths");
 
-      int[][][] jsonPaths  = GSON.fromJson(jsonString, int[][][].class);
+      int[][][] jsonPaths = GSON.fromJson(jsonString, int[][][].class);
       BasketballPosition[] bballPositions = BasketballPosition.values();
       int numBasketballPlayers = bballPositions.length;
       Location[][] paths = new Location[numBasketballPlayers][];
@@ -78,13 +76,12 @@ public class PlaymakerGUI {
       dbManager.savePlay(new Play(id, name, numFrames, paths));
       Map<Integer, String> plays = dbManager.loadPlayIDs();
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("plays", plays)
-          .build();
+          .put("plays", plays).build();
 
       return GSON.toJson(variables);
     }
   }
-  
+
   public class LoadHandler implements Route {
 
     @Override
@@ -93,11 +90,10 @@ public class PlaymakerGUI {
       int id = Integer.parseInt(qm.value("id"));
       Play play = dbManager.loadPlay(id);
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("play", GSON.toJson(play))
-          .build();
-      
+          .put("play", GSON.toJson(play)).build();
+
       return GSON.toJson(variables);
     }
-    
+
   }
 }
