@@ -81,7 +81,9 @@ public class Game {
       s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(awayBoxScore.getTeamStats());
     } else {
-      System.out.println("ruh roh");
+      String message = "Cannot add stat for " + s.getPlayer() + " because they "
+          + "are not on either team.";
+      throw new RuntimeException(message);
     }
   }
 

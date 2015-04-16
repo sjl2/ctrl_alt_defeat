@@ -30,4 +30,8 @@ public class Player {
     return teamID;
   }
 
+  @Override
+  public String toString() {
+    return name + " (#" + number + ")";
+  }
 }
