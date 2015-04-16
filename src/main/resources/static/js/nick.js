@@ -87,8 +87,6 @@ texts.mouseup(function(e) {
 });
 
 
-
-
 boxes.mouseover(function (event) {
     this.g = this.glow({
         opacity: 0.85,

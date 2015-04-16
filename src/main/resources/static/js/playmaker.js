@@ -10,7 +10,7 @@ var maxFrame = 0;
 var width = 0;
 var height = 0;
 
-var radius = 25;
+var radius;
 
 var courtTopLeftCorner;
 var courtBottomRightCorner;
@@ -24,6 +24,10 @@ var tokens = [];
 
 var intervalVar;
 var grabbedToken;
+
+var edittingPlayName = "";
+
+var existingPlays = [];
 
 function Location(x, y) {
     return {
@@ -89,18 +93,21 @@ window.onload = function() {
     circ = paper.circle(width / 2, height / 2, radius);
     circ.attr("fill", "url(images/Basketball-small.png)");
     
-    var startingLocations = [Location(350, 285),
-			     Location(260, 100),
-			     Location(60, 470),
-			     Location(75, 185),
-			     Location(190, 380),
-			     Location(290, 285),
-			     Location(220, 140),
-			     Location(60, 410),
-			     Location(75, 245),
-			     Location(150, 340)]
+    var startingLocations = [Location(35, 50),
+			     Location(26, 17.54),
+			     Location(6, 82.46),
+			     Location(7.5, 32.456),
+			     Location(19, 66.666),
+			     Location(29, 50),
+			     Location(22, 24.561),
+			     Location(6, 71.93),
+			     Location(7.5, 42.982),
+			     Location(15, 59.649)];
+    radius = width * 0.025;
     for(i = 0; i < 10; i++) {
 	var loc = startingLocations[i];
+	loc.x = loc.x * width / 100;
+	loc.y = loc.y * height / 100;
 	var circ2 = paper.circle(loc.x, loc.y, radius);
 	if(i < 5) {
 	    circ2.attr("fill", "#00f");
@@ -175,6 +182,20 @@ window.onload = function() {
     $("#stop").on("click", function() {
 	if(playing) {
 	    stop();
+	}
+    });
+
+    $("#save_play").on("click", function() {
+	console.log("test");
+	var playName = $("#play_name")[0].value;
+	if(playName != ""){
+	    if(existingPlays[playName] == undefined) {//saving play with name that doesn't exist 
+		save(playName);
+	    } else if(edittingPlayName == playName) {//saving the play that is currently being editted
+		save(playName);
+	    } else if(confirm("Play " + playName + " already exists. Do you want to overwrite it?")){//Trying to overwrite another play
+		save(playName);
+	    }
 	}
     });
 
@@ -305,6 +326,38 @@ function stepAnimation() {
 	currentFrame++;
 	$("#current_frame")[0].value = currentFrame;
 	playTime += (playSpeed / FRAME_RATE)
+    }
+}
+
+function save(playName) {
+    var paths = [];
+    for(i = 0; i < tokens.length; i++) {
+	var tokenPath = tokens[i].path;
+	var path = [];
+	for(j = 0; j < tokenPath.length; j++) {
+	    path[j] = [Math.round(tokenPath[j].x),
+		       Math.round(tokenPath[j].y)];
+	}
+	paths[i] = path;
+    }
+    var data = {
+	name: playName,
+	numFrames: maxFrame,
+	paths: JSON.stringify(paths)
+    };
+    $.post("/playmaker/save",
+	   data,
+	   updateLoadBar,
+	   "json");
+    edittingPlayName = playName;
+}
+
+function updateLoadBar(data) {
+    var table = $("#plays")[0];
+    for(i = 0; i < data.length; i++) {
+	var row = table.insertRow();
+	row.innerHTML = data[i];
+	existingPlays[data[i]] = 1;
     }
 }
 

@@ -5,6 +5,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public interface Stat {
 
+  int getID();
+
+  int getPeriod();
+
   void execute(GameStats ps);
 
   void undo(GameStats ps);

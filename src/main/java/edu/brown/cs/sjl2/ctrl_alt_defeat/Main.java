@@ -1,7 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
-import java.io.File;
-
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GUI.GUIManager;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -35,13 +34,13 @@ public final class Main {
     OptionSpec<Integer>  portSpec =
       parser.accepts("port").withRequiredArg().ofType(Integer.class);
 
-    OptionSpec<File> fileSpec = parser.nonOptions().ofType(File.class);
+    OptionSpec<String> fileSpec = parser.nonOptions().ofType(String.class);
 
 
 
     OptionSet options = parser.parse(args);
 
-    File db = options.valueOf(fileSpec);
+    String db = options.valueOf(fileSpec);
 
 
     if (db == null) {

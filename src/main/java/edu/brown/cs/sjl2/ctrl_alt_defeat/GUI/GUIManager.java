@@ -1,4 +1,4 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 
 import spark.ExceptionHandler;
 import spark.ModelAndView;
@@ -16,23 +15,38 @@ import spark.Response;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import freemarker.template.Configuration;
 
 public class GUIManager {
 
-  private File db;
+  private DBManager dbManager;
   private int port = 8585;
   private final static int STATUS = 500;
-  private final static Gson GSON = new Gson();
 
-  public GUIManager(File db) {
-    this.db = db;
+  private Dashboard dash;
+  private Game game;
+
+  private PlaymakerGUI playmakerGUI;
+  private StatsEntryGUI statsEntryGUI;
+  private DashboardGUI dashboardGUI;
+
+  public GUIManager(String db) {
+    this.dbManager = new DBManager(db);
+    this.dash = new Dashboard(dbManager);
+    this.dashboardGUI = new DashboardGUI(dash);
+    this.playmakerGUI = new PlaymakerGUI(dbManager);
+    this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
 
-  public GUIManager(File db, int port) {
-    this.db = db;
+  public GUIManager(String db, int port) {
+    this.dbManager = new DBManager(db);
     this.port = port;
+    this.playmakerGUI = new PlaymakerGUI(dbManager);
+    this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
 
@@ -45,7 +59,15 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
-		Spark.get("/playmaker", new PlaymakerHandler(), freeMarker);
+    Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
+		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
+    Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
+    Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
+    Spark.get("/playmaker/playNames", playmakerGUI.new PlayNamesHandler());
+		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
+
+		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
+
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -62,28 +84,16 @@ public class GUIManager {
   }
 
   /**
-   * Default Handler for stars. Provides html for users looking for
-   * localhost/bacon.
+   * Default Handler for ctrl-alt-defeat
    *
    * @author sjl2
-   *
    */
   private class FrontHandler implements TemplateViewRoute {
     @Override
-    public ModelAndView handle(Request req, Response res) {
+    public ModelAndView handle(Request rsubleq, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("title", "Bacon",
-          "movieDB", db);
-      return new ModelAndView(variables, "query.ftl");
-    }
-  }
-
-	private class PlaymakerHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-        ImmutableMap.of("title", "Ctrl Alt Defeat: Playmaker");
-      return new ModelAndView(variables, "playmaker.ftl");
+        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
+      return new ModelAndView(variables, "ctrl_alt_defeat.ftl");
     }
   }
 
@@ -108,6 +118,4 @@ public class GUIManager {
       res.body(stacktrace.toString());
     }
   }
-
 }
-
