@@ -30,12 +30,15 @@ public class GUIManager {
   private Game game;
 
   private PlaymakerGUI playmakerGUI;
-  private StatGUI statGUI;
+  private StatsEntryGUI statsEntryGUI;
+  private DashboardGUI dashboardGUI;
 
   public GUIManager(String db) {
     this.dbManager = new DBManager(db);
+    this.dash = new Dashboard(dbManager);
+    this.dashboardGUI = new DashboardGUI(dash);
     this.playmakerGUI = new PlaymakerGUI(dbManager);
-    this.statGUI = new StatGUI(dash);
+    this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
 
@@ -43,7 +46,7 @@ public class GUIManager {
     this.dbManager = new DBManager(db);
     this.port = port;
     this.playmakerGUI = new PlaymakerGUI(dbManager);
-    this.statGUI = new StatGUI(dash);
+    this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
 
@@ -56,8 +59,12 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
+    Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
-		Spark.post("/add/stat", statGUI.new AddStat());
+		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
+
+		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
+
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -76,14 +83,14 @@ public class GUIManager {
   /**
    * Default Handler for ctrl-alt-defeat
    *
-   * @author awainger
+   * @author sjl2
    */
   private class FrontHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request rsubleq, Response res) {
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
-      return new ModelAndView(variables, "query.ftl");
+      return new ModelAndView(variables, "dash.ftl");
     }
   }
 
