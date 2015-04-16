@@ -1,24 +1,40 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
+import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import spark.TemplateViewRoute;
 
-public class StatGUI {
+public class StatsEntryGUI {
 
   private final static Gson GSON = new Gson();
   private Dashboard dash;
 
-  public StatGUI(Dashboard dash) {
+  public StatsEntryGUI(Dashboard dash) {
     this.dash = dash;
   }
 
-  public class AddStat implements Route {
+  public class StatsEntryHandler implements TemplateViewRoute {
+
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      Map<String, Object> variables =
+          ImmutableMap.of("title", "Ctrl-Alt-Defeat: Stats Entry");
+        return new ModelAndView(variables, "stats_entry.ftl");
+    }
+
+  }
+
+  public class AddStatHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
