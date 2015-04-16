@@ -29,7 +29,7 @@ initializeTeams();
 	var stats = [["Block", "DefensiveFoul", "DefensiveRebound", "FreeThrow"],
 				["MissedFreeThrow", "MissedThreePointer", "MissedTwoPointer", "OffensiveFoul"],
 				["OffensiveRebound", "Steal", "TechnicalFoul", "Turnover"],
-				["ThreePointer", "TwoPointer"]];
+				["ThreePointer", "TwoPointer", "STEWART\nRANGE!!!!"]];
 
 	var paper = Raphael(controls, 1000, 500);
 	var court_paper = Raphael(court, court.width, court.height);

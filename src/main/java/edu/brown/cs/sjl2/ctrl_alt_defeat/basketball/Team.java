@@ -34,6 +34,20 @@ public class Team {
       playerNames.put(p.getName(), p);
     }
   }
+  
+  public Team(Integer i) {
+    this.id = i;
+    this.name = "Team " + i;
+    this.primary = "#FF0000";
+    this.secondary = "#00FF00";
+    playerIds = new HashMap<>();
+    playerNames = new HashMap<>();
+    for (int j = 0; j < 12; j++) {
+      Player p = new Player(j, i);
+      playerIds.put(j, p);
+      playerNames.put(p.getName(), p);
+    }
+  }
 
   public int getID() {
     return id;

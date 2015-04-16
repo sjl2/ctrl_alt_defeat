@@ -93,8 +93,8 @@ public class DBManager {
           prep.setString(1, name);
           prep.setString(2, bballPositions[position].getName());
           prep.setInt(3, frame);
-          prep.setInt(4, l.getX());
-          prep.setInt(5, l.getY());
+          prep.setDouble(4, l.getX());
+          prep.setDouble(5, l.getY());
           prep.addBatch();
         }
       }
@@ -157,7 +157,7 @@ public class DBManager {
 
         Location[] path = new Location[numFrames];
         while (rs.next()) {
-          Location loc = new Location(rs.getInt("x"), rs.getInt("y"));
+          Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
           path[rs.getInt("frame")] = loc;
         }
 
