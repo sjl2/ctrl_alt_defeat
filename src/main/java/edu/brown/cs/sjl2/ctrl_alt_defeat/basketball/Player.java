@@ -14,7 +14,7 @@ public class Player {
     this.teamID = teamID;
   }
 
-  public int getId() {
+  public int getID() {
     return id;
   }
 

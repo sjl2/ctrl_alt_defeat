@@ -1,4 +1,4 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +18,8 @@ import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import freemarker.template.Configuration;
 
 public class GUIManager {
@@ -99,8 +101,8 @@ public class GUIManager {
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
 
-      String statID = qm.value("stat");
-      String playerID = qm.value("player");
+      int statID = GSON.fromJson(qm.value("stat"), Integer.class);
+      int playerID = GSON.fromJson(qm.value("player"), Integer.class);
       int x = GSON.fromJson(qm.value("x"), Integer.class);
       int y = GSON.fromJson(qm.value("y"), Integer.class);
 

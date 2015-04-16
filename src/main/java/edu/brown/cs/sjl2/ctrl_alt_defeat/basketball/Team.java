@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.brown.cs.sjl2.ctrl_alt_defeat.PlayerFactory;
-
 public class Team {
   private int id;
   private String name;
@@ -13,7 +11,6 @@ public class Team {
   private String secondary;
   private Map<Integer, Player> playerIds;
   private Map<String, Player> playerNames;
-  private PlayerFactory pf;
 
   public Team(
       int id,
@@ -26,12 +23,16 @@ public class Team {
     this.name =  name;
     this.primary = primary;
     this.secondary = secondary;
-    this.pf = pf;
 
     playerIds = new HashMap<>();
     playerNames = new HashMap<>();
 
+    Collection<Player> players = pf.getTeamPlayers(id);
 
+    for (Player p : players) {
+      playerIds.put(p.getID(), p);
+      playerNames.put(p.getName(), p);
+    }
   }
 
   public int getId() {
