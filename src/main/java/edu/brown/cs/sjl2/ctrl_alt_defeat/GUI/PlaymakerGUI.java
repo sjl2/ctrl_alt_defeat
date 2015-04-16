@@ -92,7 +92,6 @@ public class PlaymakerGUI {
 
     @Override
     public Object handle(Request request, Response response) {
-
       QueryParamsMap qm = request.queryMap();
       String name = qm.value("name");
       Play play = dbManager.loadPlay(name);
@@ -101,6 +100,21 @@ public class PlaymakerGUI {
 
       return GSON.toJson(variables);
     }
+  }
+  
+  /**
+   * Loads list of play names for playmaker sidebar.
+   * @author awainger
+   */
+  public class PlayNamesHandler implements Route {
 
+    @Override
+    public Object handle(Request request, Response response) {
+      List<String> plays = dbManager.loadPlayNames();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("plays", plays).build();
+
+      return GSON.toJson(variables);
+    } 
   }
 }
