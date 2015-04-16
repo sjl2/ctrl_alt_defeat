@@ -7,7 +7,7 @@ public class FreeThrow implements Stat {
   private Location pos;
   private Player player;
 
-  public FreeThrow(Location pos, Player player) {
+  public FreeThrow(Player player, Location pos) {
     this.pos = pos;
     this.player = player;
   }

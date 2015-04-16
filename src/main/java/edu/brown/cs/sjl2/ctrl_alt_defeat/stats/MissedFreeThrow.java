@@ -7,7 +7,7 @@ public class MissedFreeThrow implements Stat {
   private Location pos;
   private Player player;
 
-  public MissedFreeThrow(Location pos, Player player) {
+  public MissedFreeThrow(Player player, Location pos) {
     this.pos = pos;
     this.player = player;
   }

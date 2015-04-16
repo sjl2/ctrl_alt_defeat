@@ -7,7 +7,7 @@ public class Turnover implements Stat {
   private Location pos;
   private Player player;
 
-  public Turnover(Location pos, Player player) {
+  public Turnover(Player player, Location pos) {
     this.pos = pos;
     this.player = player;
   }

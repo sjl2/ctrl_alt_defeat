@@ -7,7 +7,7 @@ public class TwoPointer implements Stat {
   private Location pos;
   private Player player;
 
-  public TwoPointer(Location pos, Player player) {
+  public TwoPointer(Player player, Location pos) {
     this.pos = pos;
     this.player = player;
   }

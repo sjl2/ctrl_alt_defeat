@@ -7,7 +7,7 @@ public class Steal implements Stat {
   private Location pos;
   private Player player;
 
-  public Steal(Location pos, Player player) {
+  public Steal(Player player, Location pos) {
     this.pos = pos;
     this.player = player;
   }

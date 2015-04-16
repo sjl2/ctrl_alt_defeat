@@ -7,7 +7,7 @@ public class OffensiveFoul implements Stat {
   private Location pos;
   private Player player;
 
-  public OffensiveFoul(Location pos, Player player) {
+  public OffensiveFoul(Player player, Location pos) {
     this.pos = pos;
     this.player = player;
   }
