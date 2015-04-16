@@ -28,7 +28,7 @@ public class StatsEntryGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
-          ImmutableMap.of("title", "Ctrl-Alt-Defeat: Stats Entry");
+          ImmutableMap.of("tabTitle", "Stats Entry");
         return new ModelAndView(variables, "stats_entry.ftl");
     }
 

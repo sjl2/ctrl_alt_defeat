@@ -24,7 +24,7 @@ public class PlaymakerGUI {
 
   /**
    * @param dbManager
-   * @author awainger
+   * @author sjl2
    */
   public PlaymakerGUI(DBManager dbManager) {
     this.dbManager = dbManager;
@@ -33,13 +33,13 @@ public class PlaymakerGUI {
   /**
    * Playmaker handler, loads main playmaker class.
    *
-   * @author awainger
+   * @author sjl2
    */
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("tabTitle",
-          "Ctrl Alt Defeat: Playmaker");
+      Map<String, Object> variables =
+        ImmutableMap.of("tabTitle", "Playmaker");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
@@ -86,6 +86,7 @@ public class PlaymakerGUI {
 
     @Override
     public Object handle(Request request, Response response) {
+
       QueryParamsMap qm = request.queryMap();
       int id = Integer.parseInt(qm.value("id"));
       Play play = dbManager.loadPlay(id);
