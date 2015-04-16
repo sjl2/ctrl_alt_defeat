@@ -50,14 +50,17 @@ public class StatsEntryGUI {
       int playerID = 1;
       double x = GSON.fromJson(qm.value("x"), Double.class);
       double y = GSON.fromJson(qm.value("y"), Double.class);
+      System.out.println(statID + " " + playerID + " " + x + " " + y);
 
       try {
         dash.getGame().addStat(statID, playerID, new Location(x, y));
       } catch (GameException ex) {
         return ex.getMessage();
+      } catch (Exception e) {
+        return "there was an error adding the stat";
       }
 
-      return "";
+      return 28;
     }
   }
 

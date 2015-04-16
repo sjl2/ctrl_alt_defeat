@@ -1,5 +1,6 @@
 initializeTeams();
-
+var homeRoster = [];
+var awayRoster = [];
 
 	// STAT GLOBALS
 	var clickedPoint; 
@@ -219,10 +220,7 @@ function clickThing(b) {
 		console.log("adding stat ", postParameters)
 		
 		$.post("/stats/add", postParameters, function(responseJSON) {
-			errorMessage = JSON.parseJson(responseJSON);
-			if (errorMessage.length > 0) {
-				alert(errorMessage);
-			}
+			console.log(responseJSON);
 		});
 
 		}
@@ -232,6 +230,8 @@ function initializeTeams() {
 
 	$.get("/game/roster", function(responseJSON) {
 		console.log(responseJSON);
+		var res = JSON.parseJSON(responseJSON);
+		
 	});
 
 	
