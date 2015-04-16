@@ -80,8 +80,10 @@ window.onload = function() {
     var control = $("#control");
     control.css("top", containerTop + 20);
 
-    var save_area = $("#save");
-    save_area.css("top", containerTop - 20);
+    var above_court = $("#above_court");
+    var above_court_height = $("#play_name").height();
+    above_court.css("top", containerTop - 20);
+    above_court.css("height", above_court_height);
 
     var offset = container.offset();
     paper = Raphael(offset.left, offset.top, width, height);
@@ -198,6 +200,11 @@ window.onload = function() {
 	    }
 	}
     });
+
+    $.get("/playmaker/playNames",
+	  {},
+	  updateLoadBar,
+	  "json");
 
 }
 
@@ -342,7 +349,7 @@ function save(playName) {
     }
     var data = {
 	name: playName,
-	numFrames: maxFrame,
+	numFrames: maxFrame + 1,
 	paths: JSON.stringify(paths)
     };
     $.post("/playmaker/save",
@@ -350,14 +357,28 @@ function save(playName) {
 	   updateLoadBar,
 	   "json");
     edittingPlayName = playName;
+    $("#editing_name")[0].innerHTML = edittingPlayName;
+}
+
+function load(data) {
+    var play = data.play;
+    console.log(play);
 }
 
 function updateLoadBar(data) {
     var table = $("#plays")[0];
-    for(i = 0; i < data.length; i++) {
+    var plays = data.plays;
+    table.innerHTML = "";
+    for(i = 0; i < plays.length; i++) {
 	var row = table.insertRow();
-	row.innerHTML = data[i];
-	existingPlays[data[i]] = 1;
+	row.innerHTML = "<span id=\"" + plays[i] + "\">" + plays[i] + "</span>";
+	$("#" + plays[i]).on("click", function() {
+	    $.get("/playmaker/load",
+		  plays[i],
+		  load,
+		  "json");
+	});
+	existingPlays[plays[i]] = 1;
     }
 }
 
