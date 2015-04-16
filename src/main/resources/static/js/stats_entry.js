@@ -133,7 +133,7 @@ $(function (){
 			x: xy[0],
 			y: xy[1],
 			statID: statID,
-			playerID
+			playerID: playerID; 
 		};
 
 		$.post("/stat/add", postParameters, function(responseJSON) {

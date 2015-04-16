@@ -3,13 +3,14 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
-public class MissedTwo implements Stat {
+public class MissedThreePointer implements Stat {
+  private static final String TYPE = "MissedThreePointer";
   private Location pos;
   private Player player;
   private int id;
   private int period;
 
-  public MissedTwo(int id, Player player, Location pos, int period) {
+  public MissedThreePointer(int id, Player player, Location pos, int period) {
     this.id = id;
     this.pos = pos;
     this.player = player;
@@ -18,16 +19,16 @@ public class MissedTwo implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setTwoPointersA(ps.getTwoPointersA() + 1);
+    ps.setThreePointersA(ps.getThreePointersA() + 1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setTwoPointersA(ps.getTwoPointersA() - 1);
+    ps.setThreePointersA(ps.getThreePointersA() - 1);
   }
 
   @Override
-  public Location getPosition() {
+  public Location getLocation() {
     return pos;
   }
 
@@ -46,4 +47,13 @@ public class MissedTwo implements Stat {
     return period;
   }
 
+  @Override
+  public String toString() {
+    return TYPE + " for " + player + "(id: " + id + ")";
+  }
+
+  @Override
+  public String getStatType() {
+    return TYPE;
+  }
 }

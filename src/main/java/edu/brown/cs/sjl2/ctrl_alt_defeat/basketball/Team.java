@@ -27,7 +27,7 @@ public class Team {
     playerIds = new HashMap<>();
     playerNames = new HashMap<>();
 
-    Collection<Player> players = pf.getTeamPlayers(id);
+    Collection<Player> players = pf.getTeamPlayers(this);
 
     for (Player p : players) {
       playerIds.put(p.getID(), p);
@@ -35,7 +35,7 @@ public class Team {
     }
   }
 
-  public int getId() {
+  public int getID() {
     return id;
   }
 

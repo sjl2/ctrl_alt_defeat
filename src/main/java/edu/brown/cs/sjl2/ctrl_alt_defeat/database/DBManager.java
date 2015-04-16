@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.google.common.collect.Multiset;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
@@ -264,7 +265,7 @@ public class DBManager {
     return team;
   }
 
-  public Collection<Integer> getTeamPlayers(int teamID) {
+  public Collection<Integer> getTeamPlayers(Team team) {
     String query = "SELECT id "
         + "FROM player "
         + "WHERE team = ?;";
@@ -272,7 +273,7 @@ public class DBManager {
     Collection<Integer> players = new ArrayList<>();
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
-      prep.setInt(1, teamID);
+      prep.setInt(1, team.getID());
       ResultSet rs = prep.executeQuery();
 
       while (rs.next()) {
@@ -280,7 +281,7 @@ public class DBManager {
       }
 
     } catch (SQLException e) {
-      String message = "Could not retrieve players for team " + teamID + " from"
+      String message = "Could not retrieve players for team " + team + " from"
           + " the database.";
       close();
       throw new RuntimeException(message);
@@ -289,19 +290,48 @@ public class DBManager {
     return players;
   }
 
-  public void store(int gameID, BoxScore boxScore) {
+  public void store(BoxScore boxScore, Game game) {
     // TODO Auto-generated method stub
 
   }
 
-  public void store(int gameID, String statID, Stat s) {
-    // TODO Auto-generated method stub
-
+  public void store(Stat s, String statID, Game game) {
     // TODO
     // 1. Implement Store methods
     // 2. Backup everything that is updated in game when possible
     // 3. Dashboard
     // 4. Stat Handlers, Game Handlers,
+
+    String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
+
+      ps.setInt(1, s.getID());
+      ps.setInt(2, game.getID());
+      ps.setInt(3, s.getPlayer().getID());
+      ps.setString(4, statID);
+      ps.setInt(5, game.getPeriod());
+      ps.setDouble(6, s.getLocation().getX());
+      ps.setDouble(7, s.getLocation().getY());
+
+      // TODO Maybe Batch? See if this works
+      ps.execute();
+
+    } catch (SQLException e) {
+      String message = "Failed add " + s + " to the database.";
+      throw new RuntimeException(message);
+    }
+  }
+
+  public void remove(Stat s) {
+    // TODO Auto-generated method stub
+    String query = "DELETE FROM stat WHERE id = ? AND player = ?;";
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
+      ps.setInt(1, s.getID());
+      ps.setInt(2, s.getPlayer().getID());
+    } catch (SQLException e) {
+      throw new RuntimeException("Failure to remove " + s + " from database.");
+    }
   }
 
   public int getNextID(String table) {
@@ -322,7 +352,7 @@ public class DBManager {
         nextIDs.setCount(table, nextID);
 
       } catch (SQLException e) {
-        String message = "Could not get next game id.";
+        String message = "Could not get next id for " + table + "table.";
         close();
         throw new RuntimeException(message);
       }

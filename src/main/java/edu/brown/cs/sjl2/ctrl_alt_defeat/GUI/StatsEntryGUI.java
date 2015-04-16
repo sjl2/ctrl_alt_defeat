@@ -47,7 +47,7 @@ public class StatsEntryGUI {
       int y = GSON.fromJson(qm.value("y"), Integer.class);
 
       try {
-        dash.getGame().addStatByID(statID, playerID, new Location(x, y));
+        dash.getGame().addStat(statID, playerID, new Location(x, y));
       } catch (GameException ex) {
         return ex.getMessage();
       }

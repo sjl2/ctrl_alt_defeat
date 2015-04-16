@@ -32,9 +32,9 @@ public class PlayerFactory {
     return p != null ? p : database.getPlayer(id);
   }
 
-  public Collection<Player> getTeamPlayers(int teamID) {
+  public Collection<Player> getTeamPlayers(Team team) {
     Collection<Player> players = new ArrayList<>();
-    Collection<Integer> ids = database.getTeamPlayers(teamID);
+    Collection<Integer> ids = database.getTeamPlayers(team);
 
     for (int id : ids)  {
       players.add(getPlayer(id));

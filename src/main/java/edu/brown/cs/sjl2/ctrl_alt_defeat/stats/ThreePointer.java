@@ -4,6 +4,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public class ThreePointer implements Stat {
+  private static final String TYPE = "ThreePointer";
   private Location pos;
   private Player player;
   private int id;
@@ -29,7 +30,7 @@ public class ThreePointer implements Stat {
   }
 
   @Override
-  public Location getPosition() {
+  public Location getLocation() {
     return pos;
   }
 
@@ -48,6 +49,14 @@ public class ThreePointer implements Stat {
     return period;
   }
 
+  @Override
+  public String toString() {
+    return TYPE + " for " + player + "(id: " + id + ")";
+  }
 
+  @Override
+  public String getStatType() {
+    return TYPE;
+  }
 
 }

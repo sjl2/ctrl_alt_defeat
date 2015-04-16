@@ -4,6 +4,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public class Steal implements Stat {
+  private static final String TYPE = "Steal";
   private Location pos;
   private Player player;
   private int id;
@@ -27,7 +28,7 @@ public class Steal implements Stat {
   }
 
   @Override
-  public Location getPosition() {
+  public Location getLocation() {
     return pos;
   }
 
@@ -44,6 +45,16 @@ public class Steal implements Stat {
   @Override
   public int getPeriod() {
     return period;
+  }
+
+  @Override
+  public String toString() {
+    return TYPE + " for " + player + "(id: " + id + ")";
+  }
+
+  @Override
+  public String getStatType() {
+    return TYPE;
   }
 
 }
