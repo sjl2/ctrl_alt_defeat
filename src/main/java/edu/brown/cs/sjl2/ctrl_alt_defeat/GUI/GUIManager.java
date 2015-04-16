@@ -27,16 +27,19 @@ public class GUIManager {
   private final static int STATUS = 500;
 
   private Dashboard dash;
-  private Game game;
 
-  private PlaymakerGUI playmakerGUI;
-  private StatsEntryGUI statsEntryGUI;
   private DashboardGUI dashboardGUI;
+  private GameGUI gameGUI;
+  private StatsEntryGUI statsEntryGUI;
+  private PlaymakerGUI playmakerGUI;
+
+
 
   public GUIManager(String db) {
     this.dbManager = new DBManager(db);
     this.dash = new Dashboard(dbManager);
     this.dashboardGUI = new DashboardGUI(dash);
+    this.gameGUI = new GameGUI(dash);
     this.playmakerGUI = new PlaymakerGUI(dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
@@ -61,7 +64,9 @@ public class GUIManager {
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
 
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
-    Spark.get("/game/roster", dashboardGUI.new RosterHandler());
+
+    Spark.post("/game/start", gameGUI.new StartHandler());
+    Spark.get("/game/roster", gameGUI.new RosterHandler());
 
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());

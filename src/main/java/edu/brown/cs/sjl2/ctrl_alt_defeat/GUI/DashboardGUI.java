@@ -35,22 +35,4 @@ public class DashboardGUI {
     }
   }
 
-  public class RosterHandler implements Route {
-
-    @Override
-    public Object handle(Request request, Response response) {
-      Game game = dash.getGame();
-      if (game != null) {
-        Map<String, Object> variables =
-            ImmutableMap.of(
-                "home", game.getHome(),
-                "away", game.getAway());
-
-        return GSON.toJson(variables);
-      } else {
-        return null;
-      }
-    }
-  }
-
 }

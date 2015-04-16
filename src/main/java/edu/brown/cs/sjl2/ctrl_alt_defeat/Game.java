@@ -196,8 +196,8 @@ public class Game {
    * TODO Consider threading this to happen every second.
    */
   public void storeGame() {
-    db.store(homeBoxScore, this);
-    db.store(awayBoxScore, this);
+    homeBoxScore.updateDB();
+    awayBoxScore.updateDB();
   }
 
   public int getHomeScore() {

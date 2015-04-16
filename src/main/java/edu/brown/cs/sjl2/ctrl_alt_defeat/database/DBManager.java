@@ -13,6 +13,7 @@ import java.util.List;
 import com.google.common.collect.Multiset;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
@@ -20,6 +21,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 /**
@@ -290,8 +292,17 @@ public class DBManager {
     return players;
   }
 
-  public void store(BoxScore boxScore, Game game) {
+  public void update(BoxScore boxScore, Game game) {
     // TODO Auto-generated method stub
+
+  }
+
+  public void store(GameStats gs) throws GameException {
+    if (gs.getID() == -1 || gs.getPlayer() == null) {
+      throw new GameException("Cannot store game stats of a team.");
+    } else {
+      String query = "INSERT INTO boxscore (?, ?, ?, ?, ?)";
+    }
 
   }
 

@@ -31,11 +31,11 @@ public class StatsEntryGUI {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Stats Entry");
 
-     // if (dash.getGame() != null) {
+//      if (dash.getGame() != null) {
         return new ModelAndView(variables, "stats_entry.ftl");
-   //   } else {
-     //   return new ModelAndView(variables, "no_game.ftl");
-     // }
+//      } else {
+//        return new ModelAndView(variables, "no_game.ftl");
+//      }
 
     }
 
