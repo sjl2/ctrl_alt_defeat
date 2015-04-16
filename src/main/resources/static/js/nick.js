@@ -67,6 +67,7 @@ boxes.mouseout(function(e) {
 	this.attr({fill: this.normalColor});
 });
 
+
 buttons.mousedown(function(e) {
 	this.attr({fill: this.clickAccent});
 });
@@ -76,6 +77,7 @@ buttons.mouseup(function(e) {
 buttons.mouseout(function(e) {
 	this.attr({fill: this.normalColor});
 });
+
 
 texts.mousedown(function(e) {
 	this.box.attr({fill: this.box.clickAccent});
@@ -88,7 +90,6 @@ texts.mouseup(function(e) {
 
 
 boxes.mouseover(function (event) {
-    console.log("here");
     this.g = this.glow({
         opacity: 0.85,
         color: this.glowColor,
