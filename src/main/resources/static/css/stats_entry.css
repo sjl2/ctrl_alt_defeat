@@ -12,4 +12,5 @@
 #content {
 	height: 1000px;
 	width: 1000px;
+	"user-select": none;
 }
