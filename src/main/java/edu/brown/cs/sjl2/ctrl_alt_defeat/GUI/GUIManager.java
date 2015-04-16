@@ -28,7 +28,7 @@ public class GUIManager {
 
   private Dashboard dash;
   private Game game;
-  
+
   private PlaymakerGUI playmakerGUI;
   private StatGUI statGUI;
 
@@ -86,7 +86,6 @@ public class GUIManager {
       return new ModelAndView(variables, "query.ftl");
     }
   }
-
 
   /**
    * Handler for printing exceptions. Allows for easier debugging by having any

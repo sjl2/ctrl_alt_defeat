@@ -7,6 +7,11 @@ public class Turnover implements Stat {
   private Location pos;
   private Player player;
 
+  public Turnover(Player player, Location pos) {
+    this.pos = pos;
+    this.player = player;
+  }
+
   @Override
   public void execute(GameStats ps) {
     ps.setTurnovers(ps.getTurnovers() + 1);

@@ -13,6 +13,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class Game {
   private Team homeTeam;
@@ -27,6 +28,7 @@ public class Game {
   private RuleSet rules;
   private PlayerFactory pf;
   private TeamFactory tf;
+  private StatFactory sf;
 
   public Game(Team home, Team away) {
     this.homeTeam = home;
@@ -84,9 +86,9 @@ public class Game {
   }
 
 
-  public void addStatByID(int statID, int playerID, int[] location) {
+  public void addStatByID(String statID, int playerID, Location location) {
     Player p = pf.getPlayer(playerID);
-
+    addStat(sf.getStat(statID, p, location));
   }
 
   public void undoStat() {
@@ -101,13 +103,16 @@ public class Game {
       System.out.println("ruh roh");
     }
   }
+
   public List<Player> getTopPlayers(int n) {
     // TODO da fuq
     return null;
   }
+
   public RuleSet getRules() {
     return rules;
   }
+
   public void setRules(RuleSet rules) {
     this.rules = rules;
   }

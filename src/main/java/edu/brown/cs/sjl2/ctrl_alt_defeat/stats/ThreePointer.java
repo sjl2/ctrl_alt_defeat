@@ -7,6 +7,11 @@ public class ThreePointer implements Stat {
   private Location pos;
   private Player player;
 
+  public ThreePointer(Player player, Location pos) {
+    this.pos = pos;
+    this.player = player;
+  }
+
   @Override
   public void execute(GameStats ps) {
     ps.setThreePointers(ps.getThreePointers() + 1);
