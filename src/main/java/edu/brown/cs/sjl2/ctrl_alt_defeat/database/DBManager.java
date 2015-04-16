@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
@@ -55,7 +57,7 @@ public class DBManager {
    */
   public int generatePlayID() {
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT Max(id) FROM play;")) {
+        "SELECT MAX(id) FROM play;")) {
 
       ResultSet rs = prep.executeQuery();
       if (rs.next()) {
@@ -70,8 +72,6 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-
-  // CHECK SAVING VS OVERWRITING
 
   /**
    * Saves the inputted play name and data into the database.
@@ -111,7 +111,6 @@ public class DBManager {
 
       prep.executeBatch();
 
-
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -139,7 +138,7 @@ public class DBManager {
    * @return Play, with all fields set.
    */
   public Play loadPlay(int id) {
-    Play play = getPlayMetaData(id);
+    Play play = loadPlayMetaData(id);
     int numFrames = play.getNumFrames();
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
@@ -172,7 +171,7 @@ public class DBManager {
     return play;
   }
 
-  private Play getPlayMetaData(int id) {
+  private Play loadPlayMetaData(int id) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT name, numFrames FROM play WHERE id = ?")) {
       prep.setInt(1, id);
@@ -188,6 +187,25 @@ public class DBManager {
         throw new RuntimeException("ERROR: Play not found.");
       }
 
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+  
+  /**
+   * Loads play ids and names to pass to front end
+   * @return Map, integer to string
+   */
+  public Map<Integer, String> loadPlayIDs() {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT id, name FROM play;")) {
+      Map<Integer, String> plays = new HashMap<>();
+      ResultSet rs = prep.executeQuery();
+      while (rs.next()) {
+        plays.put(rs.getInt("id"), rs.getString("name"));
+      }
+      return plays;
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -215,6 +233,7 @@ public class DBManager {
     } catch (SQLException e) {
       String message = "Could not retrieve player " + id + " from the "
           + "database.";
+      close();
       throw new RuntimeException(message);
     }
 
@@ -241,6 +260,7 @@ public class DBManager {
       }
     } catch (SQLException e) {
       String message = "Could not retrieve team " + id + " from the database.";
+      close();
       throw new RuntimeException(message);
     }
 
@@ -265,6 +285,7 @@ public class DBManager {
     } catch (SQLException e) {
       String message = "Could not retrieve players for team " + teamID + " from"
           + " the database.";
+      close();
       throw new RuntimeException(message);
     }
 

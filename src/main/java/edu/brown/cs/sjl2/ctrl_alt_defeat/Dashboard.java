@@ -9,6 +9,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 public class Dashboard {
   private Game currentGame;
   DBManager db;
+  
+  public Game getGame() {
+    return this.currentGame;
+  }
 
   public void startGame(Boolean home, String opponentName) {
     // TODO
