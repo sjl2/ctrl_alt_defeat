@@ -6,10 +6,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Scoreboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class Game {
@@ -81,14 +83,9 @@ public class Game {
     }
   }
 
-  public void addStatByID(int statID, int playerID) {
+
+  public void addStatByID(int statID, int playerID, int[] location) {
     Player p = pf.getPlayer(playerID);
-
-    // Handlers
-    // Front End
-  }
-
-  public void addStatByID(String statID, String playerID, int[] location) {
 
   }
 

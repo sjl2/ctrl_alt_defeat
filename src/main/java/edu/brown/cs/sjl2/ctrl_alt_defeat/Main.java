@@ -2,6 +2,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import java.io.File;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GUI.GUIManager;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;

@@ -1,9 +1,8 @@
-package edu.brown.cs.sjl2.ctrl_alt_defeat;
+package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class TeamFactory {
