@@ -88,8 +88,15 @@ public class PlaymakerGUI {
 
     @Override
     public Object handle(Request request, Response response) {
-      // TODO Auto-generated method stub
-      return null;
+
+      QueryParamsMap qm = request.queryMap();
+      int id = Integer.parseInt(qm.value("id"));
+      Play play = dbManager.loadPlay(id);
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("play", GSON.toJson(play))
+          .build();
+
+      return GSON.toJson(variables);
     }
 
   }
