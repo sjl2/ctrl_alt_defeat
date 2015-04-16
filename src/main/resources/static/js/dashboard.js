@@ -1,8 +1,20 @@
-var paper = Raphael(document.getElementById("content"), 700, 700);
-var newGameButton = paper.rect(10, 10, 100, 40);
-var newGameText = paper.text(60, 30, "New Game");
-newGameButton.click(function() {
+var scoreboard = Raphael(document.getElementById("scoreboard"), 200, 200);
+scoreboard.setStart();
+scoreboard.text(10,20, "Home score: 00");
+scoreboard.text(10,40, "Away score: 00");
+scoreboard.text(10,60, "Home timeouts: 00");
+scoreboard.text(10,80, "Away timeouts: 00");
+scoreboard.text(10,100, "Home fouls: 00");
+scoreboard.text(10,120, "Away fouls: 00");
+scoreboard.text(10,140, "Possession: Home");
+scoreboard.text(10,160, "Quarter: 1");
+var st = scoreboard.setFinish();
+
+st.attr({"font-size" : 20, "text-anchor" : "start"});
+
+
+function newGame() {
 	$.post("/game/start", {}, function(responseJSON){
 		//responseJSON should have who we're playing(maybe it'll have the rosters)
 	});
-});
+}
