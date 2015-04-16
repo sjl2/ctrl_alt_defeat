@@ -1,0 +1,18 @@
+~~~~~ Playmaker ~~~~~
+
+Save Handler --
+
+Front End: Send post parameters in the form (for example):
+	id : "14"
+	name : "Pick and Roll"
+	numFrames : "50"
+	paths : <stringify Location[][]>
+
+	(If it's a new play and doesn't have an ID yet, send -1)
+
+Back End: Parses play info, sends back map from play id to name:
+	plays : Map<Integer, String>
+
+	(So that you can display the full list of plays to the user after saving)
+
+Load Handler --
