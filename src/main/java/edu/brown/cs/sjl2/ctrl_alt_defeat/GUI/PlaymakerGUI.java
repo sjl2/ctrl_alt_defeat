@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -16,15 +17,19 @@ import spark.Response;
 import spark.Route;
 import spark.TemplateViewRoute;
 
+/**
+ * PlaymakerGUI class, houses all gui handlers related to the playmaker
+ * @author awainger
+ */
 public class PlaymakerGUI {
 
   private DBManager dbManager;
-
   private static final Gson GSON = new Gson();
 
   /**
-   * @param dbManager
-   * @author sjl2
+   * Constructor for playmaker gui class.
+   * @param dbManager - DBManager, allows handlers to get data
+   * @author awainger
    */
   public PlaymakerGUI(DBManager dbManager) {
     this.dbManager = dbManager;
@@ -32,8 +37,7 @@ public class PlaymakerGUI {
 
   /**
    * Playmaker handler, loads main playmaker class.
-   *
-   * @author sjl2
+   * @author awainger
    */
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
@@ -47,14 +51,12 @@ public class PlaymakerGUI {
   /**
    * Save handler, parses play, saves to database, returns list of play ids and
    * names to front end.
-   *
    * @author awainger
    */
   public class SaveHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      int id = Integer.parseInt(qm.value("id"));
       String name = qm.value("name");
       int numFrames = Integer.parseInt(qm.value("numFrames"));
       String jsonString = qm.value("paths");
@@ -73,8 +75,8 @@ public class PlaymakerGUI {
         paths[position] = path;
       }
 
-      dbManager.savePlay(new Play(id, name, numFrames, paths));
-      Map<Integer, String> plays = dbManager.loadPlayIDs();
+      dbManager.savePlay(new Play(name, numFrames, paths));
+      List<String> plays = dbManager.loadPlayNames();
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("plays", plays).build();
 
@@ -82,19 +84,37 @@ public class PlaymakerGUI {
     }
   }
 
+  /**
+   * Loads a play for the front end.
+   * @author awainger
+   */
   public class LoadHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
-
       QueryParamsMap qm = request.queryMap();
-      int id = Integer.parseInt(qm.value("id"));
-      Play play = dbManager.loadPlay(id);
+      String name = qm.value("name");
+      Play play = dbManager.loadPlay(name);
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("play", GSON.toJson(play)).build();
+          .put("play", play).build();
 
       return GSON.toJson(variables);
     }
+  }
+  
+  /**
+   * Loads list of play names for playmaker sidebar.
+   * @author awainger
+   */
+  public class PlayNamesHandler implements Route {
 
+    @Override
+    public Object handle(Request request, Response response) {
+      List<String> plays = dbManager.loadPlayNames();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("plays", plays).build();
+
+      return GSON.toJson(variables);
+    } 
   }
 }

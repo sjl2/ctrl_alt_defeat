@@ -8,13 +8,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.collect.Multiset;
 
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
@@ -24,13 +22,19 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
+/**
+ * DBManager class, handles connection to database.
+ * @author awainger
+ */
 public class DBManager {
+
   private Connection conn;
   private Multiset<String> nextIDs;
 
   /**
    * Constructor for DBManager class, sets up connection.
    * @param path - String representing path to db file
+   * @author awainger
    */
   public DBManager(String path) {
     try {
@@ -48,6 +52,7 @@ public class DBManager {
 
   /**
    * Call any time there is an error or you are done with the DBManager.
+   * @author awainger
    */
   public void close() {
     try {
@@ -60,39 +65,14 @@ public class DBManager {
   }
 
   /**
-   * Generates new PlayID's, always one greater than the existing max id.
-   * @return int, new play ID to be used.
-   */
-  public int generatePlayID() {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT MAX(id) FROM play;")) {
-
-      ResultSet rs = prep.executeQuery();
-      if (rs.next()) {
-        int maxID = rs.getInt(1);
-        assert (!rs.next());
-        return maxID++;
-      } else {
-        return 0;
-      }
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
    * Saves the inputted play name and data into the database.
-   * @param name - String, name of play.
-   * @param play - Location[][], representing path data of all players.
+   * @param play - Play, with name, frames and paths set from front end.
+   * @author awainger
    */
   public void savePlay(Play play) {
-    int id;
-    if (play.isNewPlay()) {
-      id = generatePlayID();
-      saveToPlaysTable(id, play.getName(), play.getNumFrames());
-    } else {
-      id = play.getID();
+    String name = play.getName();
+    if (!doesPlayExist(name)) {
+      saveToPlaysTable(name, play.getNumFrames());
     }
 
     Location[][] paths = play.getPaths();
@@ -108,7 +88,7 @@ public class DBManager {
       for (int position = 0; position < length; position++) {
         for (int frame = 0; frame < paths[position].length; frame++) {
           Location l = paths[position][frame];
-          prep.setInt(1, id);
+          prep.setString(1, name);
           prep.setString(2, bballPositions[position].getName());
           prep.setInt(3, frame);
           prep.setInt(4, l.getX());
@@ -125,14 +105,25 @@ public class DBManager {
     }
   }
 
-  private void saveToPlaysTable(int id, String name, int numFrames) {
+  private void saveToPlaysTable(String name, int numFrames) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO play VALUES(?, ?, ?);")) {
+        "INSERT INTO play VALUES(?, ?);")) {
 
-      prep.setInt(1, id);
-      prep.setString(2, name);
-      prep.setInt(3, numFrames);
+      prep.setString(1, name);
+      prep.setInt(2, numFrames);
       prep.executeUpdate();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+  private boolean doesPlayExist(String name) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT name FROM play WHERE name == ? LIMIT 1;")) {
+      prep.setString(1, name);
+      ResultSet rs = prep.executeQuery();
+      return rs.next();
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -142,11 +133,11 @@ public class DBManager {
   /**
    * Fetches all the data associated with a single play to send
    * to the front end.
-   * @param id - Int, corresponding to play front end is requesting
+   * @param name - String, corresponding to play front end is requesting
    * @return Play, with all fields set.
    */
-  public Play loadPlay(int id) {
-    Play play = loadPlayMetaData(id);
+  public Play loadPlay(String name) {
+    Play play = loadPlayMetaData(name);
     int numFrames = play.getNumFrames();
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
@@ -158,7 +149,7 @@ public class DBManager {
           + "FROM play_detail "
           + "WHERE play = ? AND position = ?;")) {
 
-        prep.setInt(1, id);
+        prep.setString(1, name);
         prep.setString(2, bballPositions[i].getName());
         ResultSet rs = prep.executeQuery();
 
@@ -179,22 +170,20 @@ public class DBManager {
     return play;
   }
 
-  private Play loadPlayMetaData(int id) {
+  private Play loadPlayMetaData(String name) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name, numFrames FROM play WHERE id = ?")) {
-      prep.setInt(1, id);
+        "SELECT numFrames FROM play WHERE name = ?")) {
+      prep.setString(1, name);
       ResultSet rs = prep.executeQuery();
 
       if (rs.next()) {
-        String name = rs.getString("name");
         int numFrames = rs.getInt("numFrames");
-        Play toReturn = new Play(id, name, numFrames);
+        Play toReturn = new Play(name, numFrames);
         assert (!rs.next());
         return toReturn;
       } else {
         throw new RuntimeException("ERROR: Play not found.");
       }
-
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -202,16 +191,17 @@ public class DBManager {
   }
 
   /**
-   * Loads play ids and names to pass to front end
-   * @return Map, integer to string
+   * Loads play names to pass to front end
+   * @return List strings, play names
+   * @author awainger
    */
-  public Map<Integer, String> loadPlayIDs() {
+  public List<String> loadPlayNames() {
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT id, name FROM play;")) {
-      Map<Integer, String> plays = new HashMap<>();
+        "SELECT name FROM play;")) {
+      List<String> plays = new ArrayList<>();
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
-        plays.put(rs.getInt("id"), rs.getString("name"));
+        plays.add(rs.getString("name"));
       }
       return plays;
     } catch (SQLException e) {
