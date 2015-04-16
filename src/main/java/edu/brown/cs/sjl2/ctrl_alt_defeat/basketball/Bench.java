@@ -5,6 +5,7 @@ import java.util.List;
 public class Bench {
   private List<Player> players;
   private Team team;
+
   public List<Player> getPlayers() {
     return players;
   }

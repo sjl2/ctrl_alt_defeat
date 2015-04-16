@@ -3,6 +3,8 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import java.util.Collection;
 import java.util.Map;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
 public class BoxScore {
@@ -10,17 +12,21 @@ public class BoxScore {
   private GameStats teamStats;
   private Team team;
   private boolean isHome;
+  private DBManager db;
+  private Game game;
 
-  public BoxScore(boolean isHome, Team team) {
+  public BoxScore(DBManager db, Game game, boolean isHome, Team team) {
+    this.db = db;
+    this.game = game;
     this.isHome = isHome;
     this.team = team;
     Collection<Player> players = team.getPlayers();
 
     for (Player p : players) {
-      playerStats.put(p, new GameStats());
+      playerStats.put(p, new GameStats(db.getNextID("boxscore"), p, game));
     }
 
-    teamStats = new GameStats();
+    teamStats = GameStats.TeamGameStats(game);
   }
 
   public GameStats getPlayerStats(Player p) {
@@ -38,13 +44,13 @@ public class BoxScore {
   public boolean isHome() {
     return isHome;
   }
-  
+
   public int getScore() {
-    return teamStats.getFreeThrows() 
-        + (teamStats.getTwoPointers() * 2) 
-        + (teamStats.getThreePointers() * 3);  
+    return teamStats.getFreeThrows()
+        + (teamStats.getTwoPointers() * 2)
+        + (teamStats.getThreePointers() * 3);
   }
-  
+
   public int getFouls() {
     return teamStats.getPersonalFouls();
   }

@@ -3,6 +3,8 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonElement;
+
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
@@ -46,8 +48,8 @@ public class Game {
     this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
-    this.homeBoxScore = new BoxScore(true, home);
-    this.awayBoxScore = new BoxScore(false, away);
+    this.homeBoxScore = new BoxScore(db, this, true, home);
+    this.awayBoxScore = new BoxScore(db, this, false, away);
     this.lineup = new Lineup();
     this.stats = new ArrayList<>();
     this.pf = pf;
@@ -60,6 +62,14 @@ public class Game {
   }
 
   public Player getPlayerAtPosition(Location pos) {return null;}
+
+  public Team getHome() {
+    return homeTeam;
+  }
+
+  public Team getAway() {
+    return awayTeam;
+  }
 
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
@@ -208,6 +218,11 @@ public class Game {
 
   public int getPeriod() {
     return period;
+  }
+
+  public JsonElement getRoster() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

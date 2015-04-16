@@ -59,7 +59,9 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
+
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
+    Spark.get("/game/roster", dashboardGUI.new RosterHandler());
 
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());

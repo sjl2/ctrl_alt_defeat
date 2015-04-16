@@ -1,6 +1,12 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+
 public class GameStats {
+  private int id;
+  private Player player;
+  private Game game;
   private int minutesPlayed = 0;
   private int twoPointers = 0;
   private int twoPointersA = 0;
@@ -18,8 +24,18 @@ public class GameStats {
   private int defensiveFouls = 0;
   private int technicalFouls = 0;
 
+  public GameStats(int id, Player player, Game game) {
+    this.id = id;
+    this.player = player;
+    this.game = game;
+  }
+
+  public static GameStats TeamGameStats(Game game) {
+    return new GameStats(-1, null, game);
+  }
+
   public GameStats copy() {
-    GameStats copy = new GameStats();
+    GameStats copy = new GameStats(id, player, game);
 
     copy.setMinutesPlayed(minutesPlayed);
     copy.setTwoPointers(twoPointers);
@@ -39,6 +55,31 @@ public class GameStats {
     copy.setTechnicalFouls(technicalFouls);
 
     return copy;
+  }
+
+  /**
+   * Getter for the DB ID of this GameStats. -1 If the game stats is for a team
+   * as that is not stored, but built up from the players.
+   * @return Returns the id of the GameStats of -1 if the stats are for a team.
+   */
+  public int getID() {
+    return id;
+  }
+
+  /**
+   * Getter for the Player that these stats refer to.
+   * @return
+   */
+  public Player getPlayer() {
+    return player;
+  }
+
+  /**
+   * Getter for the Game of these stats.
+   * @return
+   */
+  public Game getGame() {
+    return game;
   }
 
   public int getMinutesPlayed() {
