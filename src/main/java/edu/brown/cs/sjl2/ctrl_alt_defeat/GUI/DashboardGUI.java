@@ -30,26 +30,8 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("title", "Dashboard");
+        ImmutableMap.of("tabTitle", "Dashboard");
       return new ModelAndView(variables, "dashboard.ftl");
-    }
-  }
-
-  public class RosterHandler implements Route {
-
-    @Override
-    public Object handle(Request request, Response response) {
-      Game game = dash.getGame();
-      if (game != null) {
-        Map<String, Object> variables =
-            ImmutableMap.of(
-                "home", game.getHome(),
-                "away", game.getAway());
-
-        return GSON.toJson(variables);
-      } else {
-        return null;
-      }
     }
   }
 

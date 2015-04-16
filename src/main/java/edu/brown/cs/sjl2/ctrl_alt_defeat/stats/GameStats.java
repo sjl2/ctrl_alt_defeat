@@ -4,6 +4,9 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public class GameStats {
+  private static final int TWO_POINTS = 2;
+  private static final int THREE_POINTS = 3;
+
   private int id;
   private Player player;
   private Game game;
@@ -56,6 +59,9 @@ public class GameStats {
 
     return copy;
   }
+
+  // TODO Finish Storing GameStats
+
 
   /**
    * Getter for the DB ID of this GameStats. -1 If the game stats is for a team
@@ -229,6 +235,10 @@ public class GameStats {
 
   public double getFreeThrowPercentage() {
     return freeThrows / (double) freeThrowsA;
+  }
+
+  public int getPoints() {
+    return TWO_POINTS * twoPointers + THREE_POINTS * threePointers;
   }
 
   public int getRebounds() {
