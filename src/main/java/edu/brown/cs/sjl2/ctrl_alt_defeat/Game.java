@@ -11,11 +11,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Scoreboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class Game {
+  private int id;
   private Team homeTeam;
   private Team awayTeam;
   private Lineup lineup;
@@ -28,18 +29,24 @@ public class Game {
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
+  private DBManager db;
 
-  public Game(Team home, Team away, PlayerFactory pf, StatFactory sf) {
+  public Game(Team home, Team away, PlayerFactory pf, StatFactory sf, DBManager db) {
+    this.id = db.getNextGameID();
     this.homeTeam = home;
     this.awayTeam = away;
+    this.homeBoxScore = new BoxScore(true, home);
+    this.awayBoxScore = new BoxScore(false, away);
     this.lineup = new Lineup();
     this.scoreboard = createScoreboard();
     this.pf = pf;
     this.sf = sf;
+    this.db = db;
   }
 
 
   public Player getPlayerAtPosition(Location pos) {return null;}
+
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
   }
@@ -73,7 +80,7 @@ public class Game {
     scoreboard.flipPossession();
   }
 
-  public void addStat(Stat s) {
+  public void addStat(Stat s) throws GameException {
     stats.add(0, s);
     if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
@@ -84,16 +91,20 @@ public class Game {
     } else {
       String message = "Cannot add stat for " + s.getPlayer() + " because they "
           + "are not on either team.";
-      throw new RuntimeException(message);
+      throw new GameException(message);
     }
+
+    storeGame();
   }
 
-  public void addStatByID(String statID, int playerID, Location location) {
+  public void addStatByID(String statID, int playerID, Location location)
+      throws GameException {
+
     Player p = pf.getPlayer(playerID);
     addStat(sf.getStat(statID, p, location));
   }
 
-  public void undoStat() {
+  public void undoStat() throws GameException {
     Stat s = stats.remove(0);
     if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
@@ -104,7 +115,7 @@ public class Game {
     } else {
       String message = "Cannot undo stat for " + s.getPlayer() + " because "
           + "they are not on either team.";
-      throw new RuntimeException(message);
+      throw new GameException(message);
     }
   }
 
@@ -121,7 +132,15 @@ public class Game {
     this.rules = rules;
   }
 
-
+  /**
+   * Store all essential data from the game to the databse in case of failure.
+   * TODO Consider threading this to happen every second.
+   */
+  public void storeGame() {
+    db.store(id, homeBoxScore);
+    db.store(id, awayBoxScore);
+    db.store(id, stats);
+  }
 
 
 }

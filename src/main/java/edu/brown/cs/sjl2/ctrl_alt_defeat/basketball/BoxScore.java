@@ -8,8 +8,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 public class BoxScore {
   private Map<Player, GameStats> playerStats;
   private GameStats teamStats;
+  private Team team;
+  private boolean isHome;
 
-  public BoxScore(Team team) {
+  public BoxScore(boolean isHome, Team team) {
+    this.isHome = isHome;
+    this.team = team;
     Collection<Player> players = team.getPlayers();
 
     for (Player p : players) {
@@ -27,5 +31,12 @@ public class BoxScore {
     return teamStats.copy();
   }
 
+  public Team getTeam() {
+    return team;
+  }
+
+  public boolean isHome() {
+    return isHome;
+  }
 
 }

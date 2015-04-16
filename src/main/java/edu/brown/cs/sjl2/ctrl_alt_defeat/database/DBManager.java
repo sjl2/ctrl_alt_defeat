@@ -9,14 +9,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class DBManager {
   private Connection conn;
@@ -192,7 +196,7 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-  
+
   /**
    * Loads play ids and names to pass to front end
    * @return Map, integer to string
@@ -290,5 +294,22 @@ public class DBManager {
     }
 
     return players;
+  }
+
+  public void store(int gameID, BoxScore boxScore) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public void store(int gameID, List<Stat> stats) {
+    // TODO Auto-generated method stub
+    String query = "";
+
+  }
+
+  public int getNextGameID() {
+    // TODO Auto-generated method stub
+    String query = "SELECT MAX(id) FROM game;";
+    return 0;
   }
 }

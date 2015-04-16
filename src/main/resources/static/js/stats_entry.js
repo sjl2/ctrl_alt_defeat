@@ -121,4 +121,32 @@ $(function (){
 		this.box.g.remove();
 	});
 
+	// STAT GLOBALS
+	var x; 
+	var y; 
+	var statID; 
+	var playerID; 
+
+	function addStat() {
+		var xy = standardizeXY(x, y);
+		postParameters = {
+			x: xy[0],
+			y: xy[1],
+			statID: statID,
+			playerID
+		};
+
+		$.post("/stat/add", postParameters, function(responseJSON) {
+			errorMessage = JSON.parseJson(responseJSON);
+			if (errorMessage.length > 0) {
+				alert(errorMessage);
+			}
+		})
+	}
+
+	// Convert the pixels x and y for this court to the backend's reference pixels
+	function standardizeXY(x, y) {
+
+	}
+
 })

@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -40,14 +41,18 @@ public class StatsEntryGUI {
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
 
-      String statID = qm.value("stat");
-      int playerID = GSON.fromJson(qm.value("player"), Integer.class);
+      String statID = qm.value("statID");
+      int playerID = GSON.fromJson(qm.value("playerID"), Integer.class);
       int x = GSON.fromJson(qm.value("x"), Integer.class);
       int y = GSON.fromJson(qm.value("y"), Integer.class);
 
-      dash.getGame().addStatByID(statID, playerID, new Location(x, y));
+      try {
+        dash.getGame().addStatByID(statID, playerID, new Location(x, y));
+      } catch (GameException ex) {
+        return ex.getMessage();
+      }
 
-      return null;
+      return "";
     }
   }
 
