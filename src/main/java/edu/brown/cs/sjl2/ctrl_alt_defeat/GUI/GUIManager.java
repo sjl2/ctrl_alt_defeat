@@ -7,14 +7,11 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 
 import spark.ExceptionHandler;
 import spark.ModelAndView;
-import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -27,19 +24,25 @@ public class GUIManager {
   private File db;
   private int port = 8585;
   private final static int STATUS = 500;
-  private final static Gson GSON = new Gson();
 
   private Dashboard dash;
   private Game game;
+  
+  private PlaymakerGUI playmakerGUI;
+  private StatGUI statGUI;
 
   public GUIManager(File db) {
     this.db = db;
+    this.playmakerGUI = new PlaymakerGUI(dash);
+    this.statGUI = new StatGUI(dash);
     runServer();
   }
 
   public GUIManager(File db, int port) {
     this.db = db;
     this.port = port;
+    this.playmakerGUI = new PlaymakerGUI(dash);
+    this.statGUI = new StatGUI(dash);
     runServer();
   }
 
@@ -52,8 +55,8 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
-		Spark.get("/playmaker", new PlaymakerHandler(), freeMarker);
-		Spark.post("/add/stat", new AddStat());
+		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
+		Spark.post("/add/stat", statGUI.new AddStat());
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -70,11 +73,9 @@ public class GUIManager {
   }
 
   /**
-   * Default Handler for stars. Provides html for users looking for
-   * localhost/bacon.
+   * Default Handler for ctrl-alt-defeat
    *
-   * @author sjl2
-   *
+   * @author awainger
    */
   private class FrontHandler implements TemplateViewRoute {
     @Override
@@ -86,35 +87,6 @@ public class GUIManager {
     }
   }
 
-	private class PlaymakerHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-        ImmutableMap.of("title", "Ctrl Alt Defeat: Playmaker");
-      return new ModelAndView(variables, "playmaker.ftl");
-    }
-  }
-
-	private class AddStat implements Route {
-
-    @Override
-    public Object handle(Request request, Response response) {
-      QueryParamsMap qm = request.queryMap();
-
-      int statID = GSON.fromJson(qm.value("stat"), Integer.class);
-      int playerID = GSON.fromJson(qm.value("player"), Integer.class);
-      int x = GSON.fromJson(qm.value("x"), Integer.class);
-      int y = GSON.fromJson(qm.value("y"), Integer.class);
-
-      int[] location = new int[] { x, y };
-
-      game.addStatByID(statID, playerID, location);
-
-
-      return null;
-    }
-
-	}
 
   /**
    * Handler for printing exceptions. Allows for easier debugging by having any
@@ -137,6 +109,4 @@ public class GUIManager {
       res.body(stacktrace.toString());
     }
   }
-
 }
-
