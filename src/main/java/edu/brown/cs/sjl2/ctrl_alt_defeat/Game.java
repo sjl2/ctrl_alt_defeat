@@ -33,7 +33,7 @@ public class Game {
   private StatFactory sf;
   private DBManager db;
 
-  public Game(Team home, Team away, PlayerFactory pf, StatFactory sf, DBManager db) {
+  public Game(Team home, Team away, PlayerFactory pf, DBManager db) {
     this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
@@ -42,7 +42,7 @@ public class Game {
     this.lineup = new Lineup();
     this.scoreboard = createScoreboard();
     this.pf = pf;
-    this.sf = sf;
+    this.sf = new StatFactory(db, id);
     this.db = db;
   }
 
@@ -106,7 +106,7 @@ public class Game {
       throws GameException {
 
     Player p = pf.getPlayer(playerID);
-    addStat(sf.getStat(statID, p, location));
+    addStat(sf.getStat(statID, p, location, period));
   }
 
   public void undoStat() throws GameException {
@@ -144,7 +144,6 @@ public class Game {
   public void storeGame() {
     db.store(id, homeBoxScore);
     db.store(id, awayBoxScore);
-    db.store(id, stats);
   }
 
 

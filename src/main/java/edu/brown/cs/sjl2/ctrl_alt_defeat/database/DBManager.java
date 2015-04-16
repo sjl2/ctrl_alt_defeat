@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import java.util.List;
 
 import com.google.common.collect.Multiset;
@@ -295,10 +294,14 @@ public class DBManager {
 
   }
 
-  public void store(int gameID, List<Stat> stats) {
+  public void store(int gameID, String statID, Stat s) {
     // TODO Auto-generated method stub
-    String query = "";
 
+    // TODO
+    // 1. Implement Store methods
+    // 2. Backup everything that is updated in game when possible
+    // 3. Dashboard
+    // 4. Stat Handlers, Game Handlers,
   }
 
   public int getNextID(String table) {
@@ -327,4 +330,6 @@ public class DBManager {
 
     return nextIDs.add(table, 1);
   }
+
+
 }
