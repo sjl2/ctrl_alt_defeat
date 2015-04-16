@@ -157,7 +157,7 @@ public class DBManager {
 
         Location[] path = new Location[numFrames];
         while (rs.next()) {
-          Location loc = new Location(rs.getInt("x"), rs.getInt("y"));
+          Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
           path[rs.getInt("frame")] = loc;
         }
 
