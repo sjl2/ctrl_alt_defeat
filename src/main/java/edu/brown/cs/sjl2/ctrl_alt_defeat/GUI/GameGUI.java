@@ -2,6 +2,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
 import java.util.Map;
 
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -43,17 +44,14 @@ public class GameGUI {
 
     @Override
     public Object handle(Request request, Response response) {
-      Game game = dash.getGame();
-      if (game != null) {
-        Map<String, Object> variables =
-            ImmutableMap.of(
-                "home", game.getHome(),
-                "away", game.getAway());
-
-        return GSON.toJson(variables);
-      } else {
-        return null;
-      }
+      QueryParamsMap qm = request.queryMap();
+      System.out.println("in the starthandler " + qm.value("opponent"));
+      
+      Game g = new Game();
+      System.out.println("here");
+      dash.setGame(g);
+      return 15;
+      
     }
   }
 

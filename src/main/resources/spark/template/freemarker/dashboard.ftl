@@ -13,6 +13,7 @@
 			<button id="new_game_button" onclick = "newGame();">Make a new Game!</button>
 			
 		</div>
+		<div id="new_team"> <a href = "/dashboard/newteam"> Make a new team!</a> </div>
 	</div>
  <script src="js/dashboard.js"></script>
  <link rel="stylesheet" href="css/dashboard.css">

@@ -32,6 +32,12 @@ public class Dashboard {
   private Game newGame(Team home, Team away) {
     return new Game(home, away, pf, db);
   }
+  //simple setter for game
+  //only used for testing
+  public void setGame(Game g) {
+    System.out.println("good god you better be testing");
+    this.currentGame = g;
+  }
 
   public void startGame(Boolean home, int opponentID)
       throws DashboardException {

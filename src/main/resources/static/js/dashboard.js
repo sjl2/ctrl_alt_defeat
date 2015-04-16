@@ -14,7 +14,8 @@ st.attr({"font-size" : 20, "text-anchor" : "start"});
 
 
 function newGame() {
-	$.post("/game/start", {}, function(responseJSON){
+	console.log($("#opponent")[0].value);
+	$.post("/game/start", {opponent: $("#opponent")[0].value}, function(responseJSON){
 		//responseJSON should have who we're playing(maybe it'll have the rosters)
 	});
 }

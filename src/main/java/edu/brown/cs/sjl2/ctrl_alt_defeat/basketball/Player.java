@@ -13,6 +13,13 @@ public class Player {
     this.number = number;
     this.teamID = teamID;
   }
+  
+  public Player(int j, int teamID) {
+    this.id = j;
+    this.name = "player " + j;
+    this.number = 15 + j;
+    this.teamID = teamID;
+  }
 
   public int getID() {
     return id;
