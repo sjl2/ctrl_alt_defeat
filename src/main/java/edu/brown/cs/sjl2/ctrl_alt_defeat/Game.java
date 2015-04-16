@@ -3,6 +3,8 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonElement;
+
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
@@ -46,12 +48,12 @@ public class Game {
     this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
-    this.homeBoxScore = new BoxScore(true, home);
-    this.awayBoxScore = new BoxScore(false, away);
+    this.homeBoxScore = new BoxScore(db, this, true, home);
+    this.awayBoxScore = new BoxScore(db, this, false, away);
     this.lineup = new Lineup();
     this.stats = new ArrayList<>();
     this.pf = pf;
-    this.sf = new StatFactory(db, id);
+    this.sf = new StatFactory(db, this);
     this.db = db;
   }
 
@@ -60,6 +62,14 @@ public class Game {
   }
 
   public Player getPlayerAtPosition(Location pos) {return null;}
+
+  public Team getHome() {
+    return homeTeam;
+  }
+
+  public Team getAway() {
+    return awayTeam;
+  }
 
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
@@ -122,12 +132,12 @@ public class Game {
 
   public void addStat(Stat s) throws GameException {
     stats.add(0, s);
-    if (s.getPlayer().getTeamID() == homeTeam.getId()) {
+    if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(homeBoxScore.getTeamStats());
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
-    } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
+    } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(awayBoxScore.getTeamStats());
       awayScore = awayBoxScore.getScore();
@@ -141,7 +151,7 @@ public class Game {
     storeGame();
   }
 
-  public void addStatByID(String statID, int playerID, Location location)
+  public void addStat(String statID, int playerID, Location location)
       throws GameException {
 
     Player p = pf.getPlayer(playerID);
@@ -150,12 +160,13 @@ public class Game {
 
   public void undoStat() throws GameException {
     Stat s = stats.remove(0);
-    if (s.getPlayer().getTeamID() == homeTeam.getId()) {
+    db.remove(s);
+    if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(homeBoxScore.getTeamStats());
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
-    } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
+    } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(awayBoxScore.getTeamStats());
       awayScore = awayBoxScore.getScore();
@@ -181,12 +192,12 @@ public class Game {
   }
 
   /**
-   * Store all essential data from the game to the databse in case of failure.
+   * Store all essential data from the game to the database in case of failure.
    * TODO Consider threading this to happen every second.
    */
   public void storeGame() {
-    db.store(id, homeBoxScore);
-    db.store(id, awayBoxScore);
+    db.store(homeBoxScore, this);
+    db.store(awayBoxScore, this);
   }
 
   public int getHomeScore() {
@@ -203,6 +214,15 @@ public class Game {
 
   public int getAwayFouls() {
     return awayFouls;
+  }
+
+  public int getPeriod() {
+    return period;
+  }
+
+  public JsonElement getRoster() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

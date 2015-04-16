@@ -13,8 +13,10 @@ public interface Stat {
 
   void undo(GameStats ps);
 
-  Location getPosition();
+  Location getLocation();
 
   Player getPlayer();
+
+  String getStatType();
 
 }

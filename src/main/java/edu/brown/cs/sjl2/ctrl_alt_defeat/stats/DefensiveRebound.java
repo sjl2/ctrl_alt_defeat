@@ -4,6 +4,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public class DefensiveRebound implements Stat {
+  private static final String TYPE = "DefensiveRebound";
   private int id;
   private int period;
   private Location pos;
@@ -27,7 +28,7 @@ public class DefensiveRebound implements Stat {
   }
 
   @Override
-  public Location getPosition() {
+  public Location getLocation() {
     return pos;
   }
 
@@ -46,4 +47,13 @@ public class DefensiveRebound implements Stat {
     return period;
   }
 
+  @Override
+  public String toString() {
+    return TYPE + " for " + player + "(id: " + id + ")";
+  }
+
+  @Override
+  public String getStatType() {
+    return TYPE;
+  }
 }

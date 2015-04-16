@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
@@ -7,11 +8,11 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 public class StatFactory {
 
   private DBManager db;
-  private int gameID;
+  private Game game;
 
-  public StatFactory(DBManager db, int gameID) {
+  public StatFactory(DBManager db, Game game) {
     this.db = db;
-    this.gameID = gameID;
+    this.game = game;
   }
 
   public Stat getStat(String statID, Player p, Location location, int period) {
@@ -33,10 +34,10 @@ public class StatFactory {
         s = new MissedFreeThrow(id, p, location, period);
         break;
       case "MissedTwo":
-        s = new MissedTwo(id, p, location, period);
+        s = new MissedTwoPointer(id, p, location, period);
         break;
       case "MissedThree":
-        s = new MissedThree(id, p, location, period);
+        s = new MissedThreePointer(id, p, location, period);
         break;
       case "OffensiveFoul":
         s = new OffensiveFoul(id, p, location, period);
@@ -66,7 +67,7 @@ public class StatFactory {
         throw new RuntimeException("Unrecognized statID \"" + statID + "\".");
     }
 
-    db.store(gameID, statID, s);
+    db.store(s, statID, game);
 
     return s;
   }
