@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -13,10 +13,10 @@ import spark.TemplateViewRoute;
 
 public class PlaymakerGUI {
   
-  private Dashboard dash;
+  private DBManager dbManager;
   
-  public PlaymakerGUI(Dashboard dash) {
-    this.dash = dash;
+  public PlaymakerGUI(DBManager dbManager) {
+    this.dbManager = dbManager;
   }
 
   public class PlaymakerHandler implements TemplateViewRoute {
@@ -30,7 +30,6 @@ public class PlaymakerGUI {
 
 
   public class SaveHandler implements Route {
-
     @Override
     public Object handle(Request request, Response response) {
       

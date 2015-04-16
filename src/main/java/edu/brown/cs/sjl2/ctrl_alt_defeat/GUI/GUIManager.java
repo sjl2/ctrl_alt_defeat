@@ -17,11 +17,12 @@ import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import freemarker.template.Configuration;
 
 public class GUIManager {
 
-  private File db;
+  private DBManager dbManager;
   private int port = 8585;
   private final static int STATUS = 500;
 
@@ -31,17 +32,17 @@ public class GUIManager {
   private PlaymakerGUI playmakerGUI;
   private StatGUI statGUI;
 
-  public GUIManager(File db) {
-    this.db = db;
-    this.playmakerGUI = new PlaymakerGUI(dash);
+  public GUIManager(String db) {
+    this.dbManager = new DBManager(db);
+    this.playmakerGUI = new PlaymakerGUI(dbManager);
     this.statGUI = new StatGUI(dash);
     runServer();
   }
 
-  public GUIManager(File db, int port) {
-    this.db = db;
+  public GUIManager(String db, int port) {
+    this.dbManager = new DBManager(db);
     this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dash);
+    this.playmakerGUI = new PlaymakerGUI(dbManager);
     this.statGUI = new StatGUI(dash);
     runServer();
   }
@@ -81,8 +82,7 @@ public class GUIManager {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("title", "Bacon",
-          "movieDB", db);
+        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
       return new ModelAndView(variables, "query.ftl");
     }
   }
