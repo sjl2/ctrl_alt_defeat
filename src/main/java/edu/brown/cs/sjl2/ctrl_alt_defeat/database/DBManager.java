@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Multiset;
+
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
@@ -24,6 +26,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class DBManager {
   private Connection conn;
+  private Multiset<String> nextIDs;
 
   /**
    * Constructor for DBManager class, sets up connection.
@@ -36,6 +39,7 @@ public class DBManager {
       Statement stat = conn.createStatement();
       stat.executeUpdate("PRAGMA foreign_keys = ON;");
       stat.close();
+
     } catch (SQLException | ClassNotFoundException e) {
       close();
       throw new RuntimeException(e);
@@ -307,9 +311,30 @@ public class DBManager {
 
   }
 
-  public int getNextGameID() {
-    // TODO Auto-generated method stub
-    String query = "SELECT MAX(id) FROM game;";
-    return 0;
+  public int getNextID(String table) {
+    int nextID = nextIDs.count(table);
+
+    if (nextID == 0) {
+      String query = "SELECT MAX(id) FROM game;";
+
+      try (PreparedStatement prep = conn.prepareStatement(query)) {
+        ResultSet rs = prep.executeQuery();
+
+        if (rs.next()) {
+          nextID = rs.getInt(1) + 1;
+        } else {
+          nextID = 1;
+        }
+
+        nextIDs.setCount(table, nextID);
+
+      } catch (SQLException e) {
+        String message = "Could not get next game id.";
+        close();
+        throw new RuntimeException(message);
+      }
+    }
+
+    return nextIDs.add(table, 1);
   }
 }

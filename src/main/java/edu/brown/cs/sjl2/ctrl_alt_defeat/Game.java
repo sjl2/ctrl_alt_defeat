@@ -16,6 +16,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class Game {
+  private static final String TABLE = "game";
+
   private int id;
   private Team homeTeam;
   private Team awayTeam;
@@ -32,7 +34,7 @@ public class Game {
   private DBManager db;
 
   public Game(Team home, Team away, PlayerFactory pf, StatFactory sf, DBManager db) {
-    this.id = db.getNextGameID();
+    this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
     this.homeBoxScore = new BoxScore(true, home);
@@ -44,6 +46,9 @@ public class Game {
     this.db = db;
   }
 
+  public int getID() {
+    return id;
+  }
 
   public Player getPlayerAtPosition(Location pos) {return null;}
 
