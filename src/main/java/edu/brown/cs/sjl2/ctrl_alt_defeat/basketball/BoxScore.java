@@ -38,5 +38,15 @@ public class BoxScore {
   public boolean isHome() {
     return isHome;
   }
+  
+  public int getScore() {
+    return teamStats.getFreeThrows() 
+        + (teamStats.getTwoPointers() * 2) 
+        + (teamStats.getThreePointers() * 3);  
+  }
+  
+  public int getFouls() {
+    return teamStats.getPersonalFouls();
+  }
 
 }
