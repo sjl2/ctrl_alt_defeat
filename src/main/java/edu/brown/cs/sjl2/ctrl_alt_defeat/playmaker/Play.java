@@ -15,14 +15,14 @@ public class Play {
     this.numFrames = numFrames;
     this.paths = paths;
   }
-  
+
   public Play(String name, int numFrames, Location[][] paths) {
     this.id = -1;
     this.name = name;
     this.numFrames = numFrames;
     this.paths = paths;
   }
-  
+
   public Play(int id, String name, int numFrames) {
     this.id = id;
     this.name = name;
@@ -47,18 +47,4 @@ public class Play {
   public void setPaths(Location[][] paths) {
     this.paths = paths;
   }
-
-//  public Path getPathForPosition(BasketballPosition pos) {
-//    return paths.get(pos);
-//  }
-//
-//  public void setLocationForPosition(BasketballPosition pos, Location loc, int index) {
-//    Path p = paths.get(pos);
-//    p.setLocationAtIndex(loc, index);
-//  }
-//
-//  public void moveLocationForPosition(BasketballPosition pos, Location loc, int index) {
-//		Path p = paths.get(pos);
-//    p.moveLocationAtIndex(loc, index);
-//  }
 }
