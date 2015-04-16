@@ -30,7 +30,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
  */
 public class DBManager {
 
-  private static final int GAME_STATS_LENGTH = 19;
   private Connection conn;
   private Multiset<String> nextIDs;
 
@@ -293,14 +292,8 @@ public class DBManager {
     return players;
   }
 
-  public void update(Collection<GameStats> gameStats) {
+  public void update(BoxScore boxScore, Game game) {
     // TODO Auto-generated method stub
-    StringBuilder query = new StringBuilder("UPDATE boxscore SET ");
-    for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
-      query.append("?, ");
-    }
-    query.append("?)");
-
 
   }
 
@@ -308,25 +301,7 @@ public class DBManager {
     if (gs.getID() == -1 || gs.getPlayer() == null) {
       throw new GameException("Cannot store game stats of a team.");
     } else {
-
-      StringBuilder query = new StringBuilder("INSERT INTO boxscore (");
-      for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
-        query.append("?, ");
-      }
-      query.append("?)");
-
-      try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-        List<Integer> values = gs.getStatValues();
-        for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
-          ps.setInt(i, values.get(i));
-        }
-
-        ps.execute();
-      } catch (SQLException e) {
-        String message = "Failed to add games stats for " + gs.getPlayer()
-            + " to database.";
-        throw new RuntimeException(message);
-      }
+      String query = "INSERT INTO boxscore (?, ?, ?, ?, ?)";
     }
 
   }
