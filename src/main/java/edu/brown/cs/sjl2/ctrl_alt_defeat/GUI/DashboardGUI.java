@@ -23,7 +23,7 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("title", "Ctrl-Alt-Defeat: Dashboard");
+        ImmutableMap.of("title", "Dashboard");
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }

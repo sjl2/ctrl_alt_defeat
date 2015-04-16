@@ -40,7 +40,9 @@ body {
     text-align: center;
 }
 
-h1, #query, #path, #info {
+h1, h3, #query, #path, #info {
+    margin: 5px;
+    padding: 5px;
 	background-color: white;
 	border: ridge;
 	border-color: gold; 

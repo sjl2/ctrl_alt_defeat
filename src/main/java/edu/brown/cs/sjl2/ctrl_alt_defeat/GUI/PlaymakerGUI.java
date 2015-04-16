@@ -25,7 +25,7 @@ public class PlaymakerGUI {
 
   /**
    * @param dbManager
-   * @author awainger
+   * @author sjl2
    */
   public PlaymakerGUI(DBManager dbManager) {
     this.dbManager = dbManager;
@@ -34,17 +34,16 @@ public class PlaymakerGUI {
   /**
    * Playmaker handler, loads main playmaker class.
    *
-   * @author awainger
+   * @author sjl2
    */
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Ctrl Alt Defeat: Playmaker");
+        ImmutableMap.of("tabTitle", "Playmaker");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
-
 
   /**
    * Save handler, parses play, saves to database, returns list of
@@ -84,8 +83,14 @@ public class PlaymakerGUI {
       return GSON.toJson(variables);
     }
   }
-  
+
   public class LoadHandler implements Route {
-    
+
+    @Override
+    public Object handle(Request request, Response response) {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
   }
 }
