@@ -90,7 +90,7 @@ public class GUIManager {
     public ModelAndView handle(Request rsubleq, Response res) {
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
-      return new ModelAndView(variables, "dash.ftl");
+      return new ModelAndView(variables, "ctrl_alt_defeat.ftl");
     }
   }
 

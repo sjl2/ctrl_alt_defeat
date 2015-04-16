@@ -22,7 +22,7 @@ public class PlaymakerGUI {
 
   private static final Gson GSON = new Gson();
 
-  
+
   /**
    * @param dbManager
    * @author awainger
@@ -40,7 +40,7 @@ public class PlaymakerGUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("title", "Ctrl Alt Defeat: Playmaker");
+        ImmutableMap.of("tabTitle", "Ctrl Alt Defeat: Playmaker");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
@@ -83,5 +83,9 @@ public class PlaymakerGUI {
 
       return GSON.toJson(variables);
     }
+  }
+  
+  public class LoadHandler implements Route {
+    
   }
 }
