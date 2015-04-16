@@ -1,6 +1,5 @@
 <#assign content>
 
-	<h1>Bacon: ${movieDB}</h1>
 	<div id="wrapper">
 		<div id="query">
 			<form method="POST" action="/path">
