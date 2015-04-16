@@ -61,15 +61,15 @@ public class PlaymakerGUI {
       int numFrames = Integer.parseInt(qm.value("numFrames"));
       String jsonString = qm.value("paths");
 
-      int[][][] jsonPaths = GSON.fromJson(jsonString, int[][][].class);
+      double[][][] jsonPaths = GSON.fromJson(jsonString, double[][][].class);
       BasketballPosition[] bballPositions = BasketballPosition.values();
       int numBasketballPlayers = bballPositions.length;
       Location[][] paths = new Location[numBasketballPlayers][];
       for (int position = 0; position < numBasketballPlayers; position++) {
         Location[] path = new Location[numFrames];
         for (int frame = 0; frame < numFrames; frame++) {
-          int x = jsonPaths[position][frame][0];
-          int y = jsonPaths[position][frame][1];
+          double x = jsonPaths[position][frame][0];
+          double y = jsonPaths[position][frame][1];
           path[frame] = new Location(x, y);
         }
         paths[position] = path;
