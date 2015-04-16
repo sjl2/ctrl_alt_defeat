@@ -99,7 +99,7 @@ public class Game {
       }
     }
   }
-  
+
   public void incrementPeriod() throws GameException {
     if (this.period == rules.periods()) {
       throw new GameException("Cannot increment, game is already in period " + this.period + "!");
@@ -107,7 +107,7 @@ public class Game {
       this.period++;
     }
   }
-  
+
   public void decrementPeriod() throws GameException {
     if (this.period == 1) {
       throw new GameException("Cannot decrement, game is already in the first period!");
@@ -125,13 +125,13 @@ public class Game {
     if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(homeBoxScore.getTeamStats());
-      this.homeScore = homeBoxScore.getScore();
-      this.homeFouls = homeBoxScore.getFouls();
+      homeScore = homeBoxScore.getScore();
+      homeFouls = homeBoxScore.getFouls();
     } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
       s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.execute(awayBoxScore.getTeamStats());
-      this.awayScore = awayBoxScore.getScore();
-      this.awayFouls = awayBoxScore.getFouls();
+      awayScore = awayBoxScore.getScore();
+      awayFouls = awayBoxScore.getFouls();
     } else {
       String message = "Cannot add stat for " + s.getPlayer() + " because they "
           + "are not on either team.";
@@ -153,13 +153,13 @@ public class Game {
     if (s.getPlayer().getTeamID() == homeTeam.getId()) {
       s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(homeBoxScore.getTeamStats());
-      this.homeScore = homeBoxScore.getScore();
-      this.homeFouls = homeBoxScore.getFouls();
+      homeScore = homeBoxScore.getScore();
+      homeFouls = homeBoxScore.getFouls();
     } else if (s.getPlayer().getTeamID() == awayTeam.getId()) {
       s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
       s.undo(awayBoxScore.getTeamStats());
-      this.awayScore = awayBoxScore.getScore();
-      this.awayFouls = awayBoxScore.getFouls();
+      awayScore = awayBoxScore.getScore();
+      awayFouls = awayBoxScore.getFouls();
     } else {
       String message = "Cannot undo stat for " + s.getPlayer() + " because "
           + "they are not on either team.";
@@ -188,4 +188,21 @@ public class Game {
     db.store(id, homeBoxScore);
     db.store(id, awayBoxScore);
   }
+
+  public int getHomeScore() {
+    return homeScore;
+  }
+
+  public int getAwayScore() {
+    return awayScore;
+  }
+
+  public int getHomeFouls() {
+    return homeFouls;
+  }
+
+  public int getAwayFouls() {
+    return awayFouls;
+  }
+
 }
