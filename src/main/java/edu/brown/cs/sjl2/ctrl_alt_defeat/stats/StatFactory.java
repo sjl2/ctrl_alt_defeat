@@ -44,6 +44,9 @@ public class StatFactory {
       case "OffensiveRebound":
         s = new OffensiveRebound(id, p, location, period);
         break;
+      case "DefensiveRebound":
+        s = new DefensiveRebound(id, p, location, period);
+        break;
       case "Steal":
         s = new Steal(id, p, location, period);
         break;
