@@ -14,6 +14,7 @@
     <script src="js/main.js"></script>
   </head>
   <body>
+
      ${content}
      <!-- Again, we're serving up the unminified source for clarity. -->
 
