@@ -7,6 +7,11 @@ public class Steal implements Stat {
   private Location pos;
   private Player player;
 
+  public Steal(Location pos, Player player) {
+    this.pos = pos;
+    this.player = player;
+  }
+
   @Override
   public void execute(GameStats ps) {
     ps.setSteals(ps.getSteals() + 1);

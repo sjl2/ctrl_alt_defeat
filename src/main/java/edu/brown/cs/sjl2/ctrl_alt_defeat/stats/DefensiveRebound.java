@@ -7,6 +7,11 @@ public class DefensiveRebound implements Stat {
   private Location pos;
   private Player player;
 
+  public DefensiveRebound(Location pos, Player player) {
+    this.pos = pos;
+    this.player = player;
+  }
+
   @Override
   public void execute(GameStats ps) {
     ps.setDefensiveRebounds(ps.getDefensiveRebounds() + 1);

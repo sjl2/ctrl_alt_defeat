@@ -7,6 +7,11 @@ public class MissedThree implements Stat {
   private Location pos;
   private Player player;
 
+  public MissedThree(Location pos, Player player) {
+    this.pos = pos;
+    this.player = player;
+  }
+
   @Override
   public void execute(GameStats ps) {
     ps.setThreePointersA(ps.getThreePointersA() + 1);

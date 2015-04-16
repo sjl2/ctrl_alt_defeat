@@ -7,6 +7,11 @@ public class FreeThrow implements Stat {
   private Location pos;
   private Player player;
 
+  public FreeThrow(Location pos, Player player) {
+    this.pos = pos;
+    this.player = player;
+  }
+
   @Override
   public void execute(GameStats ps) {
     ps.setFreeThrowsA(ps.getFreeThrowsA() + 1);
