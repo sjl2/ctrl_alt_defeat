@@ -1,5 +1,8 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
@@ -10,7 +13,7 @@ public class GameStats {
   private int id;
   private Player player;
   private Game game;
-  private int minutesPlayed = 0;
+  private int minutes = 0;
   private int twoPointers = 0;
   private int twoPointersA = 0;
   private int threePointers = 0;
@@ -40,7 +43,7 @@ public class GameStats {
   public GameStats copy() {
     GameStats copy = new GameStats(id, player, game);
 
-    copy.setMinutesPlayed(minutesPlayed);
+    copy.setMinutes(minutes);
     copy.setTwoPointers(twoPointers);
     copy.setTwoPointersA(twoPointersA);
     copy.setThreePointers(threePointers);
@@ -61,7 +64,61 @@ public class GameStats {
   }
 
   // TODO Finish Storing GameStats
+  public List<Integer> getStatValues() {
+    List<Integer> stats = new ArrayList<>();
 
+    assert (id != -1 && player != null);
+
+    stats.add(game.getID());
+    stats.add(player.getID());
+    stats.add(minutes);
+    stats.add(getFieldGoals());
+    stats.add(getFieldGoalsAttempted());
+    stats.add(twoPointers);
+    stats.add(twoPointersA);
+    stats.add(threePointers);
+    stats.add(threePointersA);
+    stats.add(freeThrows);
+    stats.add(freeThrowsA);
+    stats.add(orb);
+    stats.add(drb);
+    stats.add(ast);
+    stats.add(stl);
+    stats.add(blk);
+    stats.add(tov);
+    stats.add(getPersonalFouls());
+    stats.add(getPoints());
+
+    return stats;
+  }
+
+  public List<String> getStatTitles() {
+    List<String> stats = new ArrayList<>();
+
+    assert (id != -1 && player != null);
+
+    stats.add("game");
+    stats.add("player");
+    stats.add("minutes");
+    stats.add("FGM");
+    stats.add("FGA");
+    stats.add("twoPointersM");
+    stats.add("twoPointersA");
+    stats.add("threePointersM");
+    stats.add("threePointersA");
+    stats.add("FTM");
+    stats.add("FTA");
+    stats.add("ORB");
+    stats.add("DRB");
+    stats.add("AST");
+    stats.add("STL");
+    stats.add("BLK");
+    stats.add("TOV");
+    stats.add("PF");
+    stats.add("points");
+
+    return stats;
+  }
 
   /**
    * Getter for the DB ID of this GameStats. -1 If the game stats is for a team
@@ -88,12 +145,12 @@ public class GameStats {
     return game;
   }
 
-  public int getMinutesPlayed() {
-    return minutesPlayed;
+  public int getMinutes() {
+    return minutes;
   }
 
-  public void setMinutesPlayed(int minutesPlayed) {
-    this.minutesPlayed = minutesPlayed;
+  public void setMinutes(int minutesPlayed) {
+    this.minutes = minutesPlayed;
   }
 
   public int getTwoPointers() {
