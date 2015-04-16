@@ -31,11 +31,11 @@ public class StatsEntryGUI {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Stats Entry");
 
-      if (dash.getGame() != null) {
+     // if (dash.getGame() != null) {
         return new ModelAndView(variables, "stats_entry.ftl");
-      } else {
-        return new ModelAndView(variables, "no_game.ftl");
-      }
+   //   } else {
+     //   return new ModelAndView(variables, "no_game.ftl");
+     // }
 
     }
 
@@ -46,7 +46,7 @@ public class StatsEntryGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-
+      System.out.println("here");
       String statID = qm.value("statID");
       int playerID = GSON.fromJson(qm.value("playerID"), Integer.class);
       int x = GSON.fromJson(qm.value("x"), Integer.class);

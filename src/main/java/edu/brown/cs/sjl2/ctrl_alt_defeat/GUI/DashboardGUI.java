@@ -30,7 +30,7 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("title", "Dashboard");
+        ImmutableMap.of("tabTitle", "Dashboard");
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }

@@ -1,12 +1,5 @@
 initializeTeams();
 
-function _disable_user_select() {
-    $("*").css("-webkit-user-select", "none");
-    $("*").css("-moz-user-select", "none");
-    if (jQuery.browser.msie) {
-        $("body").attr("onselectstart", "return false;");
-    }
-};
 
 	// STAT GLOBALS
 	var clickedPoint; 
@@ -225,7 +218,7 @@ function clickThing(b) {
 		clickedStat.attr({fill: clickedStat.normalColor});
 		console.log("adding stat ", postParameters)
 		
-		$.post("/stat/add", postParameters, function(responseJSON) {
+		$.post("/stats/add", postParameters, function(responseJSON) {
 			errorMessage = JSON.parseJson(responseJSON);
 			if (errorMessage.length > 0) {
 				alert(errorMessage);
@@ -243,3 +236,10 @@ function initializeTeams() {
 
 	
 }
+
+disable_user_select();
+
+function disable_user_select() {
+    $("*").css("-webkit-user-select", "none");
+    $("*").css("-moz-user-select", "none");
+};
