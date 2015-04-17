@@ -70,6 +70,7 @@ public class GameStats {
     assert (id != -1 && player != null);
 
     stats.add(game.getID());
+    stats.add(player.getTeamID());
     stats.add(player.getID());
     stats.add(minutes);
     stats.add(getFieldGoals());
@@ -92,12 +93,11 @@ public class GameStats {
     return stats;
   }
 
-  public List<String> getStatTitles() {
+  public static List<String> getStatTitles() {
     List<String> stats = new ArrayList<>();
 
-    assert (id != -1 && player != null);
-
     stats.add("game");
+    stats.add("team");
     stats.add("player");
     stats.add("minutes");
     stats.add("FGM");

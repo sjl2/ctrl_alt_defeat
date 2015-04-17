@@ -26,7 +26,7 @@ public class BoxScore {
     for (Player p : players) {
       GameStats gs = new GameStats(db.getNextID("boxscore"), p, game);
       try {
-        db.store(gs);
+        db.storeGameStats(gs);
       } catch (GameException e) {
         throw new RuntimeException(e.getMessage());
       }
@@ -35,6 +35,9 @@ public class BoxScore {
 
     teamStats = GameStats.TeamGameStats(game);
   }
+
+  //public static BoxScore LoadOldBoxScore(DBManager db, Game game, boolean )
+
 
   public GameStats getPlayerStats(Player p) {
     return playerStats.get(p).copy();
@@ -66,7 +69,7 @@ public class BoxScore {
    * Update the DB with the latest stats stored within the box score.
    */
   public void updateDB() {
-    //db.update(playerStats.values());
+    db.updateBoxscore(playerStats.values());
   }
 
 }
