@@ -6,16 +6,12 @@ import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import spark.TemplateViewRoute;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 
 public class DashboardGUI {
 
@@ -34,7 +30,7 @@ public class DashboardGUI {
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }
-  
+
   public class NewTeamHandler implements TemplateViewRoute {
 
     @Override
@@ -43,9 +39,9 @@ public class DashboardGUI {
           ImmutableMap.of("tabTitle", "New Team");
       return new ModelAndView(variables, "newTeam.ftl");
     }
-    
+
   }
-  
+
   public class NewTeamResultsHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
