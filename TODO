@@ -1,0 +1,56 @@
+/****************************************************/
+	TODO List for CTRL-ALT-DEFEAT
+
+	Delete For Completely done
+	* For functionally done (needs JS, CSS UI)
+/****************************************************/
+
+- Deleting Plays
+- Threading of Save plays for performance
+- Subbing
+- Be able to load, save, use Boxscore
+- Grab boxscores from the back end and display nicely
+- Get List of Game IDs
+- Display page for game
+- Display page for team
+- Display page for player
+- Heat Maps (Shot Charts)
+- Team Editor
+- Player Editor 
+- My Dashboard editor
+	- Customize My Team
+	- Add Players to my team (similar to player editor)
+- Autocomplete the shit
+- Handler JUnits (Maybe? Prolly not a bad idea)
+- Dashboard JUnit
+- Game JUnit
+- Boxscore JUnit
+- GameStats JUnit
+- PlayMaker JUnit (for threadinging and saving and shit)
+- Data Visualization:
+	- Heat Maps
+	- Graphs of some kind
+	- Productive Plays (Keeping track of current play and the point efficiency during them.
+- File System for PlayMaker (Data visualization should come first)
+- Load GameStats from DB
+- PlayMaker/Whiteboard half court option 
+- PlayMaker/Whiteboard reflect option
+- PlayMaker/Whiteboard rotate option if they prefer court to be vertical on the screen. 
+- Whiteboard
+	- Clear
+	- Eraser
+	- Couple color options? 
+- Log-In Screen
+	- User population/creation in dashboard
+		- Coach should create a stats user 
+- Error Checking
+
+
+
+
+
+
+
+
+
+
