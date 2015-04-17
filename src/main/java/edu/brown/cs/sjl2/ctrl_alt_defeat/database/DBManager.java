@@ -294,13 +294,11 @@ public class DBManager {
   }
 
   public void update(Collection<GameStats> gameStats) {
-    // TODO Auto-generated method stub
     StringBuilder query = new StringBuilder("UPDATE boxscore SET ");
     for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
       query.append("?, ");
     }
     query.append("?)");
-
 
   }
 
@@ -332,11 +330,6 @@ public class DBManager {
   }
 
   public void store(Stat s, String statID, Game game) {
-    // TODO
-    // 1. Implement Store methods
-    // 2. Backup everything that is updated in game when possible
-    // 3. Dashboard
-    // 4. Stat Handlers, Game Handlers,
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?)";
 
