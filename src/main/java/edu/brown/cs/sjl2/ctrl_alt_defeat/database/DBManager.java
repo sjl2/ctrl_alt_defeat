@@ -453,6 +453,12 @@ public class DBManager {
     return nextIDs.add(table, 1);
   }
 
+  /**
+   * Saves a team to the database.
+   * @param name
+   * @param color1
+   * @param color2
+   */
   public void saveTeam(String name, String color1, String color2) {
     try (PreparedStatement prep = conn.prepareStatement(
         "INSERT INTO team VALUES(?, ?, ?, ?);")) {
@@ -461,13 +467,34 @@ public class DBManager {
       prep.setString(3, color1);
       prep.setString(4, color2);
       prep.executeUpdate();
-
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e.getMessage());
     }
   }
 
-
+  /**
+   * Saves a player to the database.
+   * @param team - Int, team id
+   * @param number - Int, player's jersey number
+   * @param current - Boolean (represented as int), whether player is currently on team
+   * @author awainger
+   */
+  public void savePlayer(int team, int number, int current) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "INSERT INTO player VALUES(?, ?, ?, ?);")) {
+      prep.setInt(1, getNextID("player"));
+      prep.setInt(2, team);
+      prep.setInt(3, number);
+      prep.setInt(4, current);
+      prep.executeUpdate();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+  
+  public List<String> getTeams() {
+    return null;
+  }
 }
-

@@ -71,8 +71,4 @@ public class Dashboard {
     // TODO
     return null;
   }
-  
-  public void saveTeam(String name, String color1, String color2) {
-    db.saveTeam(name, color1, color2);
-  }
 }
