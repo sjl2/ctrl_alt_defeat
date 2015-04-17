@@ -16,7 +16,6 @@ var courtTopLeftCorner;
 var courtBottomRightCorner;
 
 var paper;
-var circ;
 
 var angle = 0;
 
@@ -92,8 +91,6 @@ window.onload = function() {
     courtBottomRightCorner = Location(offset.left + container.width(), offset.top + container.height());
 
     var court = paper.image("images/Basketball-Court.png", 0, 0, width, height);
-    circ = paper.circle(width / 2, height / 2, radius);
-    circ.attr("fill", "url(images/Basketball-small.png)");
     
     var startingLocations = [Location(35, 50),
 			     Location(26, 17.54),
@@ -121,6 +118,8 @@ window.onload = function() {
 	tokens[i] = t;
     }
 
+    var circ = paper.circle(width / 2, height / 2, 27);
+    circ.attr("fill", "url(images/Basketball-small.png)");
     var ballLoc = Location(width / 2, height / 2);//TODO make ball follow player
     var t = Token(circ, ballLoc);
     circ.drag(onmove, onstart, onend, t, t, t);
@@ -188,7 +187,6 @@ window.onload = function() {
     });
 
     $("#save_play").on("click", function() {
-	console.log("test");
 	var playName = $("#play_name")[0].value;
 	if(playName != ""){
 	    if(existingPlays[playName] == undefined) {//saving play with name that doesn't exist 
@@ -361,9 +359,9 @@ function save(playName) {
 }
 
 function load(data) {
+    console.log(data);
     var play = data.play;
     var paths = play.paths;
-    console.log(paths);
     for(i = 0; i < paths.length; i++) {
 	var path = paths[i];
 	tokens[i].path = [];
