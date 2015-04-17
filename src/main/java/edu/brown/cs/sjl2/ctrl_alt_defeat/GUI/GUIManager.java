@@ -72,6 +72,7 @@ public class GUIManager {
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
+    Spark.get("/playmaker/delete", playmakerGUI.new DeleteHandler());
     Spark.get("/playmaker/playNames", playmakerGUI.new PlayNamesHandler());
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);

@@ -85,29 +85,29 @@ public class DBManager {
     int length = bballPositions.length;
 
     try (
-        PreparedStatement prep = conn.prepareStatement(
-            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
+        PreparedStatement prep1 = conn.prepareStatement(
+            "DELETE FROM play_detail WHERE play = ?");
         PreparedStatement prep2 = conn.prepareStatement(
-            "DELETE FROM play_detail WHERE play = ?")) {
+            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
 
-      prep2.setString(1, name);
-      prep2.executeUpdate();
+      prep1.setString(1, name);
+      prep1.executeUpdate();
 
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
         for (int frame = 0; frame < paths[position].length; frame++) {
           Location l = paths[position][frame];
-          prep.setString(1, name);
-          prep.setString(2, bballPositions[position].getName());
-          prep.setInt(3, frame);
-          prep.setDouble(4, l.getX());
-          prep.setDouble(5, l.getY());
-          prep.addBatch();
+          prep2.setString(1, name);
+          prep2.setString(2, bballPositions[position].getName());
+          prep2.setInt(3, frame);
+          prep2.setDouble(4, l.getX());
+          prep2.setDouble(5, l.getY());
+          prep2.addBatch();
         }
       }
 
-      prep.executeBatch();
+      prep2.executeBatch();
 
     } catch (SQLException e) {
       close();
@@ -219,7 +219,34 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
+  
+  /**
+   * Deletes the indicated play from the database.
+   * @param name - String, name of play to delete
+   * @author awainger
+   */
+  public void deletePlay(String name) {
+    try (
+        PreparedStatement prep1 = conn.prepareStatement(
+            "DELETE FROM play WHERE name = ?");
+        PreparedStatement prep2 = conn.prepareStatement(
+            "DELETE FROM play_details WHERE play = ?") ) {
+      prep1.setString(1, name);
+      prep2.setString(1, name);
+      prep1.executeUpdate();
+      prep2.executeUpdate(); 
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
 
+  /**
+   * Gets player from database.
+   * @param id - Int, corresponding to player to get
+   * @return - Player, with fields populated from db info
+   * @author awainger
+   */
   public Player getPlayer(int id) {
     String query = "SELECT person.name, player.team, player.number "
         + "FROM person, player "
@@ -248,6 +275,13 @@ public class DBManager {
     return player;
   }
 
+  /**
+   * Gets team from database.
+   * @param id - Int, corresponding to team
+   * @param pf - PlayerFactor, to create players later
+   * @return - Team, populated with db info
+   * @author awainger
+   */
   public Team getTeam(int id, PlayerFactory pf) {
     String query = "SELECT team.name, team.color1, team.color2 "
         + "FROM team "
@@ -436,3 +470,4 @@ public class DBManager {
 
 
 }
+
