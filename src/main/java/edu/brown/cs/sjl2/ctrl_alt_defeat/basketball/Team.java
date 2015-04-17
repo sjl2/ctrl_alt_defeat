@@ -35,6 +35,15 @@ public class Team {
       playerNames.put(p.getName(), p);
     }
   }
+  
+  public Team(int id, String name) {
+    this.id = id;
+    this.name = name;
+    this.primary = null;
+    this.secondary = null;
+    this.playerIds = null;
+    this.playerNames = null;
+  }
 
   public Team(Integer i) {
     Random rn = new Random();

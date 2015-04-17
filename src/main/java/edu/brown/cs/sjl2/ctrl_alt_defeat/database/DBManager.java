@@ -475,26 +475,48 @@ public class DBManager {
 
   /**
    * Saves a player to the database.
+   * @param name - String, player's name
    * @param team - Int, team id
    * @param number - Int, player's jersey number
    * @param current - Boolean (represented as int), whether player is currently on team
    * @author awainger
    */
-  public void savePlayer(int team, int number, int current) {
+  public void savePlayer(String name, int team, int number, int current) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO player VALUES(?, ?, ?, ?);")) {
+        "INSERT INTO player VALUES(?, ?, ?, ?, ?);")) {
       prep.setInt(1, getNextID("player"));
-      prep.setInt(2, team);
-      prep.setInt(3, number);
-      prep.setInt(4, current);
+      prep.setString(2, name);
+      prep.setInt(3, team);
+      prep.setInt(4, number);
+      prep.setInt(5, current);
       prep.executeUpdate();
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e.getMessage());
     }
   }
-  
-  public List<String> getTeams() {
-    return null;
+
+  /**
+   * Generates a list of team names and id's for the create-player handler.
+   * @return - List of teams, (dummy teams though)
+   * @author awainger
+   */
+  public List<Team> getTeams() {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT id, name FROM team;")) {
+      List<Team> teams = new ArrayList<>();
+      ResultSet rs = prep.executeQuery();
+      while (rs.next()) {
+        int id = rs.getInt("id");
+        String name = rs.getString("name");
+        Team t = new Team(id, name);
+        teams.add(t); 
+      }
+
+      return teams;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e.getMessage());
+    }
   }
 }
