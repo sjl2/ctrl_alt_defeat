@@ -16,7 +16,6 @@ import com.google.common.collect.Multiset;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
@@ -31,6 +30,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
  */
 public class DBManager {
 
+  private static final int GAME_STATS_LENGTH = 19;
   private Connection conn;
   private Multiset<String> nextIDs;
 
@@ -89,7 +89,7 @@ public class DBManager {
             "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
         PreparedStatement prep2 = conn.prepareStatement(
             "DELETE FROM play_detail WHERE play = ?")) {
-      
+
       prep2.setString(1, name);
       prep2.executeUpdate();
 
@@ -300,8 +300,12 @@ public class DBManager {
     return players;
   }
 
-  public void update(BoxScore boxScore, Game game) {
-    // TODO Auto-generated method stub
+  public void update(Collection<GameStats> gameStats) {
+    StringBuilder query = new StringBuilder("UPDATE boxscore SET ");
+    for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
+      query.append("?, ");
+    }
+    query.append("?)");
 
   }
 
@@ -309,17 +313,30 @@ public class DBManager {
     if (gs.getID() == -1 || gs.getPlayer() == null) {
       throw new GameException("Cannot store game stats of a team.");
     } else {
-      String query = "INSERT INTO boxscore (?, ?, ?, ?, ?)";
+
+      StringBuilder query = new StringBuilder("INSERT INTO boxscore (");
+      for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
+        query.append("?, ");
+      }
+      query.append("?)");
+
+      try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+        List<Integer> values = gs.getStatValues();
+        for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
+          ps.setInt(i, values.get(i));
+        }
+
+        ps.execute();
+      } catch (SQLException e) {
+        String message = "Failed to add games stats for " + gs.getPlayer()
+            + " to database.";
+        throw new RuntimeException(message);
+      }
     }
 
   }
 
   public void store(Stat s, String statID, Game game) {
-    // TODO
-    // 1. Implement Store methods
-    // 2. Backup everything that is updated in game when possible
-    // 3. Dashboard
-    // 4. Stat Handlers, Game Handlers,
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -379,7 +396,7 @@ public class DBManager {
 
     return nextIDs.add(table, 1);
   }
-  
+
   public void saveTeam(String name, String color1, String color2) {
     try (PreparedStatement prep = conn.prepareStatement(
         "INSERT INTO team VALUES(?, ?, ?, ?);")) {
