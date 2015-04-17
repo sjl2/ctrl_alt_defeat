@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
@@ -30,6 +30,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
  */
 public class DBManager {
 
+  private static final int GAME_STATS_LENGTH = 20;
   private Connection conn;
   private Multiset<String> nextIDs;
 
@@ -40,6 +41,7 @@ public class DBManager {
    */
   public DBManager(String path) {
     try {
+      nextIDs = HashMultiset.create();
       Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection("jdbc:sqlite:" + path);
       Statement stat = conn.createStatement();
@@ -82,24 +84,30 @@ public class DBManager {
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
-    try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
+    try (
+        PreparedStatement prep1 = conn.prepareStatement(
+            "DELETE FROM play_detail WHERE play = ?");
+        PreparedStatement prep2 = conn.prepareStatement(
+            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
+
+      prep1.setString(1, name);
+      prep1.executeUpdate();
 
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
         for (int frame = 0; frame < paths[position].length; frame++) {
           Location l = paths[position][frame];
-          prep.setString(1, name);
-          prep.setString(2, bballPositions[position].getName());
-          prep.setInt(3, frame);
-          prep.setDouble(4, l.getX());
-          prep.setDouble(5, l.getY());
-          prep.addBatch();
+          prep2.setString(1, name);
+          prep2.setString(2, bballPositions[position].getName());
+          prep2.setInt(3, frame);
+          prep2.setDouble(4, l.getX());
+          prep2.setDouble(5, l.getY());
+          prep2.addBatch();
         }
       }
 
-      prep.executeBatch();
+      prep2.executeBatch();
 
     } catch (SQLException e) {
       close();
@@ -211,7 +219,34 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
+  
+  /**
+   * Deletes the indicated play from the database.
+   * @param name - String, name of play to delete
+   * @author awainger
+   */
+  public void deletePlay(String name) {
+    try (
+        PreparedStatement prep1 = conn.prepareStatement(
+            "DELETE FROM play WHERE name = ?");
+        PreparedStatement prep2 = conn.prepareStatement(
+            "DELETE FROM play_details WHERE play = ?") ) {
+      prep1.setString(1, name);
+      prep2.setString(1, name);
+      prep1.executeUpdate();
+      prep2.executeUpdate(); 
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
 
+  /**
+   * Gets player from database.
+   * @param id - Int, corresponding to player to get
+   * @return - Player, with fields populated from db info
+   * @author awainger
+   */
   public Player getPlayer(int id) {
     String query = "SELECT person.name, player.team, player.number "
         + "FROM person, player "
@@ -240,6 +275,13 @@ public class DBManager {
     return player;
   }
 
+  /**
+   * Gets team from database.
+   * @param id - Int, corresponding to team
+   * @param pf - PlayerFactor, to create players later
+   * @return - Team, populated with db info
+   * @author awainger
+   */
   public Team getTeam(int id, PlayerFactory pf) {
     String query = "SELECT team.name, team.color1, team.color2 "
         + "FROM team "
@@ -292,26 +334,64 @@ public class DBManager {
     return players;
   }
 
-  public void update(BoxScore boxScore, Game game) {
-    // TODO Auto-generated method stub
+  public void updateBoxscore(Collection<GameStats> gameStats) {
+    StringBuilder query = new StringBuilder("UPDATE boxscore SET ");
+    List<String> cols = GameStats.getStatTitles();
+
+    for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
+      query.append(cols.get(i) + " = ?, ");
+    }
+    query.append(cols.get(GAME_STATS_LENGTH -1) + " = ?)");
+
+    try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+      for (GameStats gs : gameStats) {
+        List<Integer> values = gs.getStatValues();
+        for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
+          ps.setInt(i, values.get(i));
+        }
+
+        ps.addBatch();
+
+      }
+
+      ps.execute();
+    } catch (SQLException e) {
+      String message = "Failed to update gameStats in database: ";
+      throw new RuntimeException(message + e.getMessage());
+    }
+
+
 
   }
 
-  public void store(GameStats gs) throws GameException {
+  public void storeGameStats(GameStats gs) throws GameException {
     if (gs.getID() == -1 || gs.getPlayer() == null) {
       throw new GameException("Cannot store game stats of a team.");
     } else {
-      String query = "INSERT INTO boxscore (?, ?, ?, ?, ?)";
+
+      StringBuilder query = new StringBuilder("INSERT INTO boxscore (");
+      for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
+        query.append("?, ");
+      }
+      query.append("?)");
+
+      try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+        List<Integer> values = gs.getStatValues();
+        for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
+          ps.setInt(i, values.get(i));
+        }
+
+        ps.execute();
+      } catch (SQLException e) {
+        String message = "Failed to add games stats for " + gs.getPlayer()
+            + " to database: ";
+        throw new RuntimeException(message + e.getMessage());
+      }
     }
 
   }
 
-  public void store(Stat s, String statID, Game game) {
-    // TODO
-    // 1. Implement Store methods
-    // 2. Backup everything that is updated in game when possible
-    // 3. Dashboard
-    // 4. Stat Handlers, Game Handlers,
+  public void storeStat(Stat s, String statID, Game game) {
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -329,8 +409,8 @@ public class DBManager {
       ps.execute();
 
     } catch (SQLException e) {
-      String message = "Failed add " + s + " to the database.";
-      throw new RuntimeException(message);
+      String message = "Failed add " + s + " to the database: ";
+      throw new RuntimeException(message + e.getMessage());
     }
   }
 
@@ -341,7 +421,8 @@ public class DBManager {
       ps.setInt(1, s.getID());
       ps.setInt(2, s.getPlayer().getID());
     } catch (SQLException e) {
-      throw new RuntimeException("Failure to remove " + s + " from database.");
+      String message = "Failure to remove " + s + " from database.";
+      throw new RuntimeException(message + e.getMessage());
     }
   }
 
@@ -349,7 +430,7 @@ public class DBManager {
     int nextID = nextIDs.count(table);
 
     if (nextID == 0) {
-      String query = "SELECT MAX(id) FROM game;";
+      String query = "SELECT MAX(id) FROM " + table + ";";
 
       try (PreparedStatement prep = conn.prepareStatement(query)) {
         ResultSet rs = prep.executeQuery();
@@ -363,14 +444,30 @@ public class DBManager {
         nextIDs.setCount(table, nextID);
 
       } catch (SQLException e) {
-        String message = "Could not get next id for " + table + "table.";
+        String message = "Could not get next id for " + table + "table: ";
         close();
-        throw new RuntimeException(message);
+        throw new RuntimeException(message + e.getMessage());
       }
     }
 
     return nextIDs.add(table, 1);
   }
 
+  public void saveTeam(String name, String color1, String color2) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "INSERT INTO team VALUES(?, ?, ?, ?);")) {
+      prep.setInt(1, getNextID("team"));
+      prep.setString(2, name);
+      prep.setString(3, color1);
+      prep.setString(4, color2);
+      prep.executeUpdate();
+
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
 
 }
+

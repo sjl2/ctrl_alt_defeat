@@ -67,7 +67,7 @@ public class StatFactory {
         throw new RuntimeException("Unrecognized statID \"" + statID + "\".");
     }
 
-    db.store(s, statID, game);
+    db.storeStat(s, statID, game);
 
     return s;
   }

@@ -35,7 +35,7 @@ public class Team {
       playerNames.put(p.getName(), p);
     }
   }
-  
+
   public Team(Integer i) {
     Random rn = new Random();
     this.id = i;

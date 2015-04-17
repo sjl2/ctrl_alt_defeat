@@ -16,7 +16,6 @@ var courtTopLeftCorner;
 var courtBottomRightCorner;
 
 var paper;
-var circ;
 
 var angle = 0;
 
@@ -92,8 +91,6 @@ window.onload = function() {
     courtBottomRightCorner = Location(offset.left + container.width(), offset.top + container.height());
 
     var court = paper.image("images/Basketball-Court.png", 0, 0, width, height);
-    circ = paper.circle(width / 2, height / 2, radius);
-    circ.attr("fill", "url(images/Basketball-small.png)");
     
     var startingLocations = [Location(35, 50),
 			     Location(26, 17.54),
@@ -121,6 +118,8 @@ window.onload = function() {
 	tokens[i] = t;
     }
 
+    var circ = paper.circle(width / 2, height / 2, 27);
+    circ.attr("fill", "url(images/Basketball-small.png)");
     var ballLoc = Location(width / 2, height / 2);//TODO make ball follow player
     var t = Token(circ, ballLoc);
     circ.drag(onmove, onstart, onend, t, t, t);
@@ -188,7 +187,6 @@ window.onload = function() {
     });
 
     $("#save_play").on("click", function() {
-	console.log("test");
 	var playName = $("#play_name")[0].value;
 	if(playName != ""){
 	    if(existingPlays[playName] == undefined) {//saving play with name that doesn't exist 
@@ -272,6 +270,16 @@ function onend(event) {
 	    maxFrame = tokens[i].path.length - 1;
 	}
     }
+    for(i = 0; i < tokens.length; i++) {
+	var t = tokens[i];
+	if(t.path.length - 1 < maxFrame) {
+	    var path = t.path;
+	    var length = path.length;
+	    for(j = length; j <= maxFrame; j++) {
+		path[j] = path[length - 1];
+	    }
+	}
+    }
 }
 
 function updatePath() {
@@ -336,6 +344,11 @@ function stepAnimation() {
     }
 }
 
+function setEditingName(playName) {
+    edittingPlayName = playName;
+    $("#editing_name")[0].innerHTML = edittingPlayName;
+}
+
 function save(playName) {
     var paths = [];
     for(i = 0; i < tokens.length; i++) {
@@ -356,14 +369,12 @@ function save(playName) {
 	   data,
 	   updateLoadBar,
 	   "json");
-    edittingPlayName = playName;
-    $("#editing_name")[0].innerHTML = edittingPlayName;
+    setEditingName(playName);
 }
 
 function load(data) {
     var play = data.play;
     var paths = play.paths;
-    console.log(paths);
     for(i = 0; i < paths.length; i++) {
 	var path = paths[i];
 	tokens[i].path = [];
@@ -382,14 +393,17 @@ function updateLoadBar(data) {
     table.innerHTML = "";
     for(i = 0; i < plays.length; i++) {
 	var row = table.insertRow();
-	row.innerHTML = "<span id=\"" + plays[i] + "\">" + plays[i] + "</span>";
-	$("#" + plays[i]).on("click", function() {
+	var idName = "playName" + plays[i].replace(/ /g, "_");
+	row.innerHTML = "<td class=\"playName\"><span id=\"" + idName + "\">" + plays[i] + "</span></td>";
+	$("#" + idName).on("click", function() {
+	    var playName = this.id.replace(/_/g, " ").substring(8);
 	    $.get("/playmaker/load",
 		  {
-		      name: this.id
+		      name: playName
 		  },
 		  load,
 		  "json");
+	    setEditingName(playName);
 	});
 	existingPlays[plays[i]] = 1;
     }
