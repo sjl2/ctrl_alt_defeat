@@ -230,11 +230,11 @@ public class DBManager {
         PreparedStatement prep1 = conn.prepareStatement(
             "DELETE FROM play WHERE name = ?");
         PreparedStatement prep2 = conn.prepareStatement(
-            "DELETE FROM play_details WHERE play = ?") ) {
+            "DELETE FROM play_detail WHERE play = ?") ) {
       prep1.setString(1, name);
       prep2.setString(1, name);
+      prep2.executeUpdate();
       prep1.executeUpdate();
-      prep2.executeUpdate(); 
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);

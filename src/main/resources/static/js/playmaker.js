@@ -51,7 +51,7 @@ function PlayToken(playName) {
 
 	delete: function() {
 	    $.post("/playmaker/delete",
-		   playName,
+		   {name:playName},
 		   updateLoadBar,
 		   "json");
 	},
@@ -456,7 +456,7 @@ function updateLoadBar(data) {
 	    var playName = this.id.replace(/_/g, " ").substring(8);
 	    $.get("/playmaker/load",
 		  {
-		      name: playToken.playName
+		      name: playName
 		  },
 		  load,
 		  "json");
@@ -464,6 +464,8 @@ function updateLoadBar(data) {
 	});
 	$("#delete" + playToken.getID()).on("click", playToken.delete);
     }
+    $("#delete_plays")[0].innerHTML = "Delete Plays";
+    deletingPlays = false;
 }
 
 
