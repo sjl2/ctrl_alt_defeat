@@ -48,15 +48,15 @@ public class Game {
     this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
-    this.homeBoxScore = new BoxScore(db, this, true, home);
-    this.awayBoxScore = new BoxScore(db, this, false, away);
+    this.homeBoxScore = new BoxScore(db, this, home);
+    this.awayBoxScore = new BoxScore(db, this, away);
     this.lineup = new Lineup();
     this.stats = new ArrayList<>();
     this.pf = pf;
     this.sf = new StatFactory(db, this);
     this.db = db;
   }
-  
+
   public Game() {
     this.id = -1;
     this.homeTeam = new Team(1);

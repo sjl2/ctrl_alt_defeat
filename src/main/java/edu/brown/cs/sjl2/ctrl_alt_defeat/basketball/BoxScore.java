@@ -14,17 +14,14 @@ public class BoxScore {
   private Team team;
   private boolean isHome;
   private DBManager db;
-  private Game game;
 
-  public BoxScore(DBManager db, Game game, boolean isHome, Team team) {
+  public BoxScore(DBManager db, Game game, Team team) {
     this.db = db;
-    this.game = game;
-    this.isHome = isHome;
     this.team = team;
     Collection<Player> players = team.getPlayers();
 
     for (Player p : players) {
-      GameStats gs = new GameStats(db.getNextID("boxscore"), p, game);
+      GameStats gs = new GameStats(game, team, p);
       try {
         db.storeGameStats(gs);
       } catch (GameException e) {
@@ -33,18 +30,27 @@ public class BoxScore {
       playerStats.put(p, gs);
     }
 
-    teamStats = GameStats.TeamGameStats(game);
+    teamStats = GameStats.TeamGameStats(game, team);
   }
 
-  //public static BoxScore LoadOldBoxScore(DBManager db, Game game, boolean )
-
+  /**
+   * Static Instantiator of a stored box score.
+   * @param db
+   * @param game
+   * @param home
+   * @return Returns a Boxscore from a past game.
+   */
+  public static BoxScore OldBoxScore(DBManager db, Game game, Team team) {
+    // TODO
+    return null;
+  }
 
   public GameStats getPlayerStats(Player p) {
-    return playerStats.get(p).copy();
+    return playerStats.get(p);
   }
 
   public GameStats getTeamStats() {
-    return teamStats.copy();
+    return teamStats;
   }
 
   public Team getTeam() {

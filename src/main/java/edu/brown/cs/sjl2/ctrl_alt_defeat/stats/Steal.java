@@ -19,12 +19,12 @@ public class Steal implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setSteals(ps.getSteals() + 1);
+    ps.addSteals(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setSteals(ps.getSteals() - 1);
+    ps.addSteals(-1);
   }
 
   @Override

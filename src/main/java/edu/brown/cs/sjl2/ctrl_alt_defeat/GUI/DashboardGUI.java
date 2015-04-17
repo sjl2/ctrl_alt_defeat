@@ -58,9 +58,25 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Team",
+          ImmutableMap.of("tabTitle", "New Player",
                           "teams", dbManager.getTeams());
-      return new ModelAndView(variables, "newTeam.ftl");
+      return new ModelAndView(variables, "newPlayer.ftl");
+    }
+  }
+  
+  public class NewPlayerResultsHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      dbManager.savePlayer(
+          qm.value("name"),
+          Integer.parseInt(qm.value("team")),
+          Integer.parseInt(qm.value("number")),
+          Integer.parseInt(qm.value("current")));
+
+      Map<String, Object> variables =
+          ImmutableMap.of("tabTitle", "New Player Results");
+      return new ModelAndView(variables, "newPlayerResults.ftl");
     }
     
   }

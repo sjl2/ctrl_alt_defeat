@@ -19,12 +19,12 @@ public class OffensiveFoul implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setOffensiveFouls(ps.getOffensiveFouls() + 1);
+    ps.addOffensiveFouls(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setOffensiveFouls(ps.getOffensiveFouls() - 1);
+    ps.addOffensiveFouls(-1);
   }
 
   @Override
