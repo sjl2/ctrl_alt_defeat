@@ -19,14 +19,14 @@ public class TwoPointer implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setTwoPointers(ps.getTwoPointers() + 1);
-    ps.setTwoPointersA(ps.getTwoPointersA() + 1);
+    ps.addTwoPointers(1);
+    ps.addTwoPointersA(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setTwoPointers(ps.getTwoPointers() - 1);
-    ps.setTwoPointersA(ps.getTwoPointersA() - 1);
+    ps.addTwoPointers(-1);
+    ps.addTwoPointersA(-1);
   }
 
   @Override

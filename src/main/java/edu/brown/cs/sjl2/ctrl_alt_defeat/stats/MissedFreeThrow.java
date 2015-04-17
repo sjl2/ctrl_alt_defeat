@@ -19,12 +19,12 @@ public class MissedFreeThrow implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setFreeThrowsA(ps.getFreeThrowsA() + 1);
+    ps.addFreeThrowsA(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setFreeThrowsA(ps.getFreeThrowsA() - 1);
+    ps.addFreeThrowsA(-1);
   }
 
   @Override

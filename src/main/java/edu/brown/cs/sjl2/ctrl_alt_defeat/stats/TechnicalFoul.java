@@ -19,12 +19,12 @@ public class TechnicalFoul implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setTechnicalFouls(ps.getTechnicalFouls() + 1);
+    ps.addTechnicalFouls(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setTechnicalFouls(ps.getTechnicalFouls() - 1);
+    ps.addTechnicalFouls(-1);
   }
 
   @Override

@@ -20,14 +20,12 @@ public class Block implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    int blocks = ps.getBlocks();
-    ps.setBlocks(blocks + 1);
+    int blocks = ps.addBlocks(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    int blocks = ps.getBlocks();
-    ps.setBlocks(blocks - 1);
+    int blocks = ps.addBlocks(-1);
   }
 
   @Override
