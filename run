@@ -36,4 +36,3 @@ PROJECT=$(basename $(pwd))
 # this script to your Java program.
 
 java -cp $TARGET:$CP edu.brown.cs.sjl2.ctrl_alt_defeat.Main "$@"
-
