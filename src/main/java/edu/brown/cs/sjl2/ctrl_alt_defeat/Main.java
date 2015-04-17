@@ -30,7 +30,6 @@ public final class Main {
   private void run() {
     OptionParser parser = new OptionParser();
 
-    parser.accepts("gui");
     OptionSpec<Integer>  portSpec =
       parser.accepts("port").withRequiredArg().ofType(Integer.class);
 

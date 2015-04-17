@@ -16,7 +16,6 @@ import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import freemarker.template.Configuration;
 
@@ -64,6 +63,8 @@ public class GUIManager {
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
 
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
+    Spark.get("/dashboard/newTeam", dashboardGUI.new NewTeamHandler(), freeMarker);
+    Spark.post("/dashboard/newTeam/results", dashboardGUI.new NewTeamResultsHandler(), freeMarker);
 
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new RosterHandler());

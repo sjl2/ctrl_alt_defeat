@@ -5,9 +5,12 @@
   <div id="load_column">
     <table id="plays"></table>
   </div>
-  <div id="save">
-    <input type="text" id="play_name"></input>
-    <button id="save_play">Save Play</button>
+  <div id="above_court">
+    <span id="editing_name"></span>
+    <div id="save">
+      <input type="text" id="play_name"></input>
+      <button id="save_play">Save Play</button>
+    </div>
   </div>
   <div id="canvas_container"></div>
   <div id="control">

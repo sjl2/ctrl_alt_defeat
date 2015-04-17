@@ -9,11 +9,21 @@
     width: 150px;
 }
 
+#above_court {
+    width: 50%;
+    margin: 0px auto;
+    position: relative;
+}
+
+#editing_name {
+    width: 25%;
+    font-size: 20px;
+}
+
 #save {
     width: 50%;
     text-align: right;
-    margin: 0px auto;
-    position: relative;
+    float: right;
 }
 
 #load_column {

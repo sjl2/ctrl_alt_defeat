@@ -1,3 +1,6 @@
+initializeTeams();
+var homeRoster = [];
+var awayRoster = [];
 
 	// STAT GLOBALS
 	var clickedPoint; 
@@ -27,10 +30,11 @@
 	var stats = [["Block", "DefensiveFoul", "DefensiveRebound", "FreeThrow"],
 				["MissedFreeThrow", "MissedThreePointer", "MissedTwoPointer", "OffensiveFoul"],
 				["OffensiveRebound", "Steal", "TechnicalFoul", "Turnover"],
-				["ThreePointer", "TwoPointer"]];
+				["ThreePointer", "TwoPointer", "STEWART\nRANGE!!!!"]];
 
-	var paper = Raphael(controls, 1000, 1000);
+	var paper = Raphael(controls, 1000, 500);
 	var court_paper = Raphael(court, court.width, court.height);
+	
 	court_paper.image("images/Basketball-Court.png", 0, 0, court_paper.width, court_paper.height);
 
 	var boxes = paper.set();
@@ -39,9 +43,9 @@
 
 
 	for (var i = 0; i < 5; i++) {
-		var tempBox = paper.rect(50, 5 + 55 * i, 120, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
+		var tempBox = paper.rect(130, 5 + 55 * i, 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
 			.data("thing", "player");
-		var tempText = paper.text(110, 5 + 55 * i + 25, positions[i]).attr({"font-family": "Arial", "font-size":16});
+		var tempText = paper.text(155, 5 + 55 * i + 25, positions[i]).attr({"font-family": "Arial", "font-size":16});
 		tempText.box = tempBox;
 		tempBox.glowColor = homeAccent;
 		tempBox.clickAccent = homeClick;
@@ -54,10 +58,14 @@
 		boxes.push(tempBox);
 	}
 
+	for (var i = 5; i < 12; i++) {
+
+	}
+
 	for (var i = 0; i < 5; i++) {
-		var tempBox = paper.rect(600, 5 + 55 * i, 120, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
+		var tempBox = paper.rect(570, 5 + 55 * i, 50, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
 			.data("thing", "player");
-		var tempText = paper.text(660, 5 + 55 * i + 25, positions[i]).attr({"font-family": "Arial", "font-size":16});
+		var tempText = paper.text(595, 5 + 55 * i + 25, positions[i]).attr({"font-family": "Arial", "font-size":16});
 		tempText.box = tempBox;
 		tempBox.glowColor = awayAccent;
 		tempBox.clickAccent = awayClick;
@@ -90,9 +98,11 @@
 		}
 	}
 
+
 	var sendStat = paper.rect(750, 5, 50, 50).attr({fill : "red", "stroke-width" : 2});
 	sendStat.click(function (e) {addStat();});
 	paper.text(775, 60, "Send Stat");
+
 
 	
 
@@ -187,10 +197,11 @@ function clickThing(b) {
 	if (b.data("thing") == "player") {
 		if (!(clickedPlayer === undefined)) clickedPlayer.attr({fill: clickedPlayer.normalColor});
 		clickedPlayer = b;
+		clickedPlayer.attr({fill: clickedPlayer.clickAccent});
 	} else if (b.data("thing") == "stat") {
 		if (!(clickedStat === undefined)) clickedStat.attr({fill: clickedStat.normalColor});
 		clickedStat = b;
-
+		clickedStat.attr({fill: clickedStat.clickAccent});
 	}
 } 
 
@@ -208,13 +219,27 @@ function clickThing(b) {
 		clickedStat.attr({fill: clickedStat.normalColor});
 		console.log("adding stat ", postParameters)
 		
-		$.post("/stat/add", postParameters, function(responseJSON) {
-			errorMessage = JSON.parseJson(responseJSON);
-			if (errorMessage.length > 0) {
-				alert(errorMessage);
-			}
+		$.post("/stats/add", postParameters, function(responseJSON) {
+			console.log(responseJSON);
 		});
 
 		}
 	}
 
+function initializeTeams() {
+
+	$.get("/game/roster", function(responseJSON) {
+		console.log(responseJSON);
+		var res = JSON.parseJSON(responseJSON);
+		
+	});
+
+	
+}
+
+disable_user_select();
+
+function disable_user_select() {
+    $("*").css("-webkit-user-select", "none");
+    $("*").css("-moz-user-select", "none");
+};

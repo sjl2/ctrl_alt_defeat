@@ -56,6 +56,14 @@ public class Game {
     this.sf = new StatFactory(db, this);
     this.db = db;
   }
+  
+  public Game() {
+    this.id = -1;
+    this.homeTeam = new Team(1);
+    this.awayTeam = new Team(2);
+    this.pf = null;
+    this.db = null;
+  }
 
   public int getID() {
     return id;

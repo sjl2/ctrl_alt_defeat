@@ -1,27 +1,27 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 public class Location {
-  private int x;
-  private int y;
+  private double x;
+  private double y;
 
-  public Location(int x, int y) {
+  public Location(double x, double y) {
     this.x = x;
     this.y = y;
   }
 
-  public int getX() {
+  public double getX() {
     return x;
   }
 
-  public int getY() {
+  public double getY() {
     return y;
   }
 
-	public Location withX(int newX) {
+	public Location withX(double newX) {
 		return new Location(newX, y);
 	}
 
-	public Location withY(int newY) {
+	public Location withY(double newY) {
 		return new Location(x, newY);
 	}
 //

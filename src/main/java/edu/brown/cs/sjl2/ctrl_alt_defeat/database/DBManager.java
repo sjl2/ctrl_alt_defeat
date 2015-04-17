@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
@@ -41,6 +41,7 @@ public class DBManager {
    */
   public DBManager(String path) {
     try {
+      nextIDs = HashMultiset.create();
       Class.forName("org.sqlite.JDBC");
       conn = DriverManager.getConnection("jdbc:sqlite:" + path);
       Statement stat = conn.createStatement();
@@ -83,8 +84,14 @@ public class DBManager {
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
-    try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
+    try (
+        PreparedStatement prep = conn.prepareStatement(
+            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
+        PreparedStatement prep2 = conn.prepareStatement(
+            "DELETE FROM play_detail WHERE play = ?")) {
+
+      prep2.setString(1, name);
+      prep2.executeUpdate();
 
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
@@ -158,7 +165,7 @@ public class DBManager {
 
         Location[] path = new Location[numFrames];
         while (rs.next()) {
-          Location loc = new Location(rs.getInt("x"), rs.getInt("y"));
+          Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
           path[rs.getInt("frame")] = loc;
         }
 
@@ -367,7 +374,7 @@ public class DBManager {
     int nextID = nextIDs.count(table);
 
     if (nextID == 0) {
-      String query = "SELECT MAX(id) FROM game;";
+      String query = "SELECT MAX(id) FROM " + table + ";";
 
       try (PreparedStatement prep = conn.prepareStatement(query)) {
         ResultSet rs = prep.executeQuery();
@@ -388,6 +395,21 @@ public class DBManager {
     }
 
     return nextIDs.add(table, 1);
+  }
+
+  public void saveTeam(String name, String color1, String color2) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "INSERT INTO team VALUES(?, ?, ?, ?);")) {
+      prep.setInt(1, getNextID("team"));
+      prep.setString(2, name);
+      prep.setString(3, color1);
+      prep.setString(4, color2);
+      prep.executeUpdate();
+
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 
 

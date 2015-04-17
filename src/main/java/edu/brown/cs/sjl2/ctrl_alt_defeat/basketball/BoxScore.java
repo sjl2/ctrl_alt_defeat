@@ -66,7 +66,7 @@ public class BoxScore {
    * Update the DB with the latest stats stored within the box score.
    */
   public void updateDB() {
-    db.update(playerStats.values());
+    //db.update(playerStats.values());
   }
 
 }

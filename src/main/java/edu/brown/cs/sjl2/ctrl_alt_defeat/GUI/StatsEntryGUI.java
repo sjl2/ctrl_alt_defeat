@@ -46,19 +46,21 @@ public class StatsEntryGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-
       String statID = qm.value("statID");
-      int playerID = GSON.fromJson(qm.value("playerID"), Integer.class);
-      int x = GSON.fromJson(qm.value("x"), Integer.class);
-      int y = GSON.fromJson(qm.value("y"), Integer.class);
+      int playerID = 1;
+      double x = GSON.fromJson(qm.value("x"), Double.class);
+      double y = GSON.fromJson(qm.value("y"), Double.class);
+      System.out.println(statID + " " + playerID + " " + x + " " + y);
 
       try {
         dash.getGame().addStat(statID, playerID, new Location(x, y));
       } catch (GameException ex) {
         return ex.getMessage();
+      } catch (Exception e) {
+        return "there was an error adding the stat";
       }
 
-      return "";
+      return 28;
     }
   }
 
