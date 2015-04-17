@@ -4,6 +4,7 @@
 
   <div id="load_column">
     <div id="load_header">
+      <button id="to_dashboard">Back To Dashboard</button>
       <button id="delete_plays">Delete Plays</button>
     </div>
     <table id="plays"></table>

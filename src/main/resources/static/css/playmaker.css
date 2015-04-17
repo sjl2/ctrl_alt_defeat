@@ -61,6 +61,11 @@
     margin-right: auto;
 }
 
+#to_dashboard {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
 #delete_plays {
     position: absolute;
     bottom: 15px;
