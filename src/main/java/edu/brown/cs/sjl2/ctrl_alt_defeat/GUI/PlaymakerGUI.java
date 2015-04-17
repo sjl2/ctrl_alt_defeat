@@ -51,6 +51,15 @@ public class PlaymakerGUI {
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
+  
+  public class WhiteboardHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request req, Response res) {
+      Map<String, Object> variables =
+        ImmutableMap.of("tabTitle", "Whiteboard");
+      return new ModelAndView(variables, "whiteboard.ftl");
+    }
+  }
 
   /**
    * Save handler, parses play, saves to database, returns list of play ids and

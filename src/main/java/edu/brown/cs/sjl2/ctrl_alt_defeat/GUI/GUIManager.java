@@ -80,6 +80,8 @@ public class GUIManager {
 		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
+		
+		Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
 
   }
 
