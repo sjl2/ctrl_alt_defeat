@@ -21,21 +21,26 @@ public class GameStats {
   private Player player;
   private Team team;
   private Game game;
-  private Multiset<String> stats = HashMultiset.create();
+  private Multiset<String> stats;
 
 
   public GameStats(Game game, Team team, Player player) {
     this.player = player;
     this.team = team;
     this.game = game;
-
+    this.stats = HashMultiset.create();
+    
     for (String s : getCols()) {
       stats.setCount(s, 0);
     }
 
     stats.setCount("game", game.getID());
     stats.setCount("team", team.getID());
-    stats.setCount("player", player.getID());
+    if (player != null) {
+      //TODO
+      stats.setCount("player", player.getID());
+    }
+   
   }
 
   public GameStats(List<Integer> values, Game game, Player player) {

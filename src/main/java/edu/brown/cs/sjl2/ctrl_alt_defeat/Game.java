@@ -48,6 +48,8 @@ public class Game {
     this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
+    db.saveGame(this);
+    
     this.homeBoxScore = new BoxScore(db, this, home);
     this.awayBoxScore = new BoxScore(db, this, away);
     this.lineup = new Lineup();
@@ -55,6 +57,7 @@ public class Game {
     this.pf = pf;
     this.sf = new StatFactory(db, this);
     this.db = db;
+
   }
 
   public Game() {

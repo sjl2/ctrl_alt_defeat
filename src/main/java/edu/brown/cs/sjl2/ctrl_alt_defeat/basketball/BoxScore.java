@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
@@ -19,6 +20,7 @@ public class BoxScore {
     this.db = db;
     this.team = team;
     Collection<Player> players = team.getPlayers();
+    playerStats = new HashMap<>();
 
     for (Player p : players) {
       GameStats gs = new GameStats(game, team, p);

@@ -19,10 +19,14 @@ public class Dashboard {
   StatFactory sf;
 
   public Dashboard(DBManager db) {
+    // TODO : Mark coach's team in database somehow
+    
     this.db = db;
 
     pf = new PlayerFactory(db);
     tf = new TeamFactory(db, pf);
+    myTeam = tf.getTeam(1); // TODO Config the head team
+    
   }
 
   public Game getGame() {
@@ -32,12 +36,13 @@ public class Dashboard {
   private Game newGame(Team home, Team away) {
     return new Game(home, away, pf, db);
   }
-  //simple setter for game
-  //only used for testing
-  public void setGame(Game g) {
-    System.out.println("good god you better be testing");
-    this.currentGame = g;
-  }
+  
+//  //simple setter for game
+//  //only used for testing
+//  public void setGame(Game g) {
+//    System.out.println("good god you better be testing");
+//    this.currentGame = g;
+//  }
 
   public void startGame(Boolean home, int opponentID)
       throws DashboardException {
@@ -53,6 +58,10 @@ public class Dashboard {
     }
   }
 
+  public Team getMyTeam() {
+    return myTeam;
+  }
+  
   public Team getTeam(int id) {
     return tf.getTeam(id);
   }

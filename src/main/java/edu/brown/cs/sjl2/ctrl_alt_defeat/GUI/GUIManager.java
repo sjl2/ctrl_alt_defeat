@@ -37,7 +37,7 @@ public class GUIManager {
   public GUIManager(String db) {
     this.dbManager = new DBManager(db);
     this.dash = new Dashboard(dbManager);
-    this.dashboardGUI = new DashboardGUI(dbManager);
+    this.dashboardGUI = new DashboardGUI(dash, dbManager);
     this.gameGUI = new GameGUI(dash);
     this.playmakerGUI = new PlaymakerGUI(dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);

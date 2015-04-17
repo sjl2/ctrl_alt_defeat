@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -252,9 +253,9 @@ public class DBManager {
    * @author awainger
    */
   public Player getPlayer(int id) {
-    String query = "SELECT person.name, player.team, player.number "
-        + "FROM person, player "
-        + "WHERE player.id = ?;";
+    String query = "SELECT name, team, number "
+        + "FROM player "
+        + "WHERE id = ?;";
 
     Player player = null;
 
@@ -263,9 +264,9 @@ public class DBManager {
       ResultSet rs = prep.executeQuery();
 
       if (rs.next()) {
-        String name = rs.getString("person.name");
-        int team = rs.getInt("player.team");
-        int number = rs.getInt("player.number");
+        String name = rs.getString("name");
+        int team = rs.getInt("team");
+        int number = rs.getInt("number");
 
         player = new Player(id, name, number, team);
       }
@@ -287,7 +288,7 @@ public class DBManager {
    * @author awainger
    */
   public Team getTeam(int id, PlayerFactory pf) {
-    String query = "SELECT team.name, team.color1, team.color2 "
+    String query = "SELECT name, color1, color2 "
         + "FROM team "
         + "WHERE team.id = ?;";
 
@@ -298,16 +299,16 @@ public class DBManager {
       ResultSet rs = prep.executeQuery();
 
       if (rs.next()) {
-        String name = rs.getString("team.name");
-        String color1 = rs.getString("team.color1");
-        String color2 = rs.getString("team.color2");
+        String name = rs.getString("name");
+        String color1 = rs.getString("color1");
+        String color2 = rs.getString("color2");
 
         team = new Team(id, name, color1, color2, pf);
       }
     } catch (SQLException e) {
-      String message = "Could not retrieve team " + id + " from the database.";
+      String message = "Could not retrieve team " + id + " from the database: ";
       close();
-      throw new RuntimeException(message);
+      throw new RuntimeException(message + e.getMessage());
     }
 
     return team;
@@ -409,7 +410,7 @@ public class DBManager {
       throw new GameException("Cannot store game stats of a team.");
     } else {
       int numCols = GameStats.getCols().length;
-      StringBuilder query = new StringBuilder("INSERT INTO game_stats (");
+      StringBuilder query = new StringBuilder("INSERT INTO game_stats VALUES (");
       for (int i = 0; i < (numCols - 1); i++) {
         query.append("?, ");
       }
@@ -556,6 +557,22 @@ public class DBManager {
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e.getMessage());
+    }
+  }
+
+  public void saveGame(Game game) {
+    // TODO Auto-generated method stub
+    String query = "INSERT INTO game VALUES(?, ?, ?, ?);";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, game.getID());
+      prep.setLong(2, TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()));
+      prep.setInt(3, game.getHome().getID());
+      prep.setInt(4, game.getAway().getID());
+      
+      prep.executeUpdate(); 
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
   }
 }
