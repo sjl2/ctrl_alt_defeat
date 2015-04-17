@@ -1,12 +1,15 @@
 #wrapper {
-	width: 80%;
-	height: 100%;
+	width: 1000px;
+	height: 1000px;
+}
+
+#subForm {
+	width : 200px;
 }
 
 #court {
 	background-size: cover; 
-	/*background-image: url("../images/Basketball-Court.png");*/
-
+	float : left;
 }
 
 #content {

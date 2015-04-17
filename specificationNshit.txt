@@ -12,6 +12,7 @@ Back End: Parses play info, sends back list of play names:
 
 	(So that you can display the full list of plays to the user after saving)
 
+
 Load Handler --
 
 Front End: Send the name of the play you want:
@@ -19,6 +20,16 @@ Front End: Send the name of the play you want:
 
 Back End: Parses name, retrieves from the DB, responds with:
 	"play" : <Stringified Location[][]>
+
+
+
+Delete Handler --
+
+Front End: Send the name of the play you want to delete to /playmaker/delete, in the same way as the others
+
+Back End: Parses name, deletes from database, responds with:
+	"plays" : List<String>, for updating the list of plays.
+
 
 
 GetPlayNamesHandler -- 

@@ -3,6 +3,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Team {
   private int id;
@@ -36,10 +37,11 @@ public class Team {
   }
 
   public Team(Integer i) {
+    Random rn = new Random();
     this.id = i;
     this.name = "Team " + i;
-    this.primary = "#FF0000";
-    this.secondary = "#00FF00";
+    this.primary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";
+    this.secondary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";;
     playerIds = new HashMap<>();
     playerNames = new HashMap<>();
     for (int j = 0; j < 12; j++) {
