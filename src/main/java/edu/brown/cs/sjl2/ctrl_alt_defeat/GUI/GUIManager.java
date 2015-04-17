@@ -64,6 +64,8 @@ public class GUIManager {
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
 
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
+    Spark.get("/dashboard/newTeam", dashboardGUI.new NewTeamHandler(), freeMarker);
+    Spark.post("/dashboard/newTeam/results", dashboardGUI.new NewTeamResultsHandler(), freeMarker);
 
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new RosterHandler());
