@@ -78,6 +78,9 @@ public class GUIManager {
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
+		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
+		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
+		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
 
   }
 
