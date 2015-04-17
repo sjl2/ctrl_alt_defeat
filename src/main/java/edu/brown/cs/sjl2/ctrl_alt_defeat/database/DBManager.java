@@ -12,7 +12,6 @@ import java.util.List;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.Multiset.Entry;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
@@ -36,7 +35,6 @@ public class DBManager {
   private static final int FIVE = 5;
   private static final int SIX = 6;
   private static final int SEVEN = 7;
-  private static final int GAME_STATS_LENGTH = 20;
   private Connection conn;
   private Multiset<String> nextIDs;
 
@@ -341,44 +339,45 @@ public class DBManager {
   }
 
   public void updateBoxscore(Collection<GameStats> gameStats) {
-    for (GameStats gs : gameStats) {
+    StringBuilder query = new StringBuilder("UPDATE game_stats SET ");
 
-      StringBuilder query = new StringBuilder("UPDATE boxscore SET ");
-
-      Collection<Entry<String>> cols = gs.getStats();
-      int i = 0;
-      for (Entry<String> e : cols) {
-        if (i < cols.size()) {
-          query.append(e.getElement() + " = ?, ");
+      String[] cols = GameStats.getCols();
+      for (int i = 0; i < cols.length; i++) {
+        if (i < cols.length - 1) {
+          query.append(cols[i] + " = ?, ");
         } else {
-          query.append(e.getElement() + " = ?) ");
+          query.append(cols[i] + " = ?) ");
         }
-        i++;
       }
       query.append("WHERE game = ? AND team = ? AND player = ?;");
 
       try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-          i = 1;
-          for (Entry<String> e : cols) {
-            ps.setInt(i, e.getCount());
+        for (GameStats gs : gameStats) {
+          List<Integer> vals = gs.getValues();
+          int i = 1;
+          for (int v : vals) {
+            ps.setInt(i, v);
             i++;
           }
           ps.setInt(i++, gs.getGame().getID());
-          ps.setInt(i++, gs.getTeamID());
+          ps.setInt(i++, gs.getTeam().getID());
           ps.setInt(i, gs.getPlayer().getID());
-          ps.execute();
+
+          ps.addBatch();
+        }
+
+        ps.executeBatch();
       } catch (SQLException e) {
         String message = "Failed to update gameStats in database: ";
         throw new RuntimeException(message + e.getMessage());
       }
-    }
   }
 
   public GameStats loadGameStats(Game game, Team team, Player player)
       throws GameException {
 
     String query =
-        "SELECT * FROM boxscore "
+        "SELECT * FROM game_stats "
         + "WHERE game = ? AND team = ? AND player = ?;";
 
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
@@ -391,8 +390,8 @@ public class DBManager {
       List<Integer> values = new ArrayList<>();
 
       if (rs.next()) {
-        List<String> titles = GameStats.getNames();
-        for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
+        String[] titles = GameStats.getCols();
+        for (int i = 1; i <= titles.length; i++) {
           values.add(rs.getInt(i));
         }
       } else {
@@ -401,26 +400,24 @@ public class DBManager {
 
       return new GameStats(values, game, player);
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new GameException("Failed to load game stats: " + e.getMessage());
     }
-    return null;
   }
 
   public void storeGameStats(GameStats gs) throws GameException {
-    if (gs.getID() == -1 || gs.getPlayer() == null) {
+    if (gs.getPlayer() == null) {
       throw new GameException("Cannot store game stats of a team.");
     } else {
-
-      StringBuilder query = new StringBuilder("INSERT INTO boxscore (");
-      for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
+      int numCols = GameStats.getCols().length;
+      StringBuilder query = new StringBuilder("INSERT INTO game_stats (");
+      for (int i = 0; i < (numCols - 1); i++) {
         query.append("?, ");
       }
       query.append("?)");
 
       try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-        List<Integer> values = gs.getStats();
-        for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
+        List<Integer> values = gs.getValues();
+        for (int i = 1; i <= numCols; i++) {
           ps.setInt(i, values.get(i - 1));
         }
 
@@ -448,7 +445,6 @@ public class DBManager {
       ps.setDouble(SIX, s.getLocation().getX());
       ps.setDouble(SEVEN, s.getLocation().getY());
 
-      // TODO Maybe Batch? See if this works
       ps.execute();
 
     } catch (SQLException e) {
@@ -457,15 +453,14 @@ public class DBManager {
     }
   }
 
-  public void remove(Stat s) {
-    // TODO Auto-generated method stub
+  public void remove(Stat s) throws GameException {
     String query = "DELETE FROM stat WHERE id = ? AND player = ?;";
     try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, s.getID());
       ps.setInt(2, s.getPlayer().getID());
     } catch (SQLException e) {
       String message = "Failure to remove " + s + " from database.";
-      throw new RuntimeException(message + e.getMessage());
+      throw new GameException(message + e.getMessage());
     }
   }
 

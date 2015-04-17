@@ -1,79 +1,65 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import com.google.common.collect.Multiset.Entry;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 
 public class GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
+  private static final String[] COLS = {
+    "game", "team", "player", "MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA",
+    "FTM", "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF"
+  };
 
-  private int id;
   private Player player;
+  private Team team;
   private Game game;
   private Multiset<String> stats = HashMultiset.create();
 
 
-  public GameStats(int id, Game game, Player player) {
-    this.id = id;
+  public GameStats(Game game, Team team, Player player) {
     this.player = player;
+    this.team = team;
     this.game = game;
 
     for (String s : getCols()) {
       stats.setCount(s, 0);
     }
+
+    stats.setCount("game", game.getID());
+    stats.setCount("team", team.getID());
+    stats.setCount("player", player.getID());
   }
 
-  public static List<String> getCols() {
-    List<String> titles = new ArrayList<>();
-    titles.add("game");
-    titles.add("team");
-    titles.add("player");
-    titles.add("MIN");
-    titles.add("2PM");
-    titles.add("2PA");
-    titles.add("3PM");
-    titles.add("3PA");
-    titles.add("FTM");
-    titles.add("FTA");
-    titles.add("ORB");
-    titles.add("DRB");
-    titles.add("AST");
-    titles.add("STL");
-    titles.add("BLK");
-    titles.add("TOV");
-    titles.add("OF");
-    titles.add("DF");
+  public GameStats(List<Integer> values, Game game, Player player) {
 
-    return titles;
+    for (int i = 0; i < COLS.length; i++) {
+      stats.setCount(COLS[i], values.get(i));
+    }
   }
 
-  public static GameStats TeamGameStats(Game game) {
-    return new GameStats(-1, game, null);
+  public static String[] getCols() {
+    return COLS;
   }
 
-  public Collection<Entry<String>> getStats() {
-    return stats.entrySet();
+  public static GameStats TeamGameStats(Game game, Team team) {
+    return new GameStats(game, team, null);
   }
 
-  public Collection<String> getStatTitles() {
-    return stats.elementSet();
-  }
+  public List<Integer> getValues() {
+    List<Integer> values = new ArrayList<>();
 
-  /**
-   * Getter for the DB ID of this GameStats. -1 If the game stats is for a team
-   * as that is not stored, but built up from the players.
-   * @return Returns the id of the GameStats of -1 if the stats are for a team.
-   */
-  public int getID() {
-    return id;
+    for (String col : getCols()) {
+      values.add(stats.count(col));
+    }
+    return values;
   }
 
   /**
@@ -84,8 +70,8 @@ public class GameStats {
     return player;
   }
 
-  public int getTeamID() {
-    return player.getTeamID();
+  public Team getTeam() {
+    return team;
   }
   /**
    * Getter for the Game of these stats.
@@ -104,35 +90,35 @@ public class GameStats {
   }
 
   public int getTwoPointers() {
-    return stats.count("2PM");
+    return stats.count("TwoPM");
   }
 
   void addTwoPointers(int twoPointers) {
-    stats.add("2PM", twoPointers);
+    stats.add("TwoPM", twoPointers);
   }
 
   public int getTwoPointersA() {
-    return stats.count("2PA");
+    return stats.count("TwoPA");
   }
 
   void addTwoPointersA(int twoPointersA) {
-    stats.add("2PA", twoPointersA);
+    stats.add("TwoPA", twoPointersA);
   }
 
   public int getThreePointers() {
-    return stats.count("3PM");
+    return stats.count("ThreePM");
   }
 
   void addThreePointers(int threePointers) {
-    stats.add("3PM", threePointers);
+    stats.add("ThreePM", threePointers);
   }
 
   public int getThreePointersA() {
-    return stats.count("3PA");
+    return stats.count("ThreePA");
   }
 
   void addThreePointersA(int threePointersA) {
-    stats.add("3PA", threePointersA);
+    stats.add("ThreePA", threePointersA);
   }
 
   public int getFreeThrows() {
@@ -225,19 +211,19 @@ public class GameStats {
   }
 
   public int getFieldGoals() {
-    return stats.count("3PM") + stats.count("2PM");
+    return stats.count("ThreePM") + stats.count("TwoPM");
   }
 
   public int getFieldGoalsAttempted() {
-    return stats.count("3PA") + stats.count("2PA");
+    return stats.count("ThreePA") + stats.count("TwoPA");
   }
 
   public double getTwoPointPercentage() {
-    return  stats.count("2PM") / (double) stats.count("2PA");
+    return  stats.count("TwoPM") / (double) stats.count("TwoPA");
   }
 
   public double getThreePointPercentage() {
-    return  stats.count("3PM") / (double) stats.count("3PA");
+    return  stats.count("ThreePM") / (double) stats.count("ThreePA");
   }
 
   public double getFreeThrowPercentage() {
@@ -246,8 +232,8 @@ public class GameStats {
 
   public int getPoints() {
     return stats.count("FTM")
-        + TWO_POINTS * stats.count("2PM")
-        + THREE_POINTS * stats.count("3PM");
+        + TWO_POINTS * stats.count("TwoPM")
+        + THREE_POINTS * stats.count("ThreePM");
   }
 
   public int getRebounds() {
