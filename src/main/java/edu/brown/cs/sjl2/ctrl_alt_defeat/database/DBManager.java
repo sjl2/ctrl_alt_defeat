@@ -84,8 +84,14 @@ public class DBManager {
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
-    try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
+    try (
+        PreparedStatement prep = conn.prepareStatement(
+            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
+        PreparedStatement prep2 = conn.prepareStatement(
+            "DELETE FROM play_detail WHERE name = ?")) {
+      
+      prep2.setString(1, name);
+      prep2.executeUpdate();
 
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame

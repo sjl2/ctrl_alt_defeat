@@ -16,7 +16,6 @@ import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import freemarker.template.Configuration;
 
