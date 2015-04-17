@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.google.common.collect.Multiset.Entry;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
@@ -30,6 +31,11 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
  */
 public class DBManager {
 
+  private static final int THREE = 3;
+  private static final int FOUR = 4;
+  private static final int FIVE = 5;
+  private static final int SIX = 6;
+  private static final int SEVEN = 7;
   private static final int GAME_STATS_LENGTH = 20;
   private Connection conn;
   private Multiset<String> nextIDs;
@@ -100,9 +106,9 @@ public class DBManager {
           Location l = paths[position][frame];
           prep.setString(1, name);
           prep.setString(2, bballPositions[position].getName());
-          prep.setInt(3, frame);
-          prep.setDouble(4, l.getX());
-          prep.setDouble(5, l.getY());
+          prep.setInt(THREE, frame);
+          prep.setDouble(FOUR, l.getX());
+          prep.setDouble(FIVE, l.getY());
           prep.addBatch();
         }
       }
@@ -301,33 +307,70 @@ public class DBManager {
   }
 
   public void updateBoxscore(Collection<GameStats> gameStats) {
-    StringBuilder query = new StringBuilder("UPDATE boxscore SET ");
-    List<String> cols = GameStats.getStatTitles();
+    for (GameStats gs : gameStats) {
 
-    for (int i = 0; i < (GAME_STATS_LENGTH - 1); i++) {
-      query.append(cols.get(i) + " = ?, ");
+      StringBuilder query = new StringBuilder("UPDATE boxscore SET ");
+
+      Collection<Entry<String>> cols = gs.getStats();
+      int i = 0;
+      for (Entry<String> e : cols) {
+        if (i < cols.size()) {
+          query.append(e.getElement() + " = ?, ");
+        } else {
+          query.append(e.getElement() + " = ?) ");
+        }
+        i++;
+      }
+      query.append("WHERE game = ? AND team = ? AND player = ?;");
+
+      try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+          i = 1;
+          for (Entry<String> e : cols) {
+            ps.setInt(i, e.getCount());
+            i++;
+          }
+          ps.setInt(i++, gs.getGame().getID());
+          ps.setInt(i++, gs.getTeamID());
+          ps.setInt(i, gs.getPlayer().getID());
+          ps.execute();
+      } catch (SQLException e) {
+        String message = "Failed to update gameStats in database: ";
+        throw new RuntimeException(message + e.getMessage());
+      }
     }
-    query.append(cols.get(GAME_STATS_LENGTH -1) + " = ?)");
+  }
+
+  public GameStats loadGameStats(Game game, Team team, Player player)
+      throws GameException {
+
+    String query =
+        "SELECT * FROM boxscore "
+        + "WHERE game = ? AND team = ? AND player = ?;";
 
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-      for (GameStats gs : gameStats) {
-        List<Integer> values = gs.getStatValues();
+      ps.setInt(1, game.getID());
+      ps.setInt(2, team.getID());
+      ps.setInt(THREE, player.getID());
+
+      ResultSet rs = ps.executeQuery();
+
+      List<Integer> values = new ArrayList<>();
+
+      if (rs.next()) {
+        List<String> titles = GameStats.getNames();
         for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
-          ps.setInt(i, values.get(i));
+          values.add(rs.getInt(i));
         }
-
-        ps.addBatch();
-
+      } else {
+        throw new GameException("No Game Stats for " + game + " in the DB.");
       }
 
-      ps.execute();
+      return new GameStats(values, game, player);
     } catch (SQLException e) {
-      String message = "Failed to update gameStats in database: ";
-      throw new RuntimeException(message + e.getMessage());
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-
-
-
+    return null;
   }
 
   public void storeGameStats(GameStats gs) throws GameException {
@@ -342,9 +385,9 @@ public class DBManager {
       query.append("?)");
 
       try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-        List<Integer> values = gs.getStatValues();
+        List<Integer> values = gs.getStats();
         for (int i = 1; i <= GAME_STATS_LENGTH; i++) {
-          ps.setInt(i, values.get(i));
+          ps.setInt(i, values.get(i - 1));
         }
 
         ps.execute();
@@ -365,11 +408,11 @@ public class DBManager {
 
       ps.setInt(1, s.getID());
       ps.setInt(2, game.getID());
-      ps.setInt(3, s.getPlayer().getID());
-      ps.setString(4, statID);
-      ps.setInt(5, game.getPeriod());
-      ps.setDouble(6, s.getLocation().getX());
-      ps.setDouble(7, s.getLocation().getY());
+      ps.setInt(THREE, s.getPlayer().getID());
+      ps.setString(FOUR, statID);
+      ps.setInt(FIVE, game.getPeriod());
+      ps.setDouble(SIX, s.getLocation().getX());
+      ps.setDouble(SEVEN, s.getLocation().getY());
 
       // TODO Maybe Batch? See if this works
       ps.execute();
@@ -424,8 +467,8 @@ public class DBManager {
         "INSERT INTO team VALUES(?, ?, ?, ?);")) {
       prep.setInt(1, getNextID("team"));
       prep.setString(2, name);
-      prep.setString(3, color1);
-      prep.setString(4, color2);
+      prep.setString(THREE, color1);
+      prep.setString(FOUR, color2);
       prep.executeUpdate();
 
     } catch (SQLException e) {
