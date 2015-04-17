@@ -19,14 +19,14 @@ public class ThreePointer implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setThreePointers(ps.getThreePointers() + 1);
-    ps.setThreePointersA(ps.getThreePointersA() + 1);
+    ps.addThreePointers(1);
+    ps.addThreePointersA(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setThreePointers(ps.getThreePointers() - 1);
-    ps.setThreePointersA(ps.getThreePointersA() - 1);
+    ps.addThreePointers(-1);
+    ps.addThreePointersA(-1);
   }
 
   @Override

@@ -20,12 +20,12 @@ public class Turnover implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setTurnovers(ps.getTurnovers() + 1);
+    ps.addTurnovers(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setTurnovers(ps.getTurnovers() - 1);
+    ps.addTurnovers(1);
   }
 
   @Override

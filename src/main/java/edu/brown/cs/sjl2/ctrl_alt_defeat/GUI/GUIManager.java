@@ -37,7 +37,7 @@ public class GUIManager {
   public GUIManager(String db) {
     this.dbManager = new DBManager(db);
     this.dash = new Dashboard(dbManager);
-    this.dashboardGUI = new DashboardGUI(dash);
+    this.dashboardGUI = new DashboardGUI(dbManager);
     this.gameGUI = new GameGUI(dash);
     this.playmakerGUI = new PlaymakerGUI(dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);
@@ -65,6 +65,7 @@ public class GUIManager {
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
     Spark.get("/dashboard/newTeam", dashboardGUI.new NewTeamHandler(), freeMarker);
     Spark.post("/dashboard/newTeam/results", dashboardGUI.new NewTeamResultsHandler(), freeMarker);
+    Spark.get("/dashboard/newPlayer", dashboardGUI.new NewPlayerHandler(), freeMarker);
 
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new RosterHandler());
@@ -72,10 +73,16 @@ public class GUIManager {
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
+    Spark.post("/playmaker/delete", playmakerGUI.new DeleteHandler());
     Spark.get("/playmaker/playNames", playmakerGUI.new PlayNamesHandler());
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
+		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
+		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
+		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
+		
+		Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
 
   }
 

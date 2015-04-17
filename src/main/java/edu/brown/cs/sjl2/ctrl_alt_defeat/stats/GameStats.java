@@ -131,7 +131,7 @@ public class GameStats {
     return stats.count("3PA");
   }
 
-  void setThreePointersA(int threePointersA) {
+  void addThreePointersA(int threePointersA) {
     stats.add("3PA", threePointersA);
   }
 
@@ -139,7 +139,7 @@ public class GameStats {
     return stats.count("FTM");
   }
 
-  void setFreeThrows(int freeThrows) {
+  void addFreeThrows(int freeThrows) {
     stats.add("FTM", freeThrows);
   }
 
@@ -147,7 +147,7 @@ public class GameStats {
     return stats.count("FTA");
   }
 
-  void setFreeThrowsA(int freeThrowsA) {
+  void addFreeThrowsA(int freeThrowsA) {
     stats.add("FTA", freeThrowsA);
   }
 
@@ -155,7 +155,7 @@ public class GameStats {
     return stats.count("ORB");
   }
 
-  void setOffensiveRebounds(int orb) {
+  void addOffensiveRebounds(int orb) {
     stats.add("ORB", orb);
   }
 
@@ -179,7 +179,7 @@ public class GameStats {
     return stats.count("STL");
   }
 
-  void setSteals(int stl) {
+  void addSteals(int stl) {
     stats.add("STL", stl);
   }
 
@@ -220,7 +220,7 @@ public class GameStats {
     return stats.count("TF");
   }
 
-  void setTechnicalFouls(int technicalFouls) {
+  void addTechnicalFouls(int technicalFouls) {
     stats.add("TF", technicalFouls);
   }
 

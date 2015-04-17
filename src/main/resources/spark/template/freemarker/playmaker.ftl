@@ -3,6 +3,9 @@
   <link rel="stylesheet" href="css/playmaker.css">
 
   <div id="load_column">
+    <div id="load_header">
+      <button id="delete_plays">Delete Plays</button>
+    </div>
     <table id="plays"></table>
   </div>
   <div id="above_court">

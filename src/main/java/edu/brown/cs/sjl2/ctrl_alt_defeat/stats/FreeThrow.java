@@ -19,14 +19,14 @@ public class FreeThrow implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setFreeThrowsA(ps.getFreeThrowsA() + 1);
-    ps.setFreeThrows(ps.getFreeThrows() + 1);
+    ps.addFreeThrowsA(1);
+    ps.addFreeThrows(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setFreeThrowsA(ps.getFreeThrowsA() - 1);
-    ps.setFreeThrows(ps.getFreeThrows() - 1);
+    ps.addFreeThrowsA(-1);
+    ps.addFreeThrows(-1);
   }
 
   @Override

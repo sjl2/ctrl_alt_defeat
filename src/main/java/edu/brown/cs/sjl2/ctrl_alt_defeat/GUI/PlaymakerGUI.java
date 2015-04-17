@@ -21,6 +21,10 @@ import spark.TemplateViewRoute;
  * PlaymakerGUI class, houses all gui handlers related to the playmaker
  * @author awainger
  */
+/**
+ * @author awainger
+ *
+ */
 public class PlaymakerGUI {
 
   private DBManager dbManager;
@@ -45,6 +49,15 @@ public class PlaymakerGUI {
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Playmaker");
       return new ModelAndView(variables, "playmaker.ftl");
+    }
+  }
+  
+  public class WhiteboardHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request req, Response res) {
+      Map<String, Object> variables =
+        ImmutableMap.of("tabTitle", "Whiteboard");
+      return new ModelAndView(variables, "whiteboard.ftl");
     }
   }
 
@@ -76,11 +89,7 @@ public class PlaymakerGUI {
       }
 
       dbManager.savePlay(new Play(name, numFrames, paths));
-      List<String> plays = dbManager.loadPlayNames();
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("plays", plays).build();
-
-      return GSON.toJson(variables);
+      return getPlayNamesFromDB();
     }
   }
 
@@ -101,6 +110,19 @@ public class PlaymakerGUI {
       return GSON.toJson(variables);
     }
   }
+  
+  public class DeleteHandler implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String name = qm.value("name");
+      dbManager.deletePlay(name);
+      
+      return getPlayNamesFromDB();
+    }
+    
+  }
 
   /**
    * Loads list of play names for playmaker sidebar.
@@ -110,11 +132,21 @@ public class PlaymakerGUI {
 
     @Override
     public Object handle(Request request, Response response) {
-      List<String> plays = dbManager.loadPlayNames();
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("plays", plays).build();
+      return getPlayNamesFromDB();
+    }
+  }
 
-      return GSON.toJson(variables);
-    } 
+
+  /**
+   * Gets play names from DB, used to updated list of plays on front
+   * end after each update.
+   * @return - String, GSON'ed map from "plays" to the list of play names
+   */
+  private String getPlayNamesFromDB() {
+    List<String> plays = dbManager.loadPlayNames();
+    Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+        .put("plays", plays).build();
+
+    return GSON.toJson(variables);
   }
 }

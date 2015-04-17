@@ -14,6 +14,8 @@
 			
 		</div>
 		<div id="new_team"> <a href = "/dashboard/newTeam"> Make a new team!</a> </div>
+		<div id="new_player"> <a href = "/dashboard/newPlayer"> Make a new player!</a> </div>
+
 	</div>
  <script src="js/dashboard.js"></script>
  <link rel="stylesheet" href="css/dashboard.css">
