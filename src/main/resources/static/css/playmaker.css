@@ -40,3 +40,20 @@
     margin: 0px auto;
     text-align: center;
 }
+
+#load_header {
+    background-color: #333333;
+    height: 100px;
+}
+
+.playName {
+    text-align: center;
+    font-size: 30px;
+    padding: 15px;
+}
+
+#plays {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}

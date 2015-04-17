@@ -270,6 +270,16 @@ function onend(event) {
 	    maxFrame = tokens[i].path.length - 1;
 	}
     }
+    for(i = 0; i < tokens.length; i++) {
+	var t = tokens[i];
+	if(t.path.length - 1 < maxFrame) {
+	    var path = t.path;
+	    var length = path.length;
+	    for(j = length; j <= maxFrame; j++) {
+		path[j] = path[length - 1];
+	    }
+	}
+    }
 }
 
 function updatePath() {
@@ -334,6 +344,11 @@ function stepAnimation() {
     }
 }
 
+function setEditingName(playName) {
+    edittingPlayName = playName;
+    $("#editing_name")[0].innerHTML = edittingPlayName;
+}
+
 function save(playName) {
     var paths = [];
     for(i = 0; i < tokens.length; i++) {
@@ -354,12 +369,10 @@ function save(playName) {
 	   data,
 	   updateLoadBar,
 	   "json");
-    edittingPlayName = playName;
-    $("#editing_name")[0].innerHTML = edittingPlayName;
+    setEditingName(playName);
 }
 
 function load(data) {
-    console.log(data);
     var play = data.play;
     var paths = play.paths;
     for(i = 0; i < paths.length; i++) {
@@ -380,14 +393,17 @@ function updateLoadBar(data) {
     table.innerHTML = "";
     for(i = 0; i < plays.length; i++) {
 	var row = table.insertRow();
-	row.innerHTML = "<span id=\"" + plays[i] + "\">" + plays[i] + "</span>";
-	$("#" + plays[i]).on("click", function() {
+	var idName = "playName" + plays[i].replace(/ /g, "_");
+	row.innerHTML = "<td class=\"playName\"><span id=\"" + idName + "\">" + plays[i] + "</span></td>";
+	$("#" + idName).on("click", function() {
+	    var playName = this.id.replace(/_/g, " ").substring(8);
 	    $.get("/playmaker/load",
 		  {
-		      name: this.id
+		      name: playName
 		  },
 		  load,
 		  "json");
+	    setEditingName(playName);
 	});
 	existingPlays[plays[i]] = 1;
     }
