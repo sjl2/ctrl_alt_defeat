@@ -19,12 +19,12 @@ public class MissedTwoPointer implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setTwoPointersA(ps.getTwoPointersA() + 1);
+    ps.addTwoPointersA(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setTwoPointersA(ps.getTwoPointersA() - 1);
+    ps.addTwoPointersA(-1);
   }
 
   @Override

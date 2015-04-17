@@ -19,12 +19,12 @@ public class OffensiveRebound implements Stat {
 
   @Override
   public void execute(GameStats ps) {
-    ps.setOffensiveRebounds(ps.getOffensiveRebounds() + 1);
+    ps.addOffensiveRebounds(1);
   }
 
   @Override
   public void undo(GameStats ps) {
-    ps.setOffensiveRebounds(ps.getOffensiveRebounds() - 1);
+    ps.addOffensiveRebounds(-1);
   }
 
   @Override

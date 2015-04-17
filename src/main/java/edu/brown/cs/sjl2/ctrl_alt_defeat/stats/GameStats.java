@@ -3,130 +3,63 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 
 public class GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
+  private static final String[] COLS = {
+    "game", "team", "player", "MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA",
+    "FTM", "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF"
+  };
 
-  private int id;
   private Player player;
+  private Team team;
   private Game game;
-  private int minutes = 0;
-  private int twoPointers = 0;
-  private int twoPointersA = 0;
-  private int threePointers = 0;
-  private int threePointersA = 0;
-  private int freeThrows = 0;
-  private int freeThrowsA = 0;
-  private int orb = 0;
-  private int drb = 0;
-  private int ast = 0;
-  private int stl = 0;
-  private int blk = 0;
-  private int tov = 0;
-  private int offensiveFouls = 0;
-  private int defensiveFouls = 0;
-  private int technicalFouls = 0;
+  private Multiset<String> stats = HashMultiset.create();
 
-  public GameStats(int id, Player player, Game game) {
-    this.id = id;
+
+  public GameStats(Game game, Team team, Player player) {
     this.player = player;
+    this.team = team;
     this.game = game;
+
+    for (String s : getCols()) {
+      stats.setCount(s, 0);
+    }
+
+    stats.setCount("game", game.getID());
+    stats.setCount("team", team.getID());
+    stats.setCount("player", player.getID());
   }
 
-  public static GameStats TeamGameStats(Game game) {
-    return new GameStats(-1, null, game);
+  public GameStats(List<Integer> values, Game game, Player player) {
+
+    for (int i = 0; i < COLS.length; i++) {
+      stats.setCount(COLS[i], values.get(i));
+    }
   }
 
-  public GameStats copy() {
-    GameStats copy = new GameStats(id, player, game);
-
-    copy.setMinutes(minutes);
-    copy.setTwoPointers(twoPointers);
-    copy.setTwoPointersA(twoPointersA);
-    copy.setThreePointers(threePointers);
-    copy.setThreePointersA(threePointersA);
-    copy.setFreeThrows(freeThrows);
-    copy.setFreeThrowsA(freeThrowsA);
-    copy.setOffensiveRebounds(orb);
-    copy.setDefensiveRebounds(drb);
-    copy.setAssists(ast);
-    copy.setSteals(stl);
-    copy.setBlocks(blk);
-    copy.setTurnovers(tov);
-    copy.setOffensiveFouls(offensiveFouls);
-    copy.setDefensiveFouls(defensiveFouls);
-    copy.setTechnicalFouls(technicalFouls);
-
-    return copy;
+  public static String[] getCols() {
+    return COLS;
   }
 
-  // TODO Finish Storing GameStats
-  public List<Integer> getStatValues() {
-    List<Integer> stats = new ArrayList<>();
-
-    assert (id != -1 && player != null);
-
-    stats.add(game.getID());
-    stats.add(player.getTeamID());
-    stats.add(player.getID());
-    stats.add(minutes);
-    stats.add(getFieldGoals());
-    stats.add(getFieldGoalsAttempted());
-    stats.add(twoPointers);
-    stats.add(twoPointersA);
-    stats.add(threePointers);
-    stats.add(threePointersA);
-    stats.add(freeThrows);
-    stats.add(freeThrowsA);
-    stats.add(orb);
-    stats.add(drb);
-    stats.add(ast);
-    stats.add(stl);
-    stats.add(blk);
-    stats.add(tov);
-    stats.add(getPersonalFouls());
-    stats.add(getPoints());
-
-    return stats;
+  public static GameStats TeamGameStats(Game game, Team team) {
+    return new GameStats(game, team, null);
   }
 
-  public static List<String> getStatTitles() {
-    List<String> stats = new ArrayList<>();
+  public List<Integer> getValues() {
+    List<Integer> values = new ArrayList<>();
 
-    stats.add("game");
-    stats.add("team");
-    stats.add("player");
-    stats.add("minutes");
-    stats.add("FGM");
-    stats.add("FGA");
-    stats.add("twoPointersM");
-    stats.add("twoPointersA");
-    stats.add("threePointersM");
-    stats.add("threePointersA");
-    stats.add("FTM");
-    stats.add("FTA");
-    stats.add("ORB");
-    stats.add("DRB");
-    stats.add("AST");
-    stats.add("STL");
-    stats.add("BLK");
-    stats.add("TOV");
-    stats.add("PF");
-    stats.add("points");
-
-    return stats;
-  }
-
-  /**
-   * Getter for the DB ID of this GameStats. -1 If the game stats is for a team
-   * as that is not stored, but built up from the players.
-   * @return Returns the id of the GameStats of -1 if the stats are for a team.
-   */
-  public int getID() {
-    return id;
+    for (String col : getCols()) {
+      values.add(stats.count(col));
+    }
+    return values;
   }
 
   /**
@@ -137,6 +70,9 @@ public class GameStats {
     return player;
   }
 
+  public Team getTeam() {
+    return team;
+  }
   /**
    * Getter for the Game of these stats.
    * @return
@@ -146,163 +82,166 @@ public class GameStats {
   }
 
   public int getMinutes() {
-    return minutes;
+    return stats.count("MIN");
   }
 
-  public void setMinutes(int minutesPlayed) {
-    this.minutes = minutesPlayed;
+  public void addMinutes(int minutes) {
+    stats.add("MIN", minutes);
   }
 
   public int getTwoPointers() {
-    return twoPointers;
+    return stats.count("TwoPM");
   }
 
-  void setTwoPointers(int twoPoints) {
-    this.twoPointers = twoPoints;
+  void addTwoPointers(int twoPointers) {
+    stats.add("TwoPM", twoPointers);
   }
 
   public int getTwoPointersA() {
-    return twoPointersA;
+    return stats.count("TwoPA");
   }
 
-  void setTwoPointersA(int twoPointsA) {
-    this.twoPointersA = twoPointsA;
+  void addTwoPointersA(int twoPointersA) {
+    stats.add("TwoPA", twoPointersA);
   }
 
   public int getThreePointers() {
-    return threePointers;
+    return stats.count("ThreePM");
   }
 
-  void setThreePointers(int threePoints) {
-    this.threePointers = threePoints;
+  void addThreePointers(int threePointers) {
+    stats.add("ThreePM", threePointers);
   }
 
   public int getThreePointersA() {
-    return threePointersA;
+    return stats.count("ThreePA");
   }
 
-  void setThreePointersA(int threePointsA) {
-    this.threePointersA = threePointsA;
+  void addThreePointersA(int threePointersA) {
+    stats.add("ThreePA", threePointersA);
   }
 
   public int getFreeThrows() {
-    return freeThrows;
+    return stats.count("FTM");
   }
 
-  void setFreeThrows(int freeThrows) {
-    this.freeThrows = freeThrows;
+  void addFreeThrows(int freeThrows) {
+    stats.add("FTM", freeThrows);
   }
 
   public int getFreeThrowsA() {
-    return freeThrowsA;
+    return stats.count("FTA");
   }
 
-  void setFreeThrowsA(int freeThrowsA) {
-    this.freeThrowsA = freeThrowsA;
+  void addFreeThrowsA(int freeThrowsA) {
+    stats.add("FTA", freeThrowsA);
   }
 
   public int getOffensiveRebounds() {
-    return orb;
+    return stats.count("ORB");
   }
 
-  void setOffensiveRebounds(int orb) {
-    this.orb = orb;
+  void addOffensiveRebounds(int orb) {
+    stats.add("ORB", orb);
   }
 
   public int getDefensiveRebounds() {
-    return drb;
+    return stats.count("DRB");
   }
 
-  void setDefensiveRebounds(int drb) {
-    this.drb = drb;
+  void addDefensiveRebounds(int drb) {
+    stats.add("DRB", drb);
   }
 
   public int getAssists() {
-    return ast;
+    return stats.count("AST");
   }
 
-  void setAssists (int ast) {
-    this.ast = ast;
+  void addAssists (int ast) {
+    stats.add("AST", ast);
   }
 
   public int getSteals() {
-    return stl;
+    return stats.count("STL");
   }
 
-  void setSteals(int stl) {
-    this.stl = stl;
+  void addSteals(int stl) {
+    stats.add("STL", stl);
   }
 
   public int getBlocks() {
-    return blk;
+    return stats.count("BLK");
   }
 
-  void setBlocks(int blk) {
-    this.blk = blk;
+  void addBlocks(int blk) {
+    stats.add("BLK", blk);
   }
 
   public int getTurnovers() {
-    return tov;
+    return stats.count("TOV");
   }
 
-  void setTurnovers(int tov) {
-    this.tov = tov;
+  void addTurnovers(int tov) {
+    stats.add("TOV", tov);
   }
 
   public int getOffensiveFouls() {
-    return offensiveFouls;
+    return stats.count("OffensiveFouls");
   }
 
 
-  void setOffensiveFouls(int offensiveFoul) {
-    this.offensiveFouls = offensiveFoul;
+  void addOffensiveFouls(int offensiveFoul) {
+    stats.add("OF", offensiveFoul);
   }
 
   public int getDefensiveFouls() {
-    return defensiveFouls;
+    return stats.count("DF");
   }
 
-  void setDefensiveFouls(int defensiveFoul) {
-    this.defensiveFouls = defensiveFoul;
+  void addDefensiveFouls(int defensiveFoul) {
+    stats.add("DF", defensiveFoul);
   }
 
   public int getTechnicalFouls() {
-    return technicalFouls;
+    return stats.count("TF");
   }
 
-  void setTechnicalFouls(int technicalFouls) {
-    this.technicalFouls = technicalFouls;
+  void addTechnicalFouls(int technicalFouls) {
+    stats.add("TF", technicalFouls);
   }
 
   public int getFieldGoals() {
-    return threePointers + twoPointers;
+    return stats.count("ThreePM") + stats.count("TwoPM");
   }
 
   public int getFieldGoalsAttempted() {
-    return threePointersA + twoPointersA;
+    return stats.count("ThreePA") + stats.count("TwoPA");
   }
 
   public double getTwoPointPercentage() {
-    return  twoPointers / (double) twoPointersA;
+    return  stats.count("TwoPM") / (double) stats.count("TwoPA");
   }
 
   public double getThreePointPercentage() {
-    return  threePointers / (double) threePointersA;
+    return  stats.count("ThreePM") / (double) stats.count("ThreePA");
   }
 
   public double getFreeThrowPercentage() {
-    return freeThrows / (double) freeThrowsA;
+    return stats.count("FTM") / (double) stats.count("FTA");
   }
 
   public int getPoints() {
-    return TWO_POINTS * twoPointers + THREE_POINTS * threePointers;
+    return stats.count("FTM")
+        + TWO_POINTS * stats.count("TwoPM")
+        + THREE_POINTS * stats.count("ThreePM");
   }
 
   public int getRebounds() {
-    return orb + drb;
+    return stats.count("ORB") + stats.count("DRB");
   }
 
   public int getPersonalFouls() {
-    return offensiveFouls + defensiveFouls;
+    return stats.count("OF") + stats.count("DF");
   }
+
 }
