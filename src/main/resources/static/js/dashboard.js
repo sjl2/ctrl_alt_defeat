@@ -22,6 +22,7 @@ function newGame() {
 
 	$.post("/game/start", postParameters, function(responseJSON){
 		//responseJSON should have who we're playing(maybe it'll have the rosters)
+		alert("Game Started!");
 		if (responseJSON.length > 0) {
 			alert(responseJSON); 
 		}
