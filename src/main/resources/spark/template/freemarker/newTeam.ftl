@@ -9,6 +9,8 @@
 		<br>
 		Secondary Color:<br>
 		<input type="text" name="color2">
+		<br><br>
+		<input type="submit" class="submit" value="Submit"> <br>
 	</form>
   <link rel="stylesheet" href="css/newTeam.css">
 </#assign>

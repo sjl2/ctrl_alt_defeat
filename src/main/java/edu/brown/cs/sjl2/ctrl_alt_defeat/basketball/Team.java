@@ -34,7 +34,7 @@ public class Team {
       playerNames.put(p.getName(), p);
     }
   }
-  
+
   public Team(Integer i) {
     this.id = i;
     this.name = "Team " + i;
