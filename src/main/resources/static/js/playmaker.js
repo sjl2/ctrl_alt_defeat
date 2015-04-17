@@ -252,6 +252,10 @@ window.onload = function() {
 	}
     });
 
+    $("#to_dashboard").on("click", function() {
+	window.location.href = "/dashboard";
+    });
+
     $.get("/playmaker/playNames",
 	  {},
 	  updateLoadBar,
