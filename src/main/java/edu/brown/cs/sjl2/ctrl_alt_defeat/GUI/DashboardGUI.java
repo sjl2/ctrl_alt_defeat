@@ -12,14 +12,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class DashboardGUI {
 
   private final static Gson GSON = new Gson();
-  private Dashboard dash;
+  private DBManager dbManager;
 
-  public DashboardGUI(Dashboard dash) {
-    this.dash = dash;
+  public DashboardGUI(DBManager dbManager) {
+    this.dbManager = dbManager;
   }
 
   public class DashboardHandler implements TemplateViewRoute {
@@ -46,11 +47,22 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      dash.saveTeam(qm.value("name"), qm.value("color1"), qm.value("color2"));
+      dbManager.saveTeam(qm.value("name"), qm.value("color1"), qm.value("color2"));
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Team Results");
       return new ModelAndView(variables, "newTeamResults.ftl");
     }
+  }
+  
+  public class NewPlayerHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      Map<String, Object> variables =
+          ImmutableMap.of("tabTitle", "New Team",
+                          "teams", dbManager.getTeams());
+      return new ModelAndView(variables, "newTeam.ftl");
+    }
+    
   }
 
 }

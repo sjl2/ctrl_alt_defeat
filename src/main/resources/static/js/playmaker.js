@@ -26,6 +26,8 @@ var grabbedToken;
 
 var edittingPlayName = "";
 
+var deletingPlays = false;
+
 var existingPlays = [];
 
 function Location(x, y) {
@@ -40,6 +42,41 @@ function Location(x, y) {
 	    return Location(this.x, this.y);
 	}
     };
+}
+
+function PlayToken(playName) {
+    return {
+
+	playName: playName,
+
+	delete: function() {
+	    $.post("/playmaker/delete",
+		   {name:playName},
+		   updateLoadBar,
+		   "json");
+	},
+
+	getID: function() {
+	    return "playName" + playName.replace(/ /g, "_");
+	},
+
+	showDelete: function() {
+	    $("#delete" + this.getID()).css("display", "inline");
+	},
+
+	hideDelete: function() {
+	    $("#delete" + this.getID()).css("display", "none");
+	},
+	
+	getHTML: function() {
+	    return "<td>"
+		+ "<button id=\"delete" + this.getID() + "\" class=\"delete_button\">Delete</button>"
+		+ "<span id=\"" + this.getID() + "\" class=\"playName\">"
+		+ playName + "</span>"
+		+ "</td>";
+	}
+    }
+	
 }
 
 function Token(circle, location) {
@@ -196,6 +233,22 @@ window.onload = function() {
 	    } else if(confirm("Play " + playName + " already exists. Do you want to overwrite it?")){//Trying to overwrite another play
 		save(playName);
 	    }
+	}
+    });
+
+    $("#delete_plays").on("click", function() {
+	if(deletingPlays) {
+	    deletingPlays = false;
+	    for(playName in existingPlays) {
+		existingPlays[playName].hideDelete();
+	    }
+	    $("#delete_plays")[0].innerHTML = "Delete Plays";
+	} else {
+	    deletingPlays = true;
+	    for(playName in existingPlays) {
+		existingPlays[playName].showDelete();
+	    }
+	    $("#delete_plays")[0].innerHTML = "Stop Deleting Plays";
 	}
     });
 
@@ -392,10 +445,14 @@ function updateLoadBar(data) {
     var plays = data.plays;
     table.innerHTML = "";
     for(i = 0; i < plays.length; i++) {
+	var playToken = PlayToken(plays[i]);
+	existingPlays[plays[i]] = playToken;
 	var row = table.insertRow();
-	var idName = "playName" + plays[i].replace(/ /g, "_");
-	row.innerHTML = "<td class=\"playName\"><span id=\"" + idName + "\">" + plays[i] + "</span></td>";
-	$("#" + idName).on("click", function() {
+	row.innerHTML = playToken.getHTML();
+	$("#" + playToken.getID()).on("click", function() {
+	    if(deletingPlays) {
+		return;
+	    }
 	    var playName = this.id.replace(/_/g, " ").substring(8);
 	    $.get("/playmaker/load",
 		  {
@@ -405,7 +462,11 @@ function updateLoadBar(data) {
 		  "json");
 	    setEditingName(playName);
 	});
-	existingPlays[plays[i]] = 1;
+	$("#delete" + playToken.getID()).on("click", playToken.delete);
     }
+    $("#delete_plays")[0].innerHTML = "Delete Plays";
+    deletingPlays = false;
 }
+
+
 
