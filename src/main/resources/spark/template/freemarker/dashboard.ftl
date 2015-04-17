@@ -1,7 +1,7 @@
 <#assign content>
 
 
-	<h1>Welcome to the Coach's Dashboard!</h1>
+	<h1>Welcome to ${myTeam.getName()}'s Dashboard!</h1>
 
 	<div id="wrapper">
 		<div id="scoreboard" width = "300px" height = "300px"> the scoreboard</div>
@@ -9,7 +9,15 @@
 		<div id="stats_display" width = "300px" height = "300px"> Fancy in-game stats </div>
 		<div id="new_game" width = "300px" height = "300px">
 			<p>Enter opponent and click the button</p>
-			<input type="text" id = "opponent"></input>
+			<input type="radio" name="is_home" id="is_home" value="1" checked>Home Game
+			<br>
+			<input type="radio" name="is_home" id="is_away" value="0">Away Game
+			<br>
+			<select id="opponent">
+				<#list teams as team>
+					<option value="${team.getID()}">${team.getName()}</option>
+				</#list>
+			</select>
 			<button id="new_game_button" onclick = "newGame();">Make a new Game!</button>
 			
 		</div>

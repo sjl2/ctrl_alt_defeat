@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 
 public class GameGUI {
@@ -45,12 +46,18 @@ public class GameGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      System.out.println("in the starthandler " + qm.value("opponent"));
+      int teamID = Integer.parseInt(qm.value("opponent"));
+      boolean isHome = GSON.fromJson(qm.value("is_home"), Boolean.class);
       
-      Game g = new Game();
-      System.out.println("here");
-      dash.setGame(g);
-      return 15;
+      try {
+        dash.startGame(isHome, teamID);
+      } catch (DashboardException e) {
+        return e.getMessage(); 
+      }
+      
+      // TODO StartHandler should spark a game perspective 
+      
+      return "";
       
     }
   }

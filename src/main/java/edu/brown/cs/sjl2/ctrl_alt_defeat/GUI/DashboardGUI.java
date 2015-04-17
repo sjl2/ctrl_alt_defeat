@@ -18,16 +18,20 @@ public class DashboardGUI {
 
   private final static Gson GSON = new Gson();
   private DBManager dbManager;
+  private Dashboard dash;
 
-  public DashboardGUI(DBManager dbManager) {
+  public DashboardGUI(Dashboard dash, DBManager dbManager) {
     this.dbManager = dbManager;
+    this.dash = dash;
   }
 
   public class DashboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Dashboard");
+          ImmutableMap.of("tabTitle", "Dashboard",
+                          "teams", dbManager.getTeams(),
+                          "myTeam", dash.getMyTeam());
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }
