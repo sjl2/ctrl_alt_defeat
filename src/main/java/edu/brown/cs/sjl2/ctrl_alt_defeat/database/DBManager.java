@@ -88,7 +88,7 @@ public class DBManager {
         PreparedStatement prep = conn.prepareStatement(
             "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
         PreparedStatement prep2 = conn.prepareStatement(
-            "DELETE FROM play_detail WHERE name = ?")) {
+            "DELETE FROM play_detail WHERE play = ?")) {
       
       prep2.setString(1, name);
       prep2.executeUpdate();
