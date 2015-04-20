@@ -1,10 +1,12 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.JsonElement;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
@@ -53,6 +55,11 @@ public class Game {
     this.homeBoxScore = new BoxScore(db, this, home);
     this.awayBoxScore = new BoxScore(db, this, away);
     this.lineup = new Lineup();
+    this.homeBench = new Bench(home);
+    this.awayBench = new Bench(away);
+    
+    placePlayers(home, away);
+    
     this.stats = new ArrayList<>();
     this.pf = pf;
     this.sf = new StatFactory(db, this);
@@ -100,7 +107,7 @@ public class Game {
       b = awayBench;
       t = awayTeam;
     }
-
+    System.out.println(t.playerIds + "  " + t.playerIds + "  " + l.getPlayers().values());
     l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
     b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
   }
@@ -138,7 +145,10 @@ public class Game {
   }
 
   public void flipPossession() {
+    System.out.println(possession);
     this.possession = !possession;
+    System.out.println(possession);
+
   }
 
   public void addStat(Stat s) throws GameException {
@@ -230,10 +240,40 @@ public class Game {
   public int getPeriod() {
     return period;
   }
+  
+  public Lineup getLineup() {
+    return lineup;
+  }
+  
+  public Bench getBench(boolean home) {
+    if (home) {
+      return homeBench;
+    } else {
+      return awayBench;
+    }
+  }
 
-  public JsonElement getRoster() {
-    // TODO Auto-generated method stub
-    return null;
+  public void placePlayers(Team h, Team a) {
+    Iterator<Player> homeIterator = h.getPlayers().iterator();
+    lineup.getPlayers().put(BasketballPosition.HomePG, homeIterator.next());
+    lineup.getPlayers().put(BasketballPosition.HomeSG, homeIterator.next());
+    lineup.getPlayers().put(BasketballPosition.HomeSF, homeIterator.next());
+    lineup.getPlayers().put(BasketballPosition.HomePF, homeIterator.next());
+    lineup.getPlayers().put(BasketballPosition.HomeC, homeIterator.next());
+    while (homeIterator.hasNext()) {
+      homeBench.getPlayers().add(homeIterator.next());
+    }
+    
+    Iterator<Player> awayIterator = a.getPlayers().iterator();
+    lineup.getPlayers().put(BasketballPosition.AwayPG, awayIterator.next());
+    lineup.getPlayers().put(BasketballPosition.AwaySG, awayIterator.next());
+    lineup.getPlayers().put(BasketballPosition.AwaySF, awayIterator.next());
+    lineup.getPlayers().put(BasketballPosition.AwayPF, awayIterator.next());
+    lineup.getPlayers().put(BasketballPosition.AwayC, awayIterator.next());
+    while (awayIterator.hasNext()) {
+      awayBench.getPlayers().add(awayIterator.next());
+    }
+
   }
 
 }

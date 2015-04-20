@@ -86,6 +86,7 @@ public class StatsEntryGUI {
       try {
         dash.getGame().takeTimeout(GSON.fromJson(request.queryMap().value("h"), Boolean.class));
       } catch (JsonSyntaxException | GameException e) {
+        e.printStackTrace();
         System.out.println("mistake handling timeout");
       };
 
@@ -100,10 +101,11 @@ public class StatsEntryGUI {
       int inPlayerID = GSON.fromJson(qm.value("in"), Integer.class);
       int outPlayerID = GSON.fromJson(qm.value("out"), Integer.class);
       boolean home = Boolean.parseBoolean(qm.value("home"));
-
+      
       try {
         dash.getGame().subPlayer(inPlayerID, outPlayerID, home);
       } catch (ScoreboardException e) {
+        e.printStackTrace();
         System.out.println("there was an error subbing the players");
       } catch (Exception e) {
         System.out.println("the error is not well classified");

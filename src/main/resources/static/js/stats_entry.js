@@ -107,25 +107,34 @@ $("#court").click(function(e) {
 var home = {};
 var away = {};
 $.get("/game/roster", function(responseJSON) {
-		console.log(responseJSON);
 		var res = JSON.parse(responseJSON);
-		home.primary = res.home.primary;
-		home.secondary = res.home.secondary;
+		console.log(res);
+		home.primary = res[0];
+		home.secondary = res[1];
 		home.roster = [];
-		console.log(res.home.playerNames);
-		for (var key in res.home.playerNames) {
-  			if (res.home.playerNames.hasOwnProperty(key)) {
-  				home.roster.push(res.home.playerNames[key]);
-  			}
+		console.log(res[4].players);
+		home.roster.push(res[4].players.HomePG);
+		home.roster.push(res[4].players.HomeSG);
+		home.roster.push(res[4].players.HomeSF);
+		home.roster.push(res[4].players.HomePF);
+		home.roster.push(res[4].players.HomeC);
+		for (var i = 0; i < res[5].players.length; i++) {
+			home.roster.push(res[5].players[i]);
 		}
-		away.primary = res.away.primary;
-		away.secondary = res.away.secondary;
+
+		away.primary = res[2];
+		away.secondary = res[3];
 		away.roster = [];
-		for (var key in res.away.playerNames) {
-  			if (res.away.playerNames.hasOwnProperty(key)) {
-  				away.roster.push(res.away.playerNames[key]);
-  			}
+		away.roster.push(res[4].players.AwayPG);
+		away.roster.push(res[4].players.AwaySG);
+		away.roster.push(res[4].players.AwaySF);
+		away.roster.push(res[4].players.AwayPF);
+		away.roster.push(res[4].players.AwayC);
+		for (var i = 0; i < res[5].players.length; i++) {
+			away.roster.push(res[5].players[i]);
 		}
+
+		console.log("away ", away.roster);
 
 
 		var homeColor = home.primary;
@@ -319,7 +328,7 @@ function sub() {
 		inBox.t.attr({"text" : inBox.player.number});
 		outBox.t.attr({"text" : outBox.player.number});
 
-		$.post("/stats/sub", {"in" : inBox.id, "out" : outBox.id}, function(){});
+		$.post("/stats/sub", {"out" : inBox.player.id, "in" : outBox.player.id, "home" : h}, function(){});
 	} else alert("Sub was invalid! Sorry");
 
 	

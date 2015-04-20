@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import spark.QueryParamsMap;
@@ -28,10 +29,14 @@ public class GameGUI {
     public Object handle(Request request, Response response) {
       Game game = dash.getGame();
       if (game != null) {
-        Map<String, Object> variables =
-            ImmutableMap.of(
-                "home", game.getHome(),
-                "away", game.getAway());
+        ArrayList<Object> variables = new ArrayList<Object>();
+            variables.add(game.getHome().getPrimary());
+            variables.add(game.getHome().getSecondary());
+            variables.add(game.getAway().getPrimary());
+            variables.add(game.getHome().getSecondary());
+            variables.add(game.getLineup());
+            variables.add(game.getBench(true));
+            variables.add(game.getBench(false));
 
         return GSON.toJson(variables);
       } else {

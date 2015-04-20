@@ -10,7 +10,7 @@ public class Team {
   private String name;
   private String primary;
   private String secondary;
-  private Map<Integer, Player> playerIds;
+  public Map<Integer, Player> playerIds;
   private Map<String, Player> playerNames;
 
   public Team(

@@ -1,11 +1,17 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Bench {
   private List<Player> players;
   private Team team;
 
+  public Bench(Team t) {
+    this.team = t;
+    this.players = new ArrayList<Player>();
+  }
+  
   public List<Player> getPlayers() {
     return players;
   }
