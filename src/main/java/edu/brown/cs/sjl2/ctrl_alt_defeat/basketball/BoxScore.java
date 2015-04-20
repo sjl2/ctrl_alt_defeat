@@ -10,7 +10,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
 public class BoxScore {
-  private Map<Player, GameStats> playerStats;
+  private Map<Integer, GameStats> playerStats;
   private GameStats teamStats;
   private Team team;
   private boolean isHome;
@@ -29,7 +29,7 @@ public class BoxScore {
       } catch (GameException e) {
         throw new RuntimeException(e.getMessage());
       }
-      playerStats.put(p, gs);
+      playerStats.put(p.getID(), gs);
     }
 
     teamStats = GameStats.TeamGameStats(game, team);
@@ -48,7 +48,7 @@ public class BoxScore {
   }
 
   public GameStats getPlayerStats(Player p) {
-    return playerStats.get(p);
+    return playerStats.get(p.getID());
   }
 
   public GameStats getTeamStats() {

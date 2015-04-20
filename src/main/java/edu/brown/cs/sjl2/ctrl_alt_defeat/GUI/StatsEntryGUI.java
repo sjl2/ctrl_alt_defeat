@@ -59,7 +59,7 @@ public class StatsEntryGUI {
       } catch (GameException ex) {
         return ex.getMessage();
       } catch (Exception e) {
-        return "there was an error adding the stat";
+        e.printStackTrace();
       }
 
       return 28;

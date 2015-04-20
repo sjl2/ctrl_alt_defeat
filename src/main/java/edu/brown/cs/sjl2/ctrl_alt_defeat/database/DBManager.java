@@ -347,7 +347,7 @@ public class DBManager {
         if (i < cols.length - 1) {
           query.append(cols[i] + " = ?, ");
         } else {
-          query.append(cols[i] + " = ?) ");
+          query.append(cols[i] + " = ? ");
         }
       }
       query.append("WHERE game = ? AND team = ? AND player = ?;");
@@ -434,17 +434,18 @@ public class DBManager {
 
   public void storeStat(Stat s, String statID, Game game) {
 
-    String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?)";
+    String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = conn.prepareStatement(query)) {
 
       ps.setInt(1, s.getID());
       ps.setInt(2, game.getID());
-      ps.setInt(THREE, s.getPlayer().getID());
-      ps.setString(FOUR, statID);
-      ps.setInt(FIVE, game.getPeriod());
-      ps.setDouble(SIX, s.getLocation().getX());
-      ps.setDouble(SEVEN, s.getLocation().getY());
+      ps.setInt(THREE, s.getPlayer().getTeamID());
+      ps.setInt(FOUR, s.getPlayer().getID());
+      ps.setString(FIVE, statID);
+      ps.setInt(SIX, game.getPeriod());
+      ps.setDouble(SEVEN, s.getLocation().getX());
+      ps.setDouble(8, s.getLocation().getY());
 
       ps.execute();
 

@@ -6,14 +6,14 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 public class OffensiveRebound implements Stat {
   private static final String TYPE = "OffensiveRebound";
   private Location pos;
-  private Player player;
+  private Player p;
   private int id;
   private int period;
 
-  public OffensiveRebound(int id, Player player, Location pos, int period) {
+  public OffensiveRebound(int id, Player p, Location pos, int period) {
     this.id = id;
     this.pos = pos;
-    this.player = player;
+    this.p = p;
     this.period = period;
   }
 
@@ -34,7 +34,7 @@ public class OffensiveRebound implements Stat {
 
   @Override
   public Player getPlayer() {
-    return player;
+    return p;
   }
 
   @Override
@@ -49,7 +49,7 @@ public class OffensiveRebound implements Stat {
 
   @Override
   public String toString() {
-    return TYPE + " for " + player + "(id: " + id + ")";
+    return TYPE + " for " + p + "(id: " + id + ")";
   }
 
   @Override
