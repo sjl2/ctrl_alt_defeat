@@ -111,33 +111,34 @@ $.get("/game/roster", function(responseJSON) {
 		console.log(res);
 		home.primary = res[0];
 		home.secondary = res[1];
-		home.roster = [];
+		home.onCourt = [];
 		console.log(res[4].players);
-		home.roster.push(res[4].players.HomePG);
-		home.roster.push(res[4].players.HomeSG);
-		home.roster.push(res[4].players.HomeSF);
-		home.roster.push(res[4].players.HomePF);
-		home.roster.push(res[4].players.HomeC);
+		home.onCourt.push(res[4].players.HomePG);
+		home.onCourt.push(res[4].players.HomeSG);
+		home.onCourt.push(res[4].players.HomeSF);
+		home.onCourt.push(res[4].players.HomePF);
+		home.onCourt.push(res[4].players.HomeC);
+		home.bench = [];
 		for (var i = 0; i < res[5].players.length; i++) {
-			home.roster.push(res[5].players[i]);
+			home.bench.push(res[5].players[i]);
 		}
 
 		away.primary = res[2];
 		away.secondary = res[3];
-		away.roster = [];
-		away.roster.push(res[4].players.AwayPG);
-		away.roster.push(res[4].players.AwaySG);
-		away.roster.push(res[4].players.AwaySF);
-		away.roster.push(res[4].players.AwayPF);
-		away.roster.push(res[4].players.AwayC);
+		away.onCourt = [];
+		away.onCourt.push(res[4].players.AwayPG);
+		away.onCourt.push(res[4].players.AwaySG);
+		away.onCourt.push(res[4].players.AwaySF);
+		away.onCourt.push(res[4].players.AwayPF);
+		away.onCourt.push(res[4].players.AwayC);
+		away.bench = [];
 		for (var i = 0; i < res[5].players.length; i++) {
-			away.roster.push(res[5].players[i]);
+			away.bench.push(res[5].players[i]);
 		}
 
-		console.log("away ", away.roster);
 
 
-		var homeColor = home.primary;
+	var homeColor = home.primary;
 	var homeClick = "#a2591d";
 	var homeAccent = home.secondary;
 
@@ -153,7 +154,7 @@ $.get("/game/roster", function(responseJSON) {
 		console.log(home);
 		var tempBox = paper.rect(130, 35 + 55 * i, 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
 			.data("thing", "player").data("bench", false).data("home", true);
-		var tempText = paper.text(155, 35 + 55 * i + 25, home.roster[i].number).attr({"font-family": "Arial", "font-size":16});
+		var tempText = paper.text(155, 35 + 55 * i + 25, home.onCourt[i].number).attr({"font-family": "Arial", "font-size":16});
 		tempText.box = tempBox;
 		tempBox.glowColor = homeAccent;
 		tempBox.clickAccent = homeClick;
@@ -161,15 +162,15 @@ $.get("/game/roster", function(responseJSON) {
 		tempBox.t = tempText;
 		tempText.toFront();
 
-		tempBox.player = home.roster[i];
+		tempBox.player = home.onCourt[i];
 
 		texts.push(tempText);
 		boxes.push(tempBox);
 	}
-	for (var i = 5; i < home.roster.length; i++) {
-		var tempBox = paper.rect(50, 35 + 55 * (i - 5), 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
+	for (var i = 0; i < home.bench.length; i++) {
+		var tempBox = paper.rect(50, 35 + 55 * (i), 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
 			.data("thing", "player").data("bench", true).data("home", true);
-		var tempText = paper.text(75, 35 + 55 * (i-5) + 25, home.roster[i].number).attr({"font-family": "Arial", "font-size":16});
+		var tempText = paper.text(75, 35 + 55 * (i) + 25, home.bench[i].number).attr({"font-family": "Arial", "font-size":16});
 		tempText.box = tempBox;
 		tempBox.glowColor = homeAccent;
 		tempBox.clickAccent = homeClick;
@@ -177,7 +178,7 @@ $.get("/game/roster", function(responseJSON) {
 		tempBox.t = tempText;
 		tempText.toFront();
 
-		tempBox.player = home.roster[i];
+		tempBox.player = home.bench[i];
 
 		texts.push(tempText);
 		boxes.push(tempBox);
@@ -187,7 +188,7 @@ $.get("/game/roster", function(responseJSON) {
 	for (var i = 0; i < 5; i++) {
 		var tempBox = paper.rect(570, 35 + 55 * i, 50, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
 			.data("thing", "player").data("bench", false).data("home", false);
-		var tempText = paper.text(595, 35 + 55 * i + 25, away.roster[i].number).attr({"font-family": "Arial", "font-size":16});
+		var tempText = paper.text(595, 35 + 55 * i + 25, away.onCourt[i].number).attr({"font-family": "Arial", "font-size":16});
 		tempText.box = tempBox;
 		tempBox.glowColor = awayAccent;
 		tempBox.clickAccent = awayClick;
@@ -195,16 +196,16 @@ $.get("/game/roster", function(responseJSON) {
 		tempBox.t = tempText;
 		tempText.toFront();
 
-		tempBox.player = away.roster[i];
+		tempBox.player = away.onCourt[i];
 
 
 		texts.push(tempText);
 		boxes.push(tempBox);
 	}
-	for (var i = 5; i < away.roster.length; i++) {
-		var tempBox = paper.rect(650, 35 + 55 * (i - 5), 50, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
+	for (var i = 0; i < away.bench.length; i++) {
+		var tempBox = paper.rect(650, 35 + 55 * (i), 50, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
 			.data("thing", "player").data("bench", true).data("home", false);
-		var tempText = paper.text(675, 35 + 55 * (i-5) + 25, away.roster[i].number).attr({"font-family": "Arial", "font-size":16});
+		var tempText = paper.text(675, 35 + 55 * (i) + 25, away.bench[i].number).attr({"font-family": "Arial", "font-size":16});
 		tempText.box = tempBox;
 		tempBox.glowColor = awayAccent;
 		tempBox.clickAccent = awayClick;
@@ -212,7 +213,7 @@ $.get("/game/roster", function(responseJSON) {
 		tempBox.t = tempText;
 		tempText.toFront();
 
-		tempBox.player = away.roster[i];
+		tempBox.player = away.bench[i];
 
 		texts.push(tempText);
 		boxes.push(tempBox);
@@ -271,12 +272,109 @@ $.get("/game/roster", function(responseJSON) {
 	});
 
 
+	var subWindow = paper.rect(10, 10, 500, 300).attr({fill : "white", "stroke-width" : 3}).mousemove(function(e) {
+		if (!(this.currentMove === undefined)) {
+			this.currentMove.attr({cx : e.offsetX});
+			this.currentMove.attr({cy : e.offsetY});
+		}
+	});
+	subWindow.ornaments = [];
+	subWindow.currentMove = undefined;
+
+	var benchDots = paper.set();
+	var starterBoxes = paper.set();
+	var subtexts = paper.set();
+	var counts = {};
+	counts.homeBench = 0;
+	counts.homeOn = 0;
+	counts.awayBench = 0;
+	counts.awayOn = 0;
+
+	boxes.forEach(function(obj) {
+		console.log(obj.data("bench"));
+		if (obj.data("bench")) {
+			var temp;
+			if (obj.data("home")) {
+				var temp = paper.circle(40,40 + 40 * counts.homeBench,10).attr({fill : "blue"});
+				temp.defaultX = 40;
+				temp.defaultY = 40 + 40 * counts.homeBench;
+				counts.homeBench += 1;
+
+			} else {
+				var temp = paper.circle(440,40 + 40 * counts.awayBench,10).attr({fill : "blue"});
+				temp.defaultX = 440;
+				temp.defaultY = 40 + 40 * counts.awayBench;
+				counts.awayBench += 1;
+			}
+			temp.player = obj.player;
+			var tempTexts = paper.text(temp.defaultX, temp.defaultY, temp.player.number);
+			subtexts.push(tempText);
+
+			benchDots.push(temp);
+		} else {
+			if (obj.data("home")){
+				var temp = paper.rect(200, 15 + 60 * counts.homeOn, 45, 45);
+				counts.homeOn += 1;
+
+			} else {
+				var temp = paper.rect(300, 15 + 60 * counts.awayOn, 45, 45);
+				counts.awayOn += 1;
+
+			}
+			temp.player = obj.player;
+			var tempTexts = paper.text(temp.cx, temp.cy, temp.player.number);
+			subtexts.push(tempTexts);
+			starterBoxes.push(temp);
+		}
+	});
+
+	benchDots.forEach(function(o) {
+		subWindow.ornaments.push(o);
+		makeDraggable(o, subWindow);
+	});	
+	starterBoxes.forEach(function(o) {
+		subWindow.ornaments.push(o);
+	});
+	subtexts.forEach(function(o) {
+		subWindow.ornaments.push(o);
+	});
+
+	for(var i = 0; i < subWindow.ornaments.length; i++) subWindow.ornaments[i].hide();
+
+	var openSub = paper.rect(750, 130, 50, 50).attr({fill : "black", "stroke-width" : 2}).data("open", false);
+	openSub.subWindow = subWindow;
+	openSub.subWindow.hide();
+	openSub.click(function(e) {showSubWindow(this)});
+
+	function makeDraggable(obj, sw) {
+	obj.mousedown(function (e) {
+		sw.currentMove = this;
+		console.log("a");
+	});
+	obj.mousemove(function (e) {
+		if (sw.currentMove == this) {
+			this.attr({cx : e.offsetX});
+			this.attr({cy : e.offsetY});
+		}
+	});
+	obj.mouseup(function (e) {
+		sw.currentMove = undefined;
+		this.attr({cx : this.defaultX});
+		this.attr({cy : this.defaultY});
+
+	});
+	}
 		
 	});
 
 
 
 var flipPossession = paper.rect(750, 70, 50, 50).attr({fill : "blue", "stroke-width" : 2}).data("home", true);
+
+
+
+
+	
 	sendStat.click(function (e) {addStat();});
 	paper.text(775, 125, "Flip Possession");
 	var a = paper.path("M755,75,755,115,795,95z").attr({fill : "Yellow"});
@@ -287,6 +385,25 @@ var flipPossession = paper.rect(750, 70, 50, 50).attr({fill : "blue", "stroke-wi
 	flipPossession.click(function(e) {fp()});
 	a.click(function(e) {fp()});		
 	h.click(function(e) {fp()});	
+
+function showSubWindow(obj) {
+	if (obj.data("open")) {
+		for (var i = 0; i < obj.subWindow.ornaments.length; i++) {
+			obj.subWindow.ornaments[i].hide();
+		}
+		obj.subWindow.hide();
+
+		obj.data("open", false);
+	} else {
+		obj.subWindow.show();
+		obj.subWindow.toFront();
+		for (var i = 0; i < obj.subWindow.ornaments.length; i++) {
+			obj.subWindow.ornaments[i].show();
+			obj.subWindow.ornaments[i].toFront();
+		}
+		obj.data("open", true);
+	}
+}
 
 function fp() {
 	if (flipPossession.data("home")) {
