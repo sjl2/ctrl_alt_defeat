@@ -1,6 +1,6 @@
 <#assign content>
   <h1>Welcome to the Create a Player Screen!</h1>
-	<form method="POST" action="/dashboard/newPlayer/results">
+	<form method="POST" action="/dashboard/new/player/results">
 
 		Player name:<br>
 		<input type="text" name="name">

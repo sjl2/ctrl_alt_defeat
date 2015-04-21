@@ -21,8 +21,8 @@
 			<button id="new_game_button" onclick = "newGame();">Make a new Game!</button>
 			
 		</div>
-		<div id="new_team"> <a href = "/dashboard/newTeam"> Make a new team!</a> </div>
-		<div id="new_player"> <a href = "/dashboard/newPlayer"> Make a new player!</a> </div>
+		<div id="new_team"> <a href = "/dashboard/new/team"> Make a new team!</a> </div>
+		<div id="new_player"> <a href = "/dashboard/new/player"> Make a new player!</a> </div>
 
 	</div>
  <script src="js/dashboard.js"></script>

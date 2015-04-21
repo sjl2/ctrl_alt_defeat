@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
@@ -288,7 +289,7 @@ public class DBManager {
    * @author awainger
    */
   public Team getTeam(int id, PlayerFactory pf) {
-    String query = "SELECT name, color1, color2 "
+    String query = "SELECT name, coach, color1, color2 "
         + "FROM team "
         + "WHERE team.id = ?;";
 
@@ -300,10 +301,11 @@ public class DBManager {
 
       if (rs.next()) {
         String name = rs.getString("name");
+        String coach = rs.getString("coach");
         String color1 = rs.getString("color1");
         String color2 = rs.getString("color2");
 
-        team = new Team(id, name, color1, color2, pf);
+        team = new Team(id, name, coach, color1, color2, pf);
       }
     } catch (SQLException e) {
       String message = "Could not retrieve team " + id + " from the database: ";
@@ -317,7 +319,7 @@ public class DBManager {
   public Collection<Integer> getTeamPlayers(Team team) {
     String query = "SELECT id "
         + "FROM player "
-        + "WHERE team = ?;";
+        + "WHERE team = ? AND current = 1;";
 
     Collection<Integer> players = new ArrayList<>();
 
@@ -391,15 +393,15 @@ public class DBManager {
       List<Integer> values = new ArrayList<>();
 
       if (rs.next()) {
-        String[] titles = GameStats.getCols();
-        for (int i = 1; i <= titles.length; i++) {
+        int len = GameStats.getNumCols();
+        for (int i = 1; i <= len; i++) {
           values.add(rs.getInt(i));
         }
       } else {
         throw new GameException("No Game Stats for " + game + " in the DB.");
       }
 
-      return new GameStats(values, game, player);
+      return new GameStats(values, game, team, player);
     } catch (SQLException e) {
       throw new GameException("Failed to load game stats: " + e.getMessage());
     }
@@ -455,7 +457,7 @@ public class DBManager {
     }
   }
 
-  public void remove(Stat s) throws GameException {
+  public void removeStat(Stat s) throws GameException {
     String query = "DELETE FROM stat WHERE id = ? AND player = ?;";
     try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, s.getID());
@@ -493,19 +495,15 @@ public class DBManager {
     return nextIDs.add(table, 1);
   }
 
-  /**
-   * Saves a team to the database.
-   * @param name
-   * @param color1
-   * @param color2
-   */
-  public void saveTeam(String name, String color1, String color2) {
+  public void saveTeam(Team team, boolean b) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO team VALUES(?, ?, ?, ?);")) {
-      prep.setInt(1, getNextID("team"));
-      prep.setString(2, name);
-      prep.setString(THREE, color1);
-      prep.setString(FOUR, color2);
+        "INSERT INTO team VALUES(?, ?, ?, ?, ?, ?);")) {
+      prep.setInt(1, team.getID());
+      prep.setString(2, team.getName());
+      prep.setString(THREE, team.getCoach());
+      prep.setString(FOUR, team.getPrimary());
+      prep.setString(FIVE, team.getSecondary());
+      prep.setBoolean(SIX, b);
       prep.executeUpdate();
     } catch (SQLException e) {
       close();
@@ -551,7 +549,7 @@ public class DBManager {
         int id = rs.getInt("id");
         String name = rs.getString("name");
         Team t = new Team(id, name);
-        teams.add(t); 
+        teams.add(t);
       }
 
       return teams;
@@ -569,11 +567,38 @@ public class DBManager {
       prep.setLong(2, TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()));
       prep.setInt(3, game.getHome().getID());
       prep.setInt(4, game.getAway().getID());
-      
-      prep.executeUpdate(); 
+
+      prep.executeUpdate();
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+    }
+  }
+
+  public Team getMyTeam(PlayerFactory pf) throws DashboardException {
+    String query = "Select id, name, coach, color1, color2 "
+        + "FROM team "
+        + "WHERE my_Team = 1;";
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      ResultSet rs = prep.executeQuery();
+
+      if (rs.next()) {
+        return new Team(
+            rs.getInt("id"),
+            rs.getString("name"),
+            rs.getString("coach"),
+            rs.getString("color1"),
+            rs.getString("color2"),
+            pf);
+      } else {
+        String message = "No myTeam in database. Please create one.";
+        throw new DashboardException(message);
+      }
+
+    } catch (SQLException e) {
+      String message = "No myTeam in database. Please create one.";
+      throw new DashboardException(message + " " + e.getMessage());
     }
   }
 }

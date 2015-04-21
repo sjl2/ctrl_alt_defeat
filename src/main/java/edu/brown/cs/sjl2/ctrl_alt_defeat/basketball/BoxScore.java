@@ -8,6 +8,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class BoxScore {
   private Map<Integer, GameStats> playerStats;
@@ -17,8 +18,7 @@ public class BoxScore {
   private DBManager db;
 
   public BoxScore(DBManager db, Game game, Team team) {
-    this.db = db;
-    this.team = team;
+
     Collection<Player> players = team.getPlayers();
     playerStats = new HashMap<>();
 
@@ -33,6 +33,14 @@ public class BoxScore {
     }
 
     teamStats = GameStats.TeamGameStats(game, team);
+
+    this.team = team;
+    this.isHome = game.isHome(team);
+    this.db = db;
+  }
+
+  private BoxScore(Map<Integer, GameStats> playerStats, Game game, Team team) {
+
   }
 
   /**
@@ -40,11 +48,22 @@ public class BoxScore {
    * @param db
    * @param game
    * @param home
-   * @return Returns a Boxscore from a past game.
+   * @return Returns a Boxscore from the database
    */
-  public static BoxScore OldBoxScore(DBManager db, Game game, Team team) {
-    // TODO
-    return null;
+  public static BoxScore getBoxScore(DBManager db, Game game, Team team) {
+    Collection<Player> players = team.getPlayers();
+    Map<Integer, GameStats> playerStats = new HashMap<>();
+
+    for (Player player : players) {
+      try {
+        playerStats.put(player.getID(), db.loadGameStats(game, team, player));
+      } catch (GameException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
+    return new BoxScore(playerStats, game, team);
   }
 
   public GameStats getPlayerStats(Player p) {
@@ -73,11 +92,24 @@ public class BoxScore {
     return teamStats.getPersonalFouls();
   }
 
+  public void addStat(Stat s) {
+    s.execute(playerStats.get(s.getPlayer().getID()));
+    s.execute(teamStats);
+    updateDB();
+  }
+
   /**
    * Update the DB with the latest stats stored within the box score.
    */
-  public void updateDB() {
+  private void updateDB() {
     db.updateBoxscore(playerStats.values());
   }
+
+  public void undoStat(Stat s) {
+    s.undo(playerStats.get(s.getPlayer().getID()));
+    s.undo(teamStats);
+    updateDB();
+  }
+
 
 }
