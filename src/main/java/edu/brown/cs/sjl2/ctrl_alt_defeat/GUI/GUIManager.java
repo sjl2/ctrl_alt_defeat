@@ -16,6 +16,8 @@ import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GUI.PlaymakerGUI.PlaymakerHandler;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import freemarker.template.Configuration;
 
@@ -63,10 +65,15 @@ public class GUIManager {
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
 
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
-    Spark.get("/dashboard/newTeam", dashboardGUI.new NewTeamHandler(), freeMarker);
-    Spark.post("/dashboard/newTeam/results", dashboardGUI.new NewTeamResultsHandler(), freeMarker);
-    Spark.get("/dashboard/newPlayer", dashboardGUI.new NewPlayerHandler(), freeMarker);
-    Spark.post("/dashboard/newPlayer/results", dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
+    Spark.post("/dashboard/new", dashboardGUI.new DashboardSetupHandler(), freeMarker);
+    Spark.get("/dashboard/new/team",
+        dashboardGUI.new NewTeamHandler(), freeMarker);
+    Spark.post("/dashboard/new/team/results",
+        dashboardGUI.new NewTeamResultsHandler(), freeMarker);
+    Spark.get("/dashboard/new/player",
+        dashboardGUI.new NewPlayerHandler(), freeMarker);
+    Spark.post("/dashboard/new/player/results",
+        dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
 
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new RosterHandler());
@@ -79,10 +86,11 @@ public class GUIManager {
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
-		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
+		Spark.post("/stats/changepossession",
+		    statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
-		
+
 		Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
 
   }

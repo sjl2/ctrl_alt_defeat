@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.gson.JsonElement;
-
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
@@ -51,15 +49,15 @@ public class Game {
     this.homeTeam = home;
     this.awayTeam = away;
     db.saveGame(this);
-    
+
     this.homeBoxScore = new BoxScore(db, this, home);
     this.awayBoxScore = new BoxScore(db, this, away);
     this.lineup = new Lineup();
     this.homeBench = new Bench(home);
     this.awayBench = new Bench(away);
-    
+
     placePlayers(home, away);
-    
+
     this.stats = new ArrayList<>();
     this.pf = pf;
     this.sf = new StatFactory(db, this);
@@ -67,19 +65,22 @@ public class Game {
 
   }
 
-  public Game() {
-    this.id = -1;
-    this.homeTeam = new Team(1);
-    this.awayTeam = new Team(2);
-    this.pf = null;
-    this.db = null;
-  }
-
   public int getID() {
     return id;
   }
 
   public Player getPlayerAtPosition(Location pos) {return null;}
+
+  /**
+   * Returns true if the team input is the home team of the game. Checks via
+   * team id.
+   * @param team The team to check
+   * @return Returns true if team is the home team, false otherwise. Checks for
+   * equivalent team ids.
+   */
+  public boolean isHome(Team team) {
+    return this.homeTeam.getID() == team.getID();
+  }
 
   public Team getHome() {
     return homeTeam;
@@ -154,13 +155,11 @@ public class Game {
   public void addStat(Stat s) throws GameException {
     stats.add(0, s);
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
-      s.execute(homeBoxScore.getPlayerStats(s.getPlayer()));
-      s.execute(homeBoxScore.getTeamStats());
+      homeBoxScore.addStat(s);
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
-      s.execute(awayBoxScore.getPlayerStats(s.getPlayer()));
-      s.execute(awayBoxScore.getTeamStats());
+      awayBoxScore.addStat(s);
       awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
     } else {
@@ -168,8 +167,6 @@ public class Game {
           + "are not on either team.";
       throw new GameException(message);
     }
-
-    storeGame();
   }
 
   public void addStat(String statID, int playerID, Location location)
@@ -179,17 +176,15 @@ public class Game {
     addStat(sf.getStat(statID, p, location, period));
   }
 
-  public void undoStat() throws GameException {
-    Stat s = stats.remove(0);
-    db.remove(s);
+  public void undoStat(int i) throws GameException {
+    Stat s = stats.remove(i);
+    db.removeStat(s);
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
-      s.undo(homeBoxScore.getPlayerStats(s.getPlayer()));
-      s.undo(homeBoxScore.getTeamStats());
+      homeBoxScore.undoStat(s);
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
-      s.undo(awayBoxScore.getPlayerStats(s.getPlayer()));
-      s.undo(awayBoxScore.getTeamStats());
+      awayBoxScore.undoStat(s);
       awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
     } else {
@@ -212,15 +207,6 @@ public class Game {
     this.rules = rules;
   }
 
-  /**
-   * Store all essential data from the game to the database in case of failure.
-   * TODO Consider threading this to happen every second.
-   */
-  public void storeGame() {
-    homeBoxScore.updateDB();
-    awayBoxScore.updateDB();
-  }
-
   public int getHomeScore() {
     return homeScore;
   }
@@ -240,11 +226,11 @@ public class Game {
   public int getPeriod() {
     return period;
   }
-  
+
   public Lineup getLineup() {
     return lineup;
   }
-  
+
   public Bench getBench(boolean home) {
     if (home) {
       return homeBench;
@@ -255,21 +241,25 @@ public class Game {
 
   public void placePlayers(Team h, Team a) {
     Iterator<Player> homeIterator = h.getPlayers().iterator();
+
     lineup.getPlayers().put(BasketballPosition.HomePG, homeIterator.next());
     lineup.getPlayers().put(BasketballPosition.HomeSG, homeIterator.next());
     lineup.getPlayers().put(BasketballPosition.HomeSF, homeIterator.next());
     lineup.getPlayers().put(BasketballPosition.HomePF, homeIterator.next());
     lineup.getPlayers().put(BasketballPosition.HomeC, homeIterator.next());
+
     while (homeIterator.hasNext()) {
       homeBench.getPlayers().add(homeIterator.next());
     }
-    
+
     Iterator<Player> awayIterator = a.getPlayers().iterator();
+
     lineup.getPlayers().put(BasketballPosition.AwayPG, awayIterator.next());
     lineup.getPlayers().put(BasketballPosition.AwaySG, awayIterator.next());
     lineup.getPlayers().put(BasketballPosition.AwaySF, awayIterator.next());
     lineup.getPlayers().put(BasketballPosition.AwayPF, awayIterator.next());
     lineup.getPlayers().put(BasketballPosition.AwayC, awayIterator.next());
+
     while (awayIterator.hasNext()) {
       awayBench.getPlayers().add(awayIterator.next());
     }

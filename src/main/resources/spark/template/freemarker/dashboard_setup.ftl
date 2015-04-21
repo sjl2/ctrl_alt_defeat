@@ -1,6 +1,7 @@
 <#assign content>
-  <h1>Welcome to the Wonderously Useful New Team Screen! (written by the project czar himself)</h1>
-	<form method="POST" action="/dashboard/new/team/results">
+  <h1>Thank you for using Ctrl-Alt-Defeat!</h1>
+  <h3>To deliver our top quality service, we need a little information from you.</h3>
+	<form method="POST" action="/dashboard/new">
 		Team name:<br>
 		<input type="text" name="name">
 		<br>
@@ -15,6 +16,6 @@
 		<br><br>
 		<input type="submit" class="submit" value="Submit"> <br>
 	</form>
-  <link rel="stylesheet" href="css/newTeam.css">
+  <link rel="stylesheet" href="css/dashboard_setup.css">
 </#assign>
 <#include "main.ftl">

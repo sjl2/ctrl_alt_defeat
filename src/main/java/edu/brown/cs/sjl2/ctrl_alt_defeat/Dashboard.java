@@ -19,14 +19,20 @@ public class Dashboard {
   StatFactory sf;
 
   public Dashboard(DBManager db) {
-    // TODO : Mark coach's team in database somehow
-    
+
     this.db = db;
+
 
     pf = new PlayerFactory(db);
     tf = new TeamFactory(db, pf);
-    myTeam = tf.getTeam(1); // TODO Config the head team
-    
+
+    try {
+      this.myTeam = db.getMyTeam(pf);
+    } catch (DashboardException e) {
+      this.myTeam = null;
+      System.out.println(e.getMessage());
+    }
+
   }
 
   public Game getGame() {
@@ -36,7 +42,7 @@ public class Dashboard {
   private Game newGame(Team home, Team away) {
     return new Game(home, away, pf, db);
   }
-  
+
 //  //simple setter for game
 //  //only used for testing
 //  public void setGame(Game g) {
@@ -46,7 +52,11 @@ public class Dashboard {
 
   public void startGame(Boolean home, int opponentID)
       throws DashboardException {
-    if (currentGame == null) {
+    if (getMyTeam() == null) {
+      String message = "You cannot start a new game without a team. Please "
+          + "create your team at ...";
+      throw new DashboardException(message);
+    } else if (currentGame == null) {
       if (home) {
         currentGame = newGame(myTeam, tf.getTeam(opponentID));
       } else {
@@ -61,7 +71,7 @@ public class Dashboard {
   public Team getMyTeam() {
     return myTeam;
   }
-  
+
   public Team getTeam(int id) {
     return tf.getTeam(id);
   }
@@ -78,6 +88,16 @@ public class Dashboard {
 
   BoxScore getBoxscore(int gameID) {
     // TODO
+    return null;
+  }
+
+  public Team setMyTeam(String name,
+      String coach, String color1, String color2) {
+    this.myTeam =
+        new Team(db.getNextID("team"), name, coach, color1, color2, pf);
+
+    db.saveTeam(this.myTeam, true);
+
     return null;
   }
 }

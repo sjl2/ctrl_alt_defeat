@@ -3,11 +3,12 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+//import java.util.Random;
 
 public class Team {
   private int id;
   private String name;
+  private String coach;
   private String primary;
   private String secondary;
   public Map<Integer, Player> playerIds;
@@ -16,12 +17,14 @@ public class Team {
   public Team(
       int id,
       String name,
+      String coach,
       String primary,
       String secondary,
       PlayerFactory pf) {
 
     this.id = id;
     this.name =  name;
+    this.coach = coach;
     this.primary = primary;
     this.secondary = secondary;
 
@@ -35,7 +38,7 @@ public class Team {
       playerNames.put(p.getName(), p);
     }
   }
-  
+
   public Team(int id, String name) {
     this.id = id;
     this.name = name;
@@ -45,20 +48,20 @@ public class Team {
     this.playerNames = null;
   }
 
-  public Team(Integer i) {
-    Random rn = new Random();
-    this.id = i;
-    this.name = "Team " + i;
-    this.primary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";
-    this.secondary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";;
-    playerIds = new HashMap<>();
-    playerNames = new HashMap<>();
-    for (int j = 0; j < 12; j++) {
-      Player p = new Player(j, i);
-      playerIds.put(j, p);
-      playerNames.put(p.getName(), p);
-    }
-  }
+//  public Team(Integer i) {
+//    Random rn = new Random();
+//    this.id = i;
+//    this.name = "Team " + i;
+//    this.primary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";
+//    this.secondary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";;
+//    playerIds = new HashMap<>();
+//    playerNames = new HashMap<>();
+//    for (int j = 0; j < 12; j++) {
+//      Player p = new Player(j, i);
+//      playerIds.put(j, p);
+//      playerNames.put(p.getName(), p);
+//    }
+//  }
 
   public int getID() {
     return id;
@@ -91,7 +94,15 @@ public class Team {
 
   @Override
   public String toString() {
-    return name + " (id: " + id + ")";
+    String prefix = "";
+    if (!coach.isEmpty()) {
+      prefix = coach + "\'s ";
+    }
+    return prefix + name + " (id: " + id + ")";
+  }
+
+  public String getCoach() {
+    return coach;
   }
 
 

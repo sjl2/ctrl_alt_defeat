@@ -111,6 +111,8 @@ $.get("/game/roster", function(responseJSON) {
 		console.log(res);
 		home.primary = res[0];
 		home.secondary = res[1];
+		home.teamID = res[4].players.HomePG.teamID;
+
 		home.onCourt = [];
 		console.log(res[4].players);
 		home.onCourt.push(res[4].players.HomePG);
@@ -125,6 +127,8 @@ $.get("/game/roster", function(responseJSON) {
 
 		away.primary = res[2];
 		away.secondary = res[3];
+		away.teamID = res[4].players.AwayPG.teamID;
+
 		away.onCourt = [];
 		away.onCourt.push(res[4].players.AwayPG);
 		away.onCourt.push(res[4].players.AwaySG);
@@ -295,34 +299,41 @@ $.get("/game/roster", function(responseJSON) {
 		if (obj.data("bench")) {
 			var temp;
 			if (obj.data("home")) {
-				var temp = paper.circle(40,40 + 40 * counts.homeBench,10).attr({fill : "blue"});
+				var temp = paper.circle(40,40 + 40 * counts.homeBench,10).attr({fill : "lightblue"});
 				temp.defaultX = 40;
 				temp.defaultY = 40 + 40 * counts.homeBench;
 				counts.homeBench += 1;
 
 			} else {
-				var temp = paper.circle(440,40 + 40 * counts.awayBench,10).attr({fill : "blue"});
+				var temp = paper.circle(440,40 + 40 * counts.awayBench,10).attr({fill : "lightblue"});
 				temp.defaultX = 440;
 				temp.defaultY = 40 + 40 * counts.awayBench;
 				counts.awayBench += 1;
 			}
 			temp.player = obj.player;
 			var tempTexts = paper.text(temp.defaultX, temp.defaultY, temp.player.number);
-			subtexts.push(tempText);
+			tempTexts.circ = temp;
+			temp.number = tempTexts;
+			subtexts.push(tempTexts);
 
 			benchDots.push(temp);
 		} else {
 			if (obj.data("home")){
 				var temp = paper.rect(200, 15 + 60 * counts.homeOn, 45, 45);
+				temp.defaultX = 200 + 22.5;
+				temp.defaultY = 15 + 60 * counts.homeOn + 22.5;
 				counts.homeOn += 1;
 
 			} else {
 				var temp = paper.rect(300, 15 + 60 * counts.awayOn, 45, 45);
+				temp.defaultX = 300 + 22.5;
+				temp.defaultY = 15 + 60 * counts.awayOn + 22.5;
 				counts.awayOn += 1;
 
 			}
 			temp.player = obj.player;
-			var tempTexts = paper.text(temp.cx, temp.cy, temp.player.number);
+			var tempTexts = paper.text(temp.defaultX, temp.defaultY, temp.player.number);
+			temp.number = tempTexts;
 			subtexts.push(tempTexts);
 			starterBoxes.push(temp);
 		}
@@ -337,6 +348,19 @@ $.get("/game/roster", function(responseJSON) {
 	});
 	subtexts.forEach(function(o) {
 		subWindow.ornaments.push(o);
+		o.mousedown(function (e) {
+			subWindow.currentMove = o.circ;
+		});
+		o.mousemove(function (e) {
+				if (!(subWindow.currentMove === undefined)) {
+					subWindow.currentMove.attr({cx : e.layerX, cy : e.layerY});
+				}
+			
+		});
+		o.mouseup(function (e) {
+			subWindow.currentMove.attr({cx : subWindow.currentMove.defaultX, cy : subWindow.currentMove.defaultY});
+			subWindow.currentMove = undefined;
+		});
 	});
 
 	for(var i = 0; i < subWindow.ornaments.length; i++) subWindow.ornaments[i].hide();
@@ -352,15 +376,37 @@ $.get("/game/roster", function(responseJSON) {
 		console.log("a");
 	});
 	obj.mousemove(function (e) {
-		if (sw.currentMove == this) {
-			this.attr({cx : e.offsetX});
-			this.attr({cy : e.offsetY});
+		if (sw.currentMove !== undefined) {
+			sw.currentMove.attr({cx : e.offsetX});
+			sw.currentMove.attr({cy : e.offsetY});
+
 		}
 	});
 	obj.mouseup(function (e) {
+		sw.currentMove.attr({cx : sw.currentMove.defaultX});
+		sw.currentMove.attr({cy : sw.currentMove.defaultY});
 		sw.currentMove = undefined;
-		this.attr({cx : this.defaultX});
-		this.attr({cy : this.defaultY});
+
+
+		starterBoxes.forEach(function (o) {
+			if (Raphael.isPointInsideBBox(o.getBBox(), e.offsetX, e.offsetY)) {
+				console.log(o.player);
+				if (o.player.teamID == obj.player.teamID) {
+					console.log(o.data("home"), " ", obj.player.number, " ", o.player.number);
+					sub(o.player.teamID == home.teamID, obj.player.number, o.player.number);
+					obj.hide();
+
+					var temp = o.player;
+					o.player = obj.player;
+					obj.player = temp;
+					console.log(o.number, obj.number);
+
+					var a = o.number.attr("text");
+					o.number.attr({text : obj.number.attr("text")});
+					obj.number.attr({text : a});
+				}
+			}
+		});
 
 	});
 	}
@@ -419,11 +465,7 @@ function fp() {
 
 }
 
-function sub() {
-	var inPlayer = $("#inPlayer")[0].value;
-	var outPlayer = $("#outPlayer")[0].value;
-
-	var h = $("#h").is(":checked");
+function sub(h, inPlayer, outPlayer) {
 
 	var inBox;
 	var outBox;
@@ -439,11 +481,29 @@ function sub() {
 	});
 
 	if (!(inBox === undefined || outBox === undefined) && inBox.data("home") == outBox.data("home")) {
+		var t;
+		if (inBox.data("home")) t = home;
+		else t = away;
+
+		var courtSpot;
+		var benchSpot;
+		for (var i = 0; i < t.onCourt.length; i++) {
+			if (t.onCourt[i] == outBox.player) courtSpot = i;
+		}
+		for (var j = 0; j < t.bench.length; j++) {
+			if (t.onCourt[j] == outBox.player) courtSpot = j;
+		}
+		var temp = t.onCourt[courtSpot];
+		t.onCourt[courtSpot] = t.bench[benchSpot];
+		t.bench[benchSpot] = temp;
+
 		var temp = inBox.player;
 		inBox.player = outBox.player;
 		outBox.player = temp;
 		inBox.t.attr({"text" : inBox.player.number});
 		outBox.t.attr({"text" : outBox.player.number});
+
+
 
 		$.post("/stats/sub", {"out" : inBox.player.id, "in" : outBox.player.id, "home" : h}, function(){});
 	} else alert("Sub was invalid! Sorry");

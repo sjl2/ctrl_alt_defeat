@@ -29,7 +29,7 @@ public class GameStats {
     this.team = team;
     this.game = game;
     this.stats = HashMultiset.create();
-    
+
     for (String s : getCols()) {
       stats.setCount(s, 0);
     }
@@ -40,11 +40,24 @@ public class GameStats {
       //TODO
       stats.setCount("player", player.getID());
     }
-   
+
   }
 
-  public GameStats(List<Integer> values, Game game, Player player) {
-
+  /**
+   * Constructor that initializes the values of the stats to the values. Ensure
+   * that the values correspond to the correct columns by matching the stats to
+   * the output of getCols(). Note, the length mus be equal to
+   * GameStats.getNumCols() as well.
+   * @param values A list of Integers representing in order the stats found in
+   * GameStats.getCols().
+   * @param game The game object to be found.
+   * @param team The team referring for the gamestats
+   * @param player The player of the gamestats.
+   */
+  public GameStats(List<Integer> values, Game game, Team team, Player player) {
+    this.game = game;
+    this.team = team;
+    this.player = player;
     for (int i = 0; i < COLS.length; i++) {
       stats.setCount(COLS[i], values.get(i));
     }
@@ -52,6 +65,10 @@ public class GameStats {
 
   public static String[] getCols() {
     return COLS;
+  }
+
+  public static int getNumCols() {
+    return COLS.length;
   }
 
   public static GameStats TeamGameStats(Game game, Team team) {
