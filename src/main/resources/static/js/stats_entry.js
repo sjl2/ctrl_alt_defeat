@@ -136,8 +136,8 @@ $.get("/game/roster", function(responseJSON) {
 		away.onCourt.push(res[4].players.AwayPF);
 		away.onCourt.push(res[4].players.AwayC);
 		away.bench = [];
-		for (var i = 0; i < res[5].players.length; i++) {
-			away.bench.push(res[5].players[i]);
+		for (var i = 0; i < res[6].players.length; i++) {
+			away.bench.push(res[6].players[i]);
 		}
 
 
