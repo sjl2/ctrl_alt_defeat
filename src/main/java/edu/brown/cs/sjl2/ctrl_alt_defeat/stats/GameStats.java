@@ -14,6 +14,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 public class GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
+  private static final int FIRST_STAT_COL = 3;
   private static final String[] COLS = {
     "game", "team", "player", "MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA",
     "FTM", "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF"
@@ -40,6 +41,8 @@ public class GameStats {
     if (player != null) {
       //TODO
       stats.setCount("player", player.getID());
+    } else {
+      stats.setCount("player", -1); // Team Stats Don't Have player id. 
     }
 
   }
@@ -55,13 +58,13 @@ public class GameStats {
    * @param team The team referring for the gamestats
    * @param player The player of the gamestats.
    */
-  public GameStats(List<Integer> values, Game game, Team team, Player player) {
+  private GameStats(List<Integer> values, Game game, Team team, Player player) {
     this.game = game;
     this.team = team;
     this.player = player;
     this.stats = HashMultiset.create();
 
-    for (int i = 0; i < COLS.length; i++) {
+    for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
       stats.setCount(COLS[i], values.get(i));
     }
   }
@@ -71,6 +74,18 @@ public class GameStats {
     this.team = team;
     this.player = player;
     this.stats = values;
+  }
+
+  public GameStats(List<Integer> values, Game game, Team team) {
+    this.game = game;
+    this.team = team;
+
+    int playerID = values.get(2);
+    this.player = team.getPlayerById(playerID);
+
+    for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
+      stats.setCount(COLS[i], values.get(i));
+    }
   }
 
   public static String[] getCols() {
@@ -90,6 +105,13 @@ public class GameStats {
 
     List<Integer> teamValues = new ArrayList<>();
 
+    // TODO
+    for (GameStats gs : playerStats) {
+      List<Integer> values = gs.getValues();
+      for (int i = 0; i < COLS.length; i++) {
+        teamValues.set(i, teamValues.get(i) + values.get(i));
+      }
+    }
 
 
 

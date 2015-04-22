@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.HashMultiset;
@@ -377,60 +379,58 @@ public class DBManager {
       }
   }
 
-  public GameStats loadGameStats(Game game, Team team, Player player)
+  public Map<Integer, GameStats> loadBoxScore(Game game, Team team)
       throws GameException {
 
     String query =
         "SELECT * FROM game_stats "
-        + "WHERE game = ? AND team = ? AND player = ?;";
+        + "WHERE game = ? AND team = ?;";
+
+    Map<Integer, GameStats> playerStats = new HashMap<>();
 
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
       ps.setInt(1, game.getID());
       ps.setInt(2, team.getID());
-      ps.setInt(THREE, player.getID());
 
       ResultSet rs = ps.executeQuery();
 
       List<Integer> values = new ArrayList<>();
 
-      if (rs.next()) {
+      while (rs.next()) {
         int len = GameStats.getNumCols();
         for (int i = 1; i <= len; i++) {
           values.add(rs.getInt(i));
         }
-      } else {
-        throw new GameException("No Game Stats for " + game + " in the DB.");
+        playerStats.put(values.get(2), new GameStats(values, game, team));
       }
 
-      return new GameStats(values, game, team, player);
+      return playerStats;
     } catch (SQLException e) {
       throw new GameException("Failed to load game stats: " + e.getMessage());
     }
   }
 
-  public void storeGameStats(GameStats gs) throws GameException {
-    if (gs.getPlayer() == null) {
-      throw new GameException("Cannot store game stats of a team.");
-    } else {
-      int numCols = GameStats.getCols().length;
-      StringBuilder query = new StringBuilder("INSERT INTO game_stats VALUES (");
-      for (int i = 0; i < (numCols - 1); i++) {
-        query.append("?, ");
-      }
-      query.append("?)");
+  public void storeGameStats(GameStats gs) {
+    int numCols = GameStats.getCols().length;
+    StringBuilder query = new StringBuilder("INSERT INTO game_stats VALUES (");
 
-      try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-        List<Integer> values = gs.getValues();
-        for (int i = 1; i <= numCols; i++) {
-          ps.setInt(i, values.get(i - 1));
-        }
+    for (int i = 0; i < (numCols - 1); i++) {
+      query.append("?, ");
+    }
 
-        ps.execute();
-      } catch (SQLException e) {
-        String message = "Failed to add games stats for " + gs.getPlayer()
-            + " to database: ";
-        throw new RuntimeException(message + e.getMessage());
+    query.append("?)");
+
+    try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+      List<Integer> values = gs.getValues();
+      for (int i = 1; i <= numCols; i++) {
+        ps.setInt(i, values.get(i - 1));
       }
+
+      ps.execute();
+    } catch (SQLException e) {
+      String message = "Failed to add games stats for " + gs.getPlayer()
+          + " to database: ";
+      throw new RuntimeException(message + e.getMessage());
     }
 
   }
@@ -621,6 +621,7 @@ public class DBManager {
     String query = "INSERT INTO game VALUES(?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, game.getID());
+      // TODO "YEAR-MONTH-DAY"
       prep.setLong(2, TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()));
       prep.setInt(3, game.getHome().getID());
       prep.setInt(4, game.getAway().getID());

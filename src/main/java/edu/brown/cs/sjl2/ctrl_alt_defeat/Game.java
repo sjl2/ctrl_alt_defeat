@@ -1,6 +1,5 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -93,6 +92,7 @@ public class Game {
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
   }
+
   public BoxScore getAwayBoxScore() {
     return awayBoxScore;
   }
