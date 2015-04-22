@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;

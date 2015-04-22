@@ -194,6 +194,7 @@ public class Game {
     }
 
     return s;
+
   }
 
   public void undoStat(Stat s) throws GameException {

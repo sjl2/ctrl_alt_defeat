@@ -1,6 +1,8 @@
 #wrapper {
-	width: 1000px;
+	width: 1400px;
 	height: 1000px;
+	float : center;
+	margin : 40px;
 }
 
 #subForm {
@@ -9,11 +11,22 @@
 
 #court {
 	background-size: cover; 
-	float : left;
+	width : 650px;
+	float : center;
 }
 
 #content {
-	height: 1000px;
-	width: 1000px;
+	height: 650px;
+	width: 800px;
 	"user-select": none;
+	float : left;
+}
+
+#statFeed {
+	position : absolute;
+	top : 40px;
+	left : 900px;
+	height : 800px;
+	width : 300px;
+	padding : 40px;
 }
