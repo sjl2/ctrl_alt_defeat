@@ -1,5 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import spark.ModelAndView;
@@ -14,6 +16,7 @@ import com.google.gson.Gson;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
 public class DashboardGUI {
 
@@ -44,14 +47,14 @@ public class DashboardGUI {
   }
 
   public class NewTeamHandler implements TemplateViewRoute {
-
+    
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Team");
       return new ModelAndView(variables, "newTeam.ftl");
     }
-
+    
   }
 
   public class NewTeamResultsHandler implements TemplateViewRoute {
@@ -115,6 +118,19 @@ public class DashboardGUI {
       return new ModelAndView(variables, "newPlayerResults.ftl");
     }
 
+  }
+
+  public class GameViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int gameID = Integer.parseInt(request.params("id"));
+
+
+      Map<String, Object> variables =
+        ImmutableMap.of("tabTitle", "Player View", "rows", new ArrayList<GameStats>());
+      return new ModelAndView(variables, "game.ftl");
+    }
+    
   }
 
 }
