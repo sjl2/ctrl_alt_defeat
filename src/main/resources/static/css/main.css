@@ -15,12 +15,7 @@ h1, h3, #query, #path, #info {
 	border-color: gold; 
 }
 
-#wrapper {
-	margin:0px; 
-	position: absolute;
-	left: 200px;
-	top: 155px;
-}
+
 
 #query {
 	padding: 5px;

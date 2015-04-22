@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -10,6 +11,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -53,16 +55,18 @@ public class StatsEntryGUI {
       double x = GSON.fromJson(qm.value("x"), Double.class);
       double y = GSON.fromJson(qm.value("y"), Double.class);
       System.out.println(statID + " " + playerID + " " + x + " " + y);
-
+      Stat toReturn = null;
       try {
-        dash.getGame().addStat(statID, playerID, new Location(x, y));
+        toReturn = dash.getGame().addStat(statID, playerID, new Location(x, y));
       } catch (GameException ex) {
         return ex.getMessage();
       } catch (Exception e) {
         e.printStackTrace();
       }
-
-      return 28;
+      HashMap<String, Object> a = new HashMap<String, Object>();
+      a.put("stat", toReturn);
+      a.put("type", toReturn.getStatType());
+      return GSON.toJson(a);
     }
   }
 

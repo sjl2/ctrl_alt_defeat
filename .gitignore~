@@ -1,4 +1,4 @@
 /target/
 .mvn-classpath
 .DS_Store
-/data/*.sqlite3
+/data/TestData.sqlite3

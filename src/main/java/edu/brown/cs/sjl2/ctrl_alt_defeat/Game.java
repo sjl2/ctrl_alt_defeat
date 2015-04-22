@@ -169,11 +169,13 @@ public class Game {
     }
   }
 
-  public void addStat(String statID, int playerID, Location location)
+  public Stat addStat(String statID, int playerID, Location location)
       throws GameException {
 
     Player p = pf.getPlayer(playerID);
-    addStat(sf.getStat(statID, p, location, period));
+    Stat st = sf.getStat(statID, p, location, period);
+    addStat(st);
+    return st;
   }
 
   public void undoStat(int i) throws GameException {
@@ -241,6 +243,9 @@ public class Game {
 
   public void placePlayers(Team h, Team a) {
     Iterator<Player> homeIterator = h.getPlayers().iterator();
+    if (h.getPlayers().size() < 5) {
+      System.out.println("Need 5 or more players");
+    }
 
     lineup.getPlayers().put(BasketballPosition.HomePG, homeIterator.next());
     lineup.getPlayers().put(BasketballPosition.HomeSG, homeIterator.next());
@@ -253,7 +258,9 @@ public class Game {
     }
 
     Iterator<Player> awayIterator = a.getPlayers().iterator();
-
+    if (a.getPlayers().size() < 5) {
+      System.out.println("Need 5 or more players");
+    }
     lineup.getPlayers().put(BasketballPosition.AwayPG, awayIterator.next());
     lineup.getPlayers().put(BasketballPosition.AwaySG, awayIterator.next());
     lineup.getPlayers().put(BasketballPosition.AwaySF, awayIterator.next());
