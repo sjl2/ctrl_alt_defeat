@@ -37,6 +37,7 @@ public class DBManager {
   private static final int FIVE = 5;
   private static final int SIX = 6;
   private static final int SEVEN = 7;
+  private static final int EIGHT = 8;
   private Connection conn;
   private Multiset<String> nextIDs;
 
@@ -447,7 +448,7 @@ public class DBManager {
       ps.setString(FIVE, statID);
       ps.setInt(SIX, game.getPeriod());
       ps.setDouble(SEVEN, s.getLocation().getX());
-      ps.setDouble(8, s.getLocation().getY());
+      ps.setDouble(EIGHT, s.getLocation().getY());
 
       ps.execute();
 
@@ -465,6 +466,43 @@ public class DBManager {
     } catch (SQLException e) {
       String message = "Failure to remove " + s + " from database.";
       throw new GameException(message + e.getMessage());
+    }
+  }
+
+  public boolean doesUsernameExist(String username) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT name FROM user WHERE name == ? LIMIT 1;")) {
+      prep.setString(1, username);
+      ResultSet rs = prep.executeQuery();
+      return rs.next();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public int checkPassword(String username, String password) {
+    if(!doesUsernameExist(username)) {
+      return -1;
+    }
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT password, clearance FROM user WHERE name == ? LIMIT 1;")) {
+      prep.setString(1, username);
+      ResultSet rs = prep.executeQuery();
+      if(rs.next()) {
+        String dbPassword = rs.getString(1);
+        int clearance = rs.getInt(2);
+        if(dbPassword.equals(password)) {
+          return clearance;
+        } else {
+          return -1;
+        }
+      } else {
+        return -1;
+      }
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
     }
   }
 

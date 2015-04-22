@@ -1,5 +1,6 @@
 <#assign content>
   <script src="js/playmaker.js"></script>
+
   <link rel="stylesheet" href="css/playmaker.css">
 
   <div id="load_column">
