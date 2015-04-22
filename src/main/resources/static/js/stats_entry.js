@@ -123,7 +123,15 @@ $("#court").click(function(e) {
 var home = {};
 var away = {};
 $.get("/game/roster", function(responseJSON) {
-		var res = JSON.parse(responseJSON).roster;
+
+		var r = JSON.parse(responseJSON);
+		console.log(r);
+
+		for (var i = 0; i < r.stats.length; i++) {
+			logStat(r.stats[i], r.types[i]);
+		}
+
+		var res = r.roster;
 		console.log(res);
 		home.primary = res[0];
 		home.secondary = res[1];
@@ -543,8 +551,11 @@ function clickThing(b) {
 			playerID: clickedPlayer.player.id
 		};
 		clickedPoint.remove();
+		clickedPoint = undefined;
 		clickedPlayer.attr({fill: clickedPlayer.normalColor});
+		clickedPlayer = undefined;
 		clickedStat.attr({fill: clickedStat.normalColor});
+		clickedStat = undefined;
 
 		console.log(postParameters);
 		
@@ -552,12 +563,21 @@ function clickThing(b) {
 			console.log(responseJSON);
 			var r = JSON.parse(responseJSON);
 			var res = r.stat;
-			var feed = stats_feed.rect(13, stats_feed.count * -50, 25, 25).attr({fill : "gold"});
-			var txt = stats_feed.text(40, stats_feed.count * -50 + 12.5, "#" + res.player.number + " " + res.player.name + " " + postParameters.statID)
+			logStat(res, r.statType);
+			
+		});
+
+		}
+
+	}
+
+	function logStat(res, type) {
+		var feed = stats_feed.rect(13, stats_feed.count * -50, 25, 25).attr({fill : "gold"});
+			var txt = stats_feed.text(40, stats_feed.count * -50 + 12.5, "#" + res.player.number + " " + res.player.name + " " + type)
 			.attr({"text-anchor" : "start"});
 			feed.words = txt;
 			feed.stat = res;
-			feed.statType = r.type;
+			feed.statType = type;
 			feed.g = undefined;
 			feed.click(function (e) {
 				if (feed.g === undefined) {
@@ -569,6 +589,7 @@ function clickThing(b) {
 					stats_feed.curr = feed;
 					STAT_EDIT = true;
 					paper.sendStat.attr({"fill" : "green"});
+					paper.sendStat.words.attr({"text" : "Update Stat"});
 					paper.deleteStat.show();
 					paper.deleteStat.words.show();
 				} else {
@@ -578,22 +599,36 @@ function clickThing(b) {
 
 					STAT_EDIT = false;
 					paper.sendStat.attr({"fill" : "red"});
+					paper.sendStat.words.attr({"text" : "Send Stat"});
+
 					paper.deleteStat.hide();
 					paper.deleteStat.words.hide();
 				}
 			});
-
 			stats_feed.count++;
 			stats_feed.l.push(feed);
 			stats_feed.setViewBox(0, stats_feed.count * -50, stats_feed.width, stats_feed.height);
-		});
-
-		}
-
 	}
 
 	function deleteStat() {
-		//database id, 
+		//database id
+		var i = stats_feed.curr.stat.id;
+		stats_feed.curr.words.remove();
+		stats_feed.curr.g.remove();
+		stats_feed.curr.remove();
+
+		stats_feed.curr.g = undefined;
+		stats_feed.curr = undefined;
+
+		STAT_EDIT = false;
+		paper.sendStat.attr({"fill" : "red"});
+		paper.sendStat.words.attr({"text" : "Send Stat"});
+
+		paper.deleteStat.hide();
+		paper.deleteStat.words.hide();
+
+
+		$.post("/stats/delete", {databaseID : i}, function() {});
 	}
 
 	function updateStat() {
@@ -613,17 +648,20 @@ function clickThing(b) {
 			postParameters.x = clickedPoint.data("ratioX");
 			postParameters.y = clickedPoint.data("ratioY");
 			clickedPoint.remove();
+			clickedPoint = undefined;
 
 		}
 		if (clickedStat !== undefined) {
 			postParameters.statID = clickedStat.statID;
 			clickedStat.attr({fill: clickedStat.normalColor});
+			clickedStat = undefined;
 
 		}
 		if (clickedPlayer !== undefined) {
 			postParameters.playerID = clickedPlayer.player.id;
 			clickedPlayer.attr({fill: clickedPlayer.normalColor});
 			player = clickedPlayer.player;
+			clickedPlayer = undefined;
 
 		}
 
@@ -638,6 +676,8 @@ function clickThing(b) {
 
 		STAT_EDIT = false;
 		paper.sendStat.attr({"fill" : "red"});
+		paper.sendStat.words.attr({"text" : "Send Stat"});
+
 		paper.deleteStat.hide();
 		paper.deleteStat.words.hide();
 
