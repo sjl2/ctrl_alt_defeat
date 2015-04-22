@@ -65,8 +65,10 @@ public class StatsEntryGUI {
       } catch (Exception e) {
         e.printStackTrace();
       }
-
-      return GSON.toJson(s);
+      HashMap<String, Object> st = new HashMap<String, Object>();
+      st.put("stat", s);
+      st.put("statType", s.getStatType());
+      return GSON.toJson(st);
     }
   }
 
@@ -75,7 +77,7 @@ public class StatsEntryGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      int id = GSON.fromJson(qm.value("id"), Integer.class);
+      int id = GSON.fromJson(qm.value("databaseID"), Integer.class);
       String statID = qm.value("statID");
       int playerID = GSON.fromJson(qm.value("playerID"), Integer.class);
       double x = GSON.fromJson(qm.value("x"), Double.class);
