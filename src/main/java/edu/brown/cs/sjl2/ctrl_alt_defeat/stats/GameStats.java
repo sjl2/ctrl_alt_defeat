@@ -128,7 +128,7 @@ public class GameStats {
     return stats.count("MIN");
   }
 
-  public void addMinutes(int minutes) {
+  void addMinutes(int minutes) {
     stats.add("MIN", minutes);
   }
 

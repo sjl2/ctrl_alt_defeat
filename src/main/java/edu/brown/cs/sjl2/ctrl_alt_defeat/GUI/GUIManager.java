@@ -79,7 +79,10 @@ public class GUIManager {
         dashboardGUI.new NewPlayerHandler(), freeMarker);
     Spark.post("/dashboard/new/player/results",
         dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
-
+    Spark.get("/dashboard/game/:id", dashboardGUI.new GameViewHandler(), freeMarker);
+    //Spark.get("/dashboard/team/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
+    //Spark.get("/dashboard/player/:id", dashboardGUI.new PlayerViewHandler(), freeMarker);
+    
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new StatPageHandler());
 
