@@ -7,11 +7,14 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
 
 import spark.ExceptionHandler;
 import spark.ModelAndView;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -34,7 +37,7 @@ public class GUIManager {
   private StatsEntryGUI statsEntryGUI;
   private PlaymakerGUI playmakerGUI;
 
-
+  private static final Gson GSON = new Gson();
 
   public GUIManager(String db) {
     this.dbManager = new DBManager(db);
@@ -63,7 +66,9 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
-
+    
+    Spark.get("/login", new LoginViewHandler(), freeMarker);
+    Spark.post("/login/login", new LoginHandler());
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
     Spark.post("/dashboard/new", dashboardGUI.new DashboardSetupHandler(), freeMarker);
     Spark.get("/dashboard/new/team",
@@ -76,7 +81,7 @@ public class GUIManager {
         dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
 
     Spark.post("/game/start", gameGUI.new StartHandler());
-    Spark.get("/game/roster", gameGUI.new RosterHandler());
+    Spark.get("/game/roster", gameGUI.new StatPageHandler());
 
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
@@ -115,10 +120,33 @@ public class GUIManager {
    */
   private class FrontHandler implements TemplateViewRoute {
     @Override
-    public ModelAndView handle(Request rsubleq, Response res) {
+    public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
       return new ModelAndView(variables, "ctrl_alt_defeat.ftl");
+    }
+  }
+
+  private class LoginViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request req, Response res) {
+      Map<String, Object> variables =
+        ImmutableMap.of("tabTitle", "Login");
+      return new ModelAndView(variables, "login.ftl");
+    }
+  }
+  
+  private class LoginHandler implements Route {
+    @Override
+    public Object handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String username = qm.value("username");
+      String password = qm.value("password");
+      int clearance = dbManager.checkPassword(username, password);
+      Map<String, Object> variables =
+        ImmutableMap.of("clearance", clearance);
+
+      return GSON.toJson(variables);
     }
   }
 

@@ -23,22 +23,25 @@ public class GameGUI {
     this.dash = dash;
   }
 
-  public class RosterHandler implements Route {
+  public class StatPageHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
       Game game = dash.getGame();
       if (game != null) {
-        ArrayList<Object> variables = new ArrayList<Object>();
-            variables.add(game.getHome().getPrimary());
-            variables.add(game.getHome().getSecondary());
-            variables.add(game.getAway().getPrimary());
-            variables.add(game.getHome().getSecondary());
-            variables.add(game.getLineup());
-            variables.add(game.getBench(true));
-            variables.add(game.getBench(false));
+        ArrayList<Object> rosterInfo = new ArrayList<Object>();
+            rosterInfo.add(game.getHome().getPrimary());
+            rosterInfo.add(game.getHome().getSecondary());
+            rosterInfo.add(game.getAway().getPrimary());
+            rosterInfo.add(game.getHome().getSecondary());
+            rosterInfo.add(game.getLineup());
+            rosterInfo.add(game.getBench(true));
+            rosterInfo.add(game.getBench(false));
 
-        return GSON.toJson(variables);
+        Map<String, Object> toReturn =
+            ImmutableMap.of("roster", rosterInfo, "stats", game.getAllStats());
+
+        return GSON.toJson(toReturn);
       } else {
         return null;
       }

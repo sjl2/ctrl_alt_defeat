@@ -39,7 +39,6 @@ public class Game {
   private int homeFouls;
   private int awayFouls;
 
-  private List<Stat> stats;
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
@@ -60,7 +59,6 @@ public class Game {
 
     placePlayers(home, away);
 
-    this.stats = new ArrayList<>();
     this.pf = pf;
     this.sf = new StatFactory(db, this);
     this.db = db;
@@ -151,11 +149,36 @@ public class Game {
     System.out.println(possession);
     this.possession = !possession;
     System.out.println(possession);
+  }
+
+  public List<Stat> getAllStats() {
+    return sf.getAllStats();
+  }
+
+  public Stat addStat(String statID, int playerID, Location location)
+      throws GameException {
+
+    Player p = pf.getPlayer(playerID);
+    return addStat(sf.addStat(statID, p, location, period));
+  }
+
+  public void updateStat(int id, String statID,
+      int playerID, Location location) throws GameException {
+
+    Stat oldStat = sf.getStat(id);
+    undoStat(oldStat);
+
+    Stat s = sf.updateStat(id, statID, pf.getPlayer(playerID), location);
+    addStat(s);
 
   }
 
-  public void addStat(Stat s) throws GameException {
-    stats.add(0, s);
+  public void deleteStat(int id) throws GameException {
+    Stat s = sf.removeStat(id);
+    undoStat(s);
+  }
+
+  public Stat addStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.addStat(s);
       homeScore = homeBoxScore.getScore();
@@ -169,18 +192,11 @@ public class Game {
           + "are not on either team.";
       throw new GameException(message);
     }
+
+    return s;
   }
 
-  public void addStat(String statID, int playerID, Location location)
-      throws GameException {
-
-    Player p = pf.getPlayer(playerID);
-    addStat(sf.getStat(statID, p, location, period));
-  }
-
-  public void undoStat(int i) throws GameException {
-    Stat s = stats.remove(i);
-    db.removeStat(s);
+  public void undoStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.undoStat(s);
       homeScore = homeBoxScore.getScore();

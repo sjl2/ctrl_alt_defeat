@@ -37,6 +37,7 @@ public class DBManager {
   private static final int FIVE = 5;
   private static final int SIX = 6;
   private static final int SEVEN = 7;
+  private static final int EIGHT = 8;
   private Connection conn;
   private Multiset<String> nextIDs;
 
@@ -434,7 +435,7 @@ public class DBManager {
 
   }
 
-  public void storeStat(Stat s, String statID, Game game) {
+  public void storeStat(Stat s, String statType, Game game) {
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -444,15 +445,34 @@ public class DBManager {
       ps.setInt(2, game.getID());
       ps.setInt(THREE, s.getPlayer().getTeamID());
       ps.setInt(FOUR, s.getPlayer().getID());
-      ps.setString(FIVE, statID);
+      ps.setString(FIVE, statType);
       ps.setInt(SIX, game.getPeriod());
       ps.setDouble(SEVEN, s.getLocation().getX());
-      ps.setDouble(8, s.getLocation().getY());
+      ps.setDouble(EIGHT, s.getLocation().getY());
 
       ps.execute();
 
     } catch (SQLException e) {
       String message = "Failed add " + s + " to the database: ";
+      throw new RuntimeException(message + e.getMessage());
+    }
+  }
+
+  public void updateStat(Stat s) {
+    String query = "UPDATE stat "
+        + "SET player = ?, type = ?, x = ?, y = ? "
+        + "WHERE id = ?;";
+
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
+      ps.setInt(1, s.getPlayer().getID());
+      ps.setString(2, s.getStatType());
+      ps.setDouble(THREE, s.getLocation().getX());
+      ps.setDouble(FOUR, s.getLocation().getY());
+      ps.setDouble(FIVE, s.getID());
+
+      ps.execute();
+    } catch (SQLException e) {
+      String message = "Failed to update stat " + s + " in database: ";
       throw new RuntimeException(message + e.getMessage());
     }
   }
@@ -465,6 +485,43 @@ public class DBManager {
     } catch (SQLException e) {
       String message = "Failure to remove " + s + " from database.";
       throw new GameException(message + e.getMessage());
+    }
+  }
+
+  public boolean doesUsernameExist(String username) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT name FROM user WHERE name == ? LIMIT 1;")) {
+      prep.setString(1, username);
+      ResultSet rs = prep.executeQuery();
+      return rs.next();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public int checkPassword(String username, String password) {
+    if(!doesUsernameExist(username)) {
+      return -1;
+    }
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT password, clearance FROM user WHERE name == ? LIMIT 1;")) {
+      prep.setString(1, username);
+      ResultSet rs = prep.executeQuery();
+      if(rs.next()) {
+        String dbPassword = rs.getString(1);
+        int clearance = rs.getInt(2);
+        if(dbPassword.equals(password)) {
+          return clearance;
+        } else {
+          return -1;
+        }
+      } else {
+        return -1;
+      }
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
     }
   }
 
@@ -601,4 +658,5 @@ public class DBManager {
       throw new DashboardException(message + " " + e.getMessage());
     }
   }
+
 }
