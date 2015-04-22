@@ -7,18 +7,34 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class TeamFactory {
 
-  private DBManager database;
+  private DBManager db;
   private Map<Integer, Team> teams;
   private PlayerFactory pf;
 
   public TeamFactory(DBManager db, PlayerFactory pf) {
-    this.database = db;
+    this.db = db;
     this.teams = new HashMap<>();
     this.pf = pf;
   }
 
   public Team getTeam(int id) {
     Team t = teams.get(id);
-    return t != null ? t : database.getTeam(id, pf);
+    return t != null ? t : db.getTeam(id, pf);
+  }
+
+  public Team addTeam(
+      String name,
+      String coach,
+      String primary,
+      String secondary,
+      boolean myTeam) {
+
+    Team t =
+        new Team(db.getNextID("team"), name, coach, primary, secondary, pf);
+    db.saveTeam(t, myTeam);
+
+    teams.put(t.getID(), t);
+
+    return t;
   }
 }

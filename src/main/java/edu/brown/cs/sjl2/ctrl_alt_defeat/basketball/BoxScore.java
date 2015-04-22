@@ -46,7 +46,11 @@ public class BoxScore {
     this.isHome = game.isHome(team);
 
     // TODO store in db?
-    this.teamStats = GameStats.getTeamGameStats(game, team);
+    this.teamStats =
+        GameStats.getTeamGameStats(game, team, playerStats.values());
+
+
+
 
   }
 

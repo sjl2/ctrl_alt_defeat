@@ -58,14 +58,11 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      Team t = new Team(
-          dbManager.getNextID("team"),
+      dash.addTeam(
           qm.value("name"),
           qm.value("coach"),
           qm.value("color1"),
-          qm.value("color2"),
-          null);
-      dbManager.saveTeam(t, false);
+          qm.value("color2"));
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Team Results");
@@ -78,10 +75,12 @@ public class DashboardGUI {
     public ModelAndView handle(Request request, Response response) {
 
       QueryParamsMap qm = request.queryMap();
+
       String name = qm.value("name");
       String coach = qm.value("coach");
       String color1 = qm.value("color1");
       String color2 = qm.value("color2");
+
       dash.setMyTeam(name, coach, color1, color2);
 
       Map<String, Object> variables =

@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,7 +45,8 @@ public class Game {
   private StatFactory sf;
   private DBManager db;
 
-  public Game(Team home, Team away, PlayerFactory pf, DBManager db) {
+  public Game(Team home, Team away, PlayerFactory pf, DBManager db)
+      throws GameException {
     this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
@@ -239,8 +241,13 @@ public class Game {
     }
   }
 
-  public void placePlayers(Team h, Team a) {
-    Iterator<Player> homeIterator = h.getPlayers().iterator();
+  public void placePlayers(Team h, Team a) throws GameException {
+    Collection<Player> players =  h.getPlayers();
+    Iterator<Player> homeIterator = players.iterator();
+
+    if (players.size() < 5) {
+      throw new GameException("Not enough players on the home team.");
+    }
 
     lineup.getPlayers().put(BasketballPosition.HomePG, homeIterator.next());
     lineup.getPlayers().put(BasketballPosition.HomeSG, homeIterator.next());
@@ -252,7 +259,13 @@ public class Game {
       homeBench.getPlayers().add(homeIterator.next());
     }
 
-    Iterator<Player> awayIterator = a.getPlayers().iterator();
+    players =  a.getPlayers();
+    Iterator<Player> awayIterator = players.iterator();
+
+
+    if (players.size() < 5) {
+      throw new GameException("Not enough players on the home team.");
+    }
 
     lineup.getPlayers().put(BasketballPosition.AwayPG, awayIterator.next());
     lineup.getPlayers().put(BasketballPosition.AwaySG, awayIterator.next());

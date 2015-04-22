@@ -24,6 +24,6 @@
 
 		<input type="submit" class="submit" value="Submit"> <br>
 	</form>
-  <link rel="stylesheet" href="css/newPlayer.css">
+  <link rel="stylesheet" href="/css/newPlayer.css">
 </#assign>
 <#include "main.ftl">

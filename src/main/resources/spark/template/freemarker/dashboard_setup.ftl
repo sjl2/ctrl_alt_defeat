@@ -16,6 +16,6 @@
 		<br><br>
 		<input type="submit" class="submit" value="Submit"> <br>
 	</form>
-  <link rel="stylesheet" href="css/dashboard_setup.css">
+  <link rel="stylesheet" href="/css/dashboard_setup.css">
 </#assign>
 <#include "main.ftl">

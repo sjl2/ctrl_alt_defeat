@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.common.collect.HashMultiset;
@@ -58,9 +59,18 @@ public class GameStats {
     this.game = game;
     this.team = team;
     this.player = player;
+    this.stats = HashMultiset.create();
+
     for (int i = 0; i < COLS.length; i++) {
       stats.setCount(COLS[i], values.get(i));
     }
+  }
+
+  public GameStats(Multiset<String> values, Game game, Team team, Player player) {
+    this.game = game;
+    this.team = team;
+    this.player = player;
+    this.stats = values;
   }
 
   public static String[] getCols() {
@@ -73,6 +83,17 @@ public class GameStats {
 
   public static GameStats getTeamGameStats(Game game, Team team) {
     return new GameStats(game, team, null);
+  }
+
+  public static GameStats getTeamGameStats(Game game, Team team,
+      Collection<GameStats> playerStats) {
+
+    List<Integer> teamValues = new ArrayList<>();
+
+
+
+
+    return new GameStats(teamValues, game, team, null);
   }
 
   public List<Integer> getValues() {

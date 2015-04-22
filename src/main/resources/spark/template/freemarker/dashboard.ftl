@@ -26,7 +26,7 @@
 
 	</div>
  <script src="js/dashboard.js"></script>
- <link rel="stylesheet" href="css/dashboard.css">
+ <link rel="stylesheet" href="/css/dashboard.css">
 
 </#assign>
 <#include "main.ftl">

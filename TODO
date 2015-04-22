@@ -10,8 +10,11 @@
 - Subbing
 - Be able to load, save, use Boxscore
 - Grab boxscores from the back end and display nicely
-- Get List of Game IDs
-- Display page for game
+- Get List of Game IDs 	
+- Display page for game (sjl2)
+- Game Information Displayed at the top of Dashboard
+	- See ESPN
+- Display Change error message from alerts to fancy balloons.
 - Display page for team
 - Display page for player
 - Heat Maps (Shot Charts)

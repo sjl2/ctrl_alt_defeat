@@ -1,43 +1,20 @@
 body {
-    background-color:#ADD8E6;
+    background-image: url("http://www.psdgraphics.com/file/basketball-floor-texture.jpg");
+    background-size: cover;
+    width:100%;
 }
-
-#current_frame {
-    width: 30px;
-    text-align: center;
-}
-
-h1, h3, #query, #path, #info {
-    margin: 5px;
-    padding: 5px;
-	background-color: white;
-	border: ridge;
-	border-color: gold; 
+h1, h2, h3 {
+    border: ridge;
+    padding: 0.25em;
 }
 
 #wrapper {
-	margin:0px; 
-	position: absolute;
-	left: 200px;
-	top: 155px;
-}
-
-#query {
-	padding: 5px;
-}
-
-#query * {
-	margin-bottom: 5px;
-	width: 70%;
-	font-size: 20px; 
-}
-
-#list, #list2 {
-	width: 476px;
-	resize: none;
-}
-
-input {
-	width: 100%;
-	resize: none;
+    background: center;
+    background-color: #ffffff;
+    width: 90%;
+    padding: 1em;
+    margin-left: 5%;
+    margin-right: 5%;
+    border-left: ridge;
+    border-right: ridge;
 }

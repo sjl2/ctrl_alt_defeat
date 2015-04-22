@@ -39,7 +39,7 @@ public class Dashboard {
     return this.currentGame;
   }
 
-  private Game newGame(Team home, Team away) {
+  private Game newGame(Team home, Team away) throws GameException {
     return new Game(home, away, pf, db);
   }
 
@@ -53,14 +53,18 @@ public class Dashboard {
   public void startGame(Boolean home, int opponentID)
       throws DashboardException {
     if (getMyTeam() == null) {
-      String message = "You cannot start a new game without a team. Please "
+      String message = "Cannot start a new game without a team. Please "
           + "create your team at ...";
       throw new DashboardException(message);
     } else if (currentGame == null) {
-      if (home) {
-        currentGame = newGame(myTeam, tf.getTeam(opponentID));
-      } else {
-        currentGame = newGame(tf.getTeam(opponentID), myTeam);
+      try {
+        if (home) {
+          currentGame = newGame(myTeam, tf.getTeam(opponentID));
+        } else {
+          currentGame = newGame(tf.getTeam(opponentID), myTeam);
+        }
+      } catch (GameException e) {
+        throw new DashboardException("Cannot start game. " + e.getMessage());
       }
     } else {
       String message = "Cannot start new game with a game in progress.";
@@ -92,12 +96,18 @@ public class Dashboard {
   }
 
   public Team setMyTeam(String name,
-      String coach, String color1, String color2) {
+      String coach, String primary, String secondary) {
     this.myTeam =
-        new Team(db.getNextID("team"), name, coach, color1, color2, pf);
+        new Team(db.getNextID("team"), name, coach, primary, secondary, pf);
 
-    db.saveTeam(this.myTeam, true);
+    Team t = tf.addTeam(name, coach, primary, secondary, true);
 
-    return null;
+    return t;
+  }
+
+  public void addTeam(String name, String coach, String primary,
+      String secondary) {
+
+    tf.addTeam(name, coach, primary, secondary, false);
   }
 }

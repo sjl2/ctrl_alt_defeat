@@ -53,17 +53,15 @@ public class GameGUI {
       QueryParamsMap qm = request.queryMap();
       int teamID = Integer.parseInt(qm.value("opponent"));
       boolean isHome = GSON.fromJson(qm.value("is_home"), Boolean.class);
-      
+
       try {
         dash.startGame(isHome, teamID);
       } catch (DashboardException e) {
-        return e.getMessage(); 
+        return e.getMessage();
       }
-      
-      // TODO StartHandler should spark a game perspective 
-      
+
       return "";
-      
+
     }
   }
 
