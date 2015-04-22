@@ -32,14 +32,21 @@ public class BoxScore {
       playerStats.put(p.getID(), gs);
     }
 
-    teamStats = GameStats.TeamGameStats(game, team);
+    teamStats = GameStats.getTeamGameStats(game, team);
 
     this.team = team;
     this.isHome = game.isHome(team);
     this.db = db;
   }
 
-  private BoxScore(Map<Integer, GameStats> playerStats, Game game, Team team) {
+  private BoxScore(DBManager db, Game game, Team team, Map<Integer, GameStats> playerStats) {
+    this.playerStats = playerStats;
+    this.db = db;
+    this.team = team;
+    this.isHome = game.isHome(team);
+
+    // TODO store in db?
+    this.teamStats = GameStats.getTeamGameStats(game, team);
 
   }
 
@@ -63,7 +70,7 @@ public class BoxScore {
       }
     }
 
-    return new BoxScore(playerStats, game, team);
+    return new BoxScore(db, game, team, playerStats);
   }
 
   public GameStats getPlayerStats(Player p) {

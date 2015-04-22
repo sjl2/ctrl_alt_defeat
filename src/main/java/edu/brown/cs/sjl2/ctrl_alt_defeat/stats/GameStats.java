@@ -71,7 +71,7 @@ public class GameStats {
     return COLS.length;
   }
 
-  public static GameStats TeamGameStats(Game game, Team team) {
+  public static GameStats getTeamGameStats(Game game, Team team) {
     return new GameStats(game, team, null);
   }
 
