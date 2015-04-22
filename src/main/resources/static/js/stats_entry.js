@@ -123,7 +123,7 @@ $("#court").click(function(e) {
 var home = {};
 var away = {};
 $.get("/game/roster", function(responseJSON) {
-		var res = JSON.parse(responseJSON);
+		var res = JSON.parse(responseJSON).roster;
 		console.log(res);
 		home.primary = res[0];
 		home.secondary = res[1];

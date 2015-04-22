@@ -33,7 +33,7 @@ public class GameGUI {
             rosterInfo.add(game.getHome().getPrimary());
             rosterInfo.add(game.getHome().getSecondary());
             rosterInfo.add(game.getAway().getPrimary());
-            rosterInfo.add(game.getHome().getSecondary());
+            rosterInfo.add(game.getAway().getSecondary());
             rosterInfo.add(game.getLineup());
             rosterInfo.add(game.getBench(true));
             rosterInfo.add(game.getBench(false));
