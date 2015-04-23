@@ -66,7 +66,7 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
-    
+
     Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
@@ -82,7 +82,7 @@ public class GUIManager {
     Spark.get("/dashboard/game/:id", dashboardGUI.new GameViewHandler(), freeMarker);
     //Spark.get("/dashboard/team/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
     //Spark.get("/dashboard/player/:id", dashboardGUI.new PlayerViewHandler(), freeMarker);
-    
+
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new StatPageHandler());
 
@@ -127,7 +127,7 @@ public class GUIManager {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
+        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat", "errorMessage", "");
       return new ModelAndView(variables, "ctrl_alt_defeat.ftl");
     }
   }
@@ -136,11 +136,11 @@ public class GUIManager {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Login");
+        ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
       return new ModelAndView(variables, "login.ftl");
     }
   }
-  
+
   private class LoginHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {
@@ -149,7 +149,7 @@ public class GUIManager {
       String password = qm.value("password");
       int clearance = dbManager.checkPassword(username, password);
       Map<String, Object> variables =
-        ImmutableMap.of("clearance", clearance);
+        ImmutableMap.of("clearance", clearance, "errorMessage", "");
 
       return GSON.toJson(variables);
     }

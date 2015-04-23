@@ -33,7 +33,7 @@ public class StatsEntryGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Stats Entry");
+          ImmutableMap.of("tabTitle", "Stats Entry", "errorMessage", "");
 
       //      if (dash.getGame() != null) {
       return new ModelAndView(variables, "stats_entry.ftl");

@@ -36,7 +36,7 @@ public class DashboardGUI {
     public ModelAndView handle(Request req, Response res) {
       if (dash.getMyTeam() == null) {
         Map<String, Object> variables =
-            ImmutableMap.of("tabTitle", "Set-Up");
+            ImmutableMap.of("tabTitle", "Set-Up", "errorMessage", "");
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
@@ -53,7 +53,7 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Team");
+          ImmutableMap.of("tabTitle", "New Team", "errorMessage", "");
       return new ModelAndView(variables, "newTeam.ftl");
     }
 
@@ -70,7 +70,7 @@ public class DashboardGUI {
           qm.value("color2"));
 
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Team Results");
+          ImmutableMap.of("tabTitle", "New Team Results", "errorMessage", "");
       return new ModelAndView(variables, "newTeamResults.ftl");
     }
   }
@@ -89,7 +89,7 @@ public class DashboardGUI {
       dash.setMyTeam(name, coach, color1, color2);
 
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Dashboard Set-up");
+          ImmutableMap.of("tabTitle", "Dashboard Set-up", "errorMessage", "");
       return new ModelAndView(variables, "setup_complete.ftl");
     }
   }
@@ -99,7 +99,8 @@ public class DashboardGUI {
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Player",
-                          "teams", dbManager.getTeams());
+                          "teams", dbManager.getTeams(),
+                          "errorMessage", "");
       return new ModelAndView(variables, "newPlayer.ftl");
     }
   }
@@ -115,7 +116,7 @@ public class DashboardGUI {
           Integer.parseInt(qm.value("current")));
 
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Player Results");
+          ImmutableMap.of("tabTitle", "New Player Results", "errorMessage", "");
       return new ModelAndView(variables, "newPlayerResults.ftl");
     }
 
