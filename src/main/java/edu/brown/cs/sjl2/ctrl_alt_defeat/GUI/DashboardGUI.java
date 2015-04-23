@@ -146,5 +146,30 @@ public class DashboardGUI {
     }
 
   }
+  
+  public class GetGameHandler implements TemplateViewRoute {
+
+    @Override
+    public ModelAndView handle(Request arg0, Response arg1) {
+      if (dash.getGame() == null) {
+        Map<String, Object> variables =
+            ImmutableMap.of(
+                "tabTitle", "Dashboard",
+                "game", "",
+                "isGame", false,
+                "errorMessage", "");
+        return new ModelAndView(variables, "dashboard.ftl");
+      } else {
+        Map<String, Object> variables =
+            ImmutableMap.of(
+                "tabTitle", "Dashboard",
+                "game", dash.getGame(),
+                "isGame", true,
+                "errorMessage", "");
+        return new ModelAndView(variables, "dashboard.ftl");
+      }
+    }
+    
+  }
 
 }

@@ -30,7 +30,14 @@ scoreboard.noGameInProgress.box = scoreboard.rect(25, 25, 350, 150).attr({fill :
 scoreboard.noGameInProgress.text = scoreboard.text(200, 100, "No Game\n In Progress!").attr({"font-size" : 50});
 
 $.get("/dashboard/getgame", {}, function(responseJSON) {
-	
+	var res = JSON.parse(responseJSON);
+	if (res.isGame) {
+		scoreboard.noGameInProgress.box.hide();
+		scoreboard.noGameInProgress.text.hide();
+		var g = res.game;
+		scoreboard.homeTimeouts.attr({text : g.homeTimeouts});
+		scoreboard.awayTimeouts.attr({text : g.awayTimeouts});
+	}
 });
 
 
