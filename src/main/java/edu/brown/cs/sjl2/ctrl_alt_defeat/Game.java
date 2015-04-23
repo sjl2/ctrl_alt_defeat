@@ -14,7 +14,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
@@ -44,7 +43,6 @@ public class Game {
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
-  private DBManager db;
 
   public Game(Team home, Team away, PlayerFactory pf, DBManager db)
       throws GameException {
@@ -66,7 +64,6 @@ public class Game {
 
     this.pf = pf;
     this.sf = new StatFactory(db, this);
-    this.db = db;
 
   }
 

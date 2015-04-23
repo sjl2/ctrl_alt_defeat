@@ -95,6 +95,7 @@ public class GUIManager {
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
     Spark.post("/stats/update", statsEntryGUI.new UpdateStatHandler());
+    Spark.post("/stats/delete", statsEntryGUI.new DeleteStatHandler());
 		Spark.post("/stats/changepossession",
 		    statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());

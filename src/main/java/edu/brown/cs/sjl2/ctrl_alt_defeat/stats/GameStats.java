@@ -138,7 +138,11 @@ public class GameStats {
   }
 
   void addMinutes(int minutes) {
-    stats.add("MIN", minutes);
+    if (minutes < 0) {
+      stats.remove("MIN", -1 * minutes);
+    } else {
+      stats.add("MIN", minutes);
+    }
   }
 
   public int getTwoPointers() {
@@ -146,7 +150,11 @@ public class GameStats {
   }
 
   void addTwoPointers(int twoPointers) {
-    stats.add("TwoPM", twoPointers);
+    if (twoPointers < 0) {
+      stats.remove("TwoPM", -1 * twoPointers);
+    } else {
+      stats.add("TwoPM", twoPointers);
+    }
   }
 
   public int getTwoPointersA() {
@@ -154,7 +162,11 @@ public class GameStats {
   }
 
   void addTwoPointersA(int twoPointersA) {
-    stats.add("TwoPA", twoPointersA);
+    if (twoPointersA < 0) {
+      stats.remove("TwoPA", -1 * twoPointersA);
+    } else {
+      stats.add("TwoPA", twoPointersA);
+    }
   }
 
   public int getThreePointers() {
@@ -162,7 +174,11 @@ public class GameStats {
   }
 
   void addThreePointers(int threePointers) {
-    stats.add("ThreePM", threePointers);
+    if (threePointers < 0) {
+      stats.remove("ThreePM", -1 * threePointers);
+    } else {
+      stats.add("ThreePM", threePointers);
+    }
   }
 
   public int getThreePointersA() {
@@ -170,7 +186,11 @@ public class GameStats {
   }
 
   void addThreePointersA(int threePointersA) {
-    stats.add("ThreePA", threePointersA);
+    if (threePointersA < 0) {
+      stats.remove("ThreePA", -1 * threePointersA);
+    } else {
+      stats.add("ThreePA", threePointersA);
+    }
   }
 
   public int getFreeThrows() {
@@ -178,7 +198,11 @@ public class GameStats {
   }
 
   void addFreeThrows(int freeThrows) {
-    stats.add("FTM", freeThrows);
+    if (freeThrows < 0) {
+      stats.remove("FTM", -1 * freeThrows);
+    } else {
+      stats.add("FTM", freeThrows);
+    }
   }
 
   public int getFreeThrowsA() {
@@ -186,7 +210,11 @@ public class GameStats {
   }
 
   void addFreeThrowsA(int freeThrowsA) {
-    stats.add("FTA", freeThrowsA);
+    if (freeThrowsA < 0) {
+      stats.remove("FTA", -1 * freeThrowsA);
+    } else {
+      stats.add("FTA", freeThrowsA);
+    }
   }
 
   public int getOffensiveRebounds() {
@@ -194,7 +222,11 @@ public class GameStats {
   }
 
   void addOffensiveRebounds(int orb) {
-    stats.add("ORB", orb);
+    if (orb < 0) {
+      stats.remove("ORB", -1 * orb);
+    } else {
+      stats.add("ORB", orb);
+    }
   }
 
   public int getDefensiveRebounds() {
@@ -202,7 +234,11 @@ public class GameStats {
   }
 
   void addDefensiveRebounds(int drb) {
-    stats.add("DRB", drb);
+    if (drb < 0) {
+      stats.remove("DRB", -1 * drb);
+    } else {
+      stats.add("DRB", drb);
+    }
   }
 
   public int getAssists() {
@@ -210,7 +246,11 @@ public class GameStats {
   }
 
   void addAssists (int ast) {
-    stats.add("AST", ast);
+    if (ast < 0) {
+      stats.remove("AST", -1 * ast);
+    } else {
+      stats.add("AST", ast);
+    }
   }
 
   public int getSteals() {
@@ -218,7 +258,11 @@ public class GameStats {
   }
 
   void addSteals(int stl) {
-    stats.add("STL", stl);
+    if (stl < 0) {
+      stats.remove("STL", -1 * stl);
+    } else {
+      stats.add("STL", stl);
+    }
   }
 
   public int getBlocks() {
@@ -226,7 +270,11 @@ public class GameStats {
   }
 
   void addBlocks(int blk) {
-    stats.add("BLK", blk);
+    if (blk < 0) {
+      stats.remove("BLK", -1 * blk);
+    } else {
+      stats.add("BLK", blk);
+    }
   }
 
   public int getTurnovers() {
@@ -234,7 +282,11 @@ public class GameStats {
   }
 
   void addTurnovers(int tov) {
-    stats.add("TOV", tov);
+    if (tov < 0) {
+      stats.remove("TOV", -1 * tov);
+    } else {
+      stats.add("TOV", tov);
+    }
   }
 
   public int getOffensiveFouls() {
@@ -243,7 +295,11 @@ public class GameStats {
 
 
   void addOffensiveFouls(int offensiveFoul) {
-    stats.add("OF", offensiveFoul);
+    if (offensiveFoul < 0) {
+      stats.remove("OffensiveFouls", -1 * offensiveFoul);
+    } else {
+      stats.add("OffensiveFouls", offensiveFoul);
+    }
   }
 
   public int getDefensiveFouls() {
@@ -251,7 +307,11 @@ public class GameStats {
   }
 
   void addDefensiveFouls(int defensiveFoul) {
-    stats.add("DF", defensiveFoul);
+    if (defensiveFoul < 0) {
+      stats.remove("DF", -1 * defensiveFoul);
+    } else {
+      stats.add("DF", defensiveFoul);
+    }
   }
 
   public int getTechnicalFouls() {
@@ -259,7 +319,11 @@ public class GameStats {
   }
 
   void addTechnicalFouls(int technicalFouls) {
-    stats.add("TF", technicalFouls);
+    if (technicalFouls < 0) {
+      stats.remove("TF", -1 * technicalFouls);
+    } else {
+      stats.add("TF", technicalFouls);
+    }
   }
 
   public int getFieldGoals() {

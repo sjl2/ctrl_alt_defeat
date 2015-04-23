@@ -80,6 +80,10 @@ public class Dashboard {
     return tf.getTeam(id);
   }
 
+  public List<Team> getTeams() {
+    return tf.getTeams();
+  }
+
   public Game getGameByDate(String date) {
     // TODO
     return null;

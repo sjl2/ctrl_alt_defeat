@@ -103,7 +103,7 @@ public class StatsEntryGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      int id = GSON.fromJson(qm.value("id"), Integer.class);
+      int id = GSON.fromJson(qm.value("databaseID"), Integer.class);
 
       try {
         dash.getGame().deleteStat(id);

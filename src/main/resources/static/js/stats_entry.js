@@ -572,6 +572,7 @@ function clickThing(b) {
 	}
 
 	function logStat(res, type) {
+		console.log(res);
 		var feed = stats_feed.rect(13, stats_feed.count * -50, 25, 25).attr({fill : "gold"});
 			var txt = stats_feed.text(40, stats_feed.count * -50 + 12.5, "#" + res.player.number + " " + res.player.name + " " + type)
 			.attr({"text-anchor" : "start"});
