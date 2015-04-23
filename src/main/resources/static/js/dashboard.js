@@ -29,11 +29,13 @@ scoreboard.noGameInProgress = {};
 scoreboard.noGameInProgress.box = scoreboard.rect(25, 25, 350, 150).attr({fill : "gray"});
 scoreboard.noGameInProgress.text = scoreboard.text(200, 100, "No Game\n In Progress!").attr({"font-size" : 50});
 
+$.get("/dashboard/getgame", {}, function(responseJSON) {
+	
+});
 
 
 
 function newGame() {
-	console.log($("#opponent")[0].value);
 	var postParameters = {
 		opponent: $("#opponent")[0].value,
 		is_home: $("#is_home")[0].checked

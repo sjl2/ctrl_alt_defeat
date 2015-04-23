@@ -86,7 +86,8 @@ public class GameStats {
     } else {
       this.player = null;
     }
-
+    
+    this.stats = HashMultiset.create();
 
     for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
       stats.setCount(COLS[i], values.get(i));
