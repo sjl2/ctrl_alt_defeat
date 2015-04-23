@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.OldGame;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
@@ -183,4 +184,29 @@ public class DashboardGUI {
     
   }
 
+  public class UpdateGameHandler implements Route {
+
+    @Override
+    public Object handle(Request arg0, Response arg1) {
+      Game g = dash.getGame();
+        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+            .put("homeScore", g.getHomeScore())
+            .put("awayScore", g.getAwayScore())
+            .put("possession", g.getPossession())
+            .put("homeFouls", g.getHomeFouls())
+            .put("awayFouls", g.getAwayFouls())
+            .put("homeTimeouts", g.getTO(true))
+            .put("awayTimeouts", g.getTO(false))
+            .put("period", g.getPeriod())
+            .put("homeBonus", g.getHomeBonus())
+            .put("homeDoubleBonus", g.getHomeDoubleBonus())
+            .put("awayBonus", g.getAwayBonus())
+            .put("awayDoubleBonus", g.getAwayDoubleBonus())
+          .put("errorMessage", "").build();
+        return GSON.toJson(variables);
+      
+    }
+    
+  }
+  
 }

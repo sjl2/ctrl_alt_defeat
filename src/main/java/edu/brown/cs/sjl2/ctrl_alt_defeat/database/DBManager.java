@@ -432,6 +432,7 @@ public class DBManager {
 
       ps.executeBatch();
     } catch (SQLException e) {
+      e.printStackTrace();
       String message = "Failed to save boxscore to database.";
       throw new RuntimeException(message + e.getMessage());
     }
