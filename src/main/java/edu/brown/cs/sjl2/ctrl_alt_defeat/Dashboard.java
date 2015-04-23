@@ -105,12 +105,10 @@ public class Dashboard {
 
   public Team setMyTeam(String name,
       String coach, String primary, String secondary) {
-    this.myTeam =
-        new Team(db.getNextID("team"), name, coach, primary, secondary, pf);
 
-    Team t = tf.addTeam(name, coach, primary, secondary, true);
+    this.myTeam = tf.addTeam(name, coach, primary, secondary, true);
 
-    return t;
+    return this.myTeam;
   }
 
   public void addTeam(String name, String coach, String primary,

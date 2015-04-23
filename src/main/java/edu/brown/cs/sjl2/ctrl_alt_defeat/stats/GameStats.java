@@ -14,7 +14,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 public class GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
-  private static final int FIRST_STAT_COL = 3;
+  private static final int DUMMY_PLAYER_ID = 0;
+
   private static final String[] COLS = {
     "game", "team", "player", "MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA",
     "FTM", "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF"
@@ -38,6 +39,7 @@ public class GameStats {
 
     stats.setCount("game", game);
     stats.setCount("team", team.getID());
+
     if (player != null) {
       //TODO
       stats.setCount("player", player.getID());
@@ -47,49 +49,20 @@ public class GameStats {
 
   }
 
-  /**
-   * Constructor that initializes the values of the stats to the values. Ensure
-   * that the values correspond to the correct columns by matching the stats to
-   * the output of getCols(). Note, the length mus be equal to
-   * GameStats.getNumCols() as well.
-   * @param values A list of Integers representing in order the stats found in
-   * GameStats.getCols().
-   * @param game The game object to be found.
-   * @param team The team referring for the gamestats
-   * @param player The player of the gamestats.
-   */
-  private GameStats(List<Integer> values, Game game, Team team, Player player) {
-    this.game = game.getID();
-    this.team = team;
-    this.player = player;
-    this.stats = HashMultiset.create();
-
-    for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
-      stats.setCount(COLS[i], values.get(i));
-    }
-  }
-
-  public GameStats(Multiset<String> values, Game game, Team team, Player player) {
-    this.game = game.getID();
-    this.team = team;
-    this.player = player;
-    this.stats = values;
-  }
-
   public GameStats(List<Integer> values, int gameID, Team team) {
     this.game = gameID;
     this.team = team;
 
     int playerID = values.get(2);
-    if (playerID != -1) {
+    if (playerID != DUMMY_PLAYER_ID) {
       this.player = team.getPlayerById(playerID);
     } else {
       this.player = null;
     }
-    
+
     this.stats = HashMultiset.create();
 
-    for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
+    for (int i = 0; i < COLS.length; i++) {
       stats.setCount(COLS[i], values.get(i));
     }
   }
@@ -111,6 +84,18 @@ public class GameStats {
 
     for (String col : getCols()) {
       values.add(stats.count(col));
+    }
+    return values;
+  }
+
+  public List<Integer> getTeamValues() {
+    List<Integer> values = new ArrayList<>();
+
+    for (String col : getCols()) {
+      // Skip player id
+      if (!col.equals("player")) {
+        values.add(stats.count(col));
+      }
     }
     return values;
   }

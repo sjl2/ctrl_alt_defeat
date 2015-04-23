@@ -103,6 +103,7 @@ public class DashboardGUI {
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Dashboard Set-up", "errorMessage", "");
+
       return new ModelAndView(variables, "setup_complete.ftl");
     }
   }
@@ -158,7 +159,7 @@ public class DashboardGUI {
     }
 
   }
-  
+
   public class GetGameHandler implements Route {
 
     @Override
@@ -180,7 +181,7 @@ public class DashboardGUI {
         return GSON.toJson(variables);
       }
     }
-    
+
   }
 
 }

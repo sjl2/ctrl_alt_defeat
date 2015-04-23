@@ -101,7 +101,8 @@ public class Game {
     return awayBoxScore;
   }
 
-  public void subPlayer(int idIn, int idOut, boolean home) throws ScoreboardException {
+  public void subPlayer(int idIn, int idOut, boolean home)
+      throws ScoreboardException {
     Lineup l = lineup;
     Bench b;
     Team t;
@@ -112,7 +113,6 @@ public class Game {
       b = awayBench;
       t = awayTeam;
     }
-    System.out.println(t.playerIds + "  " + t.playerIds + "  " + l.getPlayers().values());
     l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
     b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
   }
@@ -135,7 +135,9 @@ public class Game {
 
   public void incrementPeriod() throws GameException {
     if (this.period == rules.periods()) {
-      throw new GameException("Cannot increment, game is already in period " + this.period + "!");
+      String message = "Cannot increment, game is already in period "
+          + this.period + "!";
+      throw new GameException(message);
     } else {
       this.period++;
     }
@@ -143,7 +145,8 @@ public class Game {
 
   public void decrementPeriod() throws GameException {
     if (this.period == 1) {
-      throw new GameException("Cannot decrement, game is already in the first period!");
+      String message = "Cannot decrement, game is already in the first period!";
+      throw new GameException(message);
     } else {
       this.period--;
     }
@@ -270,11 +273,12 @@ public class Game {
       throw new GameException("Not enough players on the home team.");
     }
 
-    lineup.getPlayers().put(BasketballPosition.HomePG, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomeSG, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomeSF, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomePF, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomeC, homeIterator.next());
+    lineup
+      .addStarter(BasketballPosition.HomePG, homeIterator.next())
+      .addStarter(BasketballPosition.HomeSG, homeIterator.next())
+      .addStarter(BasketballPosition.HomeSF, homeIterator.next())
+      .addStarter(BasketballPosition.HomePF, homeIterator.next())
+      .addStarter(BasketballPosition.HomeC, homeIterator.next());
 
     while (homeIterator.hasNext()) {
       homeBench.getPlayers().add(homeIterator.next());
@@ -288,11 +292,12 @@ public class Game {
       throw new GameException("Not enough players on the home team.");
     }
 
-    lineup.getPlayers().put(BasketballPosition.AwayPG, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwaySG, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwaySF, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwayPF, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwayC, awayIterator.next());
+    lineup
+      .addStarter(BasketballPosition.AwayPG, awayIterator.next())
+      .addStarter(BasketballPosition.AwaySG, awayIterator.next())
+      .addStarter(BasketballPosition.AwaySF, awayIterator.next())
+      .addStarter(BasketballPosition.AwayPF, awayIterator.next())
+      .addStarter(BasketballPosition.AwayC, awayIterator.next());
 
     while (awayIterator.hasNext()) {
       awayBench.getPlayers().add(awayIterator.next());
@@ -303,5 +308,11 @@ public class Game {
   public LocalDate getDate() {
     return date;
   }
+
+  @Override
+  public String toString() {
+    return awayTeam + " @ " + homeTeam + " (" + date + ")";
+  }
+
 
 }
