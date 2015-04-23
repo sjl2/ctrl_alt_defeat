@@ -1,0 +1,28 @@
+#myStarters {
+    width: 33%;
+    float: left;
+}
+
+#selectors {
+    text-align: center;
+    width: 34%;
+    float: left;
+}
+
+#opponentStarters {
+    text-align: right;
+    width: 33%;
+    float: left;
+}
+
+#submit {
+    width: 33%;
+    text-align: center;
+    position: relative;
+    top: 50px;
+    margin: 0px auto;
+}
+
+.playerSelector {
+    margin-bottom: 10px;
+}
