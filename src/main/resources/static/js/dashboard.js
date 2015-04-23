@@ -36,9 +36,8 @@ $.get("/dashboard/getgame", {}, function(responseJSON) {
 	if (res.isGame) {
 		scoreboard.noGameInProgress.box.hide();
 		scoreboard.noGameInProgress.text.hide();
-		var g = res.game;
-		scoreboard.homeTimeouts.attr({text : g.homeTimeouts});
-		scoreboard.awayTimeouts.attr({text : g.awayTimeouts});
+		scoreboard.homeTimeouts.attr({text : res.timeouts});
+		scoreboard.awayTimeouts.attr({text : res.timeouts});
 	}
 });
 
