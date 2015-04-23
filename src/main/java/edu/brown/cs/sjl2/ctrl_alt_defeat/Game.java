@@ -40,7 +40,11 @@ public class Game {
   private boolean possession;
   private int homeFouls;
   private int awayFouls;
-
+  private boolean homeBonus;
+  private boolean homeDoubleBonus;
+  private boolean awayBonus;
+  private boolean awayDoubleBonus;
+  
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
@@ -65,6 +69,14 @@ public class Game {
 
     this.pf = pf;
     this.sf = new StatFactory(db, this);
+    
+    this.homeBonus = false;
+    this.homeDoubleBonus = false;
+    this.awayBonus = false;
+    this.awayDoubleBonus = false;
+    this.homeTO = rules.timeouts();
+    this.awayTO = rules.timeouts();
+    this.period = 1;
 
   }
 
@@ -153,9 +165,19 @@ public class Game {
   }
 
   public void flipPossession() {
-    System.out.println(possession);
     this.possession = !possession;
-    System.out.println(possession);
+  }
+  
+  public boolean getPossession() {
+    return possession;
+  }
+  
+  public int getTO(boolean home) {
+    if (home) {
+      return homeTO;
+    } else {
+      return awayTO;
+    }
   }
 
   public List<Stat> getAllStats() {
@@ -185,15 +207,33 @@ public class Game {
     undoStat(s);
   }
 
+  public void updateBonuses() {
+    if (homeFouls >= rules.bonus()) {
+      homeBonus = true;
+    }
+    if (homeFouls >= rules.doubleBonus()) {
+      homeDoubleBonus = true;
+    }
+    if (awayFouls >= rules.bonus()) {
+      awayBonus = true;
+    }
+    if (awayFouls >= rules.doubleBonus()) {
+      awayDoubleBonus = true;
+    }
+  }
+  
   public Stat addStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.addStat(s);
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
+      updateBonuses();
+      
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.addStat(s);
       awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
+      updateBonuses();
     } else {
       String message = "Cannot add stat for " + s.getPlayer() + " because they "
           + "are not on either team.";
@@ -209,10 +249,12 @@ public class Game {
       homeBoxScore.undoStat(s);
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
+      updateBonuses();
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.undoStat(s);
       awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
+      updateBonuses();
     } else {
       String message = "Cannot undo stat for " + s.getPlayer() + " because "
           + "they are not on either team.";
@@ -307,6 +349,19 @@ public class Game {
 
   public LocalDate getDate() {
     return date;
+  }
+  
+  public boolean getHomeBonus() {
+    return homeBonus;
+  }
+  public boolean getHomeDoubleBonus() {
+    return homeDoubleBonus;
+  }
+  public boolean getAwayBonus() {
+    return awayBonus;
+  }
+  public boolean getAwayDoubleBonus() {
+    return awayDoubleBonus;
   }
 
   @Override

@@ -29,7 +29,7 @@ public class BoxScore {
       playerStats.put(p.getID(), gs);
     }
 
-    playerStats.put(-1, GameStats.newTeamGameStats(game, team));
+    playerStats.put(0, GameStats.newTeamGameStats(game, team));
 
     // Initialize all of the gamestats in the db
     Collection<GameStats> stats = playerStats.values();
@@ -69,7 +69,7 @@ public class BoxScore {
   public List<GameStats> getAllPlayerStats() {
     List<GameStats> allStats = new ArrayList<>();
     for (int playerID : playerStats.keySet()) {
-      if (playerID != -1) {
+      if (playerID != 0) {
         allStats.add(playerStats.get(playerID));
       }
     }

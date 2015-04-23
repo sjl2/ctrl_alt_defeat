@@ -74,9 +74,11 @@ public class GameStats {
   public static int getNumCols() {
     return COLS.length;
   }
-
+//nick: I changed this from null because it's broken and hard to test other stuff
+  //i think at some point we'll have to revisit how teams are displayed in 
+  //the database and what a TeamGameStats is
   public static GameStats newTeamGameStats(Game game, Team team) {
-    return new GameStats(game.getID(), team, null);
+    return new GameStats(game.getID(), team, team.getPlayerById(0));
   }
 
   public List<Integer> getValues() {
@@ -345,5 +347,10 @@ public class GameStats {
   public int getPersonalFouls() {
     return stats.count("OF") + stats.count("DF");
   }
+  
+  @Override
+  public String toString() {
+    return "GAME STATS FOR " + this.player;
+  } 
 
 }
