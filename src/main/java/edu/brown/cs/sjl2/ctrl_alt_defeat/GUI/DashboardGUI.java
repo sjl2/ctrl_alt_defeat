@@ -127,7 +127,6 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       int gameID = Integer.parseInt(request.params("id"));
-
       String error = "";
 
       OldGame game = null;
@@ -135,8 +134,9 @@ public class DashboardGUI {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
         error = e.getMessage();
+        System.out.println("there's an error and game isn't getting defined");
       }
-
+      System.out.println(game.getHomeBoxScore().getTeamStats());
       Map<String, Object> variables =
         ImmutableMap.of(
             "tabTitle", game.toString(),
@@ -152,20 +152,22 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request arg0, Response arg1) {
       if (dash.getGame() == null) {
-        Map<String, Object> variables =
-            ImmutableMap.of(
-                "tabTitle", "Dashboard",
-                "game", "",
-                "isGame", false,
-                "errorMessage", "");
+        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+            .put("tabTitle", "Dashboard")
+            .put("teams", dbManager.getTeams())
+            .put("myTeam", dash.getMyTeam())
+            .put("isGame", false)
+            .put("game", "")
+            .put("errorMessage", "").build();
         return new ModelAndView(variables, "dashboard.ftl");
       } else {
-        Map<String, Object> variables =
-            ImmutableMap.of(
-                "tabTitle", "Dashboard",
-                "game", dash.getGame(),
-                "isGame", true,
-                "errorMessage", "");
+        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("tabTitle", "Dashboard")
+          .put("teams", dbManager.getTeams())
+          .put("myTeam", dash.getMyTeam())
+          .put("isGame", true)
+          .put("game", dash.getGame())
+          .put("errorMessage", "").build();
         return new ModelAndView(variables, "dashboard.ftl");
       }
     }

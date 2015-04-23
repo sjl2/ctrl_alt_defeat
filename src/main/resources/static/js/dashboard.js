@@ -31,6 +31,7 @@ scoreboard.noGameInProgress.text = scoreboard.text(200, 100, "No Game\n In Progr
 
 $.get("/dashboard/getgame", {}, function(responseJSON) {
 	var res = JSON.parse(responseJSON);
+	console.log(res);
 	if (res.isGame) {
 		scoreboard.noGameInProgress.box.hide();
 		scoreboard.noGameInProgress.text.hide();

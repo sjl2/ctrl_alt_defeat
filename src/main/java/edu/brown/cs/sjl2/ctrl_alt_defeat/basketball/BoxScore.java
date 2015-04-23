@@ -13,7 +13,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class BoxScore {
-  private static final int TEAM = -1;
+  private static final int TEAM = 0;
 
   private Map<Integer, GameStats> playerStats;
   private Team team;

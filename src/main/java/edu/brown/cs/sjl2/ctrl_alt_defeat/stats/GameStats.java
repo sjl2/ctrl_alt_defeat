@@ -42,7 +42,7 @@ public class GameStats {
       //TODO
       stats.setCount("player", player.getID());
     } else {
-      stats.setCount("player", -1); // Team Stats Don't Have player id.
+      stats.setCount("player", 0); // Team Stats Don't Have player id.
     }
 
   }
