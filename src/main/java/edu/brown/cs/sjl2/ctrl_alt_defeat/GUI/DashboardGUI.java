@@ -43,7 +43,8 @@ public class DashboardGUI {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Dashboard",
                           "teams", dbManager.getTeams(),
-                          "myTeam", dash.getMyTeam());
+                          "myTeam", dash.getMyTeam(),
+                          "errorMessage", "");
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }
