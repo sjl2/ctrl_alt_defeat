@@ -27,56 +27,11 @@ public class StatFactory {
     return stats.get(id);
   }
 
-  public Stat updateStat(int id, String statID, Player p, Location location) {
+  public Stat updateStat(int id, String statType, Player p, Location location) {
     Stat s = stats.get(id);
     int period = s.getPeriod();
 
-    switch (statID) {
-      case "Block":
-        s = new Block(id, p, location, period);
-        break;
-      case "DefensiveFoul":
-        s = new DefensiveFoul(id, p, location, period);
-        break;
-      case "FreeThrow":
-        s = new FreeThrow(id, p, location, period);
-        break;
-      case "MissedFreeThrow":
-        s = new MissedFreeThrow(id, p, location, period);
-        break;
-      case "MissedTwoPointer":
-        s = new MissedTwoPointer(id, p, location, period);
-        break;
-      case "MissedThreePointer":
-        s = new MissedThreePointer(id, p, location, period);
-        break;
-      case "OffensiveFoul":
-        s = new OffensiveFoul(id, p, location, period);
-        break;
-      case "OffensiveRebound":
-        s = new OffensiveRebound(id, p, location, period);
-        break;
-      case "DefensiveRebound":
-        s = new DefensiveRebound(id, p, location, period);
-        break;
-      case "Steal":
-        s = new Steal(id, p, location, period);
-        break;
-      case "TechnicalFoul":
-        s = new TechnicalFoul(id, p, location, period);
-        break;
-      case "ThreePointer":
-        s = new ThreePointer(id, p, location, period);
-        break;
-      case "Turnover":
-        s = new Turnover(id, p, location, period);
-        break;
-      case "TwoPointer":
-        s = new TwoPointer(id, p, location, period);
-        break;
-      default:
-        throw new RuntimeException("Unrecognized statID \"" + statID + "\".");
-    }
+    s = newStat(statType, id, p, location, period);
 
     stats.put(id, s);
 
@@ -85,12 +40,21 @@ public class StatFactory {
     return s;
   }
 
-  public Stat addStat(String statID, Player p, Location location, int period) {
+  public Stat addStat(String statType, Player p, Location location, int period) {
     int id = db.getNextID("stat");
 
+    Stat s = newStat(statType, id, p, location, period);
+
+    db.storeStat(s, statType, game);
+    stats.put(s.getID(), s);
+
+    return s;
+  }
+
+  public Stat newStat(String statType, int id, Player p, Location location, int period) {
     Stat s = null;
 
-    switch (statID) {
+    switch (statType) {
       case "Block":
         s = new Block(id, p, location, period);
         break;
@@ -134,11 +98,8 @@ public class StatFactory {
         s = new TwoPointer(id, p, location, period);
         break;
       default:
-        throw new RuntimeException("Unrecognized statID \"" + statID + "\".");
+        throw new RuntimeException("Unrecognized statID \"" + statType + "\".");
     }
-
-    db.storeStat(s, statID, game);
-    stats.put(s.getID(), s);
 
     return s;
   }

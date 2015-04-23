@@ -1,7 +1,9 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
@@ -11,10 +13,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class BoxScore {
+  private static final int TEAM = 0;
+
   private Map<Integer, GameStats> playerStats;
-  private GameStats teamStats;
   private Team team;
-  private boolean isHome;
   private DBManager db;
 
   public BoxScore(DBManager db, Game game, Team team) {
@@ -23,35 +25,25 @@ public class BoxScore {
     playerStats = new HashMap<>();
 
     for (Player p : players) {
-      GameStats gs = new GameStats(game, team, p);
-      try {
-        db.storeGameStats(gs);
-      } catch (GameException e) {
-        throw new RuntimeException(e.getMessage());
-      }
+      GameStats gs = new GameStats(game.getID(), team, p);
       playerStats.put(p.getID(), gs);
     }
 
-    teamStats = GameStats.getTeamGameStats(game, team);
+    playerStats.put(-1, GameStats.newTeamGameStats(game, team));
+
+    // Initialize all of the gamestats in the db
+    Collection<GameStats> stats = playerStats.values();
+    db.saveBoxScore(stats);
+
 
     this.team = team;
-    this.isHome = game.isHome(team);
     this.db = db;
   }
 
-  private BoxScore(DBManager db, Game game, Team team, Map<Integer, GameStats> playerStats) {
+  private BoxScore(DBManager db, Team team, Map<Integer, GameStats> playerStats) {
     this.playerStats = playerStats;
     this.db = db;
     this.team = team;
-    this.isHome = game.isHome(team);
-
-    // TODO store in db?
-    this.teamStats =
-        GameStats.getTeamGameStats(game, team, playerStats.values());
-
-
-
-
   }
 
   /**
@@ -60,52 +52,51 @@ public class BoxScore {
    * @param game
    * @param home
    * @return Returns a Boxscore from the database
+   * @throws GameException
    */
-  public static BoxScore getBoxScore(DBManager db, Game game, Team team) {
-    Collection<Player> players = team.getPlayers();
-    Map<Integer, GameStats> playerStats = new HashMap<>();
+  public static BoxScore getOldBoxScore(DBManager db, int gameID, Team team)
+      throws GameException {
 
-    for (Player player : players) {
-      try {
-        playerStats.put(player.getID(), db.loadGameStats(game, team, player));
-      } catch (GameException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
+    Map<Integer, GameStats> playerStats = db.loadBoxScore(gameID, team);
 
-    return new BoxScore(db, game, team, playerStats);
+    return new BoxScore(db, team, playerStats);
   }
 
   public GameStats getPlayerStats(Player p) {
     return playerStats.get(p.getID());
   }
 
+  public List<GameStats> getAllPlayerStats() {
+    List<GameStats> allStats = new ArrayList<>();
+    for (int playerID : playerStats.keySet()) {
+      if (playerID != -1) {
+        allStats.add(playerStats.get(playerID));
+      }
+    }
+    return allStats;
+  }
+
   public GameStats getTeamStats() {
-    return teamStats;
+    return playerStats.get(TEAM);
   }
 
   public Team getTeam() {
     return team;
   }
 
-  public boolean isHome() {
-    return isHome;
-  }
-
   public int getScore() {
-    return teamStats.getFreeThrows()
-        + (teamStats.getTwoPointers() * 2)
-        + (teamStats.getThreePointers() * 3);
+    return getTeamStats().getFreeThrows()
+        + (getTeamStats().getTwoPointers() * 2)
+        + (getTeamStats().getThreePointers() * 3);
   }
 
   public int getFouls() {
-    return teamStats.getPersonalFouls();
+    return getTeamStats().getPersonalFouls();
   }
 
   public void addStat(Stat s) {
     s.execute(playerStats.get(s.getPlayer().getID()));
-    s.execute(teamStats);
+    s.execute(getTeamStats());
     updateDB();
   }
 
@@ -118,7 +109,7 @@ public class BoxScore {
 
   public void undoStat(Stat s) {
     s.undo(playerStats.get(s.getPlayer().getID()));
-    s.undo(teamStats);
+    s.undo(getTeamStats());
     updateDB();
   }
 

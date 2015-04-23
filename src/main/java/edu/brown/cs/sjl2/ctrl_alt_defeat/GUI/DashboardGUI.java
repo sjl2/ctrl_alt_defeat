@@ -8,12 +8,15 @@ import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.TemplateViewRoute;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.OldGame;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
@@ -34,27 +37,28 @@ public class DashboardGUI {
     public ModelAndView handle(Request req, Response res) {
       if (dash.getMyTeam() == null) {
         Map<String, Object> variables =
-            ImmutableMap.of("tabTitle", "Set-Up");
+            ImmutableMap.of("tabTitle", "Set-Up", "errorMessage", "");
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Dashboard",
                           "teams", dbManager.getTeams(),
-                          "myTeam", dash.getMyTeam());
+                          "myTeam", dash.getMyTeam(),
+                          "errorMessage", "");
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }
 
   public class NewTeamHandler implements TemplateViewRoute {
-    
+
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Team");
+          ImmutableMap.of("tabTitle", "New Team", "errorMessage", "");
       return new ModelAndView(variables, "newTeam.ftl");
     }
-    
+
   }
 
   public class NewTeamResultsHandler implements TemplateViewRoute {
@@ -68,7 +72,7 @@ public class DashboardGUI {
           qm.value("color2"));
 
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Team Results");
+          ImmutableMap.of("tabTitle", "New Team Results", "errorMessage", "");
       return new ModelAndView(variables, "newTeamResults.ftl");
     }
   }
@@ -98,7 +102,7 @@ public class DashboardGUI {
       dash.setMyTeam(name, coach, color1, color2);
 
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Dashboard Set-up");
+          ImmutableMap.of("tabTitle", "Dashboard Set-up", "errorMessage", "");
       return new ModelAndView(variables, "setup_complete.ftl");
     }
   }
@@ -108,7 +112,8 @@ public class DashboardGUI {
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Player",
-                          "teams", dbManager.getTeams());
+                          "teams", dbManager.getTeams(),
+                          "errorMessage", "");
       return new ModelAndView(variables, "newPlayer.ftl");
     }
   }
@@ -124,7 +129,7 @@ public class DashboardGUI {
           Integer.parseInt(qm.value("current")));
 
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Player Results");
+          ImmutableMap.of("tabTitle", "New Player Results", "errorMessage", "");
       return new ModelAndView(variables, "newPlayerResults.ftl");
     }
 
@@ -134,11 +139,46 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       int gameID = Integer.parseInt(request.params("id"));
+      String error = "";
 
-
+      OldGame game = null;
+      try {
+        game = dash.getOldGame(gameID);
+      } catch (DashboardException e) {
+        error = e.getMessage();
+        System.out.println("there's an error and game isn't getting defined");
+      }
+      System.out.println(game.getHomeBoxScore().getTeamStats());
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Player View", "rows", new ArrayList<GameStats>());
+        ImmutableMap.of(
+            "tabTitle", game.toString(),
+            "game", game,
+            "errorMessage", error);
       return new ModelAndView(variables, "game.ftl");
+    }
+
+  }
+  
+  public class GetGameHandler implements Route {
+
+    @Override
+    public Object handle(Request arg0, Response arg1) {
+      if (dash.getGame() == null) {
+        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+            .put("tabTitle", "Dashboard")
+            .put("teams", dbManager.getTeams())
+            .put("myTeam", dash.getMyTeam())
+            .put("isGame", false)
+            .put("game", "")
+            .put("errorMessage", "").build();
+        return GSON.toJson(variables);
+      } else {
+        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("isGame", true)
+          .put("timeouts", dash.getGame().getRules().timeouts())
+          .put("errorMessage", "").build();
+        return GSON.toJson(variables);
+      }
     }
     
   }

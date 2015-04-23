@@ -1,6 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +11,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ProRules;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
@@ -30,6 +31,7 @@ public class Game {
   private BoxScore homeBoxScore;
   private BoxScore awayBoxScore;
 
+  private LocalDate date;
   private int period;
   private int homeScore;
   private int awayScore;
@@ -42,11 +44,13 @@ public class Game {
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
-  private DBManager db;
 
   public Game(Team home, Team away, PlayerFactory pf, DBManager db)
       throws GameException {
+    this.rules = new ProRules();
     this.id = db.getNextID(TABLE);
+    this.date = LocalDate.now();
+
     this.homeTeam = home;
     this.awayTeam = away;
     db.saveGame(this);
@@ -61,7 +65,6 @@ public class Game {
 
     this.pf = pf;
     this.sf = new StatFactory(db, this);
-    this.db = db;
 
   }
 
@@ -93,6 +96,7 @@ public class Game {
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
   }
+
   public BoxScore getAwayBoxScore() {
     return awayBoxScore;
   }
@@ -294,6 +298,10 @@ public class Game {
       awayBench.getPlayers().add(awayIterator.next());
     }
 
+  }
+
+  public LocalDate getDate() {
+    return date;
   }
 
 }

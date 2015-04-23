@@ -45,7 +45,7 @@ public class GameGUI {
           lab.add(s.getStatType());
         }
         Map<String, Object> toReturn =
-            ImmutableMap.of("roster", rosterInfo, "stats", st, "types", lab);
+            ImmutableMap.of("roster", rosterInfo, "stats", st, "types", lab, "errorMessage", "");
 
         return GSON.toJson(toReturn);
       } else {

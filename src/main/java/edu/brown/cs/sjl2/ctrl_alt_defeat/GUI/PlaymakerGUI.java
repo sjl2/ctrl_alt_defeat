@@ -47,16 +47,16 @@ public class PlaymakerGUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Playmaker");
+        ImmutableMap.of("tabTitle", "Playmaker", "errorMessage", "");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
-  
+
   public class WhiteboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Whiteboard");
+        ImmutableMap.of("tabTitle", "Whiteboard", "errorMessage", "");
       return new ModelAndView(variables, "whiteboard.ftl");
     }
   }
@@ -110,7 +110,7 @@ public class PlaymakerGUI {
       return GSON.toJson(variables);
     }
   }
-  
+
   public class DeleteHandler implements Route {
 
     @Override
@@ -118,10 +118,10 @@ public class PlaymakerGUI {
       QueryParamsMap qm = request.queryMap();
       String name = qm.value("name");
       dbManager.deletePlay(name);
-      
+
       return getPlayNamesFromDB();
     }
-    
+
   }
 
   /**
@@ -145,7 +145,7 @@ public class PlaymakerGUI {
   private String getPlayNamesFromDB() {
     List<String> plays = dbManager.loadPlayNames();
     Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-        .put("plays", plays).build();
+        .put("plays", plays).put("errorMessage", "").build();
 
     return GSON.toJson(variables);
   }

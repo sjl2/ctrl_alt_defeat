@@ -167,11 +167,12 @@ $.get("/game/roster", function(responseJSON) {
 
 
 	var homeColor = home.primary;
-	var homeClick = "#a2591d";
+
+	var homeClick = makeDarker(Raphael.color(home.primary).hex);
 	var homeAccent = home.secondary;
 
 	var awayColor = away.primary;
-	var awayClick = "#0a390c";
+	var awayClick = makeDarker(Raphael.color(away.primary).hex);
 	var awayAccent = away.secondary;
 
 	
@@ -268,10 +269,13 @@ $.get("/game/roster", function(responseJSON) {
 
 	paper.mainTexts.mousedown(function(e) {
 		this.box.attr({fill: this.box.clickAccent});
+		mousedowninsomething = true;
+
 	});
 	paper.mainTexts.mouseup(function(e) {
 		//this.box.attr({fill: this.box.normalColor});
 		clickThing(this.box);
+		mousedowninsomething = false;
 	});
 
 
@@ -299,14 +303,14 @@ $.get("/game/roster", function(responseJSON) {
 	});
 
 
-	var subWindow = paper.rect(10, 10, 500, 300).attr({fill : "white", "stroke-width" : 3}).mousemove(function(e) {
+	paper.subWindow = paper.rect(10, 10, 500, 300).attr({fill : "white", "stroke-width" : 3}).mousemove(function(e) {
 		if (!(this.currentMove === undefined)) {
 			this.currentMove.attr({cx : e.offsetX});
 			this.currentMove.attr({cy : e.offsetY});
 		}
 	});
-	subWindow.ornaments = [];
-	subWindow.currentMove = undefined;
+	paper.subWindow.ornaments = [];
+	paper.subWindow.currentMove = undefined;
 
 	var benchDots = paper.set();
 	var starterBoxes = paper.set();
@@ -318,7 +322,6 @@ $.get("/game/roster", function(responseJSON) {
 	counts.awayOn = 0;
 
 	paper.mainBoxes.forEach(function(obj) {
-		console.log(obj.data("bench"));
 		if (obj.data("bench")) {
 			var temp;
 			if (obj.data("home")) {
@@ -357,46 +360,68 @@ $.get("/game/roster", function(responseJSON) {
 			temp.player = obj.player;
 			var tempTexts = paper.text(temp.defaultX, temp.defaultY, temp.player.number);
 			temp.number = tempTexts;
+			tempTexts.box = temp;
 			subtexts.push(tempTexts);
 			starterBoxes.push(temp);
 		}
 	});
 
 	benchDots.forEach(function(o) {
-		subWindow.ornaments.push(o);
-		makeDraggable(o, subWindow);
+		paper.subWindow.ornaments.push(o);
+		makeDraggable(o, paper.subWindow);
 	});	
 	starterBoxes.forEach(function(o) {
-		subWindow.ornaments.push(o);
+		paper.subWindow.ornaments.push(o);
 	});
-	subtexts.forEach(function(o) {
-		subWindow.ornaments.push(o);
-		o.mousedown(function (e) {
-			subWindow.currentMove = o.circ;
+	subtexts.forEach(function(obj) {
+		paper.subWindow.ornaments.push(obj);
+		obj.mousedown(function (e) {
+			paper.subWindow.currentMove = obj.circ;
 		});
-		o.mousemove(function (e) {
-				if (!(subWindow.currentMove === undefined)) {
-					subWindow.currentMove.attr({cx : e.layerX, cy : e.layerY});
+		obj.mousemove(function (e) {
+				if (!(paper.subWindow.currentMove === undefined)) {
+					paper.subWindow.currentMove.attr({cx : e.layerX, cy : e.layerY});
 				}
 			
 		});
-		o.mouseup(function (e) {
-			subWindow.currentMove.attr({cx : subWindow.currentMove.defaultX, cy : subWindow.currentMove.defaultY});
-			subWindow.currentMove = undefined;
+		obj.mouseup(function (e) {
+			paper.subWindow.currentMove.attr({cx : paper.subWindow.currentMove.defaultX, cy : paper.subWindow.currentMove.defaultY});
+
+			starterBoxes.forEach(function (o) {
+
+			if (Raphael.isPointInsideBBox(o.getBBox(), e.layerX, e.layerY)) {
+
+				if (o.player.teamID == obj.box.player.teamID) {
+
+					sub(o.player.teamID == home.teamID, paper.subWindow.currentMove.player.number, o.player.number);
+					paper.subWindow.currentMove.hide();
+
+					var temp = o.player;
+					o.player = paper.subWindow.currentMove.player;
+					paper.subWindow.currentMove.player = temp;
+
+
+					var a = o.number.attr("text");
+					o.number.attr({text : paper.subWindow.currentMove.number.attr("text")});
+					paper.subWindow.currentMove.number.attr({text : a});
+				}
+			}
+		});
+		paper.subWindow.currentMove = undefined;
+
 		});
 	});
 
-	for(var i = 0; i < subWindow.ornaments.length; i++) subWindow.ornaments[i].hide();
+	for(var i = 0; i < paper.subWindow.ornaments.length; i++) paper.subWindow.ornaments[i].hide();
 
 	var openSub = paper.rect(750, 130, 50, 50).attr({fill : "black", "stroke-width" : 2}).data("open", false);
-	openSub.subWindow = subWindow;
+	openSub.subWindow = paper.subWindow;
 	openSub.subWindow.hide();
 	openSub.click(function(e) {showSubWindow(this)});
 
 	function makeDraggable(obj, sw) {
 	obj.mousedown(function (e) {
 		sw.currentMove = this;
-		console.log("a");
 	});
 	obj.mousemove(function (e) {
 		if (sw.currentMove !== undefined) {
@@ -413,16 +438,13 @@ $.get("/game/roster", function(responseJSON) {
 
 		starterBoxes.forEach(function (o) {
 			if (Raphael.isPointInsideBBox(o.getBBox(), e.offsetX, e.offsetY)) {
-				console.log(o.player);
 				if (o.player.teamID == obj.player.teamID) {
-					console.log(o.data("home"), " ", obj.player.number, " ", o.player.number);
 					sub(o.player.teamID == home.teamID, obj.player.number, o.player.number);
 					obj.hide();
 
 					var temp = o.player;
 					o.player = obj.player;
 					obj.player = temp;
-					console.log(o.number, obj.number);
 
 					var a = o.number.attr("text");
 					o.number.attr({text : obj.number.attr("text")});
@@ -689,6 +711,16 @@ function clickThing(b) {
 
 
 	}
+
+
+function makeDarker(h) {
+	console.log(h);
+	var r = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(0,2),16);
+	var g = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(2,4),16);
+	var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
+
+	return "rgb(" + r * .75 + "," + g * .75 + "," +  b * .75 + ")";
+}
 
 
 disable_user_select();

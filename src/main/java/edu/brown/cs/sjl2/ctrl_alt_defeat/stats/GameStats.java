@@ -14,6 +14,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 public class GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
+  private static final int FIRST_STAT_COL = 3;
   private static final String[] COLS = {
     "game", "team", "player", "MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA",
     "FTM", "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF"
@@ -21,11 +22,11 @@ public class GameStats {
 
   private Player player;
   private Team team;
-  private Game game;
+  private int game;
   private Multiset<String> stats;
 
 
-  public GameStats(Game game, Team team, Player player) {
+  public GameStats(int game, Team team, Player player) {
     this.player = player;
     this.team = team;
     this.game = game;
@@ -35,11 +36,13 @@ public class GameStats {
       stats.setCount(s, 0);
     }
 
-    stats.setCount("game", game.getID());
+    stats.setCount("game", game);
     stats.setCount("team", team.getID());
     if (player != null) {
       //TODO
       stats.setCount("player", player.getID());
+    } else {
+      stats.setCount("player", 0); // Team Stats Don't Have player id.
     }
 
   }
@@ -55,22 +58,40 @@ public class GameStats {
    * @param team The team referring for the gamestats
    * @param player The player of the gamestats.
    */
-  public GameStats(List<Integer> values, Game game, Team team, Player player) {
-    this.game = game;
+  private GameStats(List<Integer> values, Game game, Team team, Player player) {
+    this.game = game.getID();
     this.team = team;
     this.player = player;
     this.stats = HashMultiset.create();
 
-    for (int i = 0; i < COLS.length; i++) {
+    for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
       stats.setCount(COLS[i], values.get(i));
     }
   }
 
   public GameStats(Multiset<String> values, Game game, Team team, Player player) {
-    this.game = game;
+    this.game = game.getID();
     this.team = team;
     this.player = player;
     this.stats = values;
+  }
+
+  public GameStats(List<Integer> values, int gameID, Team team) {
+    this.game = gameID;
+    this.team = team;
+
+    int playerID = values.get(2);
+    if (playerID != -1) {
+      this.player = team.getPlayerById(playerID);
+    } else {
+      this.player = null;
+    }
+    
+    this.stats = HashMultiset.create();
+
+    for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
+      stats.setCount(COLS[i], values.get(i));
+    }
   }
 
   public static String[] getCols() {
@@ -81,19 +102,8 @@ public class GameStats {
     return COLS.length;
   }
 
-  public static GameStats getTeamGameStats(Game game, Team team) {
-    return new GameStats(game, team, null);
-  }
-
-  public static GameStats getTeamGameStats(Game game, Team team,
-      Collection<GameStats> playerStats) {
-
-    List<Integer> teamValues = new ArrayList<>();
-
-
-
-
-    return new GameStats(teamValues, game, team, null);
+  public static GameStats newTeamGameStats(Game game, Team team) {
+    return new GameStats(game.getID(), team, null);
   }
 
   public List<Integer> getValues() {
@@ -120,7 +130,7 @@ public class GameStats {
    * Getter for the Game of these stats.
    * @return
    */
-  public Game getGame() {
+  public int getGameID() {
     return game;
   }
 

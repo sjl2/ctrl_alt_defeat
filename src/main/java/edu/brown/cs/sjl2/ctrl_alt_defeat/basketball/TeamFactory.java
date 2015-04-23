@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
@@ -36,5 +37,9 @@ public class TeamFactory {
     teams.put(t.getID(), t);
 
     return t;
+  }
+
+  public List<Team> getTeams() {
+    return db.getTeams();
   }
 }

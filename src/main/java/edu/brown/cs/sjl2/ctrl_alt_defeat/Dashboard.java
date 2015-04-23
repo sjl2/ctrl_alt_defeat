@@ -80,9 +80,17 @@ public class Dashboard {
     return tf.getTeam(id);
   }
 
+  public List<Team> getTeams() {
+    return tf.getTeams();
+  }
+
   public Game getGameByDate(String date) {
     // TODO
     return null;
+  }
+
+  public Game getGameByID(int id) {
+    return null; // TODO db.getGameByID(id);
   }
 
   public List<Game> getGamesByOpponent(int opponentID) {
@@ -109,5 +117,14 @@ public class Dashboard {
       String secondary) {
 
     tf.addTeam(name, coach, primary, secondary, false);
+  }
+
+  public OldGame getOldGame(int gameID) throws DashboardException {
+    try {
+      return db.getGameByID(gameID, tf);
+    } catch (GameException e) {
+      throw new DashboardException(e.getMessage());
+    }
+
   }
 }
