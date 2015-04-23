@@ -8,6 +8,7 @@ import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.TemplateViewRoute;
 
 import com.google.common.collect.ImmutableMap;
@@ -147,10 +148,10 @@ public class DashboardGUI {
 
   }
   
-  public class GetGameHandler implements TemplateViewRoute {
+  public class GetGameHandler implements Route {
 
     @Override
-    public ModelAndView handle(Request arg0, Response arg1) {
+    public Object handle(Request arg0, Response arg1) {
       if (dash.getGame() == null) {
         Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
             .put("tabTitle", "Dashboard")
@@ -159,16 +160,13 @@ public class DashboardGUI {
             .put("isGame", false)
             .put("game", "")
             .put("errorMessage", "").build();
-        return new ModelAndView(variables, "dashboard.ftl");
+        return GSON.toJson(variables);
       } else {
         Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("tabTitle", "Dashboard")
-          .put("teams", dbManager.getTeams())
-          .put("myTeam", dash.getMyTeam())
           .put("isGame", true)
-          .put("game", dash.getGame())
+          .put("rules", dash.getGame().getRules())
           .put("errorMessage", "").build();
-        return new ModelAndView(variables, "dashboard.ftl");
+        return GSON.toJson(variables);
       }
     }
     

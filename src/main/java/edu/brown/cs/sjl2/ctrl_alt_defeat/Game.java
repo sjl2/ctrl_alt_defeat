@@ -11,6 +11,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ProRules;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
@@ -46,7 +47,7 @@ public class Game {
 
   public Game(Team home, Team away, PlayerFactory pf, DBManager db)
       throws GameException {
-
+    this.rules = new ProRules();
     this.id = db.getNextID(TABLE);
     this.date = LocalDate.now();
 
