@@ -44,10 +44,10 @@ public class StatFactory {
       case "MissedFreeThrow":
         s = new MissedFreeThrow(id, p, location, period);
         break;
-      case "MissedTwo":
+      case "MissedTwoPointer":
         s = new MissedTwoPointer(id, p, location, period);
         break;
-      case "MissedThree":
+      case "MissedThreePointer":
         s = new MissedThreePointer(id, p, location, period);
         break;
       case "OffensiveFoul":
@@ -103,10 +103,10 @@ public class StatFactory {
       case "MissedFreeThrow":
         s = new MissedFreeThrow(id, p, location, period);
         break;
-      case "MissedTwo":
+      case "MissedTwoPointer":
         s = new MissedTwoPointer(id, p, location, period);
         break;
-      case "MissedThree":
+      case "MissedThreePointer":
         s = new MissedThreePointer(id, p, location, period);
         break;
       case "OffensiveFoul":
