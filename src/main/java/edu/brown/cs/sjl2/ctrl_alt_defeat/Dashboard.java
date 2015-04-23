@@ -85,6 +85,10 @@ public class Dashboard {
     return null;
   }
 
+  public Game getGameByID(int id) {
+    return null; // TODO db.getGameByID(id);
+  }
+
   public List<Game> getGamesByOpponent(int opponentID) {
     // TODO
     return null;

@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
@@ -29,6 +31,7 @@ public class Game {
   private BoxScore homeBoxScore;
   private BoxScore awayBoxScore;
 
+  private LocalDate date;
   private int period;
   private int homeScore;
   private int awayScore;
@@ -45,7 +48,10 @@ public class Game {
 
   public Game(Team home, Team away, PlayerFactory pf, DBManager db)
       throws GameException {
+
     this.id = db.getNextID(TABLE);
+    this.date = LocalDate.now();
+
     this.homeTeam = home;
     this.awayTeam = away;
     db.saveGame(this);
@@ -294,6 +300,10 @@ public class Game {
       awayBench.getPlayers().add(awayIterator.next());
     }
 
+  }
+
+  public LocalDate getDate() {
+    return date;
   }
 
 }

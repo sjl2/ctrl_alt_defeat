@@ -22,11 +22,11 @@ public class GameStats {
 
   private Player player;
   private Team team;
-  private Game game;
+  private int game;
   private Multiset<String> stats;
 
 
-  public GameStats(Game game, Team team, Player player) {
+  public GameStats(int game, Team team, Player player) {
     this.player = player;
     this.team = team;
     this.game = game;
@@ -36,13 +36,13 @@ public class GameStats {
       stats.setCount(s, 0);
     }
 
-    stats.setCount("game", game.getID());
+    stats.setCount("game", game);
     stats.setCount("team", team.getID());
     if (player != null) {
       //TODO
       stats.setCount("player", player.getID());
     } else {
-      stats.setCount("player", -1); // Team Stats Don't Have player id. 
+      stats.setCount("player", -1); // Team Stats Don't Have player id.
     }
 
   }
@@ -59,7 +59,7 @@ public class GameStats {
    * @param player The player of the gamestats.
    */
   private GameStats(List<Integer> values, Game game, Team team, Player player) {
-    this.game = game;
+    this.game = game.getID();
     this.team = team;
     this.player = player;
     this.stats = HashMultiset.create();
@@ -70,18 +70,23 @@ public class GameStats {
   }
 
   public GameStats(Multiset<String> values, Game game, Team team, Player player) {
-    this.game = game;
+    this.game = game.getID();
     this.team = team;
     this.player = player;
     this.stats = values;
   }
 
-  public GameStats(List<Integer> values, Game game, Team team) {
-    this.game = game;
+  public GameStats(List<Integer> values, int gameID, Team team) {
+    this.game = gameID;
     this.team = team;
 
     int playerID = values.get(2);
-    this.player = team.getPlayerById(playerID);
+    if (playerID != -1) {
+      this.player = team.getPlayerById(playerID);
+    } else {
+      this.player = null;
+    }
+
 
     for (int i = FIRST_STAT_COL; i < COLS.length; i++) {
       stats.setCount(COLS[i], values.get(i));
@@ -96,26 +101,8 @@ public class GameStats {
     return COLS.length;
   }
 
-  public static GameStats getTeamGameStats(Game game, Team team) {
-    return new GameStats(game, team, null);
-  }
-
-  public static GameStats getTeamGameStats(Game game, Team team,
-      Collection<GameStats> playerStats) {
-
-    List<Integer> teamValues = new ArrayList<>();
-
-    // TODO
-    for (GameStats gs : playerStats) {
-      List<Integer> values = gs.getValues();
-      for (int i = 0; i < COLS.length; i++) {
-        teamValues.set(i, teamValues.get(i) + values.get(i));
-      }
-    }
-
-
-
-    return new GameStats(teamValues, game, team, null);
+  public static GameStats newTeamGameStats(Game game, Team team) {
+    return new GameStats(game.getID(), team, null);
   }
 
   public List<Integer> getValues() {
@@ -142,7 +129,7 @@ public class GameStats {
    * Getter for the Game of these stats.
    * @return
    */
-  public Game getGame() {
+  public int getGameID() {
     return game;
   }
 

@@ -15,7 +15,6 @@ public class BoxScore {
 
   private Map<Integer, GameStats> playerStats;
   private Team team;
-  private boolean isHome;
   private DBManager db;
 
   public BoxScore(DBManager db, Game game, Team team) {
@@ -23,27 +22,26 @@ public class BoxScore {
     Collection<Player> players = team.getPlayers();
     playerStats = new HashMap<>();
 
-
-    // TODO Batch in order to save an entire Boxscore f
-    // Gamestats for players and team
     for (Player p : players) {
-      GameStats gs = new GameStats(game, team, p);
-      db.storeGameStats(gs);
+      GameStats gs = new GameStats(game.getID(), team, p);
       playerStats.put(p.getID(), gs);
     }
 
-    playerStats.put(-1, GameStats.getTeamGameStats(game, team));
+    playerStats.put(-1, GameStats.newTeamGameStats(game, team));
+
+    // Initialize all of the gamestats in the db
+    Collection<GameStats> stats = playerStats.values();
+    db.saveBoxScore(stats);
+
 
     this.team = team;
-    this.isHome = game.isHome(team);
     this.db = db;
   }
 
-  private BoxScore(DBManager db, Game game, Team team, Map<Integer, GameStats> playerStats) {
+  private BoxScore(DBManager db, Team team, Map<Integer, GameStats> playerStats) {
     this.playerStats = playerStats;
     this.db = db;
     this.team = team;
-    this.isHome = game.isHome(team);
   }
 
   /**
@@ -54,12 +52,12 @@ public class BoxScore {
    * @return Returns a Boxscore from the database
    * @throws GameException
    */
-  public static BoxScore getBoxScore(DBManager db, Game game, Team team)
+  public static BoxScore getOldBoxScore(DBManager db, int gameID, Team team)
       throws GameException {
 
-    Map<Integer, GameStats> playerStats = db.loadBoxScore(game, team);
+    Map<Integer, GameStats> playerStats = db.loadBoxScore(gameID, team);
 
-    return new BoxScore(db, game, team, playerStats);
+    return new BoxScore(db, team, playerStats);
   }
 
   public GameStats getPlayerStats(Player p) {
@@ -72,10 +70,6 @@ public class BoxScore {
 
   public Team getTeam() {
     return team;
-  }
-
-  public boolean isHome() {
-    return isHome;
   }
 
   public int getScore() {
