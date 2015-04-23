@@ -14,6 +14,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.OldGame;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
@@ -47,14 +49,14 @@ public class DashboardGUI {
   }
 
   public class NewTeamHandler implements TemplateViewRoute {
-    
+
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Team");
       return new ModelAndView(variables, "newTeam.ftl");
     }
-    
+
   }
 
   public class NewTeamResultsHandler implements TemplateViewRoute {
@@ -124,12 +126,23 @@ public class DashboardGUI {
     public ModelAndView handle(Request request, Response response) {
       int gameID = Integer.parseInt(request.params("id"));
 
+      String error = "";
+
+      OldGame game = null;
+      try {
+        game = dash.getOldGame(gameID);
+      } catch (DashboardException e) {
+        error = e.getMessage();
+      }
 
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Player View", "rows", new ArrayList<GameStats>());
+        ImmutableMap.of(
+            "tabTitle", game.toString(),
+            "game", game,
+            "errorMessage", error);
       return new ModelAndView(variables, "game.ftl");
     }
-    
+
   }
 
 }

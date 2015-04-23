@@ -1,7 +1,9 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
@@ -62,6 +64,16 @@ public class BoxScore {
 
   public GameStats getPlayerStats(Player p) {
     return playerStats.get(p.getID());
+  }
+
+  public List<GameStats> getAllPlayerStats() {
+    List<GameStats> allStats = new ArrayList<>();
+    for (int playerID : playerStats.keySet()) {
+      if (playerID != -1) {
+        allStats.add(playerStats.get(playerID));
+      }
+    }
+    return allStats;
   }
 
   public GameStats getTeamStats() {

@@ -75,4 +75,10 @@ public class OldGame {
   public LocalDate getDate() {
     return date;
   }
+
+  @Override
+  public String toString() {
+    return away.getName() + " @ " + home.getName() + " (" +  date + ")";
+  }
+
 }

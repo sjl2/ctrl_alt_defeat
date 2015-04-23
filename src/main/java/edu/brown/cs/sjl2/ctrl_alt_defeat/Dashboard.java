@@ -114,4 +114,13 @@ public class Dashboard {
 
     tf.addTeam(name, coach, primary, secondary, false);
   }
+
+  public OldGame getOldGame(int gameID) throws DashboardException {
+    try {
+      return db.getGameByID(gameID, tf);
+    } catch (GameException e) {
+      throw new DashboardException(e.getMessage());
+    }
+
+  }
 }

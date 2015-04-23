@@ -17,7 +17,7 @@
     <div id="wrapper">
       ${content}
     </div>
-
+    <div id="error">${errorMessage}</div>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->
