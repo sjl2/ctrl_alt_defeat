@@ -48,23 +48,23 @@
       	<td>${row.getPoints()}</td>
       </tr>
     </#list>
-    <tr id="team_stats">
-        <#assign teamStats = ${game.getHomeBoxScore().getTeamStats()}>
+    <tr class="team_stats">
+        <#assign homeStats = game.getHomeBoxScore().getTeamStats()>
         <td></td>
         <td></td>
-        <td>${teamStats.getMinutes()}</td>
-        <td>${teamStats.getTwoPointers()} - ${teamStats.getTwoPointersA()}</td>
-        <td>${teamStats.getThreePointers()} - ${teamStats.getThreePointersA()}</td>
-        <td>${teamStats.getFreeThrows()} - ${teamStats.getFreeThrowsA()}</td>
-        <td>${teamStats.getOffensiveRebounds()}</td>
-        <td>${teamStats.getDefensiveRebounds()}</td>
-        <td>${teamStats.getRebounds()}</td>
-        <td>${teamStats.getAssists()}</td>
-        <td>${teamStats.getSteals()}</td>
-        <td>${teamStats.getBlocks()}</td>
-        <td>${teamStats.getTurnovers()}</td>
-        <td>${teamStats.getPersonalFouls()}</td>
-        <td>${teamStats.getPoints()}</td>
+        <td>${homeStats.getMinutes()}</td>
+        <td>${homeStats.getTwoPointers()} - ${homeStats.getTwoPointersA()}</td>
+        <td>${homeStats.getThreePointers()} - ${homeStats.getThreePointersA()}</td>
+        <td>${homeStats.getFreeThrows()} - ${homeStats.getFreeThrowsA()}</td>
+        <td>${homeStats.getOffensiveRebounds()}</td>
+        <td>${homeStats.getDefensiveRebounds()}</td>
+        <td>${homeStats.getRebounds()}</td>
+        <td>${homeStats.getAssists()}</td>
+        <td>${homeStats.getSteals()}</td>
+        <td>${homeStats.getBlocks()}</td>
+        <td>${homeStats.getTurnovers()}</td>
+        <td>${homeStats.getPersonalFouls()}</td>
+        <td>${homeStats.getPoints()}</td>
     </tr>
   </table>
 
@@ -105,8 +105,8 @@
         <td>${row.getPoints()}</td>
       </tr>
     </#list>
-    <tr id="team_stats">
-        <#assign teamStats = ${game.getAwayBoxScore().getTeamStats()}>
+    <tr class="team_stats">
+        <#assign teamStats = game.getAwayBoxScore().getTeamStats()>
         <td></td>
         <td></td>
         <td>${teamStats.getMinutes()}</td>
