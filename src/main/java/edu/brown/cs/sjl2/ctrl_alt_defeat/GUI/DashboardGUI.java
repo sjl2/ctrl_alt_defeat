@@ -145,9 +145,9 @@ public class DashboardGUI {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
         error = e.getMessage();
-        System.out.println("there's an error and game isn't getting defined");
+        System.out.println(error);
       }
-      System.out.println(game.getHomeBoxScore().getTeamStats());
+
       Map<String, Object> variables =
         ImmutableMap.of(
             "tabTitle", game.toString(),
