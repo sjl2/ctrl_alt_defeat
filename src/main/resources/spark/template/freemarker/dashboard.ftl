@@ -1,28 +1,27 @@
-<#assign content>
+<#assign coachContent>
+<head>
+<style>
+.jumbotron{background-color : ${myTeam.getPrimary()}; color : ${myTeam.getSecondary()}; -webkit-text-stroke-width: .6px; -webkit-text-stroke-color: black}
+</style>
+</head>
  	<link rel="stylesheet" href="/css/dashboard.css">
 
-  <h1>Welcome to ${myTeam.getName()}'s Dashboard!</h1>
-
-    <div id="scoreboard"></div>
-    <div id="playmaker_div" width = "300px" height = "300px"> <a href="/playmaker">Playmaker</a> </div>
-    <div id="stats_display" width = "300px" height = "300px"> Fancy in-game stats </div>
-    <div id="new_game" width = "300px" height = "300px">
-      <p>Enter opponent and click the button</p>
-      <input type="radio" name="is_home" id="is_home" value="1" checked>Home Game
-      <br>
-      <input type="radio" name="is_home" id="is_away" value="0">Away Game
-      <br>
-      <select id="opponent">
-	<#list teams as team>
-	  <option value="${team.getID()}">${team.getName()}</option>
-	</#list>
-      </select>
-      <button id="new_game_button" onclick = "newGame();">Make a new Game!</button>
-      
+    <div class="container">
+      <div class = "jumbotron">
+        <h2>Welcome to ${myTeam.getName()}'s Dashboard!</h2>
+      </div>
+      <div class = "row" >
+        <div class = "col-md-4">
+          <div id="scoreboard"></div>
+        </div>
+        <div class="col-md-4 col-md-offset-2">
+          <p> stuff will go here, I promise.  we just aren't sure what </p>
+        </div>
+      </div>
     </div>
-    <div id="new_team"> <a href = "/dashboard/new/team"> Make a new team!</a> </div>
-    <div id="new_player"> <a href = "/dashboard/new/player"> Make a new player!</a> </div>
+    <div id="stats_display" width = "300px" height = "300px"> Fancy in-game stats </div>
+    
   <script src="/js/dashboard.js"></script>
 
 </#assign>
-<#include "main.ftl">
+<#include "coach.ftl">

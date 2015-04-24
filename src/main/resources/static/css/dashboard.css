@@ -1,8 +1,6 @@
-div {
-    border: 1px solid #000000;
-}
-
 #scoreboard {
+	border: 1px solid #000000;
+	background-color : white;
 	width : 400px;
 	height : 200px;
 }

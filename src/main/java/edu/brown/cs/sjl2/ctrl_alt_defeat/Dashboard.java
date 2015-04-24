@@ -110,9 +110,14 @@ public class Dashboard {
     return null;
   }
 
-  BoxScore getBoxscore(int gameID) {
-    // TODO
-    return null;
+  BoxScore getBoxscore(int gameID, Team team) throws DashboardException {
+    try {
+      return BoxScore.getOldBoxScore(db, gameID, team);
+    } catch (GameException e) {
+      String message = "Could not get old boxscore for " + team.getName()
+          + " in game " + gameID + ". " + e.getMessage();
+      throw new DashboardException(message);
+    }
   }
 
   public Team setMyTeam(String name,

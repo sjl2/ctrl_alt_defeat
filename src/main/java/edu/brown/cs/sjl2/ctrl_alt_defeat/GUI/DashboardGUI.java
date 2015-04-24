@@ -34,6 +34,14 @@ public class DashboardGUI {
   public class DashboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
+      /*Integer clearance = req.session().attribute("clearance");
+      System.out.println("CLEARANCE IN DASH BOARD: " + clearance);
+      if (clearance == null || clearance < 2) {
+        res.redirect("/login");
+        Map<String, Object> variables =
+            ImmutableMap.of("tabTitle", "Login");
+          return new ModelAndView(variables, "login.ftl");
+      }*/
       if (dash.getMyTeam() == null) {
         Map<String, Object> variables =
             ImmutableMap.of("tabTitle", "Set-Up",
@@ -148,9 +156,9 @@ public class DashboardGUI {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
         error = e.getMessage();
-        System.out.println("there's an error and game isn't getting defined");
+        System.out.println(error);
       }
-      System.out.println(game.getHomeBoxScore().getTeamStats());
+
       Map<String, Object> variables =
         ImmutableMap.of(
             "tabTitle", game.toString(),

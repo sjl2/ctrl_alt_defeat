@@ -1,5 +1,8 @@
-<#assign content>
-  <h1>Welcome to the Create a Player Screen!</h1>
+<#assign coachContent>
+<div class="container">
+    
+  <div>
+  <h1>Make a Player</h1>
   <form method="POST" action="/dashboard/new/player/results">
 
     Player name:<br>
@@ -24,6 +27,7 @@
 
 		<input type="submit" class="submit" value="Submit"> <br>
 	</form>
+</div>
   <link rel="stylesheet" href="/css/newPlayer.css">
 </#assign>
-<#include "main.ftl">
+<#include "coach.ftl">

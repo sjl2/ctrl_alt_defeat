@@ -1,7 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.collect.HashMultiset;
@@ -41,10 +41,7 @@ public class GameStats {
     stats.setCount("team", team.getID());
 
     if (player != null) {
-      //TODO
       stats.setCount("player", player.getID());
-    } else {
-      stats.setCount("player", 0); // Team Stats Don't Have player id.
     }
 
   }
@@ -67,18 +64,29 @@ public class GameStats {
     }
   }
 
-  public static String[] getCols() {
-    return COLS;
+  public static List<String> getCols() {
+    return Arrays.asList(COLS);
+  }
+
+  public static List<String> getTeamCols() {
+    List<String> cols = new ArrayList<>();
+    for (String col : COLS) {
+      if (!col.equals("player")) {
+        cols.add(col);
+      }
+    }
+    return cols;
   }
 
   public static int getNumCols() {
     return COLS.length;
   }
+
 //nick: I changed this from null because it's broken and hard to test other stuff
-  //i think at some point we'll have to revisit how teams are displayed in 
+  //i think at some point we'll have to revisit how teams are displayed in
   //the database and what a TeamGameStats is
   public static GameStats newTeamGameStats(Game game, Team team) {
-    return new GameStats(game.getID(), team, team.getPlayerById(0));
+    return new GameStats(game.getID(), team, null);
   }
 
   public List<Integer> getValues() {
@@ -347,10 +355,10 @@ public class GameStats {
   public int getPersonalFouls() {
     return stats.count("OF") + stats.count("DF");
   }
-  
+
   @Override
   public String toString() {
     return "GAME STATS FOR " + this.player;
-  } 
+  }
 
 }

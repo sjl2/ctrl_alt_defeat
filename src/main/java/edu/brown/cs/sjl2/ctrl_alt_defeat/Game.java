@@ -54,40 +54,48 @@ public class Game {
               Map<BasketballPosition, Integer> starterIDs)
       throws GameException {
 
-    this.rules = new ProRules();
-
-    this.date = LocalDate.now();
-
     if (home.getID() == away.getID()) {
       // Cannot play with yourselves
       String message = "This is no time to play with yourself!";
       throw new GameException(message);
     }
 
+    // Game Fields in DB
+    this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
-
-    this.homeBoxScore = new BoxScore(db, this, home);
-    this.awayBoxScore = new BoxScore(db, this, away);
-    this.lineup = new Lineup();
-    this.homeBench = new Bench(home);
-    this.awayBench = new Bench(away);
-
-    placePlayers(home, away, starterIDs);
-
-    this.pf = pf;
-    this.sf = new StatFactory(db, this);
-
-    this.homeBonus = false;
-    this.homeDoubleBonus = false;
-    this.awayBonus = false;
-    this.awayDoubleBonus = false;
-    this.homeTO = rules.timeouts();
-    this.awayTO = rules.timeouts();
-    this.period = 1;
-
-    this.id = db.getNextID(TABLE);
+    this.date = LocalDate.now();
     db.saveGame(this);
+
+    try {
+      // Remaining fields
+      this.rules = new ProRules(); // TODO Change in settings
+
+      this.homeBoxScore = new BoxScore(db, this, home);
+      this.awayBoxScore = new BoxScore(db, this, away);
+      this.lineup = new Lineup();
+      this.homeBench = new Bench(home);
+      this.awayBench = new Bench(away);
+
+      placePlayers(home, away, starterIDs);
+
+      this.pf = pf;
+      this.sf = new StatFactory(db, this);
+
+      this.homeBonus = false;
+      this.homeDoubleBonus = false;
+      this.awayBonus = false;
+      this.awayDoubleBonus = false;
+      this.homeTO = rules.timeouts();
+      this.awayTO = rules.timeouts();
+      this.period = 1;
+    } catch (GameException e) {
+      db.deleteGame(id);
+      String message = e.getMessage() + " Game information deleted "
+          + "from database.";
+      throw new GameException(message);
+    }
+
   }
 
   public int getID() {
@@ -342,7 +350,7 @@ public class Game {
     Iterator<Player> awayIterator = players.iterator();
 
     if (players.size() < 5) {
-      throw new GameException("Not enough players on the home team.");
+      throw new GameException("Not enough players on the away team.");
     }
 
     while (awayIterator.hasNext()) {
