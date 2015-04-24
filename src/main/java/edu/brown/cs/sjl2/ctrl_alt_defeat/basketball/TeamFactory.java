@@ -39,7 +39,12 @@ public class TeamFactory {
     return t;
   }
 
-  public List<Team> getTeams() {
-    return db.getTeams();
+  public List<Team> getAllTeams() {
+    return db.getAllTeams();
   }
+
+  public List<Team> getOpposingTeams() {
+    return db.getOpposingTeams();
+  }
+
 }

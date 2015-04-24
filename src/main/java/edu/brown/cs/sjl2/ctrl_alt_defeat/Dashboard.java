@@ -80,8 +80,12 @@ public class Dashboard {
     return tf.getTeam(id);
   }
 
-  public List<Team> getTeams() {
-    return tf.getTeams();
+  public List<Team> getAllTeams() {
+    return tf.getAllTeams();
+  }
+
+  public List<Team> getOpposingTeams() {
+    return tf.getOpposingTeams();
   }
 
   public Game getGameByDate(String date) {
@@ -105,12 +109,10 @@ public class Dashboard {
 
   public Team setMyTeam(String name,
       String coach, String primary, String secondary) {
-    this.myTeam =
-        new Team(db.getNextID("team"), name, coach, primary, secondary, pf);
 
-    Team t = tf.addTeam(name, coach, primary, secondary, true);
+    this.myTeam = tf.addTeam(name, coach, primary, secondary, true);
 
-    return t;
+    return this.myTeam;
   }
 
   public void addTeam(String name, String coach, String primary,

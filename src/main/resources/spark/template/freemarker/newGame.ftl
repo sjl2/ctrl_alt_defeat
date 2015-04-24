@@ -39,9 +39,6 @@
     <br>
     <#list 1..5 as i>
       <select class="playerSelector" id="oppStarter${i}">
-	<#list players as player>
-	  <option id="${player.getID()}">${player.getName()}</option>
-	</#list>
       </select>
       <br>
     </#list>

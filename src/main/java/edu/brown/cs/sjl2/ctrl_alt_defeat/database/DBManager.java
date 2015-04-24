@@ -42,6 +42,8 @@ public class DBManager {
   private static final int SIX = 6;
   private static final int SEVEN = 7;
   private static final int EIGHT = 8;
+  private static final int DUMMY_PLAYER_ID = 0;
+
   private Connection conn;
   private Multiset<String> nextIDs;
 
@@ -347,7 +349,7 @@ public class DBManager {
   }
 
   public void updateBoxscore(Collection<GameStats> gameStats) {
-    StringBuilder query = new StringBuilder("UPDATE game_stats SET ");
+    StringBuilder query = new StringBuilder("UPDATE player_stats SET ");
 
       String[] cols = GameStats.getCols();
       for (int i = 0; i < cols.length; i++) {
@@ -361,17 +363,21 @@ public class DBManager {
 
       try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
         for (GameStats gs : gameStats) {
-          List<Integer> vals = gs.getValues();
-          int i = 1;
-          for (int v : vals) {
-            ps.setInt(i, v);
-            i++;
-          }
-          ps.setInt(i++, gs.getGameID());
-          ps.setInt(i++, gs.getTeam().getID());
-          ps.setInt(i, gs.getPlayer().getID());
+          if (gs.getPlayer() == null) {
+            List<Integer> vals = gs.getValues();
+            int i = 1;
+            for (int v : vals) {
+              ps.setInt(i, v);
+              i++;
+            }
+            ps.setInt(i++, gs.getGameID());
+            ps.setInt(i++, gs.getTeam().getID());
+            ps.setInt(i, gs.getPlayer().getID());
 
-          ps.addBatch();
+            ps.addBatch();
+          } else {
+            updateTeamStats(gs);
+          }
         }
 
         ps.executeBatch();
@@ -381,14 +387,46 @@ public class DBManager {
       }
   }
 
+  private void updateTeamStats(GameStats gs) {
+    StringBuilder query = new StringBuilder("UPDATE team_stats SET ");
+
+    String[] cols = GameStats.getCols();
+    for (int i = 0; i < (cols.length - 1); i++) {
+      if (i < cols.length - 1) {
+        query.append(cols[i] + " = ?, ");
+      } else {
+        query.append(cols[i] + " = ? ");
+      }
+    }
+
+    query.append("WHERE game = ? AND team = ?;");
+
+    try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+      List<Integer> vals = gs.getTeamValues();
+      int i = 1;
+      for (int v : vals) {
+        ps.setInt(i, v);
+        i++;
+      }
+      ps.setInt(i++, gs.getGameID());
+      ps.setInt(i, gs.getTeam().getID());
+
+      ps.addBatch();
+    } catch (SQLException e) {
+      String message = "Failed to update team stats for " + gs.getTeam();
+      throw new RuntimeException(message + e.getMessage());
+    }
+  }
+
   public Map<Integer, GameStats> loadBoxScore(int id, Team team)
       throws GameException {
 
+    // Load All Plays
     String query =
-        "SELECT * FROM game_stats "
+        "SELECT * FROM player_stats "
         + "WHERE game = ? AND team = ?;";
 
-    Map<Integer, GameStats> playerStats = new HashMap<>();
+    Map<Integer, GameStats> allGameStats = new HashMap<>();
 
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
       ps.setInt(1, id);
@@ -403,18 +441,48 @@ public class DBManager {
         for (int i = 1; i <= len; i++) {
           values.add(rs.getInt(i));
         }
-        playerStats.put(values.get(2), new GameStats(values, id, team));
+        allGameStats.put(values.get(2), new GameStats(values, id, team));
       }
 
-      return playerStats;
     } catch (SQLException e) {
       throw new GameException("Failed to load game stats: " + e.getMessage());
     }
+
+    // Load Team Stats
+    query =
+        "SELECT * FROM team_stats "
+        + "WHERE game = ? AND team = ?;";
+
+    try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+      ps.setInt(1, id);
+      ps.setInt(2, team.getID());
+
+      ResultSet rs = ps.executeQuery();
+
+      List<Integer> values = new ArrayList<>();
+
+      if (rs.next()) {
+        int len = GameStats.getNumCols();
+        for (int i = 1; i <= len; i++) {
+          if (i == 3) {
+            values.add(DUMMY_PLAYER_ID);
+          } else {
+            values.add(rs.getInt(i));
+          }
+        }
+        allGameStats.put(values.get(2), new GameStats(values, id, team));
+      }
+
+    } catch (SQLException e) {
+      throw new GameException("Failed to load game stats: " + e.getMessage());
+    }
+
+    return allGameStats;
   }
 
   public void saveBoxScore(Collection<GameStats> stats) {
     int numCols = GameStats.getCols().length;
-    StringBuilder query = new StringBuilder("INSERT INTO game_stats VALUES (");
+    StringBuilder query = new StringBuilder("INSERT INTO player_stats VALUES (");
 
     for (int i = 0; i < (numCols - 1); i++) {
       query.append("?, ");
@@ -423,16 +491,42 @@ public class DBManager {
 
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
       for (GameStats gs : stats) {
-        List<Integer> values = gs.getValues();
-        for (int i = 1; i <= numCols; i++) {
-          ps.setInt(i, values.get(i - 1));
+        if (gs.getPlayer() != null) {
+          List<Integer> values = gs.getValues();
+          for (int i = 1; i <= numCols; i++) {
+            ps.setInt(i, values.get(i - 1));
+          }
+          ps.addBatch();
+        } else {
+          saveTeamStats(gs);
         }
-        ps.addBatch();
       }
-
       ps.executeBatch();
     } catch (SQLException e) {
-      String message = "Failed to save boxscore to database.";
+      String message = "Failed to save player stats to database. ";
+      throw new RuntimeException(message + e.getMessage());
+    }
+
+  }
+
+  private void saveTeamStats(GameStats gs) {
+    StringBuilder query = new StringBuilder("INSERT INTO team_stats VALUES (");
+    int numCols = GameStats.getCols().length - 1;
+    for (int i = 0; i < (numCols - 1); i++) {
+      query.append("?, ");
+    }
+    query.append("?)");
+
+    try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
+      List<Integer> values = gs.getTeamValues();
+      for (int i = 1; i <= numCols; i++) {
+        if (i != 3) {
+          ps.setInt(i, values.get(i - 1));
+        }
+      }
+      ps.execute();
+    } catch (SQLException e) {
+      String message = "Failed to save team stats to database. ";
       throw new RuntimeException(message + e.getMessage());
     }
 
@@ -598,17 +692,22 @@ public class DBManager {
   /**
    * Generates a list of team names and id's for the create-player handler.
    * @return - List of teams, (dummy teams though)
-   * @author awainger
    */
-  public List<Team> getTeams() {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT id, name FROM team;")) {
+  private List<Team> getTeams(boolean includeMyTeam) {
+    String query = "SELECT id, name FROM team";
+
+    if (!includeMyTeam) {
+      query = query + " WHERE my_team = 0";
+    }
+    query = query + ";";
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
       List<Team> teams = new ArrayList<>();
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        Team t = new Team(id, name);
+        Team t = Team.newGhostTeam(id, name);
         teams.add(t);
       }
 
@@ -617,6 +716,14 @@ public class DBManager {
       close();
       throw new RuntimeException(e.getMessage());
     }
+  }
+
+  public List<Team> getAllTeams() {
+    return getTeams(true);
+  }
+
+  public List<Team> getOpposingTeams() {
+    return getTeams(false);
   }
 
   public void saveGame(Game game) {
@@ -630,8 +737,8 @@ public class DBManager {
 
       prep.executeUpdate();
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      String message = "Failed to save game data (" + game + ").";
+      throw new RuntimeException(message + e.getMessage());
     }
   }
 

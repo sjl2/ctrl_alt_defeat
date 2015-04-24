@@ -9,10 +9,10 @@
 		<input type="text" name="coach">
 		<br>
 		Primary Color:<br>
-		<input type="text" name="color1">
+		<input type="color" name="color1">
 		<br>
 		Secondary Color:<br>
-		<input type="text" name="color2">
+		<input type="color" name="color2">
 		<br><br>
 		<input type="submit" class="submit" value="Submit"> <br>
 	</form>

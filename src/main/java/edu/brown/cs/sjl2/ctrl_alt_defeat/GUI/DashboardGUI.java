@@ -1,7 +1,5 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import spark.ModelAndView;
@@ -14,12 +12,13 @@ import spark.TemplateViewRoute;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.OldGame;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
+
 
 public class DashboardGUI {
 
@@ -37,13 +36,14 @@ public class DashboardGUI {
     public ModelAndView handle(Request req, Response res) {
       if (dash.getMyTeam() == null) {
         Map<String, Object> variables =
-            ImmutableMap.of("tabTitle", "Set-Up", "errorMessage", "");
+            ImmutableMap.of("tabTitle", "Set-Up",
+                            "errorMessage", "");
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Dashboard",
-                          "teams", dbManager.getTeams(),
+                          "teams", dbManager.getOpposingTeams(),
                           "myTeam", dash.getMyTeam(),
                           "errorMessage", "");
       return new ModelAndView(variables, "dashboard.ftl");
@@ -83,7 +83,7 @@ public class DashboardGUI {
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "New Game",
                         "players", dash.getMyTeam().getPlayers(),
-                        "teams", dbManager.getTeams(),
+                        "teams", dash.getOpposingTeams(),
                         "errorMessage", "");
       return new ModelAndView(variables, "newGame.ftl");
     }
@@ -104,6 +104,7 @@ public class DashboardGUI {
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Dashboard Set-up", "errorMessage", "");
+
       return new ModelAndView(variables, "setup_complete.ftl");
     }
   }
@@ -113,7 +114,7 @@ public class DashboardGUI {
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Player",
-                          "teams", dbManager.getTeams(),
+                          "teams", dbManager.getAllTeams(),
                           "errorMessage", "");
       return new ModelAndView(variables, "newPlayer.ftl");
     }
@@ -159,7 +160,7 @@ public class DashboardGUI {
     }
 
   }
-  
+
   public class GetGameHandler implements Route {
 
     @Override
@@ -167,7 +168,7 @@ public class DashboardGUI {
       if (dash.getGame() == null) {
         Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
             .put("tabTitle", "Dashboard")
-            .put("teams", dbManager.getTeams())
+            .put("teams", dbManager.getAllTeams())
             .put("myTeam", dash.getMyTeam())
             .put("isGame", false)
             .put("game", "")
@@ -180,6 +181,48 @@ public class DashboardGUI {
           .put("errorMessage", "").build();
         return GSON.toJson(variables);
       }
+    }
+
+  }
+
+  public class UpdateGameHandler implements Route {
+
+    @Override
+    public Object handle(Request arg0, Response arg1) {
+      Game g = dash.getGame();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+        .put("homeScore", g.getHomeScore())
+        .put("awayScore", g.getAwayScore())
+        .put("possession", g.getPossession())
+        .put("homeFouls", g.getHomeFouls())
+        .put("awayFouls", g.getAwayFouls())
+        .put("homeTimeouts", g.getTO(true))
+        .put("awayTimeouts", g.getTO(false))
+        .put("period", g.getPeriod())
+        .put("homeBonus", g.getHomeBonus())
+        .put("homeDoubleBonus", g.getHomeDoubleBonus())
+        .put("awayBonus", g.getAwayBonus())
+        .put("awayDoubleBonus", g.getAwayDoubleBonus())
+        .put("errorMessage", "").build();
+
+      return GSON.toJson(variables);
+
+    }
+
+  }
+
+  public class GetPlayersHandler implements Route {
+
+    @Override
+    public Object handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      int teamID = Integer.parseInt(qm.value("teamID"));
+      Team team = dash.getTeam(teamID);
+
+      Map<String, Object> variables =
+        ImmutableMap.of("players", team.getPlayers());
+
+      return GSON.toJson(variables);
     }
     
   }

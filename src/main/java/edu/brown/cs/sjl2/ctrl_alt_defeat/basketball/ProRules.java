@@ -17,4 +17,14 @@ public class ProRules implements RuleSet{
     return 12;
   }
 
+  @Override
+  public int bonus() {
+    return 5;
+  }
+
+  @Override
+  public int doubleBonus() {
+    return Integer.MAX_VALUE;
+  }
+
 }
