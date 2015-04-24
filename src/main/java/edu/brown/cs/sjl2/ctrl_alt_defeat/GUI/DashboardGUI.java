@@ -1,7 +1,5 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import spark.ModelAndView;
@@ -18,9 +16,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.OldGame;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
+
 
 public class DashboardGUI {
 
@@ -44,7 +41,7 @@ public class DashboardGUI {
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Dashboard",
-                          "teams", dbManager.getTeams(),
+                          "teams", dbManager.getOpposingTeams(),
                           "myTeam", dash.getMyTeam(),
                           "errorMessage", "");
       return new ModelAndView(variables, "dashboard.ftl");
@@ -84,7 +81,7 @@ public class DashboardGUI {
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "New Game",
                         "players", dash.getMyTeam().getPlayers(),
-                        "teams", dbManager.getTeams());
+                        "teams", dbManager.getAllTeams());
       return new ModelAndView(variables, "newGame.ftl");
     }
   }
@@ -114,7 +111,7 @@ public class DashboardGUI {
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Player",
-                          "teams", dbManager.getTeams(),
+                          "teams", dbManager.getAllTeams(),
                           "errorMessage", "");
       return new ModelAndView(variables, "newPlayer.ftl");
     }
@@ -168,7 +165,7 @@ public class DashboardGUI {
       if (dash.getGame() == null) {
         Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
             .put("tabTitle", "Dashboard")
-            .put("teams", dbManager.getTeams())
+            .put("teams", dbManager.getAllTeams())
             .put("myTeam", dash.getMyTeam())
             .put("isGame", false)
             .put("game", "")
@@ -203,11 +200,12 @@ public class DashboardGUI {
             .put("homeDoubleBonus", g.getHomeDoubleBonus())
             .put("awayBonus", g.getAwayBonus())
             .put("awayDoubleBonus", g.getAwayDoubleBonus())
-          .put("errorMessage", "").build();
+            .put("errorMessage", "").build();
+
         return GSON.toJson(variables);
-      
+
     }
-    
+
   }
-  
+
 }
