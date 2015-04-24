@@ -1,6 +1,12 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
@@ -9,18 +15,46 @@ public class StatFactory {
 
   private DBManager db;
   private Game game;
+  private Map<Integer, Stat> stats;
 
   public StatFactory(DBManager db, Game game) {
     this.db = db;
     this.game = game;
+    this.stats = new LinkedHashMap<>();
   }
 
-  public Stat getStat(String statID, Player p, Location location, int period) {
+  public Stat getStat(int id) {
+    return stats.get(id);
+  }
+
+  public Stat updateStat(int id, String statType, Player p, Location location) {
+    Stat s = stats.get(id);
+    int period = s.getPeriod();
+
+    s = newStat(statType, id, p, location, period);
+
+    stats.put(id, s);
+
+    db.updateStat(s);
+
+    return s;
+  }
+
+  public Stat addStat(String statType, Player p, Location location, int period) {
     int id = db.getNextID("stat");
 
+    Stat s = newStat(statType, id, p, location, period);
+
+    db.storeStat(s, statType, game);
+    stats.put(s.getID(), s);
+
+    return s;
+  }
+
+  public Stat newStat(String statType, int id, Player p, Location location, int period) {
     Stat s = null;
 
-    switch (statID) {
+    switch (statType) {
       case "Block":
         s = new Block(id, p, location, period);
         break;
@@ -33,10 +67,10 @@ public class StatFactory {
       case "MissedFreeThrow":
         s = new MissedFreeThrow(id, p, location, period);
         break;
-      case "MissedTwo":
+      case "MissedTwoPointer":
         s = new MissedTwoPointer(id, p, location, period);
         break;
-      case "MissedThree":
+      case "MissedThreePointer":
         s = new MissedThreePointer(id, p, location, period);
         break;
       case "OffensiveFoul":
@@ -64,12 +98,21 @@ public class StatFactory {
         s = new TwoPointer(id, p, location, period);
         break;
       default:
-        throw new RuntimeException("Unrecognized statID \"" + statID + "\".");
+        throw new RuntimeException("Unrecognized statID \"" + statType + "\".");
     }
 
-    db.storeStat(s, statID, game);
-
     return s;
+  }
+
+  public Stat removeStat(int id) throws GameException {
+    Stat s = getStat(id);
+    stats.remove(id);
+    db.removeStat(s);
+    return s;
+  }
+
+  public List<Stat> getAllStats() {
+    return new ArrayList<>(stats.values());
   }
 
 }

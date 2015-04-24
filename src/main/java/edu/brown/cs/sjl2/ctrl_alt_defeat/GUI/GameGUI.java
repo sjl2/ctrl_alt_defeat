@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import spark.QueryParamsMap;
@@ -14,6 +15,7 @@ import com.google.gson.Gson;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class GameGUI {
   private final static Gson GSON = new Gson();
@@ -23,22 +25,29 @@ public class GameGUI {
     this.dash = dash;
   }
 
-  public class RosterHandler implements Route {
+  public class StatPageHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
       Game game = dash.getGame();
       if (game != null) {
-        ArrayList<Object> variables = new ArrayList<Object>();
-            variables.add(game.getHome().getPrimary());
-            variables.add(game.getHome().getSecondary());
-            variables.add(game.getAway().getPrimary());
-            variables.add(game.getHome().getSecondary());
-            variables.add(game.getLineup());
-            variables.add(game.getBench(true));
-            variables.add(game.getBench(false));
+        ArrayList<Object> rosterInfo = new ArrayList<Object>();
+        rosterInfo.add(game.getHome().getPrimary());
+        rosterInfo.add(game.getHome().getSecondary());
+        rosterInfo.add(game.getAway().getPrimary());
+        rosterInfo.add(game.getAway().getSecondary());
+        rosterInfo.add(game.getLineup());
+        rosterInfo.add(game.getBench(true));
+        rosterInfo.add(game.getBench(false));
+        List<Stat> st = game.getAllStats();
+        List<String> lab = new ArrayList<String>();
+        for (Stat s : st) {
+          lab.add(s.getStatType());
+        }
+        Map<String, Object> toReturn =
+            ImmutableMap.of("roster", rosterInfo, "stats", st, "types", lab, "errorMessage", "");
 
-        return GSON.toJson(variables);
+        return GSON.toJson(toReturn);
       } else {
         return null;
       }
@@ -53,17 +62,15 @@ public class GameGUI {
       QueryParamsMap qm = request.queryMap();
       int teamID = Integer.parseInt(qm.value("opponent"));
       boolean isHome = GSON.fromJson(qm.value("is_home"), Boolean.class);
-      
+
       try {
         dash.startGame(isHome, teamID);
       } catch (DashboardException e) {
-        return e.getMessage(); 
+        return e.getMessage();
       }
-      
-      // TODO StartHandler should spark a game perspective 
-      
+
       return "";
-      
+
     }
   }
 

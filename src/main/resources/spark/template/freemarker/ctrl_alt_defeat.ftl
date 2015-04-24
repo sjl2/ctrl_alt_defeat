@@ -6,7 +6,7 @@
 		<div id="content"></div>
 	</div>
  
- <script src="js/ctrl_alt_defeat.js"></script>
- <link rel="stylesheet" href="css/ctrl_alt_defeat.css">
+ <script src="/js/ctrl_alt_defeat.js"></script>
+ <link rel="stylesheet" href="/css/ctrl_alt_defeat.css">
 </#assign>
 <#include "main.ftl">

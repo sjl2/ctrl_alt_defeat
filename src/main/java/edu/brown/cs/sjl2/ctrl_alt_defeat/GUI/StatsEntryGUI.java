@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -10,6 +11,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -31,7 +33,7 @@ public class StatsEntryGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Stats Entry");
+          ImmutableMap.of("tabTitle", "Stats Entry", "errorMessage", "");
 
       //      if (dash.getGame() != null) {
       return new ModelAndView(variables, "stats_entry.ftl");
@@ -54,8 +56,57 @@ public class StatsEntryGUI {
       double y = GSON.fromJson(qm.value("y"), Double.class);
       System.out.println(statID + " " + playerID + " " + x + " " + y);
 
+      Stat s = null;
+
       try {
-        dash.getGame().addStat(statID, playerID, new Location(x, y));
+        s = dash.getGame().addStat(statID, playerID, new Location(x, y));
+      } catch (GameException ex) {
+        return ex.getMessage();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      HashMap<String, Object> st = new HashMap<String, Object>();
+      st.put("stat", s);
+      st.put("statType", s.getStatType());
+      return GSON.toJson(st);
+    }
+  }
+
+  public class UpdateStatHandler implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      int id = GSON.fromJson(qm.value("databaseID"), Integer.class);
+      String statID = qm.value("statID");
+      int playerID = GSON.fromJson(qm.value("playerID"), Integer.class);
+      double x = GSON.fromJson(qm.value("x"), Double.class);
+      double y = GSON.fromJson(qm.value("y"), Double.class);
+
+      System.out.println(
+          "Updating: " + statID + " " + playerID + " " + x + " " + y);
+
+      try {
+        dash.getGame().updateStat(id, statID, playerID, new Location(x, y));
+      } catch (GameException ex) {
+        return ex.getMessage();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+      return 28;
+    }
+  }
+
+  public class DeleteStatHandler implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      int id = GSON.fromJson(qm.value("databaseID"), Integer.class);
+
+      try {
+        dash.getGame().deleteStat(id);
       } catch (GameException ex) {
         return ex.getMessage();
       } catch (Exception e) {
@@ -76,15 +127,16 @@ public class StatsEntryGUI {
       return 27;
     }
   }
-  
+
   public class TimeoutHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
       System.out.println("timeout " + request.queryMap().value("h"));
-      
+
       try {
-        dash.getGame().takeTimeout(GSON.fromJson(request.queryMap().value("h"), Boolean.class));
+        dash.getGame().takeTimeout(
+            GSON.fromJson(request.queryMap().value("h"), Boolean.class));
       } catch (JsonSyntaxException | GameException e) {
         e.printStackTrace();
         System.out.println("mistake handling timeout");
@@ -101,7 +153,7 @@ public class StatsEntryGUI {
       int inPlayerID = GSON.fromJson(qm.value("in"), Integer.class);
       int outPlayerID = GSON.fromJson(qm.value("out"), Integer.class);
       boolean home = Boolean.parseBoolean(qm.value("home"));
-      
+
       try {
         dash.getGame().subPlayer(inPlayerID, outPlayerID, home);
       } catch (ScoreboardException e) {

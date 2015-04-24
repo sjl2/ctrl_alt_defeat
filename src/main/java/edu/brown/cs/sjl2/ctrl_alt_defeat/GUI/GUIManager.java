@@ -67,7 +67,7 @@ public class GUIManager {
 
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
-    
+
     Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
@@ -80,9 +80,15 @@ public class GUIManager {
         dashboardGUI.new NewPlayerHandler(), freeMarker);
     Spark.post("/dashboard/new/player/results",
         dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
-
+    Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
+    Spark.get("/dashboard/game/:id", dashboardGUI.new GameViewHandler(), freeMarker);
+    //Spark.get("/dashboard/team/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
+    //Spark.get("/dashboard/player/:id", dashboardGUI.new PlayerViewHandler(), freeMarker);
+    Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
+    Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
+    
     Spark.post("/game/start", gameGUI.new StartHandler());
-    Spark.get("/game/roster", gameGUI.new RosterHandler());
+    Spark.get("/game/roster", gameGUI.new StatPageHandler());
 
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
@@ -92,6 +98,8 @@ public class GUIManager {
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
+    Spark.post("/stats/update", statsEntryGUI.new UpdateStatHandler());
+    Spark.post("/stats/delete", statsEntryGUI.new DeleteStatHandler());
 		Spark.post("/stats/changepossession",
 		    statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
@@ -122,7 +130,7 @@ public class GUIManager {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat");
+        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat", "errorMessage", "");
       return new ModelAndView(variables, "ctrl_alt_defeat.ftl");
     }
   }
@@ -131,12 +139,11 @@ public class GUIManager {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Login");
+        ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
       return new ModelAndView(variables, "login.ftl");
     }
   }
-  
-  public class LoginHandler implements Route {
+  private class LoginHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -144,9 +151,7 @@ public class GUIManager {
       String password = qm.value("password");
       int clearance = dbManager.checkPassword(username, password);
       Map<String, Object> variables =
-        ImmutableMap.of("clearance", clearance);
-      System.out.println(clearance);
-      req.session().attribute("clearance", clearance);
+        ImmutableMap.of("clearance", clearance, "errorMessage", "");
 
       return GSON.toJson(variables);
     }

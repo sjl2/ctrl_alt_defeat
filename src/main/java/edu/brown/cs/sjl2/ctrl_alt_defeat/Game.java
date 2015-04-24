@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ProRules;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
@@ -29,6 +31,7 @@ public class Game {
   private BoxScore homeBoxScore;
   private BoxScore awayBoxScore;
 
+  private LocalDate date;
   private int period;
   private int homeScore;
   private int awayScore;
@@ -37,18 +40,30 @@ public class Game {
   private boolean possession;
   private int homeFouls;
   private int awayFouls;
+  private boolean homeBonus;
+  private boolean homeDoubleBonus;
+  private boolean awayBonus;
+  private boolean awayDoubleBonus;
 
-  private List<Stat> stats;
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
-  private DBManager db;
 
-  public Game(Team home, Team away, PlayerFactory pf, DBManager db) {
-    this.id = db.getNextID(TABLE);
+  public Game(Team home, Team away, PlayerFactory pf, DBManager db)
+      throws GameException {
+
+    this.rules = new ProRules();
+
+    this.date = LocalDate.now();
+
+    if (home.getID() == away.getID()) {
+      // Cannot play with yourselves
+      String message = "This is no time to play with yourself!";
+      throw new GameException(message);
+    }
+
     this.homeTeam = home;
     this.awayTeam = away;
-    db.saveGame(this);
 
     this.homeBoxScore = new BoxScore(db, this, home);
     this.awayBoxScore = new BoxScore(db, this, away);
@@ -58,11 +73,19 @@ public class Game {
 
     placePlayers(home, away);
 
-    this.stats = new ArrayList<>();
     this.pf = pf;
     this.sf = new StatFactory(db, this);
-    this.db = db;
 
+    this.homeBonus = false;
+    this.homeDoubleBonus = false;
+    this.awayBonus = false;
+    this.awayDoubleBonus = false;
+    this.homeTO = rules.timeouts();
+    this.awayTO = rules.timeouts();
+    this.period = 1;
+
+    this.id = db.getNextID(TABLE);
+    db.saveGame(this);
   }
 
   public int getID() {
@@ -93,11 +116,13 @@ public class Game {
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
   }
+
   public BoxScore getAwayBoxScore() {
     return awayBoxScore;
   }
 
-  public void subPlayer(int idIn, int idOut, boolean home) throws ScoreboardException {
+  public void subPlayer(int idIn, int idOut, boolean home)
+      throws ScoreboardException {
     Lineup l = lineup;
     Bench b;
     Team t;
@@ -108,7 +133,6 @@ public class Game {
       b = awayBench;
       t = awayTeam;
     }
-    System.out.println(t.playerIds + "  " + t.playerIds + "  " + l.getPlayers().values());
     l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
     b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
   }
@@ -131,7 +155,9 @@ public class Game {
 
   public void incrementPeriod() throws GameException {
     if (this.period == rules.periods()) {
-      throw new GameException("Cannot increment, game is already in period " + this.period + "!");
+      String message = "Cannot increment, game is already in period "
+          + this.period + "!";
+      throw new GameException(message);
     } else {
       this.period++;
     }
@@ -139,54 +165,104 @@ public class Game {
 
   public void decrementPeriod() throws GameException {
     if (this.period == 1) {
-      throw new GameException("Cannot decrement, game is already in the first period!");
+      String message = "Cannot decrement, game is already in the first period!";
+      throw new GameException(message);
     } else {
       this.period--;
     }
   }
 
   public void flipPossession() {
-    System.out.println(possession);
     this.possession = !possession;
-    System.out.println(possession);
+  }
+
+  public boolean getPossession() {
+    return possession;
+  }
+
+  public int getTO(boolean home) {
+    if (home) {
+      return homeTO;
+    } else {
+      return awayTO;
+    }
+  }
+
+  public List<Stat> getAllStats() {
+    return sf.getAllStats();
+  }
+
+  public Stat addStat(String statID, int playerID, Location location)
+      throws GameException {
+
+    Player p = pf.getPlayer(playerID);
+    return addStat(sf.addStat(statID, p, location, period));
+  }
+
+  public void updateStat(int id, String statID,
+      int playerID, Location location) throws GameException {
+
+    Stat oldStat = sf.getStat(id);
+    undoStat(oldStat);
+
+    Stat s = sf.updateStat(id, statID, pf.getPlayer(playerID), location);
+    addStat(s);
 
   }
 
-  public void addStat(Stat s) throws GameException {
-    stats.add(0, s);
+  public void deleteStat(int id) throws GameException {
+    Stat s = sf.removeStat(id);
+    undoStat(s);
+  }
+
+  public void updateBonuses() {
+    if (homeFouls >= rules.bonus()) {
+      homeBonus = true;
+    }
+    if (homeFouls >= rules.doubleBonus()) {
+      homeDoubleBonus = true;
+    }
+    if (awayFouls >= rules.bonus()) {
+      awayBonus = true;
+    }
+    if (awayFouls >= rules.doubleBonus()) {
+      awayDoubleBonus = true;
+    }
+  }
+
+  public Stat addStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.addStat(s);
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
+      updateBonuses();
+
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.addStat(s);
       awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
+      updateBonuses();
     } else {
       String message = "Cannot add stat for " + s.getPlayer() + " because they "
           + "are not on either team.";
       throw new GameException(message);
     }
+
+    return s;
+
   }
 
-  public void addStat(String statID, int playerID, Location location)
-      throws GameException {
-
-    Player p = pf.getPlayer(playerID);
-    addStat(sf.getStat(statID, p, location, period));
-  }
-
-  public void undoStat(int i) throws GameException {
-    Stat s = stats.remove(i);
-    db.removeStat(s);
+  public void undoStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.undoStat(s);
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
+      updateBonuses();
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.undoStat(s);
       awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
+      updateBonuses();
     } else {
       String message = "Cannot undo stat for " + s.getPlayer() + " because "
           + "they are not on either team.";
@@ -239,31 +315,67 @@ public class Game {
     }
   }
 
-  public void placePlayers(Team h, Team a) {
-    Iterator<Player> homeIterator = h.getPlayers().iterator();
+  public void placePlayers(Team h, Team a) throws GameException {
+    Collection<Player> players =  h.getPlayers();
+    Iterator<Player> homeIterator = players.iterator();
 
-    lineup.getPlayers().put(BasketballPosition.HomePG, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomeSG, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomeSF, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomePF, homeIterator.next());
-    lineup.getPlayers().put(BasketballPosition.HomeC, homeIterator.next());
+    if (players.size() < 5) {
+      throw new GameException("Not enough players on the home team.");
+    }
+
+    lineup
+      .addStarter(BasketballPosition.HomePG, homeIterator.next())
+      .addStarter(BasketballPosition.HomeSG, homeIterator.next())
+      .addStarter(BasketballPosition.HomeSF, homeIterator.next())
+      .addStarter(BasketballPosition.HomePF, homeIterator.next())
+      .addStarter(BasketballPosition.HomeC, homeIterator.next());
 
     while (homeIterator.hasNext()) {
       homeBench.getPlayers().add(homeIterator.next());
     }
 
-    Iterator<Player> awayIterator = a.getPlayers().iterator();
+    players =  a.getPlayers();
+    Iterator<Player> awayIterator = players.iterator();
 
-    lineup.getPlayers().put(BasketballPosition.AwayPG, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwaySG, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwaySF, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwayPF, awayIterator.next());
-    lineup.getPlayers().put(BasketballPosition.AwayC, awayIterator.next());
+
+    if (players.size() < 5) {
+      throw new GameException("Not enough players on the home team.");
+    }
+
+    lineup
+      .addStarter(BasketballPosition.AwayPG, awayIterator.next())
+      .addStarter(BasketballPosition.AwaySG, awayIterator.next())
+      .addStarter(BasketballPosition.AwaySF, awayIterator.next())
+      .addStarter(BasketballPosition.AwayPF, awayIterator.next())
+      .addStarter(BasketballPosition.AwayC, awayIterator.next());
 
     while (awayIterator.hasNext()) {
       awayBench.getPlayers().add(awayIterator.next());
     }
 
   }
+
+  public LocalDate getDate() {
+    return date;
+  }
+
+  public boolean getHomeBonus() {
+    return homeBonus;
+  }
+  public boolean getHomeDoubleBonus() {
+    return homeDoubleBonus;
+  }
+  public boolean getAwayBonus() {
+    return awayBonus;
+  }
+  public boolean getAwayDoubleBonus() {
+    return awayDoubleBonus;
+  }
+
+  @Override
+  public String toString() {
+    return awayTeam + " @ " + homeTeam + " (" + date + ")";
+  }
+
 
 }

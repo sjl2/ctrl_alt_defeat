@@ -1,9 +1,10 @@
-	// STAT GLOBALS
+// STAT GLOBALS
 	var clickedPoint; 
 	var clickedStat; 
 	var clickedPlayer; 
 	var mousedowninsomething = false;
 	var subState = false;
+	var STAT_EDIT = false;
 
 	var court = document.getElementById("court");
 	var controls = document.getElementById("content");
@@ -21,14 +22,20 @@
 				["OffensiveRebound", "Steal", "TechnicalFoul", "Turnover"],
 				["ThreePointer", "TwoPointer", "STEWART\nRANGE!!!!"]];
 
-	var paper = Raphael(controls, 1000, 500);
+	var paper = Raphael(controls, 900, 500);
 	var court_paper = Raphael(court, court.width, court.height);
+	var stats_feed = Raphael(document.getElementById("statFeed"), 200, 500);
+	stats_feed.count = 0;
+	stats_feed.l = [];
+	stats_feed.curr = undefined;
+
+	
 	
 	court_paper.image("images/Basketball-Court.png", 0, 0, court_paper.width, court_paper.height);
 
-	var texts = paper.set();
-	var buttons = paper.set();
-	var boxes = paper.set();
+	paper.mainTexts = paper.set();
+	paper.mainButtons = paper.set();
+	paper.mainBoxes = paper.set();
 
 
 	for (var i = 0; i < 4; i++) {
@@ -43,49 +50,58 @@
 			
 			tempButton.statID = stats[i][j];
 
-			texts.push(tempText);
-			buttons.push(tempButton);
+			paper.mainTexts.push(tempText);
+			paper.mainButtons.push(tempButton);
 
 
 		}
 	}
 
 
-	var sendStat = paper.rect(750, 5, 50, 50).attr({fill : "red", "stroke-width" : 2});
-	sendStat.click(function (e) {addStat();});
-	paper.text(775, 60, "Send Stat");
+	paper.sendStat = paper.rect(750, 65, 50, 50).attr({fill : "red", "stroke-width" : 2});
+	paper.sendStat.click(function (e) {
+		if (STAT_EDIT) updateStat();
+		else addStat();
+	});
+	paper.sendStat.words = paper.text(775, 120, "Send Stat");
 
-	var homeTimeout = paper.rect(130, 350, 50, 50).attr({fill : "darkorange"})
+	paper.deleteStat = paper.rect(750, 5, 50, 50).attr({fill : "orange", "stroke-width" : 2});
+	paper.deleteStat.click(function (e) {deleteStat();});
+	paper.deleteStat.words = paper.text(775, 60, "Delete Stat");
+	paper.deleteStat.hide();
+	paper.deleteStat.words.hide();
+
+	paper.homeTimeout = paper.rect(130, 350, 50, 50).attr({fill : "darkorange"})
 	.click(function(e) {
 		$.post("/stats/timeout", {h : true}, function(responseJSON){});
 	});
-	paper.text(155, 375, "T.O.");
-	var awayTimeout = paper.rect(570, 350, 50, 50).attr({fill : "darkorange"})
+	paper.homeTimeout.words = paper.text(155, 375, "T.O.");
+	paper.awayTimeout = paper.rect(570, 350, 50, 50).attr({fill : "darkorange"})
 	.click(function(e) {
 		$.post("/stats/timeout", {h : false}, function(responseJSON){});
 	});
-	paper.text(595, 375, "T.O.");
+	paper.awayTimeout.words = paper.text(595, 375, "T.O.");
 
 	
 
-buttons.mousedown(function(e) {
+paper.mainButtons.mousedown(function(e) {
 		this.attr({fill: this.clickAccent});
 		mousedowninsomething = true;
 
 	});
-	buttons.mouseup(function(e) {
+	paper.mainButtons.mouseup(function(e) {
 		clickThing(this);
 		mousedowninsomething = false;
 
 	});
-	buttons.mouseout(function(e) {
+	paper.mainButtons.mouseout(function(e) {
 		if (mousedowninsomething) {
 			clickThing(this);
 			mousedowninsomething = false;
 		}
 	});
 
-buttons.mouseover(function (event) {
+paper.mainButtons.mouseover(function (event) {
 	    this.g = this.glow({
 	        opacity: 0.85,
 	        color: this.glowColor,
@@ -107,7 +123,15 @@ $("#court").click(function(e) {
 var home = {};
 var away = {};
 $.get("/game/roster", function(responseJSON) {
-		var res = JSON.parse(responseJSON);
+
+		var r = JSON.parse(responseJSON);
+		console.log(r);
+
+		for (var i = 0; i < r.stats.length; i++) {
+			logStat(r.stats[i], r.types[i]);
+		}
+
+		var res = r.roster;
 		console.log(res);
 		home.primary = res[0];
 		home.secondary = res[1];
@@ -143,11 +167,12 @@ $.get("/game/roster", function(responseJSON) {
 
 
 	var homeColor = home.primary;
-	var homeClick = "#a2591d";
+
+	var homeClick = makeDarker(Raphael.color(home.primary).hex);
 	var homeAccent = home.secondary;
 
 	var awayColor = away.primary;
-	var awayClick = "#0a390c";
+	var awayClick = makeDarker(Raphael.color(away.primary).hex);
 	var awayAccent = away.secondary;
 
 	
@@ -155,7 +180,6 @@ $.get("/game/roster", function(responseJSON) {
 
 
 	for (var i = 0; i < 5; i++) {
-		console.log(home);
 		var tempBox = paper.rect(130, 35 + 55 * i, 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
 			.data("thing", "player").data("bench", false).data("home", true);
 		var tempText = paper.text(155, 35 + 55 * i + 25, home.onCourt[i].number).attr({"font-family": "Arial", "font-size":16});
@@ -168,8 +192,8 @@ $.get("/game/roster", function(responseJSON) {
 
 		tempBox.player = home.onCourt[i];
 
-		texts.push(tempText);
-		boxes.push(tempBox);
+		paper.mainTexts.push(tempText);
+		paper.mainBoxes.push(tempBox);
 	}
 	for (var i = 0; i < home.bench.length; i++) {
 		var tempBox = paper.rect(50, 35 + 55 * (i), 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
@@ -184,8 +208,8 @@ $.get("/game/roster", function(responseJSON) {
 
 		tempBox.player = home.bench[i];
 
-		texts.push(tempText);
-		boxes.push(tempBox);
+		paper.mainTexts.push(tempText);
+		paper.mainBoxes.push(tempBox);
 	}
 
 
@@ -203,8 +227,8 @@ $.get("/game/roster", function(responseJSON) {
 		tempBox.player = away.onCourt[i];
 
 
-		texts.push(tempText);
-		boxes.push(tempBox);
+		paper.mainTexts.push(tempText);
+		paper.mainBoxes.push(tempBox);
 	}
 	for (var i = 0; i < away.bench.length; i++) {
 		var tempBox = paper.rect(650, 35 + 55 * (i), 50, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
@@ -219,22 +243,22 @@ $.get("/game/roster", function(responseJSON) {
 
 		tempBox.player = away.bench[i];
 
-		texts.push(tempText);
-		boxes.push(tempBox);
+		paper.mainTexts.push(tempText);
+		paper.mainBoxes.push(tempBox);
 	}
 
 	
 
-	boxes.mousedown(function(e) {
+	paper.mainBoxes.mousedown(function(e) {
 		this.attr({fill: this.clickAccent});
 		mousedowninsomething = true;
 	});
-	boxes.mouseup(function(e) {
+	paper.mainBoxes.mouseup(function(e) {
 		clickThing(this);
 		mousedowninsomething = false;
 
 	});
-	boxes.mouseout(function(e) {
+	paper.mainBoxes.mouseout(function(e) {
 		if (mousedowninsomething) {
 			clickThing(this);
 			mousedowninsomething = false;
@@ -243,17 +267,20 @@ $.get("/game/roster", function(responseJSON) {
 
 	
 
-	texts.mousedown(function(e) {
+	paper.mainTexts.mousedown(function(e) {
 		this.box.attr({fill: this.box.clickAccent});
+		mousedowninsomething = true;
+
 	});
-	texts.mouseup(function(e) {
+	paper.mainTexts.mouseup(function(e) {
 		//this.box.attr({fill: this.box.normalColor});
 		clickThing(this.box);
+		mousedowninsomething = false;
 	});
 
 
 
-	boxes.mouseover(function (event) {
+	paper.mainBoxes.mouseover(function (event) {
 	    this.g = this.glow({
 	        opacity: 0.85,
 	        color: this.glowColor,
@@ -265,7 +292,7 @@ $.get("/game/roster", function(responseJSON) {
 
 	
 
-	texts.mouseover(function(e) {
+	paper.mainTexts.mouseover(function(e) {
 		this.box.g = this.box.glow({
 			opacity: 0.85,
 	        color: this.box.glowColor,
@@ -276,14 +303,14 @@ $.get("/game/roster", function(responseJSON) {
 	});
 
 
-	var subWindow = paper.rect(10, 10, 500, 300).attr({fill : "white", "stroke-width" : 3}).mousemove(function(e) {
+	paper.subWindow = paper.rect(10, 10, 500, 300).attr({fill : "white", "stroke-width" : 3}).mousemove(function(e) {
 		if (!(this.currentMove === undefined)) {
 			this.currentMove.attr({cx : e.offsetX});
 			this.currentMove.attr({cy : e.offsetY});
 		}
 	});
-	subWindow.ornaments = [];
-	subWindow.currentMove = undefined;
+	paper.subWindow.ornaments = [];
+	paper.subWindow.currentMove = undefined;
 
 	var benchDots = paper.set();
 	var starterBoxes = paper.set();
@@ -294,8 +321,7 @@ $.get("/game/roster", function(responseJSON) {
 	counts.awayBench = 0;
 	counts.awayOn = 0;
 
-	boxes.forEach(function(obj) {
-		console.log(obj.data("bench"));
+	paper.mainBoxes.forEach(function(obj) {
 		if (obj.data("bench")) {
 			var temp;
 			if (obj.data("home")) {
@@ -334,46 +360,68 @@ $.get("/game/roster", function(responseJSON) {
 			temp.player = obj.player;
 			var tempTexts = paper.text(temp.defaultX, temp.defaultY, temp.player.number);
 			temp.number = tempTexts;
+			tempTexts.box = temp;
 			subtexts.push(tempTexts);
 			starterBoxes.push(temp);
 		}
 	});
 
 	benchDots.forEach(function(o) {
-		subWindow.ornaments.push(o);
-		makeDraggable(o, subWindow);
+		paper.subWindow.ornaments.push(o);
+		makeDraggable(o, paper.subWindow);
 	});	
 	starterBoxes.forEach(function(o) {
-		subWindow.ornaments.push(o);
+		paper.subWindow.ornaments.push(o);
 	});
-	subtexts.forEach(function(o) {
-		subWindow.ornaments.push(o);
-		o.mousedown(function (e) {
-			subWindow.currentMove = o.circ;
+	subtexts.forEach(function(obj) {
+		paper.subWindow.ornaments.push(obj);
+		obj.mousedown(function (e) {
+			paper.subWindow.currentMove = obj.circ;
 		});
-		o.mousemove(function (e) {
-				if (!(subWindow.currentMove === undefined)) {
-					subWindow.currentMove.attr({cx : e.layerX, cy : e.layerY});
+		obj.mousemove(function (e) {
+				if (!(paper.subWindow.currentMove === undefined)) {
+					paper.subWindow.currentMove.attr({cx : e.layerX, cy : e.layerY});
 				}
 			
 		});
-		o.mouseup(function (e) {
-			subWindow.currentMove.attr({cx : subWindow.currentMove.defaultX, cy : subWindow.currentMove.defaultY});
-			subWindow.currentMove = undefined;
+		obj.mouseup(function (e) {
+			paper.subWindow.currentMove.attr({cx : paper.subWindow.currentMove.defaultX, cy : paper.subWindow.currentMove.defaultY});
+
+			starterBoxes.forEach(function (o) {
+
+			if (Raphael.isPointInsideBBox(o.getBBox(), e.layerX, e.layerY)) {
+
+				if (o.player.teamID == obj.box.player.teamID) {
+
+					sub(o.player.teamID == home.teamID, paper.subWindow.currentMove.player.number, o.player.number);
+					paper.subWindow.currentMove.hide();
+
+					var temp = o.player;
+					o.player = paper.subWindow.currentMove.player;
+					paper.subWindow.currentMove.player = temp;
+
+
+					var a = o.number.attr("text");
+					o.number.attr({text : paper.subWindow.currentMove.number.attr("text")});
+					paper.subWindow.currentMove.number.attr({text : a});
+				}
+			}
+		});
+		paper.subWindow.currentMove = undefined;
+
 		});
 	});
 
-	for(var i = 0; i < subWindow.ornaments.length; i++) subWindow.ornaments[i].hide();
+	for(var i = 0; i < paper.subWindow.ornaments.length; i++) paper.subWindow.ornaments[i].hide();
 
 	var openSub = paper.rect(750, 130, 50, 50).attr({fill : "black", "stroke-width" : 2}).data("open", false);
-	openSub.subWindow = subWindow;
+	openSub.subWindow = paper.subWindow;
 	openSub.subWindow.hide();
 	openSub.click(function(e) {showSubWindow(this)});
 
 	function makeDraggable(obj, sw) {
 	obj.mousedown(function (e) {
 		sw.currentMove = this;
-		console.log("a");
 	});
 	obj.mousemove(function (e) {
 		if (sw.currentMove !== undefined) {
@@ -390,16 +438,13 @@ $.get("/game/roster", function(responseJSON) {
 
 		starterBoxes.forEach(function (o) {
 			if (Raphael.isPointInsideBBox(o.getBBox(), e.offsetX, e.offsetY)) {
-				console.log(o.player);
 				if (o.player.teamID == obj.player.teamID) {
-					console.log(o.data("home"), " ", obj.player.number, " ", o.player.number);
 					sub(o.player.teamID == home.teamID, obj.player.number, o.player.number);
 					obj.hide();
 
 					var temp = o.player;
 					o.player = obj.player;
 					obj.player = temp;
-					console.log(o.number, obj.number);
 
 					var a = o.number.attr("text");
 					o.number.attr({text : obj.number.attr("text")});
@@ -415,22 +460,14 @@ $.get("/game/roster", function(responseJSON) {
 
 
 
-var flipPossession = paper.rect(750, 70, 50, 50).attr({fill : "blue", "stroke-width" : 2}).data("home", true);
-
-
-
-
-	
-	sendStat.click(function (e) {addStat();});
-	paper.text(775, 125, "Flip Possession");
-	var a = paper.path("M755,75,755,115,795,95z").attr({fill : "Yellow"});
-	flipPossession.awayPath = a;
-	var h = paper.path("M795,75,795,115,755,95z").attr({fill : "Yellow"});
-	flipPossession.awayPath = h;
-	a.hide();
-	flipPossession.click(function(e) {fp()});
-	a.click(function(e) {fp()});		
-	h.click(function(e) {fp()});	
+paper.flipPossession = paper.rect(750, 190, 50, 50).attr({fill : "blue", "stroke-width" : 2}).data("home", true);
+paper.flipPossession.words = paper.text(775, 255, "Flip Possession");
+paper.flipPossession.a = paper.path("M755,195,755,235,795,215z").attr({fill : "Yellow"});
+paper.flipPossession.h = paper.path("M795,195,795,235,755,215z").attr({fill : "Yellow"});
+paper.flipPossession.a.hide();
+paper.flipPossession.click(function(e) {fp()});
+paper.flipPossession.a.click(function(e) {fp()});		
+paper.flipPossession.h.click(function(e) {fp()});	
 
 function showSubWindow(obj) {
 	if (obj.data("open")) {
@@ -452,14 +489,14 @@ function showSubWindow(obj) {
 }
 
 function fp() {
-	if (flipPossession.data("home")) {
-			flipPossession.data("home", false);
-			h.hide();
-			a.show();
+	if (paper.flipPossession.data("home")) {
+			paper.flipPossession.data("home", false);
+			paper.flipPossession.h.hide();
+			paper.flipPossession.a.show();
 	} else {
-			flipPossession.data("home", true);
-			a.hide();
-			h.show();
+			paper.flipPossession.data("home", true);
+			paper.flipPossession.a.hide();
+			paper.flipPossession.h.show();
 	}
 	$.post("/stats/changepossession", {}, function(responseJSON) {});
 
@@ -470,7 +507,7 @@ function sub(h, inPlayer, outPlayer) {
 	var inBox;
 	var outBox;
 
-	boxes.forEach(function(t) {
+	paper.mainBoxes.forEach(function(t) {
 		if (t.data("bench") && t.data("home") == h) {
 			if (t.player.number == parseInt(inPlayer)) {
 				inBox = t;
@@ -536,17 +573,155 @@ function clickThing(b) {
 			playerID: clickedPlayer.player.id
 		};
 		clickedPoint.remove();
+		clickedPoint = undefined;
 		clickedPlayer.attr({fill: clickedPlayer.normalColor});
+		clickedPlayer = undefined;
 		clickedStat.attr({fill: clickedStat.normalColor});
-		console.log("adding stat ", postParameters)
+		clickedStat = undefined;
+
+		console.log(postParameters);
 		
 		$.post("/stats/add", postParameters, function(responseJSON) {
 			console.log(responseJSON);
+			var r = JSON.parse(responseJSON);
+			var res = r.stat;
+			logStat(res, r.statType);
+			
 		});
 
 		}
 
 	}
+
+	function logStat(res, type) {
+		console.log(res);
+		var feed = stats_feed.rect(13, stats_feed.count * -50, 25, 25).attr({fill : "gold"});
+			var txt = stats_feed.text(40, stats_feed.count * -50 + 12.5, "#" + res.player.number + " " + res.player.name + " " + type)
+			.attr({"text-anchor" : "start"});
+			feed.words = txt;
+			feed.stat = res;
+			feed.statType = type;
+			feed.g = undefined;
+			feed.click(function (e) {
+				if (feed.g === undefined) {
+					if (stats_feed.curr !== undefined) {
+						stats_feed.curr.g.remove();
+						stats_feed.curr.g = undefined;
+					}
+					feed.g = feed.glow();
+					stats_feed.curr = feed;
+					STAT_EDIT = true;
+					paper.sendStat.attr({"fill" : "green"});
+					paper.sendStat.words.attr({"text" : "Update Stat"});
+					paper.deleteStat.show();
+					paper.deleteStat.words.show();
+				} else {
+					feed.g.remove();
+					feed.g = undefined;
+					stats_feed.curr = undefined;
+
+					STAT_EDIT = false;
+					paper.sendStat.attr({"fill" : "red"});
+					paper.sendStat.words.attr({"text" : "Send Stat"});
+
+					paper.deleteStat.hide();
+					paper.deleteStat.words.hide();
+				}
+			});
+			stats_feed.count++;
+			stats_feed.l.push(feed);
+			stats_feed.setViewBox(0, stats_feed.count * -50, stats_feed.width, stats_feed.height);
+	}
+
+	function deleteStat() {
+		//database id
+		var i = stats_feed.curr.stat.id;
+		stats_feed.curr.words.remove();
+		stats_feed.curr.g.remove();
+		stats_feed.curr.remove();
+
+		stats_feed.curr.g = undefined;
+		stats_feed.curr = undefined;
+
+		STAT_EDIT = false;
+		paper.sendStat.attr({"fill" : "red"});
+		paper.sendStat.words.attr({"text" : "Send Stat"});
+
+		paper.deleteStat.hide();
+		paper.deleteStat.words.hide();
+
+
+		$.post("/stats/delete", {databaseID : i}, function() {});
+	}
+
+	function updateStat() {
+		console.log(stats_feed.curr.stat, stats_feed.curr.statType);
+		postParameters = {
+			x : stats_feed.curr.stat.pos.x,
+			y : stats_feed.curr.stat.pos.y,
+			statID : stats_feed.curr.statType,
+			playerID : stats_feed.curr.stat.player.id,
+			databaseID : stats_feed.curr.stat.id
+		};
+
+		var player = stats_feed.curr.stat.player;
+		
+		//database id, statid, playerid, new location
+		if (clickedPoint !== undefined) {
+			postParameters.x = clickedPoint.data("ratioX");
+			postParameters.y = clickedPoint.data("ratioY");
+			clickedPoint.remove();
+			clickedPoint = undefined;
+
+		}
+		if (clickedStat !== undefined) {
+			postParameters.statID = clickedStat.statID;
+			clickedStat.attr({fill: clickedStat.normalColor});
+			clickedStat = undefined;
+
+		}
+		if (clickedPlayer !== undefined) {
+			postParameters.playerID = clickedPlayer.player.id;
+			clickedPlayer.attr({fill: clickedPlayer.normalColor});
+			player = clickedPlayer.player;
+			clickedPlayer = undefined;
+
+		}
+
+		stats_feed.curr.words.attr({text : "#" + player.number + " " + player.name + " " + postParameters.statID});
+		stats_feed.curr.stat.player = player;
+		stats_feed.curr.statType = postParameters.statID;
+		stats_feed.curr.stat.pos.x = postParameters.x;
+		stats_feed.curr.stat.pos.y = postParameters.y;
+		stats_feed.curr.g.remove();
+		stats_feed.curr.g = undefined;
+		stats_feed.curr = undefined;
+
+		STAT_EDIT = false;
+		paper.sendStat.attr({"fill" : "red"});
+		paper.sendStat.words.attr({"text" : "Send Stat"});
+
+		paper.deleteStat.hide();
+		paper.deleteStat.words.hide();
+
+
+		$.post("/stats/update", postParameters, function(responseJSON) {
+		});
+
+
+
+	}
+
+
+function makeDarker(h) {
+	console.log(h);
+	var r = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(0,2),16);
+	var g = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(2,4),16);
+	var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
+
+	return "rgb(" + r * .75 + "," + g * .75 + "," +  b * .75 + ")";
+}
+
 
 disable_user_select();
 

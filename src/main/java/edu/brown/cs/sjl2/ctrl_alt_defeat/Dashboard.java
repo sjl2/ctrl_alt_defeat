@@ -39,7 +39,7 @@ public class Dashboard {
     return this.currentGame;
   }
 
-  private Game newGame(Team home, Team away) {
+  private Game newGame(Team home, Team away) throws GameException {
     return new Game(home, away, pf, db);
   }
 
@@ -53,14 +53,18 @@ public class Dashboard {
   public void startGame(Boolean home, int opponentID)
       throws DashboardException {
     if (getMyTeam() == null) {
-      String message = "You cannot start a new game without a team. Please "
+      String message = "Cannot start a new game without a team. Please "
           + "create your team at ...";
       throw new DashboardException(message);
     } else if (currentGame == null) {
-      if (home) {
-        currentGame = newGame(myTeam, tf.getTeam(opponentID));
-      } else {
-        currentGame = newGame(tf.getTeam(opponentID), myTeam);
+      try {
+        if (home) {
+          currentGame = newGame(myTeam, tf.getTeam(opponentID));
+        } else {
+          currentGame = newGame(tf.getTeam(opponentID), myTeam);
+        }
+      } catch (GameException e) {
+        throw new DashboardException("Cannot start game. " + e.getMessage());
       }
     } else {
       String message = "Cannot start new game with a game in progress.";
@@ -76,9 +80,21 @@ public class Dashboard {
     return tf.getTeam(id);
   }
 
+  public List<Team> getAllTeams() {
+    return tf.getAllTeams();
+  }
+
+  public List<Team> getOpposingTeams() {
+    return tf.getOpposingTeams();
+  }
+
   public Game getGameByDate(String date) {
     // TODO
     return null;
+  }
+
+  public Game getGameByID(int id) {
+    return null; // TODO db.getGameByID(id);
   }
 
   public List<Game> getGamesByOpponent(int opponentID) {
@@ -92,12 +108,25 @@ public class Dashboard {
   }
 
   public Team setMyTeam(String name,
-      String coach, String color1, String color2) {
-    this.myTeam =
-        new Team(db.getNextID("team"), name, coach, color1, color2, pf);
+      String coach, String primary, String secondary) {
 
-    db.saveTeam(this.myTeam, true);
+    this.myTeam = tf.addTeam(name, coach, primary, secondary, true);
 
-    return null;
+    return this.myTeam;
+  }
+
+  public void addTeam(String name, String coach, String primary,
+      String secondary) {
+
+    tf.addTeam(name, coach, primary, secondary, false);
+  }
+
+  public OldGame getOldGame(int gameID) throws DashboardException {
+    try {
+      return db.getGameByID(gameID, tf);
+    } catch (GameException e) {
+      throw new DashboardException(e.getMessage());
+    }
+
   }
 }

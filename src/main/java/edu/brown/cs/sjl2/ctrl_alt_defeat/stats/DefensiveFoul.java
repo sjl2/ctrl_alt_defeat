@@ -4,7 +4,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public class DefensiveFoul implements Stat {
-  private static final String TYPE = null;
+  private static final String TYPE = "DefensiveFoul";
   private Location pos;
   private Player player;
   private int id;

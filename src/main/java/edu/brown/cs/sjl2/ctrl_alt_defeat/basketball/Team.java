@@ -39,29 +39,19 @@ public class Team {
     }
   }
 
-  public Team(int id, String name) {
+  private Team(int id, String name) {
     this.id = id;
     this.name = name;
+    this.coach = null;
     this.primary = null;
     this.secondary = null;
     this.playerIds = null;
     this.playerNames = null;
   }
 
-//  public Team(Integer i) {
-//    Random rn = new Random();
-//    this.id = i;
-//    this.name = "Team " + i;
-//    this.primary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";
-//    this.secondary = "rgb(" + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + "," + (rn.nextDouble() * 255) + ")";;
-//    playerIds = new HashMap<>();
-//    playerNames = new HashMap<>();
-//    for (int j = 0; j < 12; j++) {
-//      Player p = new Player(j, i);
-//      playerIds.put(j, p);
-//      playerNames.put(p.getName(), p);
-//    }
-//  }
+  public static Team newGhostTeam(int id, String name) {
+    return new Team(id, name);
+  }
 
   public int getID() {
     return id;
