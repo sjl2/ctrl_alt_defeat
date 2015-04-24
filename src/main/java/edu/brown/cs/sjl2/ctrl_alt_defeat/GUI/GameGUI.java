@@ -77,7 +77,7 @@ public class GameGUI {
       starterIDs.put(BasketballPosition.AwaySF, Integer.parseInt(qm.value("asf")));
       starterIDs.put(BasketballPosition.AwayPF, Integer.parseInt(qm.value("apf")));
       starterIDs.put(BasketballPosition.AwayC, Integer.parseInt(qm.value("ac")));
-      
+
       try {
         dash.startGame(isHome, teamID, starterIDs);
       } catch (DashboardException e) {

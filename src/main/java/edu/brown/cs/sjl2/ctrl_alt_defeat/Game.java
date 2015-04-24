@@ -77,8 +77,6 @@ public class Game {
       this.homeBench = new Bench(home);
       this.awayBench = new Bench(away);
 
-      placePlayers(home, away, starterIDs);
-
       this.pf = pf;
       this.sf = new StatFactory(db, this);
 
@@ -89,6 +87,8 @@ public class Game {
       this.homeTO = rules.timeouts();
       this.awayTO = rules.timeouts();
       this.period = 1;
+
+      placePlayers(home, away, starterIDs);
     } catch (GameException e) {
       db.deleteGame(id);
       String message = e.getMessage() + " Game information deleted "
@@ -329,7 +329,10 @@ public class Game {
                            Map<BasketballPosition, Integer> starterIDs) throws GameException {
 
     for(BasketballPosition bp : BasketballPosition.values()) {
-      lineup.addStarter(bp, pf.getPlayer(starterIDs.get(bp)));
+      Integer playerID = starterIDs.get(bp);
+      if(playerID == null) continue;
+      Player p = pf.getPlayer(playerID);
+      lineup.addStarter(bp, p);
     }
     
     Collection<Player> players =  h.getPlayers();
