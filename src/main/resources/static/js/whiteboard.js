@@ -1,3 +1,7 @@
+//from the ftl
+// width="1008.8" height="572" 
+//we want 780 442
+
 canvas = document.getElementById("myCanvas");
 ctx = canvas.getContext("2d");
 

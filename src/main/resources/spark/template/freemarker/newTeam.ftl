@@ -1,5 +1,7 @@
-<#assign content>
-  <h1>Welcome to the Wonderously Useful New Team Screen! (written by the project czar himself)</h1>
+<#assign coachContent>
+    <div class="container">
+    </div>
+  <h1>Make a Team</h1>
   <form method="POST" action="/dashboard/new/team/results">
     Team name:<br>
     <input type="text" name="name">
@@ -15,6 +17,6 @@
     <br><br>
     <input type="submit" class="submit" value="Submit"> <br>
   </form>
-  <link rel="stylesheet" href="/css/newTeam.css">
+  <link rel="stylesheet" href="/css/coach.css">
 </#assign>
-<#include "main.ftl">
+<#include "coach.ftl">
