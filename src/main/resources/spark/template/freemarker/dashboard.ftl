@@ -1,4 +1,9 @@
 <#assign coachContent>
+<head>
+<style>
+.jumbotron{background-color : ${myTeam.getPrimary()}; color : ${myTeam.getSecondary()}; -webkit-text-stroke-width: .6px; -webkit-text-stroke-color: black}
+</style>
+</head>
  	<link rel="stylesheet" href="/css/dashboard.css">
 
     <div class="container">

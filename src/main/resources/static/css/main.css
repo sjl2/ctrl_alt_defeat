@@ -81,3 +81,7 @@ form {
     font-size: 16px;
     font-weight: bold;
 }
+
+.navbar {
+    height : 65px;
+}
