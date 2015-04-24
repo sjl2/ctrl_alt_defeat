@@ -44,20 +44,26 @@ public class Game {
   private boolean homeDoubleBonus;
   private boolean awayBonus;
   private boolean awayDoubleBonus;
-  
+
   private RuleSet rules;
   private PlayerFactory pf;
   private StatFactory sf;
 
   public Game(Team home, Team away, PlayerFactory pf, DBManager db)
       throws GameException {
+
     this.rules = new ProRules();
-    this.id = db.getNextID(TABLE);
+
     this.date = LocalDate.now();
+
+    if (home.getID() == away.getID()) {
+      // Cannot play with yourselves
+      String message = "This is no time to play with yourself!";
+      throw new GameException(message);
+    }
 
     this.homeTeam = home;
     this.awayTeam = away;
-    db.saveGame(this);
 
     this.homeBoxScore = new BoxScore(db, this, home);
     this.awayBoxScore = new BoxScore(db, this, away);
@@ -69,7 +75,7 @@ public class Game {
 
     this.pf = pf;
     this.sf = new StatFactory(db, this);
-    
+
     this.homeBonus = false;
     this.homeDoubleBonus = false;
     this.awayBonus = false;
@@ -78,6 +84,8 @@ public class Game {
     this.awayTO = rules.timeouts();
     this.period = 1;
 
+    this.id = db.getNextID(TABLE);
+    db.saveGame(this);
   }
 
   public int getID() {
@@ -167,11 +175,11 @@ public class Game {
   public void flipPossession() {
     this.possession = !possession;
   }
-  
+
   public boolean getPossession() {
     return possession;
   }
-  
+
   public int getTO(boolean home) {
     if (home) {
       return homeTO;
@@ -221,14 +229,14 @@ public class Game {
       awayDoubleBonus = true;
     }
   }
-  
+
   public Stat addStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.addStat(s);
       homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
       updateBonuses();
-      
+
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.addStat(s);
       awayScore = awayBoxScore.getScore();
@@ -350,7 +358,7 @@ public class Game {
   public LocalDate getDate() {
     return date;
   }
-  
+
   public boolean getHomeBonus() {
     return homeBonus;
   }

@@ -692,17 +692,22 @@ public class DBManager {
   /**
    * Generates a list of team names and id's for the create-player handler.
    * @return - List of teams, (dummy teams though)
-   * @author awainger
    */
-  public List<Team> getTeams() {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT id, name FROM team;")) {
+  private List<Team> getTeams(boolean includeMyTeam) {
+    String query = "SELECT id, name FROM team";
+
+    if (!includeMyTeam) {
+      query = query + " WHERE my_team = 0";
+    }
+    query = query + ";";
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
       List<Team> teams = new ArrayList<>();
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        Team t = new Team(id, name);
+        Team t = Team.newGhostTeam(id, name);
         teams.add(t);
       }
 
@@ -711,6 +716,14 @@ public class DBManager {
       close();
       throw new RuntimeException(e.getMessage());
     }
+  }
+
+  public List<Team> getAllTeams() {
+    return getTeams(true);
+  }
+
+  public List<Team> getOpposingTeams() {
+    return getTeams(false);
   }
 
   public void saveGame(Game game) {

@@ -80,8 +80,12 @@ public class Dashboard {
     return tf.getTeam(id);
   }
 
-  public List<Team> getTeams() {
-    return tf.getTeams();
+  public List<Team> getAllTeams() {
+    return tf.getAllTeams();
+  }
+
+  public List<Team> getOpposingTeams() {
+    return tf.getOpposingTeams();
   }
 
   public Game getGameByDate(String date) {
