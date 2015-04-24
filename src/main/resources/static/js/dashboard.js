@@ -35,7 +35,10 @@ scoreboard.awayTimeouts = scoreboard.text(320, 180, "??").attr({"font-size" : 20
 
 scoreboard.noGameInProgress = {};
 scoreboard.noGameInProgress.box = scoreboard.rect(25, 25, 350, 150).attr({fill : "gray"});
-scoreboard.noGameInProgress.text = scoreboard.text(200, 100, "No Game\n In Progress!").attr({"font-size" : 50});
+scoreboard.noGameInProgress.text = scoreboard.text(200, 100, "Click To Start\na New Game!").attr({"font-size" : 50})
+	.click(function (e) {
+		window.location.href = "/dashboard/new/game";
+	});
 
 $.get("/dashboard/getgame", {}, function(responseJSON) {
 	console.log(responseJSON);

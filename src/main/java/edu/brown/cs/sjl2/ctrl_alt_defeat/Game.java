@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
@@ -49,12 +50,9 @@ public class Game {
   private PlayerFactory pf;
   private StatFactory sf;
 
-  public Game(Team home, Team away, PlayerFactory pf, DBManager db)
+  public Game(Team home, Team away, PlayerFactory pf, DBManager db,
+              Map<BasketballPosition, Integer> starterIDs)
       throws GameException {
-
-    this.rules = new ProRules();
-
-    this.date = LocalDate.now();
 
     if (home.getID() == away.getID()) {
       // Cannot play with yourselves
@@ -62,30 +60,42 @@ public class Game {
       throw new GameException(message);
     }
 
+    // Game Fields in DB
+    this.id = db.getNextID(TABLE);
     this.homeTeam = home;
     this.awayTeam = away;
-
-    this.homeBoxScore = new BoxScore(db, this, home);
-    this.awayBoxScore = new BoxScore(db, this, away);
-    this.lineup = new Lineup();
-    this.homeBench = new Bench(home);
-    this.awayBench = new Bench(away);
-
-    placePlayers(home, away);
-
-    this.pf = pf;
-    this.sf = new StatFactory(db, this);
-
-    this.homeBonus = false;
-    this.homeDoubleBonus = false;
-    this.awayBonus = false;
-    this.awayDoubleBonus = false;
-    this.homeTO = rules.timeouts();
-    this.awayTO = rules.timeouts();
-    this.period = 1;
-
-    this.id = db.getNextID(TABLE);
+    this.date = LocalDate.now();
     db.saveGame(this);
+
+    try {
+      // Remaining fields
+      this.rules = new ProRules(); // TODO Change in settings
+
+      this.homeBoxScore = new BoxScore(db, this, home);
+      this.awayBoxScore = new BoxScore(db, this, away);
+      this.lineup = new Lineup();
+      this.homeBench = new Bench(home);
+      this.awayBench = new Bench(away);
+
+      this.pf = pf;
+      this.sf = new StatFactory(db, this);
+
+      this.homeBonus = false;
+      this.homeDoubleBonus = false;
+      this.awayBonus = false;
+      this.awayDoubleBonus = false;
+      this.homeTO = rules.timeouts();
+      this.awayTO = rules.timeouts();
+      this.period = 1;
+
+      placePlayers(home, away, starterIDs);
+    } catch (GameException e) {
+      db.deleteGame(id);
+      String message = e.getMessage() + " Game information deleted "
+          + "from database.";
+      throw new GameException(message);
+    }
+
   }
 
   public int getID() {
@@ -315,7 +325,16 @@ public class Game {
     }
   }
 
-  public void placePlayers(Team h, Team a) throws GameException {
+  public void placePlayers(Team h, Team a,
+                           Map<BasketballPosition, Integer> starterIDs) throws GameException {
+
+    for(BasketballPosition bp : BasketballPosition.values()) {
+      Integer playerID = starterIDs.get(bp);
+      if(playerID == null) continue;
+      Player p = pf.getPlayer(playerID);
+      lineup.addStarter(bp, p);
+    }
+    
     Collection<Player> players =  h.getPlayers();
     Iterator<Player> homeIterator = players.iterator();
 
@@ -323,34 +342,25 @@ public class Game {
       throw new GameException("Not enough players on the home team.");
     }
 
-    lineup
-      .addStarter(BasketballPosition.HomePG, homeIterator.next())
-      .addStarter(BasketballPosition.HomeSG, homeIterator.next())
-      .addStarter(BasketballPosition.HomeSF, homeIterator.next())
-      .addStarter(BasketballPosition.HomePF, homeIterator.next())
-      .addStarter(BasketballPosition.HomeC, homeIterator.next());
-
     while (homeIterator.hasNext()) {
-      homeBench.getPlayers().add(homeIterator.next());
+      Player p = homeIterator.next();
+      if(!starterIDs.containsValue(p.getID())) {
+        homeBench.getPlayers().add(p);
+      }
     }
 
     players =  a.getPlayers();
     Iterator<Player> awayIterator = players.iterator();
 
-
     if (players.size() < 5) {
-      throw new GameException("Not enough players on the home team.");
+      throw new GameException("Not enough players on the away team.");
     }
 
-    lineup
-      .addStarter(BasketballPosition.AwayPG, awayIterator.next())
-      .addStarter(BasketballPosition.AwaySG, awayIterator.next())
-      .addStarter(BasketballPosition.AwaySF, awayIterator.next())
-      .addStarter(BasketballPosition.AwayPF, awayIterator.next())
-      .addStarter(BasketballPosition.AwayC, awayIterator.next());
-
     while (awayIterator.hasNext()) {
-      awayBench.getPlayers().add(awayIterator.next());
+      Player p = awayIterator.next();
+      if(!starterIDs.containsValue(p.getID())) {
+        awayBench.getPlayers().add(p);
+      }
     }
 
   }

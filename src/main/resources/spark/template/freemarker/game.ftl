@@ -32,7 +32,7 @@
     <#list game.getHomeBoxScore().getAllPlayerStats() as row>
       <tr> 
       	<td>${row.getPlayer().getNumber()}</td>
-      	<td><a href="/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
+      	<td><a href="/dashboard/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
       	<td>${row.getMinutes()}</td>
       	<td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>
       	<td>${row.getThreePointers()} - ${row.getThreePointersA()}</td>
@@ -89,7 +89,7 @@
     <#list game.getAwayBoxScore().getAllPlayerStats() as row>
       <tr> 
         <td>${row.getPlayer().getNumber()}</td>
-        <td><a href="/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
+        <td><a href="/dashboard/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
         <td>${row.getMinutes()}</td>
         <td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>
         <td>${row.getThreePointers()} - ${row.getThreePointersA()}</td>
