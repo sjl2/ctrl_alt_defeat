@@ -29,6 +29,7 @@ public class GUIManager {
   private DBManager dbManager;
   private int port = 8585;
   private final static int STATUS = 500;
+  private final static int TEN_THOUSAND_AND_FOUR = 10004;
 
   private Dashboard dash;
 
@@ -97,7 +98,6 @@ public class GUIManager {
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
 
 		Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
-
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -127,7 +127,7 @@ public class GUIManager {
     }
   }
 
-  private class LoginViewHandler implements TemplateViewRoute {
+  public class LoginViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
@@ -136,7 +136,7 @@ public class GUIManager {
     }
   }
   
-  private class LoginHandler implements Route {
+  public class LoginHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -145,6 +145,8 @@ public class GUIManager {
       int clearance = dbManager.checkPassword(username, password);
       Map<String, Object> variables =
         ImmutableMap.of("clearance", clearance);
+      System.out.println(clearance);
+      req.session().attribute("clearance", clearance);
 
       return GSON.toJson(variables);
     }

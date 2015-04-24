@@ -87,7 +87,7 @@ public class PlaymakerGUI {
         }
         paths[position] = path;
       }
-
+     
       dbManager.savePlay(new Play(name, numFrames, paths));
       return getPlayNamesFromDB();
     }
