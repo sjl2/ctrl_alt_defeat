@@ -87,10 +87,12 @@ public class DBManager {
    * @author awainger
    */
   public void savePlay(Play play) {
+    long start = System.currentTimeMillis();
     String name = play.getName();
     if (!doesPlayExist(name)) {
       saveToPlaysTable(name, play.getNumFrames());
     }
+    System.out.println("Got name: " + ((start - System.currentTimeMillis()) / 1000.0));
 
     Location[][] paths = play.getPaths();
 
@@ -104,7 +106,9 @@ public class DBManager {
             "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
 
       prep1.setString(1, name);
+      System.out.println("Preparing to delete: " + ((start - System.currentTimeMillis()) / 1000.0));
       prep1.executeUpdate();
+      System.out.println("Deleted: " + ((start - System.currentTimeMillis()) / 1000.0));
 
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
@@ -119,8 +123,8 @@ public class DBManager {
           prep2.addBatch();
         }
       }
-
       prep2.executeBatch();
+      System.out.println("Batches executed: " + ((start - System.currentTimeMillis()) / 1000.0));
 
     } catch (SQLException e) {
       close();
@@ -796,15 +800,4 @@ public class DBManager {
       throw new DashboardException(message + " " + e.getMessage());
     }
   }
-
-
 }
-
-
-
-
-
-
-
-
-
