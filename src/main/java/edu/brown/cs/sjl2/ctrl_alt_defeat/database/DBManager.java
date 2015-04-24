@@ -697,7 +697,7 @@ public class DBManager {
     String query = "SELECT id, name FROM team";
 
     if (!includeMyTeam) {
-      query = query + "WHERE my_team = 0";
+      query = query + " WHERE my_team = 0";
     }
     query = query + ";";
 
