@@ -33,6 +33,14 @@ public class DashboardGUI {
   public class DashboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
+      /*Integer clearance = req.session().attribute("clearance");
+      System.out.println("CLEARANCE IN DASH BOARD: " + clearance);
+      if (clearance == null || clearance < 2) {
+        res.redirect("/login");
+        Map<String, Object> variables =
+            ImmutableMap.of("tabTitle", "Login");
+          return new ModelAndView(variables, "login.ftl");
+      }*/
       if (dash.getMyTeam() == null) {
         Map<String, Object> variables =
             ImmutableMap.of("tabTitle", "Set-Up", "errorMessage", "");

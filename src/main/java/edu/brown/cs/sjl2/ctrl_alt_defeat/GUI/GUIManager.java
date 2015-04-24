@@ -29,6 +29,7 @@ public class GUIManager {
   private DBManager dbManager;
   private int port = 8585;
   private final static int STATUS = 500;
+  private final static int TEN_THOUSAND_AND_FOUR = 10004;
 
   private Dashboard dash;
 
@@ -134,7 +135,7 @@ public class GUIManager {
     }
   }
 
-  private class LoginViewHandler implements TemplateViewRoute {
+  public class LoginViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
@@ -142,7 +143,6 @@ public class GUIManager {
       return new ModelAndView(variables, "login.ftl");
     }
   }
-
   private class LoginHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {

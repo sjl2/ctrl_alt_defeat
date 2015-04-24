@@ -105,7 +105,7 @@ public class PlaymakerGUI {
       String name = qm.value("name");
       Play play = dbManager.loadPlay(name);
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("play", play).build();
+          .put("play", play).put("errorMessage", "").build();
 
       return GSON.toJson(variables);
     }

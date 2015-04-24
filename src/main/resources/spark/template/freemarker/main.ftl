@@ -8,15 +8,16 @@
          avoid minification for clarity. -->
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/html5bp.css">
+    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/main.css">
     <script src="/js/jquery-2.1.1.js"></script>
     <script src="/js/raphael.js"></script>
+    <script src="/js/bootstrap/bootstrap.min.js"></script>
     <script src="/js/main.js"></script>
   </head>
   <body>
-    <div id="wrapper">
+
       ${content}
-    </div>
     <div id="error">${errorMessage}</div>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
