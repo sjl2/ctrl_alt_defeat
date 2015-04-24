@@ -50,6 +50,16 @@ public class Game {
   private PlayerFactory pf;
   private StatFactory sf;
 
+  private int homeWins;
+
+  private DBManager db;
+
+  private int homeLosses;
+
+  private int awayWins;
+
+  private int awayLosses;
+
   public Game(Team home, Team away, PlayerFactory pf, DBManager db,
               Map<BasketballPosition, Integer> starterIDs)
       throws GameException {
@@ -66,6 +76,7 @@ public class Game {
     this.awayTeam = away;
     this.date = LocalDate.now();
     db.saveGame(this);
+    this.db = db;
 
     try {
       // Remaining fields
@@ -121,6 +132,34 @@ public class Game {
 
   public Team getAway() {
     return awayTeam;
+  }
+
+  public int getHomeWins() {
+    if (homeWins == -1) {
+      homeWins = db.getTeamWins(getID(), homeTeam.getID(), date, false);
+    }
+    return homeWins;
+  }
+
+  public int getHomeLosses() {
+    if (homeLosses == -1) {
+      homeLosses = db.getTeamWins(getID(), homeTeam.getID(), date, false);
+    }
+    return homeLosses;
+  }
+
+  public int getAwayWins() {
+    if (awayWins == -1) {
+      awayWins = db.getTeamWins(getID(), awayTeam.getID(), date, false);
+    }
+    return awayWins;
+  }
+
+  public int getAwayLosses() {
+    if (awayLosses == -1) {
+      awayLosses = db.getTeamWins(getID(), awayTeam.getID(), date, false);
+    }
+    return awayLosses;
   }
 
   public int getHomeScore() {

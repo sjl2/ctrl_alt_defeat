@@ -840,4 +840,14 @@ public class DBManager {
 
   }
 
+  public int getTeamWins(int gameID, int teamID, LocalDate date, boolean inclusive) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  public int getTeamLosses(int gameID, int teamID, LocalDate date, boolean inclusive) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
 }
