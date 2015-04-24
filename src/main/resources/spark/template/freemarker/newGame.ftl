@@ -5,13 +5,14 @@
 
   <h1>Create New Game</h1>
   
+  <#assign pos=["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"]>
   <div id="myStarters">
     Select starters:
     <br>
-    <#list 1..5 as i>
-      <select class="playerSelector" id="myStarter${i}">
+    <#list 0..4 as i>
+      ${pos[i]}: <select class="playerSelector" id="myStarter${i}">
 	<#list players as player>
-	  <option id="${player.getID()}">${player.getName()}</option>
+	  <option id="player${player.getID()}">${player.getName()}</option>
 	</#list>
       </select>
       <br>
@@ -22,7 +23,7 @@
     Opponent Team:
     <select id="opponent">
       <#list teams as team>
-	<option id="${team.getID()}">${team.getName()}</option>
+	<option id="team${team.getID()}">${team.getName()}</option>
       </#list>
     </select>
 
@@ -37,8 +38,8 @@
   <div id="opponentStarters">
     Opponent Starters:
     <br>
-    <#list 1..5 as i>
-      <select class="playerSelector" id="oppStarter${i}">
+    <#list 0..4 as i>
+      ${pos[i]}: <select class="playerSelector" id="oppStarter${i}">
       </select>
       <br>
     </#list>

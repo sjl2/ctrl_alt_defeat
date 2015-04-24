@@ -20,7 +20,11 @@ public class TeamFactory {
 
   public Team getTeam(int id) {
     Team t = teams.get(id);
-    return t != null ? t : db.getTeam(id, pf);
+    if(t == null) {
+      t = db.getTeam(id, pf);
+      teams.put(t.getID(), t);
+    }
+    return t;
   }
 
   public Team addTeam(
@@ -37,6 +41,11 @@ public class TeamFactory {
     teams.put(t.getID(), t);
 
     return t;
+  }
+
+  public void addPlayer(Player p) {
+    Team t = getTeam(p.getTeamID());
+    t.addPlayer(p);
   }
 
   public List<Team> getAllTeams() {

@@ -1,9 +1,0 @@
-$(function() {
-    
-    $.get();
-    
-    function populateOpponentPlayers(teamName) {
-	$.get()
-    }
-    
-});

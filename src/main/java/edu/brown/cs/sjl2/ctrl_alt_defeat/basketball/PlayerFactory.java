@@ -9,7 +9,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class PlayerFactory {
 
-  private DBManager database;
+  private DBManager db;
   private Map<Integer, Player> players;
 
   /**
@@ -18,7 +18,7 @@ public class PlayerFactory {
    * @param db The database manager needed to query for a player
    */
   public PlayerFactory(DBManager db) {
-    this.database = db;
+    this.db = db;
     this.players = new HashMap<>();
   }
 
@@ -29,18 +29,32 @@ public class PlayerFactory {
    */
   public Player getPlayer(int id) {
     Player p = players.get(id);
-    return p != null ? p : database.getPlayer(id);
+    if(p == null) {
+      p = db.getPlayer(id);
+      players.put(p.getID(), p);
+    }
+    return p;
   }
 
   public Collection<Player> getTeamPlayers(Team team) {
     Collection<Player> players = new ArrayList<>();
-    Collection<Integer> ids = database.getTeamPlayers(team);
+    Collection<Integer> ids = db.getTeamPlayers(team);
 
     for (int id : ids)  {
       players.add(getPlayer(id));
     }
 
     return players;
+  }
+
+  public Player addPlayer(String name, int teamID, int number, boolean current) {
+    //TODO use current
+    Player p = new Player(db.getNextID("player"), name, number, teamID);
+    db.savePlayer(p, current);
+
+    players.put(p.getID(), p);
+
+    return p;
   }
 
 }

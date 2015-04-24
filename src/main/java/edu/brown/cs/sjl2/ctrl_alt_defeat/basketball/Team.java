@@ -34,8 +34,7 @@ public class Team {
     Collection<Player> players = pf.getTeamPlayers(this);
 
     for (Player p : players) {
-      playerIds.put(p.getID(), p);
-      playerNames.put(p.getName(), p);
+      addPlayer(p);
     }
   }
 
@@ -79,6 +78,11 @@ public class Team {
 
   public Collection<Player> getPlayers() {
     return playerIds.values();
+  }
+
+  void addPlayer(Player p) {
+    playerIds.put(p.getID(), p);
+    playerNames.put(p.getName(), p);
   }
 
 

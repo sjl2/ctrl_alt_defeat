@@ -124,11 +124,11 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      dbManager.savePlayer(
+      dash.addPlayer(
           qm.value("name"),
           Integer.parseInt(qm.value("team")),
           Integer.parseInt(qm.value("number")),
-          Integer.parseInt(qm.value("current")));
+          Boolean.parseBoolean(qm.value("current")));
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Player Results", "errorMessage", "");
@@ -220,7 +220,7 @@ public class DashboardGUI {
       Team team = dash.getTeam(teamID);
 
       Map<String, Object> variables =
-        ImmutableMap.of("players", team.getPlayers());
+        ImmutableMap.of("playerList", team.getPlayers());
 
       return GSON.toJson(variables);
     }

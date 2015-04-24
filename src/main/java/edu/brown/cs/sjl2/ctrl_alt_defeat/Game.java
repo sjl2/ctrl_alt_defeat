@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
@@ -49,7 +50,8 @@ public class Game {
   private PlayerFactory pf;
   private StatFactory sf;
 
-  public Game(Team home, Team away, PlayerFactory pf, DBManager db)
+  public Game(Team home, Team away, PlayerFactory pf, DBManager db,
+              Map<BasketballPosition, Integer> starterIDs)
       throws GameException {
 
     this.rules = new ProRules();
@@ -71,7 +73,7 @@ public class Game {
     this.homeBench = new Bench(home);
     this.awayBench = new Bench(away);
 
-    placePlayers(home, away);
+    placePlayers(home, away, starterIDs);
 
     this.pf = pf;
     this.sf = new StatFactory(db, this);
@@ -315,7 +317,13 @@ public class Game {
     }
   }
 
-  public void placePlayers(Team h, Team a) throws GameException {
+  public void placePlayers(Team h, Team a,
+                           Map<BasketballPosition, Integer> starterIDs) throws GameException {
+
+    for(BasketballPosition bp : BasketballPosition.values()) {
+      lineup.addStarter(bp, pf.getPlayer(starterIDs.get(bp)));
+    }
+    
     Collection<Player> players =  h.getPlayers();
     Iterator<Player> homeIterator = players.iterator();
 
@@ -323,34 +331,25 @@ public class Game {
       throw new GameException("Not enough players on the home team.");
     }
 
-    lineup
-      .addStarter(BasketballPosition.HomePG, homeIterator.next())
-      .addStarter(BasketballPosition.HomeSG, homeIterator.next())
-      .addStarter(BasketballPosition.HomeSF, homeIterator.next())
-      .addStarter(BasketballPosition.HomePF, homeIterator.next())
-      .addStarter(BasketballPosition.HomeC, homeIterator.next());
-
     while (homeIterator.hasNext()) {
-      homeBench.getPlayers().add(homeIterator.next());
+      Player p = homeIterator.next();
+      if(!starterIDs.containsValue(p.getID())) {
+        homeBench.getPlayers().add(p);
+      }
     }
 
     players =  a.getPlayers();
     Iterator<Player> awayIterator = players.iterator();
 
-
     if (players.size() < 5) {
       throw new GameException("Not enough players on the home team.");
     }
 
-    lineup
-      .addStarter(BasketballPosition.AwayPG, awayIterator.next())
-      .addStarter(BasketballPosition.AwaySG, awayIterator.next())
-      .addStarter(BasketballPosition.AwaySF, awayIterator.next())
-      .addStarter(BasketballPosition.AwayPF, awayIterator.next())
-      .addStarter(BasketballPosition.AwayC, awayIterator.next());
-
     while (awayIterator.hasNext()) {
-      awayBench.getPlayers().add(awayIterator.next());
+      Player p = awayIterator.next();
+      if(!starterIDs.containsValue(p.getID())) {
+        awayBench.getPlayers().add(p);
+      }
     }
 
   }

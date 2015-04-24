@@ -18,8 +18,8 @@
     </select>
     <br>
 
-    <input type="radio" name="current" value="1" checked>Current Player
-    <input type="radio" name="current" value="0">Former Player
+    <input type="radio" name="current" value="true" checked>Current Player
+    <input type="radio" name="current" value="false">Former Player
     <br><br>
 
 		<input type="submit" class="submit" value="Submit"> <br>

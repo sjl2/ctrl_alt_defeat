@@ -673,14 +673,14 @@ public class DBManager {
    * @param current - Boolean (represented as int), whether player is currently on team
    * @author awainger
    */
-  public void savePlayer(String name, int team, int number, int current) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO player VALUES(?, ?, ?, ?, ?);")) {
-      prep.setInt(1, getNextID("player"));
-      prep.setString(2, name);
-      prep.setInt(3, team);
-      prep.setInt(4, number);
-      prep.setInt(5, current);
+  public void savePlayer(Player player, boolean current) {
+    String query = "INSERT INTO player VALUES(?, ?, ?, ?, ?);";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, player.getID());
+      prep.setString(2, player.getName());
+      prep.setInt(3, player.getTeamID());
+      prep.setInt(4, player.getNumber());
+      prep.setBoolean(5, current);
       prep.executeUpdate();
     } catch (SQLException e) {
       close();

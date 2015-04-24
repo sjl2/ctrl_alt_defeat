@@ -8,16 +8,10 @@ public class Player {
   private int teamID;
 
   public Player(int id, String name, int number, int teamID) {
+    //TODO Add current variable
     this.id = id;
     this.name = name;
     this.number = number;
-    this.teamID = teamID;
-  }
-  
-  public Player(int j, int teamID) {
-    this.id = j;
-    this.name = "player " + j;
-    this.number = 15 + j;
     this.teamID = teamID;
   }
 

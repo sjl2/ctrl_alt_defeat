@@ -1,8 +1,11 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import java.util.List;
+import java.util.Map;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
@@ -39,8 +42,9 @@ public class Dashboard {
     return this.currentGame;
   }
 
-  private Game newGame(Team home, Team away) throws GameException {
-    return new Game(home, away, pf, db);
+  private Game newGame(Team home, Team away,
+                       Map<BasketballPosition, Integer> starterIDs) throws GameException {
+    return new Game(home, away, pf, db, starterIDs);
   }
 
 //  //simple setter for game
@@ -50,7 +54,7 @@ public class Dashboard {
 //    this.currentGame = g;
 //  }
 
-  public void startGame(Boolean home, int opponentID)
+  public void startGame(Boolean home, int opponentID, Map<BasketballPosition, Integer> starterIDs)
       throws DashboardException {
     if (getMyTeam() == null) {
       String message = "Cannot start a new game without a team. Please "
@@ -59,9 +63,9 @@ public class Dashboard {
     } else if (currentGame == null) {
       try {
         if (home) {
-          currentGame = newGame(myTeam, tf.getTeam(opponentID));
+          currentGame = newGame(myTeam, tf.getTeam(opponentID), starterIDs);
         } else {
-          currentGame = newGame(tf.getTeam(opponentID), myTeam);
+          currentGame = newGame(tf.getTeam(opponentID), myTeam, starterIDs);
         }
       } catch (GameException e) {
         throw new DashboardException("Cannot start game. " + e.getMessage());
@@ -78,6 +82,10 @@ public class Dashboard {
 
   public Team getTeam(int id) {
     return tf.getTeam(id);
+  }
+
+  public Player getPlayer(int id) {
+    return pf.getPlayer(id);
   }
 
   public List<Team> getAllTeams() {
@@ -115,10 +123,19 @@ public class Dashboard {
     return this.myTeam;
   }
 
-  public void addTeam(String name, String coach, String primary,
+  public Team addTeam(String name, String coach, String primary,
       String secondary) {
 
-    tf.addTeam(name, coach, primary, secondary, false);
+    Team t = tf.addTeam(name, coach, primary, secondary, false);
+    return t;
+  }
+
+  public Player addPlayer(String name, int teamID, int number, boolean current) {
+    Player p = pf.addPlayer(name, teamID, number, current);
+    if(current) {//TODO add current to player and check this further down the line
+      tf.addPlayer(p);
+    }
+    return p;
   }
 
   public OldGame getOldGame(int gameID) throws DashboardException {
