@@ -32,7 +32,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 /**
  * DBManager class, handles connection to database.
- * @author awainger
+ * @author sjl2
  */
 public class DBManager {
 
@@ -50,7 +50,7 @@ public class DBManager {
   /**
    * Constructor for DBManager class, sets up connection.
    * @param path - String representing path to db file
-   * @author awainger
+   * @author sjl2
    */
   public DBManager(String path) {
     try {
@@ -69,7 +69,7 @@ public class DBManager {
 
   /**
    * Call any time there is an error or you are done with the DBManager.
-   * @author awainger
+   * @author sjl2
    */
   public void close() {
     try {
@@ -84,7 +84,7 @@ public class DBManager {
   /**
    * Saves the inputted play name and data into the database.
    * @param play - Play, with name, frames and paths set from front end.
-   * @author awainger
+   * @author sjl2
    */
   public void savePlay(Play play) {
     long start = System.currentTimeMillis();
@@ -220,7 +220,7 @@ public class DBManager {
   /**
    * Loads play names to pass to front end
    * @return List strings, play names
-   * @author awainger
+   * @author sjl2
    */
   public List<String> loadPlayNames() {
     try (PreparedStatement prep = conn.prepareStatement(
@@ -240,7 +240,7 @@ public class DBManager {
   /**
    * Deletes the indicated play from the database.
    * @param name - String, name of play to delete
-   * @author awainger
+   * @author sjl2
    */
   public void deletePlay(String name) {
     try (
@@ -262,7 +262,7 @@ public class DBManager {
    * Gets player from database.
    * @param id - Int, corresponding to player to get
    * @return - Player, with fields populated from db info
-   * @author awainger
+   * @author sjl2
    */
   public Player getPlayer(int id) {
     String query = "SELECT name, team, number "
@@ -297,7 +297,7 @@ public class DBManager {
    * @param id - Int, corresponding to team
    * @param pf - PlayerFactor, to create players later
    * @return - Team, populated with db info
-   * @author awainger
+   * @author sjl2
    */
   public Team getTeam(int id, PlayerFactory pf) {
     String query = "SELECT name, coach, color1, color2 "
@@ -676,7 +676,7 @@ public class DBManager {
    * @param team - Int, team id
    * @param number - Int, player's jersey number
    * @param current - Boolean (represented as int), whether player is currently on team
-   * @author awainger
+   * @author sjl2
    */
   public void savePlayer(Player player, boolean current) {
     String query = "INSERT INTO player VALUES(?, ?, ?, ?, ?);";
@@ -727,6 +727,10 @@ public class DBManager {
     return getTeams(true);
   }
 
+  /**
+   * @return Returns a list of opposing teams (all teams except my team)
+   * @author sjl2
+   */
   public List<Team> getOpposingTeams() {
     return getTeams(false);
   }

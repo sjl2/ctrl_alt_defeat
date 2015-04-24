@@ -161,6 +161,54 @@ public class DashboardGUI {
 
   }
 
+  public class TeamViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int gameID = Integer.parseInt(request.params("id"));
+      String error = "";
+
+      OldGame game = null;
+      try {
+        game = dash.getOldGame(gameID);
+      } catch (DashboardException e) {
+        error = e.getMessage();
+        System.out.println(error);
+      }
+
+      Map<String, Object> variables =
+        ImmutableMap.of(
+            "tabTitle", game.toString(),
+            "game", game,
+            "errorMessage", error);
+      return new ModelAndView(variables, "game.ftl");
+    }
+
+  }
+
+  public class PlayerViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int gameID = Integer.parseInt(request.params("id"));
+      String error = "";
+
+      OldGame game = null;
+      try {
+        game = dash.getOldGame(gameID);
+      } catch (DashboardException e) {
+        error = e.getMessage();
+        System.out.println(error);
+      }
+
+      Map<String, Object> variables =
+        ImmutableMap.of(
+            "tabTitle", game.toString(),
+            "game", game,
+            "errorMessage", error);
+      return new ModelAndView(variables, "game.ftl");
+    }
+
+  }
+
   public class GetGameHandler implements Route {
 
     @Override
@@ -224,7 +272,7 @@ public class DashboardGUI {
 
       return GSON.toJson(variables);
     }
-    
+
   }
 
 }

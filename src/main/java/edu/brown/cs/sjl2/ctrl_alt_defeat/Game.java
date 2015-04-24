@@ -123,6 +123,14 @@ public class Game {
     return awayTeam;
   }
 
+  public int getHomeScore() {
+    return homeBoxScore.getScore();
+  }
+
+  public int getAwayScore() {
+    return awayBoxScore.getScore();
+  }
+
   public BoxScore getHomeBoxScore() {
     return homeBoxScore;
   }
@@ -293,14 +301,6 @@ public class Game {
     this.rules = rules;
   }
 
-  public int getHomeScore() {
-    return homeScore;
-  }
-
-  public int getAwayScore() {
-    return awayScore;
-  }
-
   public int getHomeFouls() {
     return homeFouls;
   }
@@ -330,11 +330,13 @@ public class Game {
 
     for(BasketballPosition bp : BasketballPosition.values()) {
       Integer playerID = starterIDs.get(bp);
-      if(playerID == null) continue;
+      if(playerID == null) {
+        continue;
+      }
       Player p = pf.getPlayer(playerID);
       lineup.addStarter(bp, p);
     }
-    
+
     Collection<Player> players =  h.getPlayers();
     Iterator<Player> homeIterator = players.iterator();
 
