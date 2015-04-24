@@ -421,7 +421,7 @@ public class DBManager {
     }
   }
 
-  public Map<Integer, GameStats> loadBoxScore(int id, Team team)
+  public Map<Integer, GameStats> loadBoxScore(int gameID, Team team)
       throws GameException {
 
     // Load All Plays
@@ -432,7 +432,7 @@ public class DBManager {
     Map<Integer, GameStats> allGameStats = new HashMap<>();
 
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-      ps.setInt(1, id);
+      ps.setInt(1, gameID);
       ps.setInt(2, team.getID());
 
       ResultSet rs = ps.executeQuery();
@@ -444,7 +444,8 @@ public class DBManager {
         for (int i = 1; i <= len; i++) {
           values.add(rs.getInt(i));
         }
-        allGameStats.put(values.get(2), new GameStats(values, id, team));
+        allGameStats.put(values.get(2), new GameStats(values, gameID, team));
+        values.clear();
       }
 
     } catch (SQLException e) {
@@ -458,7 +459,7 @@ public class DBManager {
         + "WHERE game = ? AND team = ?;";
 
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-      ps.setInt(1, id);
+      ps.setInt(1, gameID);
       ps.setInt(2, team.getID());
 
       ResultSet rs = ps.executeQuery();
@@ -473,7 +474,7 @@ public class DBManager {
           }
           values.add(rs.getInt(i));
         }
-        allGameStats.put(values.get(2), new GameStats(values, id, team));
+        allGameStats.put(values.get(2), new GameStats(values, gameID, team));
       }
 
     } catch (SQLException e) {
