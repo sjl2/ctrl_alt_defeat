@@ -458,6 +458,10 @@ public class DBManager {
         "SELECT * FROM team_stats "
         + "WHERE game = ? AND team = ?;";
 
+    query = "SELECT game, team, player, "
+        + "SUM(?) AS ?, SUM(?) AS ?,  FROM player_stats "
+        + "WHERE AND team = ? AND player ? ;";
+
     try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
       ps.setInt(1, gameID);
       ps.setInt(2, team.getID());
