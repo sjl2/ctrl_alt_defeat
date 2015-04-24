@@ -265,7 +265,7 @@ public class DBManager {
    * @author sjl2
    */
   public Player getPlayer(int id) {
-    String query = "SELECT name, team, number "
+    String query = "SELECT name, team, number, current "
         + "FROM player "
         + "WHERE id = ?;";
 
@@ -277,10 +277,11 @@ public class DBManager {
 
       if (rs.next()) {
         String name = rs.getString("name");
-        int team = rs.getInt("team");
         int number = rs.getInt("number");
+        int teamID = rs.getInt("team");
+        boolean current = rs.getInt("current") == 1;
 
-        player = new Player(id, name, number, team);
+        player = new Player(id, name, number, teamID, this.getTeamNameByID(teamID), current);
       }
     } catch (SQLException e) {
       String message = "Could not retrieve player " + id + " from the "
@@ -290,6 +291,23 @@ public class DBManager {
     }
 
     return player;
+  }
+  
+  public String getTeamNameByID(int teamID) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT name FROM team WHERE id = ?;")) {
+      prep.setInt(1, teamID);
+      ResultSet rs = prep.executeQuery();
+      
+      if (rs.next()) {
+        return rs.getString("name");
+      } else {
+        return "Team name could not be found ... This should be looked into...";
+      }
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -678,14 +696,14 @@ public class DBManager {
    * @param current - Boolean (represented as int), whether player is currently on team
    * @author sjl2
    */
-  public void savePlayer(Player player, boolean current) {
+  public void savePlayer(Player player) {
     String query = "INSERT INTO player VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, player.getID());
       prep.setString(2, player.getName());
       prep.setInt(3, player.getTeamID());
       prep.setInt(4, player.getNumber());
-      prep.setBoolean(5, current);
+      prep.setBoolean(5, player.getCurrent());
       prep.executeUpdate();
     } catch (SQLException e) {
       close();

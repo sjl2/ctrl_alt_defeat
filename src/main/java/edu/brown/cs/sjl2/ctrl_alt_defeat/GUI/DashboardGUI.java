@@ -12,6 +12,7 @@ import spark.TemplateViewRoute;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
@@ -188,23 +189,22 @@ public class DashboardGUI {
   public class PlayerViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
-      int gameID = Integer.parseInt(request.params("id"));
+      int playerID = Integer.parseInt(request.params("id"));
       String error = "";
 
-      OldGame game = null;
-      try {
-        game = dash.getOldGame(gameID);
-      } catch (DashboardException e) {
-        error = e.getMessage();
-        System.out.println(error);
+      Player player = dash.getPlayer(playerID);
+      if (player == null) {
+        error = "Could not find player by that ID!";
+      } else {
+        // TODO get player's stats...
       }
 
       Map<String, Object> variables =
         ImmutableMap.of(
-            "tabTitle", game.toString(),
-            "game", game,
+            "tabTitle", player.toString(),
+            "player", player,
             "errorMessage", error);
-      return new ModelAndView(variables, "game.ftl");
+      return new ModelAndView(variables, "player.ftl");
     }
 
   }

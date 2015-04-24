@@ -48,9 +48,8 @@ public class PlayerFactory {
   }
 
   public Player addPlayer(String name, int teamID, int number, boolean current) {
-    //TODO use current
-    Player p = new Player(db.getNextID("player"), name, number, teamID);
-    db.savePlayer(p, current);
+    Player p = new Player(db.getNextID("player"), name, number, teamID, db.getTeamNameByID(teamID), current);
+    db.savePlayer(p);
 
     players.put(p.getID(), p);
 
