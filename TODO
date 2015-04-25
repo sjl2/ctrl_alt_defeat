@@ -55,6 +55,8 @@
 	- User population/creation in dashboard
 		- Coach should create a stats user 
 - Error Checking
+	- 404 Pages for Teams, Games, Players, that do not exist
+	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
 
 
 

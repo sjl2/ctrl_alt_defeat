@@ -19,12 +19,12 @@ public class Block implements Stat {
   }
 
   @Override
-  public void execute(PlayerStats ps) {
+  public void execute(GameStats ps) {
     ps.addBlocks(1);
   }
 
   @Override
-  public void undo(PlayerStats ps) {
+  public void undo(GameStats ps) {
     ps.addBlocks(-1);
   }
 

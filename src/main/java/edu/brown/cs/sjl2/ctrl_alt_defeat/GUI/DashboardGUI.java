@@ -148,7 +148,8 @@ public class DashboardGUI {
       try {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
-        error = e.getMessage();
+        error = "No game exists with that id.";
+
         System.out.println(error);
       }
 

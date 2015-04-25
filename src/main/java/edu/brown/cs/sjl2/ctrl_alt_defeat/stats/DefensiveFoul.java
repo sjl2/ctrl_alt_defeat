@@ -18,12 +18,12 @@ public class DefensiveFoul implements Stat {
   }
 
   @Override
-  public void execute(PlayerStats ps) {
+  public void execute(GameStats ps) {
     ps.addDefensiveFouls(1);
   }
 
   @Override
-  public void undo(PlayerStats ps) {
+  public void undo(GameStats ps) {
     ps.addDefensiveFouls(-1);
   }
 

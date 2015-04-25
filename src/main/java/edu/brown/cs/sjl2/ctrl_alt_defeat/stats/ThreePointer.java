@@ -18,13 +18,13 @@ public class ThreePointer implements Stat {
   }
 
   @Override
-  public void execute(PlayerStats ps) {
+  public void execute(GameStats ps) {
     ps.addThreePointers(1);
     ps.addThreePointersA(1);
   }
 
   @Override
-  public void undo(PlayerStats ps) {
+  public void undo(GameStats ps) {
     ps.addThreePointers(-1);
     ps.addThreePointersA(-1);
   }

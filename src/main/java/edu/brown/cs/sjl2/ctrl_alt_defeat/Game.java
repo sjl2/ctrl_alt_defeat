@@ -34,8 +34,6 @@ public class Game {
 
   private LocalDate date;
   private int period;
-  private int homeScore;
-  private int awayScore;
   private int homeTO;
   private int awayTO;
   private boolean possession;
@@ -290,13 +288,11 @@ public class Game {
   public Stat addStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.addStat(s);
-      homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
       updateBonuses();
 
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.addStat(s);
-      awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
       updateBonuses();
     } else {
@@ -312,12 +308,10 @@ public class Game {
   public void undoStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.undoStat(s);
-      homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
       updateBonuses();
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.undoStat(s);
-      awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
       updateBonuses();
     } else {
@@ -365,7 +359,7 @@ public class Game {
   }
 
   public void placePlayers(Team h, Team a,
-                           Map<BasketballPosition, Integer> starterIDs) throws GameException {
+      Map<BasketballPosition, Integer> starterIDs) throws GameException {
 
     for(BasketballPosition bp : BasketballPosition.values()) {
       Integer playerID = starterIDs.get(bp);

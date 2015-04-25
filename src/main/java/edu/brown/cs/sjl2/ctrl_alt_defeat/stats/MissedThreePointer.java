@@ -18,12 +18,12 @@ public class MissedThreePointer implements Stat {
   }
 
   @Override
-  public void execute(PlayerStats ps) {
+  public void execute(GameStats ps) {
     ps.addThreePointersA(1);
   }
 
   @Override
-  public void undo(PlayerStats ps) {
+  public void undo(GameStats ps) {
     ps.addThreePointersA(-1);
   }
 

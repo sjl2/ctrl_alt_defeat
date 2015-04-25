@@ -11,11 +11,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
 
 public class BoxScore {
-  private static final int TEAM = 0;
 
   private Map<Integer, PlayerStats> playerStats;
+  private TeamStats teamStats;
   private Team team;
   private DBManager db;
 
@@ -29,19 +30,22 @@ public class BoxScore {
       playerStats.put(p.getID(), gs);
     }
 
-    playerStats.put(0, PlayerStats.newTeamGameStats(game, team));
+    this.teamStats = new TeamStats(game.getID(), team);
 
-    // Initialize all of the gamestats in the db
+    // Initialize all of the game stats in the db
     Collection<PlayerStats> stats = playerStats.values();
-    db.saveBoxScore(stats);
+    db.saveBoxScore(stats, teamStats);
 
 
     this.team = team;
     this.db = db;
   }
 
-  private BoxScore(DBManager db, Team team, Map<Integer, PlayerStats> playerStats) {
+  private BoxScore(DBManager db, Team team,
+      Map<Integer, PlayerStats> playerStats, TeamStats teamStats) {
+
     this.playerStats = playerStats;
+    this.teamStats = teamStats;
     this.db = db;
     this.team = team;
   }
@@ -57,9 +61,9 @@ public class BoxScore {
   public static BoxScore getOldBoxScore(DBManager db, int gameID, Team team)
       throws GameException {
 
-    Map<Integer, PlayerStats> playerStats = db.loadBoxScore(gameID, team);
-
-    return new BoxScore(db, team, playerStats);
+    Map<Integer, PlayerStats> playerStats = db.loadPlayerStats(gameID, team);
+    TeamStats teamStats = db.loadTeamStats(gameID, team);
+    return new BoxScore(db, team, playerStats, teamStats);
   }
 
   public PlayerStats getPlayerStats(Player p) {
@@ -76,8 +80,8 @@ public class BoxScore {
     return allStats;
   }
 
-  public PlayerStats getTeamStats() {
-    return playerStats.get(TEAM);
+  public TeamStats getTeamStats() {
+    return teamStats;
   }
 
   public Team getTeam() {
@@ -104,7 +108,7 @@ public class BoxScore {
    * Update the DB with the latest stats stored within the box score.
    */
   private void updateDB() {
-    db.updateBoxscore(playerStats.values());
+    db.updateBoxscore(playerStats.values(), teamStats);
   }
 
   public void undoStat(Stat s) {

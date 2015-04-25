@@ -21,6 +21,7 @@
           <th>Team</th>
           <th>PTS</th>
           <th>FGM-A</th>
+          <th>2PM-A</th>
           <th>3PM-A</th>
           <th>FTM-A</th>
           <th>OREB</th>
@@ -36,6 +37,7 @@
             <#assign homeStats = game.getHomeBoxScore().getTeamStats()>
             <td>${home.getName()}</td>
             <td>${homeStats.getPoints()}</td>
+            <td>${homeStats.getFieldGoals()} - ${homeStats.getFieldGoalsA()}</td>
             <td>${homeStats.getTwoPointers()} - ${homeStats.getTwoPointersA()}</td>
             <td>${homeStats.getThreePointers()} - ${homeStats.getThreePointersA()}</td>
             <td>${homeStats.getFreeThrows()} - ${homeStats.getFreeThrowsA()}</td>
@@ -51,7 +53,8 @@
         <tr>
             <#assign teamStats = game.getAwayBoxScore().getTeamStats()>
             <td>${away.getName()}</td>
-            <td>${teamStats.getPoints()}</td>            
+            <td>${teamStats.getPoints()}</td> 
+            <td>${teamStats.getFieldGoals()} - ${teamStats.getFieldGoalsA()}</td>          
             <td>${teamStats.getTwoPointers()} - ${teamStats.getTwoPointersA()}</td>
             <td>${teamStats.getThreePointers()} - ${teamStats.getThreePointersA()}</td>
             <td>${teamStats.getFreeThrows()} - ${teamStats.getFreeThrowsA()}</td>
@@ -76,7 +79,9 @@
           <th>#</th>
           <th>Name</th>
           <th>MIN</th>
+          <th>PTS</th>
           <th>FGM-A</th>
+          <th>2PM-A</th>
           <th>3PM-A</th>
           <th>FTM-A</th>
           <th>OREB</th>
@@ -87,13 +92,15 @@
           <th>BLK</th>
           <th>TO</th>
           <th>PF</th>
-          <th>PTS</th>
+
         </tr>
         <#list game.getHomeBoxScore().getAllPlayerStats() as row>
           <tr> 
             <td>${row.getPlayer().getNumber()}</td>
             <td><a href="/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
             <td>${row.getMinutes()}</td>
+            <td>${row.getPoints()}</td>
+            <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
             <td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>
             <td>${row.getThreePointers()} - ${row.getThreePointersA()}</td>
             <td>${row.getFreeThrows()} - ${row.getFreeThrowsA()}</td>
@@ -105,7 +112,6 @@
             <td>${row.getBlocks()}</td>
             <td>${row.getTurnovers()}</td>
             <td>${row.getPersonalFouls()}</td>
-            <td>${row.getPoints()}</td>
           </tr>
         </#list>
       </table>
@@ -120,7 +126,9 @@
           <th>#</th>
           <th>Name</th>
           <th>MIN</th>
+          <th>PTS</th>
           <th>FGM-A</th>
+          <th>2PM-A</th>
           <th>3PM-A</th>
           <th>FTM-A</th>
           <th>OREB</th>
@@ -131,13 +139,14 @@
           <th>BLK</th>
           <th>TO</th>
           <th>PF</th>
-          <th>PTS</th>
         </tr>
         <#list game.getAwayBoxScore().getAllPlayerStats() as row>
           <tr class="player-stats"> 
             <td>${row.getPlayer().getNumber()}</td>
             <td><a href="/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
             <td>${row.getMinutes()}</td>
+            <td>${row.getPoints()}</td>
+            <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
             <td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>
             <td>${row.getThreePointers()} - ${row.getThreePointersA()}</td>
             <td>${row.getFreeThrows()} - ${row.getFreeThrowsA()}</td>
@@ -149,7 +158,6 @@
             <td>${row.getBlocks()}</td>
             <td>${row.getTurnovers()}</td>
             <td>${row.getPersonalFouls()}</td>
-            <td>${row.getPoints()}</td>
           </tr>
         </#list>
       </table>

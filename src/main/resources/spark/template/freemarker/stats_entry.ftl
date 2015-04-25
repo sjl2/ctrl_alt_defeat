@@ -1,5 +1,5 @@
 <#assign content>
-
+ 	<link rel="stylesheet" href="/css/stats_entry.css">
 
 	<div id="court"></div>
 	<!--<div id="subForm">
@@ -14,7 +14,7 @@
 	<div id="statFeed"></div>
  
  <script src="/js/stats_entry.js"></script>
- <link rel="stylesheet" href="/css/stats_entry.css">
+
 
 </#assign>
 <#include "main.ftl">
