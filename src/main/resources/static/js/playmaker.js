@@ -118,7 +118,7 @@ window.onload = function() {
 
     var above_court = $("#above_court");
     var above_court_height = $("#play_name").height();
-    above_court.css("top", containerTop - 20);
+    above_court.css("top", containerTop - 40);
     above_court.css("height", above_court_height);
 
     var offset = container.offset();
@@ -165,16 +165,16 @@ window.onload = function() {
     $("#previous_frame").on("click", function() {
 	if(playing) {
 	    stop();
-	} else if(currentFrame > 0) {
-	    setFrame(currentFrame - 1);
+	} else {
+	    previousFrame();
 	}
     });
 
     $("#next_frame").on("click", function() {
 	if(playing) {
 	    stop();
-	} else if(currentFrame < maxFrame) {
-	    setFrame(currentFrame + 1);
+	} else {
+	    nextFrame();
 	}
     });
 
@@ -261,6 +261,30 @@ window.onload = function() {
 	  updateLoadBar,
 	  "json");
 
+    document.onkeydown = function(event) {
+	if(document.activeElement.type == "text") {
+	    return;
+	}
+	var keyCode = event.keyCode;
+	if(keyCode == 37) {//left
+	    previousFrame();
+	} else if(keyCode == 39) {//right
+	    nextFrame();
+	}
+    };
+
+}
+
+function previousFrame() {
+    if(currentFrame > 0) {
+	setFrame(currentFrame - 1);
+    }
+}
+
+function nextFrame() {
+    if(currentFrame < maxFrame) {
+	setFrame(currentFrame + 1);
+    }
 }
 
 function setFrame(frame) {
@@ -337,6 +361,8 @@ function onend(event) {
 	    }
 	}
     }
+
+    setFrame(0);
 }
 
 function updatePath() {
