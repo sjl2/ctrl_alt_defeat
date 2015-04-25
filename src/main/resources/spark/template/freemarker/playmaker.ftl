@@ -17,8 +17,9 @@
       <button id="save_play">Save Play</button>
     </div>
   </div>
-  <div id="canvas_container"></div>
+  <div id="canvas_container" tabindex="0"></div>
   <div id="control">
+    <input type="range" id="frame_number"></input>
     <button id="first_frame">First Frame</button>
     <button id="previous_frame">Previous Frame</button>
     <input type="text" value="0" id="current_frame"></input>

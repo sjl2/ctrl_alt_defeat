@@ -77,3 +77,13 @@
     margin-left: 15px;
     display: none;
 }
+
+#current_frame {
+    width: 55px;
+    text-align: center;
+}
+
+#frame_number {
+    width: 100%;
+    margin: 0px auto;
+}
