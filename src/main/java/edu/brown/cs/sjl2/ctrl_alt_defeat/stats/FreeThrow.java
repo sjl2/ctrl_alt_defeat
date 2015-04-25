@@ -18,13 +18,13 @@ public class FreeThrow implements Stat {
   }
 
   @Override
-  public void execute(GameStats ps) {
+  public void execute(PlayerStats ps) {
     ps.addFreeThrowsA(1);
     ps.addFreeThrows(1);
   }
 
   @Override
-  public void undo(GameStats ps) {
+  public void undo(PlayerStats ps) {
     ps.addFreeThrowsA(-1);
     ps.addFreeThrows(-1);
   }

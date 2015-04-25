@@ -9,13 +9,13 @@ import java.util.Map;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 public class BoxScore {
   private static final int TEAM = 0;
 
-  private Map<Integer, GameStats> playerStats;
+  private Map<Integer, PlayerStats> playerStats;
   private Team team;
   private DBManager db;
 
@@ -25,14 +25,14 @@ public class BoxScore {
     playerStats = new HashMap<>();
 
     for (Player p : players) {
-      GameStats gs = new GameStats(game.getID(), team, p);
+      PlayerStats gs = new PlayerStats(game.getID(), team, p);
       playerStats.put(p.getID(), gs);
     }
 
-    playerStats.put(0, GameStats.newTeamGameStats(game, team));
+    playerStats.put(0, PlayerStats.newTeamGameStats(game, team));
 
     // Initialize all of the gamestats in the db
-    Collection<GameStats> stats = playerStats.values();
+    Collection<PlayerStats> stats = playerStats.values();
     db.saveBoxScore(stats);
 
 
@@ -40,7 +40,7 @@ public class BoxScore {
     this.db = db;
   }
 
-  private BoxScore(DBManager db, Team team, Map<Integer, GameStats> playerStats) {
+  private BoxScore(DBManager db, Team team, Map<Integer, PlayerStats> playerStats) {
     this.playerStats = playerStats;
     this.db = db;
     this.team = team;
@@ -57,17 +57,17 @@ public class BoxScore {
   public static BoxScore getOldBoxScore(DBManager db, int gameID, Team team)
       throws GameException {
 
-    Map<Integer, GameStats> playerStats = db.loadBoxScore(gameID, team);
+    Map<Integer, PlayerStats> playerStats = db.loadBoxScore(gameID, team);
 
     return new BoxScore(db, team, playerStats);
   }
 
-  public GameStats getPlayerStats(Player p) {
+  public PlayerStats getPlayerStats(Player p) {
     return playerStats.get(p.getID());
   }
 
-  public List<GameStats> getAllPlayerStats() {
-    List<GameStats> allStats = new ArrayList<>();
+  public List<PlayerStats> getAllPlayerStats() {
+    List<PlayerStats> allStats = new ArrayList<>();
     for (int playerID : playerStats.keySet()) {
       if (playerID != 0) {
         allStats.add(playerStats.get(playerID));
@@ -76,7 +76,7 @@ public class BoxScore {
     return allStats;
   }
 
-  public GameStats getTeamStats() {
+  public PlayerStats getTeamStats() {
     return playerStats.get(TEAM);
   }
 

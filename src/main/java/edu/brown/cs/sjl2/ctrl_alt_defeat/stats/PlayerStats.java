@@ -11,7 +11,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 
-public class GameStats {
+public class PlayerStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
   private static final int DUMMY_PLAYER_ID = 0;
@@ -27,7 +27,7 @@ public class GameStats {
   private Multiset<String> stats;
 
 
-  public GameStats(int game, Team team, Player player) {
+  public PlayerStats(int game, Team team, Player player) {
     this.player = player;
     this.team = team;
     this.game = game;
@@ -46,7 +46,7 @@ public class GameStats {
 
   }
 
-  public GameStats(List<Integer> values, int gameID, Team team) {
+  public PlayerStats(List<Integer> values, int gameID, Team team) {
     this.game = gameID;
     this.team = team;
 
@@ -85,8 +85,8 @@ public class GameStats {
 //nick: I changed this from null because it's broken and hard to test other stuff
   //i think at some point we'll have to revisit how teams are displayed in
   //the database and what a TeamGameStats is
-  public static GameStats newTeamGameStats(Game game, Team team) {
-    return new GameStats(game.getID(), team, null);
+  public static PlayerStats newTeamGameStats(Game game, Team team) {
+    return new PlayerStats(game.getID(), team, null);
   }
 
   public List<Integer> getValues() {
