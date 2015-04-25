@@ -98,7 +98,6 @@ public class DBManager {
     }
 
     Location[][] paths = play.getPaths();
-
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
