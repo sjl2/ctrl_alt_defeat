@@ -11,7 +11,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ProRules;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
@@ -45,7 +44,6 @@ public class Game {
   private boolean awayDoubleBonus;
 
   private RuleSet rules;
-  private PlayerFactory pf;
   private StatFactory sf;
 
   private int homeWins;
@@ -58,7 +56,7 @@ public class Game {
 
   private int awayLosses;
 
-  public Game(Team home, Team away, PlayerFactory pf, DBManager db,
+  public Game(Team home, Team away, DBManager db,
               Map<BasketballPosition, Integer> starterIDs)
       throws GameException {
 
@@ -86,7 +84,6 @@ public class Game {
       this.homeBench = new Bench(home);
       this.awayBench = new Bench(away);
 
-      this.pf = pf;
       this.sf = new StatFactory(db, this);
 
       this.homeBonus = false;
@@ -250,7 +247,7 @@ public class Game {
   public Stat addStat(String statID, int playerID, Location location)
       throws GameException {
 
-    Player p = pf.getPlayer(playerID);
+    Player p = db.getPlayer(playerID);
     return addStat(sf.addStat(statID, p, location, period));
   }
 
@@ -260,7 +257,7 @@ public class Game {
     Stat oldStat = sf.getStat(id);
     undoStat(oldStat);
 
-    Stat s = sf.updateStat(id, statID, pf.getPlayer(playerID), location);
+    Stat s = sf.updateStat(id, statID, db.getPlayer(playerID), location);
     addStat(s);
 
   }
@@ -366,7 +363,7 @@ public class Game {
       if(playerID == null) {
         continue;
       }
-      Player p = pf.getPlayer(playerID);
+      Player p = db.getPlayer(playerID);
       lineup.addStarter(bp, p);
     }
 

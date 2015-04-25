@@ -57,6 +57,7 @@
 - Error Checking
 	- 404 Pages for Teams, Games, Players, that do not exist
 	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
+- Add Option to Build this table from scratch (translate the .schema to java). 
 
 
 

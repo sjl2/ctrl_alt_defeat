@@ -41,13 +41,18 @@ public class GameGUI {
         rosterInfo.add(game.getLineup());
         rosterInfo.add(game.getBench(true));
         rosterInfo.add(game.getBench(false));
+
         List<Stat> st = game.getAllStats();
         List<String> lab = new ArrayList<String>();
         for (Stat s : st) {
           lab.add(s.getStatType());
         }
         Map<String, Object> toReturn =
-            ImmutableMap.of("roster", rosterInfo, "stats", st, "types", lab, "errorMessage", "");
+            ImmutableMap.of(
+                "roster", rosterInfo,
+                "stats", st,
+                "types", lab,
+                "errorMessage", "");
 
         return GSON.toJson(toReturn);
       } else {

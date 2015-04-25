@@ -10,42 +10,38 @@ public class TeamFactory {
 
   private DBManager db;
   private Map<Integer, Team> teams;
-  private PlayerFactory pf;
 
-  public TeamFactory(DBManager db, PlayerFactory pf) {
+  public TeamFactory(DBManager db) {
     this.db = db;
     this.teams = new HashMap<>();
-    this.pf = pf;
   }
 
   public Team getTeam(int id) {
-    Team t = teams.get(id);
-    if(t == null) {
-      t = db.getTeam(id, pf);
-      teams.put(t.getID(), t);
-    }
-    return t;
+    return teams.get(id);
   }
 
-  public Team addTeam(
+  public Team getTeam(
+      int id,
       String name,
       String coach,
       String primary,
-      String secondary,
-      boolean myTeam) {
+      String secondary) {
 
-    Team t =
-        new Team(db.getNextID("team"), name, coach, primary, secondary, pf);
-    db.saveTeam(t, myTeam);
+    Team t = new Team(
+        id,
+        name,
+        coach,
+        primary,
+        secondary,
+        db);
 
-    teams.put(t.getID(), t);
+    cacheTeam(t);
 
     return t;
   }
 
-  public void addPlayer(Player p) {
-    Team t = getTeam(p.getTeamID());
-    t.addPlayer(p);
+  private void cacheTeam(Team t) {
+    teams.put(t.getID(), t);
   }
 
   public List<Team> getAllTeams() {
@@ -55,5 +51,7 @@ public class TeamFactory {
   public List<Team> getOpposingTeams() {
     return db.getOpposingTeams();
   }
+
+
 
 }

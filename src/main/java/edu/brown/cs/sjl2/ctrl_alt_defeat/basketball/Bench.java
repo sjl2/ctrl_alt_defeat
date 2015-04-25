@@ -5,19 +5,21 @@ import java.util.List;
 
 public class Bench {
   private List<Player> players;
+  //private int teamID;
   private Team team;
 
   public Bench(Team t) {
     this.team = t;
     this.players = new ArrayList<Player>();
   }
-  
+
   public List<Player> getPlayers() {
     return players;
   }
   public void setPlayers(List<Player> players) {
     this.players = players;
   }
+
   public Team getTeam() {
     return team;
   }

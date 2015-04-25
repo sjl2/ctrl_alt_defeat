@@ -20,7 +20,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.OldGame;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GameView;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
@@ -45,6 +45,8 @@ public class DBManager {
   private static final int EIGHT = 8;
 
   private Connection conn;
+  private PlayerFactory pf;
+  private TeamFactory tf;
   private Multiset<String> nextIDs;
 
   /**
@@ -65,6 +67,9 @@ public class DBManager {
       close();
       throw new RuntimeException(e);
     }
+
+    this.pf = new PlayerFactory(this);
+    this.tf = new TeamFactory(this);
   }
 
   /**
@@ -265,9 +270,16 @@ public class DBManager {
    * @author sjl2
    */
   public Player getPlayer(int id) {
-    String query = "SELECT name, team, number, current "
-        + "FROM player "
-        + "WHERE id = ?;";
+
+    Player p = pf.getPlayer(id);
+
+    if (p != null) {
+      return p;
+    }
+
+    String query = "SELECT p.name, p.team, t.name, p.number, p.current "
+        + "FROM player as p, team as t "
+        + "WHERE p.id = ? AND t.id = p.team;";
 
     Player player = null;
 
@@ -276,18 +288,20 @@ public class DBManager {
       ResultSet rs = prep.executeQuery();
 
       if (rs.next()) {
-        String name = rs.getString("name");
-        int number = rs.getInt("number");
-        int teamID = rs.getInt("team");
-        boolean current = rs.getInt("current") == 1;
+        String name = rs.getString(1);
+        int teamID = rs.getInt(2);
+        String teamName = rs.getString(THREE);
+        int number = rs.getInt(FOUR);
+        boolean current = rs.getBoolean(FIVE);
 
-        player = new Player(id, name, number, teamID, this.getTeamNameByID(teamID), current);
+        player = pf.getPlayer(id, name, teamID, teamName, number, current);
+
       }
     } catch (SQLException e) {
       String message = "Could not retrieve player " + id + " from the "
           + "database.";
       close();
-      throw new RuntimeException(message);
+      throw new RuntimeException(message + e.getMessage());
     }
 
     return player;
@@ -317,8 +331,14 @@ public class DBManager {
    * @return - Team, populated with db info
    * @author sjl2
    */
-  public Team getTeam(int id, PlayerFactory pf) {
-    String query = "SELECT name, coach, color1, color2 "
+  public Team getTeam(int id) {
+    Team t = tf.getTeam(id);
+
+    if (t != null) {
+      return t;
+    }
+
+    String query = "SELECT name, coach, color1, color2, my_team "
         + "FROM team "
         + "WHERE team.id = ?;";
 
@@ -334,7 +354,8 @@ public class DBManager {
         String color1 = rs.getString("color1");
         String color2 = rs.getString("color2");
 
-        team = new Team(id, name, coach, color1, color2, pf);
+        //team = new Team(id, name, coach, color1, color2, pf);
+        team = tf.getTeam(id, name, coach, color1, color2);
       }
     } catch (SQLException e) {
       String message = "Could not retrieve team " + id + " from the database: ";
@@ -345,23 +366,48 @@ public class DBManager {
     return team;
   }
 
-  public Collection<Integer> getTeamPlayers(Team team) {
+  public Team getMyTeam() throws DashboardException {
+    String query = "Select id, name, coach, color1, color2 "
+        + "FROM team "
+        + "WHERE my_Team = 1;";
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      ResultSet rs = prep.executeQuery();
+
+      if (rs.next()) {
+        return getTeam(rs.getInt("id"));
+      } else {
+        String message = "No myTeam in database. Please create one.";
+        throw new DashboardException(message);
+      }
+
+    } catch (SQLException e) {
+      String message = "No myTeam in database. Please create one.";
+      throw new DashboardException(message + " " + e.getMessage());
+    }
+  }
+
+  public Collection<Player> getTeamPlayers(Team team) {
+    return getTeamPlayers(team.getID());
+  }
+
+  public Collection<Player> getTeamPlayers(int id) {
     String query = "SELECT id "
         + "FROM player "
         + "WHERE team = ? AND current = 1;";
 
-    Collection<Integer> players = new ArrayList<>();
+    Collection<Player> players = new ArrayList<>();
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
-      prep.setInt(1, team.getID());
+      prep.setInt(1, id);
       ResultSet rs = prep.executeQuery();
 
       while (rs.next()) {
-        players.add(rs.getInt("id"));
+        players.add(getPlayer(rs.getInt("id")));
       }
 
     } catch (SQLException e) {
-      String message = "Could not retrieve players for team " + team + " from"
+      String message = "Could not retrieve players for team " + id + " from"
           + " the database.";
       close();
       throw new RuntimeException(message);
@@ -667,7 +713,46 @@ public class DBManager {
     return nextIDs.add(table, 1);
   }
 
-  public void saveTeam(Team team, boolean b) {
+  public Team createTeam(String name, String coach, String primary,
+      String secondary, boolean myTeam) {
+
+    Team t = tf.getTeam(getNextID("team"), name, coach, primary, secondary);
+    saveTeam(t, myTeam);
+
+    return t;
+  }
+
+  public Team updateTeam(int id, String name, String coach, String primary,
+      String secondary, boolean myTeam) {
+
+    Team t = tf.getTeam(id, name, coach, primary, secondary);
+    updateTeam(t, myTeam);
+    return t;
+  }
+
+  public void updateTeam(Team team, boolean myTeam) {
+    String query = "UPDATE team "
+        + "SET name = ?, coach = ?, color1 = ?, color2 = ?, my_Team = ? "
+        + "WHERE id = ?";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setString(1, team.getName());
+      prep.setString(2, team.getCoach());
+      prep.setString(THREE,  team.getPrimary());
+      prep.setString(FOUR,  team.getSecondary());
+      prep.setBoolean(FIVE, myTeam);
+
+      prep.setInt(SIX, team.getID());
+
+      prep.execute();
+    } catch (SQLException e) {
+      String message = "Failed to update " + team + " in the database."
+          + e.getMessage();
+      close();
+      throw new RuntimeException(message);
+    }
+  }
+
+  private void saveTeam(Team team, boolean myTeam) {
     try (PreparedStatement prep = conn.prepareStatement(
         "INSERT INTO team VALUES(?, ?, ?, ?, ?, ?);")) {
       prep.setInt(1, team.getID());
@@ -675,7 +760,7 @@ public class DBManager {
       prep.setString(THREE, team.getCoach());
       prep.setString(FOUR, team.getPrimary());
       prep.setString(FIVE, team.getSecondary());
-      prep.setBoolean(SIX, b);
+      prep.setBoolean(SIX, myTeam);
       prep.executeUpdate();
     } catch (SQLException e) {
       close();
@@ -683,15 +768,49 @@ public class DBManager {
     }
   }
 
-  /**
-   * Saves a player to the database.
-   * @param name - String, player's name
-   * @param team - Int, team id
-   * @param number - Int, player's jersey number
-   * @param current - Boolean (represented as int), whether player is currently on team
-   * @author sjl2
-   */
-  public void savePlayer(Player player) {
+  public Player createPlayer(String name, int teamID, int number, boolean curr) {
+    Team t = getTeam(teamID);
+    Player p = pf.getPlayer(
+        getNextID("player"),
+        name,
+        teamID,
+        t.getName(),
+        number,
+        curr);
+
+    t.addPlayer(p);
+    savePlayer(p);
+
+    return p;
+  }
+
+  public Player updatePlayer(int id, String name, int teamID, int number, boolean curr) {
+    Team t = getTeam(teamID);
+    Player p = pf.getPlayer(id, name, teamID, t.getName(), number, curr);
+    t.addPlayer(p);
+    updatePlayer(p);
+    return p;
+  }
+
+  public void updatePlayer(Player player) {
+    String query = "UPDATE player "
+        + "SET name = ?, team = ?, number = ?, current = ? "
+        + "WHERE id = ?";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setString(1, player.getName());
+      prep.setInt(2, player.getTeamID());
+      prep.setInt(THREE, player.getNumber());
+      prep.setBoolean(FOUR, player.getCurrent());
+      prep.setInt(FIVE, player.getID());
+
+      prep.executeUpdate();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+  private void savePlayer(Player player) {
     String query = "INSERT INTO player VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, player.getID());
@@ -709,9 +828,8 @@ public class DBManager {
 
   /**
    * Generates a list of team names and id's for the create-player handler.
-   * @return - List of teams, (dummy teams though)
    */
-  private List<Team> getTeams(boolean includeMyTeam) {
+  private List<Team> getTeamLinks(boolean includeMyTeam) {
     String query = "SELECT id, name FROM team";
 
     if (!includeMyTeam) {
@@ -725,7 +843,7 @@ public class DBManager {
       while (rs.next()) {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        Team t = Team.newGhostTeam(id, name);
+        Team t = Team.newTeamLink(id, name);
         teams.add(t);
       }
 
@@ -737,7 +855,7 @@ public class DBManager {
   }
 
   public List<Team> getAllTeams() {
-    return getTeams(true);
+    return getTeamLinks(true);
   }
 
   /**
@@ -745,7 +863,7 @@ public class DBManager {
    * @author sjl2
    */
   public List<Team> getOpposingTeams() {
-    return getTeams(false);
+    return getTeamLinks(false);
   }
 
   public void saveGame(Game game) {
@@ -765,10 +883,10 @@ public class DBManager {
   }
 
 
-  public OldGame getGameByID(int id, TeamFactory tf)
+  public GameView getGameByID(int id)
       throws DashboardException, GameException {
     String query = "SELECT * FROM game WHERE id = ?";
-    OldGame g = null;
+    GameView g = null;
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
 
@@ -779,7 +897,7 @@ public class DBManager {
         int homeID = rs.getInt("home");
         int awayID = rs.getInt("away");
 
-        g = new OldGame(this, id, tf.getTeam(homeID), tf.getTeam(awayID), date);
+        g = new GameView(this, id, getTeam(homeID), getTeam(awayID), date);
 
       } else {
         throw new DashboardException("No game in database with the id " + id);
@@ -790,33 +908,6 @@ public class DBManager {
       e.printStackTrace();
     }
     return g;
-  }
-
-  public Team getMyTeam(PlayerFactory pf) throws DashboardException {
-    String query = "Select id, name, coach, color1, color2 "
-        + "FROM team "
-        + "WHERE my_Team = 1;";
-
-    try (PreparedStatement prep = conn.prepareStatement(query)) {
-      ResultSet rs = prep.executeQuery();
-
-      if (rs.next()) {
-        return new Team(
-            rs.getInt("id"),
-            rs.getString("name"),
-            rs.getString("coach"),
-            rs.getString("color1"),
-            rs.getString("color2"),
-            pf);
-      } else {
-        String message = "No myTeam in database. Please create one.";
-        throw new DashboardException(message);
-      }
-
-    } catch (SQLException e) {
-      String message = "No myTeam in database. Please create one.";
-      throw new DashboardException(message + " " + e.getMessage());
-    }
   }
 
   public void deleteGame(int id) {
@@ -861,6 +952,10 @@ public class DBManager {
   public int getTeamLosses(int gameID, int teamID, LocalDate date, boolean inclusive) {
     // TODO Auto-generated method stub
     return 0;
+  }
+
+  public void setMyTeam(Team team) {
+    // TODO Auto-generated method stub
   }
 
 }
