@@ -104,22 +104,22 @@ function Token(circle, location) {
 
 window.onload = function() {
     var loadColumn = $("#load_column");
-    loadColumn.css("height", window.innerHeight);
+    //loadColumn.css("height", window.innerHeight);
 
     var container = $("#canvas_container");
     width = container.width();
     height = Math.floor(width / 1.75);
     container.css("height", height);
     var containerTop = ((window.innerHeight - height) / 2);
-    container.css("top", containerTop);
+    //container.css("top", containerTop);
 
     var control = $("#control");
-    control.css("top", containerTop + 20);
+    //control.css("top", containerTop + 20);
 
     var above_court = $("#above_court");
     var above_court_height = $("#play_name").height();
-    above_court.css("top", containerTop - 40);
-    above_court.css("height", above_court_height);
+    //above_court.css("top", containerTop - 40);
+    //above_court.css("height", above_court_height);
 
     var offset = container.offset();
     paper = Raphael(offset.left, offset.top, width, height);
@@ -162,36 +162,8 @@ window.onload = function() {
     circ.drag(onmove, onstart, onend, t, t, t);
     tokens[10] = t;
 
-    $("#previous_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    previousFrame();
-	}
-    });
-
-    $("#next_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    nextFrame();
-	}
-    });
-
-    $("#first_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    setFrame(0);
-	}
-    });
-
-    $("#last_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    setFrame(maxFrame);
-	}
+    $("#frame_number").on("input", function() {
+	setFrame(parseInt(this.value));
     });
 
     $("#go_frame").on("click", function() {
@@ -252,8 +224,15 @@ window.onload = function() {
 	}
     });
 
-    $("#to_dashboard").on("click", function() {
-	window.location.href = "/dashboard";
+    $("#hide-sidebar").on("click", function(e) {
+	e.preventDefault();
+	$("#wrapper").toggleClass("toggled");
+	var button = $("#hide-sidebar")[0];
+	if(button.innerHTML == ">") {
+	    button.innerHTML = "<";
+	} else {
+	    button.innerHTML = ">";
+	}
     });
 
     $.get("/playmaker/playNames",
@@ -289,7 +268,12 @@ function nextFrame() {
 
 function setFrame(frame) {
     currentFrame = frame;
-    $("#current_frame")[0].value = currentFrame;
+    if(currentFrame > maxFrame) {
+	maxFrame = currentFrame;
+	$("#frame_number").prop("max", maxFrame);
+    }
+    $("#frame_number").val(currentFrame);
+    $("#current_frame").val(currentFrame);
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
 	if(t != grabbedToken) {
@@ -309,7 +293,7 @@ function onstart(x, y, event) {
     intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
 }
 
-function onmove(dx, dy, x, y, event) {//TODO limit drag to court graphic
+function onmove(dx, dy, x, y, event) {
     var insideX = true;
     var insideY = true;
     if(x < courtTopLeftCorner.x) {
@@ -362,14 +346,12 @@ function onend(event) {
 	}
     }
 
-    setFrame(0);
 }
 
 function updatePath() {
     setFrame(currentFrame + 1);
     grabbedToken.path[currentFrame] = grabbedToken.location.copy();
     if(currentFrame > maxFrame) {
-	maxFrame = currentFrame;
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i];
 	    if(t.path[currentFrame] == undefined) {

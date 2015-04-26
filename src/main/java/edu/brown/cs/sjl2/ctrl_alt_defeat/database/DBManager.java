@@ -101,7 +101,6 @@ public class DBManager {
     System.out.println("Got name: " + ((start - System.currentTimeMillis()) / 1000.0));
 
     Location[][] paths = play.getPaths();
-
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
