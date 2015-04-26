@@ -1,32 +1,36 @@
-#wrapper {
-	width: 1400px;
-	height: 1000px;
-	float : center;
-	margin : 40px;
-}
-
-#subForm {
-	width : 200px;
-}
-
 #court {
 	background-size: cover; 
 	width : 650px;
-	float : center;
 }
 
 #content {
-	height: 650px;
-	width: 800px;
+
 	"user-select": none;
-	float : left;
 }
 
-#statFeed {
-	position : absolute;
-	top : 40px;
-	left : 900px;
-	height : 800px;
-	width : 300px;
-	padding : 40px;
+#buttons {
+	height : 160px;
+}
+
+#control {
+	height : 100px;
+	margin : 0px;
+}
+
+#home_team {
+	margin : 0px;
+	padding : 0px;
+}
+
+#away_team {
+	margin : 0px;
+	padding : 0px;
+}
+
+#stats_feed {
+	padding : 0px;
+}
+
+.col-md-9, .col-md-2, .col-md-11 {
+	padding : 0px;
 }

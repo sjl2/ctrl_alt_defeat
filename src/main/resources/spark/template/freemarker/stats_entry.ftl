@@ -1,20 +1,41 @@
 <#assign content>
+	<div class = "container">
+ 		<div class="row">
+ 			<div class="col-md-9">
+ 				<div class = "row">
+ 					<div class = "col-md-11">
+ 						<div id="buttons"></div>
+ 					</div>
+ 				</div>
+ 				<div class = "row">
+ 					<div class = "col-md-1" style = "padding : 0px;margin : 0px;">
+ 						<div id="home_team"></div>
+ 					</div>
+ 					<div class="col-md-9">
+ 						<div id="court"></div>
+ 					</div>
+ 					<div class = "col-md-1" style = "padding : 0px;margin : 0px;">
+ 						<div id="away_team"></div>
+ 					</div>
+ 				</div>
+ 				<div class = "row">
+ 					<div class = "col-md-11">
+ 						<div id="control"></div>
+ 					</div>
+ 				</div>
+
+ 			</div>
+ 			<div class = "col-md-2">
+ 				<div id="statFeed"></div>
+ 			</div>
+ 		</div>
+	</div>
 
 
-	<div id="court"></div>
-	<!--<div id="subForm">
-		<p> This is the subbing form </p>
-		<input type="radio" id = "h" name="group1" value="Home" checked> Home<br>
-  		<input type="radio" id = "a" name="group1" value="Away"> Away <br>
-  		<label for="a">In:</label><input type="text" id = "inPlayer">
-  		<label for="b">Out</label><input type="text" id = "outPlayer">
-  		<button id="subButton" onclick="sub();">Sub</button>
-	</div>-->
-	<div id="content"></div>
-	<div id="statFeed"></div>
+	
  
  <script src="/js/stats_entry.js"></script>
  <link rel="stylesheet" href="/css/stats_entry.css">
 
 </#assign>
-<#include "main.ftl">
+<#include "main.ftl">dotted thick
