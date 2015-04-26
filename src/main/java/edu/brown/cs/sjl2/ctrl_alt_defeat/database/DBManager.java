@@ -98,7 +98,6 @@ public class DBManager {
     }
 
     Location[][] paths = play.getPaths();
-
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
@@ -953,6 +952,12 @@ public class DBManager {
 
   public void setMyTeam(Team team) {
     // TODO Auto-generated method stub
+  }
+  
+  // table = either player_stats or team_stats, depending on whether you are getting player or team years, and id is for either team or player
+  public List<String> getYearsActive(String table, String id) {
+    String query = "SELECT DISTINCT SUBSTR(date, 1, 4) AS year FROM game WHERE id = (SELECT game FROM " + table + " WHERE id = ?) ORDER BY year DESC;";
+    return null;
   }
 
 }
