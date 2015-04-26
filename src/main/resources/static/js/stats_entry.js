@@ -422,9 +422,9 @@ for (var i = 0; i < 5; i++) {
 			counts.homeBench += 1;
 
 			benchTemp.player = obj.player;
-			var tempTexts = court_paper.text(temp.defaultX, temp.defaultY, temp.player.number);
-			tempTexts.circ = temp;
-			temp.number = tempTexts;
+			var tempTexts = court_paper.text(benchTemp.defaultX, benchTemp.defaultY, benchTemp.player.number);
+			tempTexts.circ = benchTemp;
+			benchTemp.number = tempTexts;
 			subtexts.push(tempTexts);
 			benchDots.push(benchTemp);
 		} else {
