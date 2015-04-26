@@ -16,14 +16,11 @@
 }
 
 #current_frame {
-    background-color: white;
-    border-color: grey;
     width: 47px;
-    text-align: center;
+    margin: 0px auto;
 }
 
 #wrapper {
-    padding-left: 0;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -31,16 +28,15 @@
 }
 
 #wrapper.toggled {
-    padding-left: 175px;
 }
 
 #sidebar-wrapper {
     z-index: 1000;
     position: fixed;
-    left: 175px;
+    left: 250px;
     width: 0;
     height: 100%;
-    margin-left: -175px;
+    margin-left: -250px;
     overflow-y: auto;
     background: #555;
     -webkit-transition: all 0.5s ease;
@@ -50,18 +46,16 @@
 }
 
 #wrapper.toggled #sidebar-wrapper {
-    width: 175px;
+    width: 250px;
 }
 
 #page-content-wrapper {
-    width: 100%;
     position: absolute;
-    padding: 15px;
 }
 
 #wrapper.toggled #page-content-wrapper {
     position: absolute;
-    margin-right: -175px;
+    margin-right: -250px;
 }
 
 /* Sidebar Styles */
@@ -69,9 +63,8 @@
 .sidebar-nav {
     position: absolute;
     top: 0;
-    width: 175px;
+    width: 250px;
     margin: 0;
-    padding: 0;
     list-style: none;
 }
 
@@ -114,15 +107,13 @@
 
 @media(min-width:768px) {
     #wrapper {
-        padding-left: 175px;
     }
 
     #wrapper.toggled {
-        padding-left: 0;
     }
 
     #sidebar-wrapper {
-        width: 175px;
+        width: 250px;
     }
 
     #wrapper.toggled #sidebar-wrapper {
@@ -130,7 +121,6 @@
     }
 
     #page-content-wrapper {
-        padding: 20px;
         position: relative;
     }
 
@@ -140,11 +130,30 @@
     }
 }
 
-/*
-#editing_name {
-    width: 25%;
-    font-size: 20px;
+#delete_plays {
+    margin: 10px;
+    float: right;
 }
+
+#load_header {
+    background-color: #333333;
+    height: 100px;
+}
+
+#editing_name {
+    visibility: hidden;
+    font-weight: bold;
+}
+
+.delete_button {
+    margin-left: 15px;
+    display: none;
+}
+
+.playName {
+}
+
+/*
 
 #save {
     width: 50%;
@@ -158,12 +167,6 @@
     position: relative;
     margin: 0px auto;
     text-align: center;
-}
-
-#load_header {
-    background-color: #333333;
-    height: 100px;
-    position: relative;
 }
 
 .playName {
@@ -183,18 +186,6 @@
 #to_dashboard {
     margin-left: 10px;
     margin-top: 10px;
-}
-
-#delete_plays {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-}
-
-.delete_button {
-    float: left;
-    margin-left: 15px;
-    display: none;
 }
 
 #frame_number {

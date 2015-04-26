@@ -70,7 +70,8 @@ function PlayToken(playName) {
 	
 	getHTML: function() {
 	    return "<td>"
-		+ "<button id=\"delete" + this.getID() + "\" class=\"delete_button\">Delete</button>"
+		+ "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
+		+ "<span class=\"glyphicon glyphicon-trash\"></span></button>"
 		+ "<span id=\"" + this.getID() + "\" class=\"playName\">"
 		+ playName + "</span>"
 		+ "</td>";
@@ -166,21 +167,6 @@ window.onload = function() {
 	setFrame(parseInt(this.value));
     });
 
-    $("#go_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    var frame = Number($("#current_frame")[0].value);
-	    if(frame < 0) {
-		setFrame(0);
-	    } else if(frame > maxFrame) {
-		setFrame(maxFrame);
-	    } else {
-		setFrame(frame);
-	    }
-	}
-    });
-
     $("#play").on("click", function() {
 	if(!playing) {
 	    if(currentFrame < maxFrame) {
@@ -228,10 +214,10 @@ window.onload = function() {
 	e.preventDefault();
 	$("#wrapper").toggleClass("toggled");
 	var button = $("#hide-sidebar")[0];
-	if(button.innerHTML == ">") {
-	    button.innerHTML = "<";
+	if(button.innerHTML == "&gt;") {
+	    button.innerHTML = "&lt";
 	} else {
-	    button.innerHTML = ">";
+	    button.innerHTML = "&gt";
 	}
     });
 
@@ -273,7 +259,7 @@ function setFrame(frame) {
 	$("#frame_number").prop("max", maxFrame);
     }
     $("#frame_number").val(currentFrame);
-    $("#current_frame").val(currentFrame);
+    $("#current_frame")[0].innerHTML = currentFrame;
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
 	if(t != grabbedToken) {
@@ -404,7 +390,7 @@ function stepAnimation() {
 	    stop();
 	}
 	currentFrame++;
-	$("#current_frame")[0].value = currentFrame;
+	$("#current_frame")[0].innerHTML = currentFrame;
 	playTime += (playSpeed / FRAME_RATE)
     }
 }
@@ -412,6 +398,7 @@ function stepAnimation() {
 function setEditingName(playName) {
     edittingPlayName = playName;
     $("#editing_name")[0].innerHTML = edittingPlayName;
+    $("#editing_name").css("visibility", "visible");
 }
 
 function save(playName) {
