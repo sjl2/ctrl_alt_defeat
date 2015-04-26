@@ -1051,7 +1051,7 @@ public class DBManager {
    * @param id
    * @return
    */
-  public GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
+  private GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
     StringBuilder query = new StringBuilder("SELECT ");
     String entity = "";
     int cols;
@@ -1084,7 +1084,7 @@ public class DBManager {
       query.append(statCols.get(i));
       query.append("), ");
     }
-    
+
     query.append(type);
     query.append("(");
     query.append(statCols.get(i));
@@ -1100,7 +1100,7 @@ public class DBManager {
       prep.setInt(1, id);
       prep.setInt(2, year);
       ResultSet rs = prep.executeQuery();
-      
+
       if (rs.next()) {
         List<Integer> values = new ArrayList<>();
         for (i = 1; i <= cols; i++) {

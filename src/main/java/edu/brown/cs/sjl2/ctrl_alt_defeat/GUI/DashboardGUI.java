@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import spark.ModelAndView;
@@ -20,6 +21,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameView;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
 
 public class DashboardGUI {
@@ -164,6 +166,7 @@ public class DashboardGUI {
 
   }
 
+  /* TODO THIS IS STILL COPY PASTED FROM GAMEVIEW HANDLER, ACTUALLY WRITE THIS! */
   public class TeamViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -195,20 +198,27 @@ public class DashboardGUI {
       String error = "";
 
       Player player = dash.getPlayer(playerID);
+      List<Integer> years = null;
+      List<GameStats> rows = null;
+
       if (player == null) {
         error = "Could not find player by that ID!";
       } else {
-        // TODO get player's stats...
+        years = dbManager.getYearsActive("player_stats", playerID);
+        rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+        
       }
 
       Map<String, Object> variables =
-        ImmutableMap.of(
-            "tabTitle", player.toString(),
-            "player", player,
-            "errorMessage", error);
+          new ImmutableMap.Builder<String, Object>()
+          .put("tabTitle", player.toString())
+          .put("db", dbManager)
+          .put("player", player)
+          .put("years", years)
+          .put("rows", rows)
+          .put("errorMessage", error).build();
       return new ModelAndView(variables, "player.ftl");
     }
-
   }
 
   public class GetGameHandler implements Route {
