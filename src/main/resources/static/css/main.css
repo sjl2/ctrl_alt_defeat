@@ -7,11 +7,7 @@ h1, h2, h3 {
     /*border: ridge;*/
     padding: 0.25em;
 }
-
-div {
-    margin : 10px;
-}
-
+/*
 #wrapper {
     background: center;
     background-color: #ffffff;
@@ -21,7 +17,7 @@ div {
     margin-right: 5%;
     border-left: ridge;
     border-right: ridge;
-}
+}*/
 
 input:not([type=submit]):not([type=file]):not([type=color]) {
    border: 2px solid white; 

@@ -3,8 +3,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.EnumHashBiMap;
 
-
-// TODO ENSURE THAT NO PLAYER IS ON THE COURT FOR BOTH TEAMS AT THE SAME TIME
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 
 public class Lineup {
   private BiMap<BasketballPosition, Player> players;
@@ -27,8 +26,16 @@ public class Lineup {
     }
   }
 
-  public Lineup addStarter(BasketballPosition position, Player player) {
-    players.put(position, player);
+  public Lineup addStarter(BasketballPosition position, Player player)
+      throws GameException {
+    try {
+      players.put(position, player);
+    } catch (IllegalArgumentException e) {
+      String message = "Cannot have the same player start in multiple "
+          + "positions.";
+      throw new GameException(message);
+    }
+
     return this;
   }
 

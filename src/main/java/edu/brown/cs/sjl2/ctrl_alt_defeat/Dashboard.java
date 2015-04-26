@@ -6,9 +6,7 @@ import java.util.Map;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
@@ -17,20 +15,14 @@ public class Dashboard {
   DBManager db;
   Team myTeam;
 
-  TeamFactory tf;
-  PlayerFactory pf;
   StatFactory sf;
 
   public Dashboard(DBManager db) {
 
     this.db = db;
 
-
-    pf = new PlayerFactory(db);
-    tf = new TeamFactory(db, pf);
-
     try {
-      this.myTeam = db.getMyTeam(pf);
+      this.myTeam = db.getMyTeam();
     } catch (DashboardException e) {
       this.myTeam = null;
       System.out.println(e.getMessage());
@@ -43,16 +35,12 @@ public class Dashboard {
   }
 
   private Game newGame(Team home, Team away,
-                       Map<BasketballPosition, Integer> starterIDs) throws GameException {
-    return new Game(home, away, pf, db, starterIDs);
+      Map<BasketballPosition, Integer> starterIDs) throws GameException {
+
+    return new Game(home, away, db, starterIDs);
   }
 
-//  //simple setter for game
-//  //only used for testing
-//  public void setGame(Game g) {
-//    System.out.println("good god you better be testing");
-//    this.currentGame = g;
-//  }
+
 
   public void startGame(Boolean home, int opponentID, Map<BasketballPosition, Integer> starterIDs)
       throws DashboardException {
@@ -63,9 +51,9 @@ public class Dashboard {
     } else if (currentGame == null) {
       try {
         if (home) {
-          currentGame = newGame(myTeam, tf.getTeam(opponentID), starterIDs);
+          currentGame = newGame(myTeam, db.getTeam(opponentID), starterIDs);
         } else {
-          currentGame = newGame(tf.getTeam(opponentID), myTeam, starterIDs);
+          currentGame = newGame(db.getTeam(opponentID), myTeam, starterIDs);
         }
       } catch (GameException e) {
         throw new DashboardException("Cannot start game. " + e.getMessage());
@@ -81,19 +69,19 @@ public class Dashboard {
   }
 
   public Team getTeam(int id) {
-    return tf.getTeam(id);
+    return db.getTeam(id);
   }
 
   public Player getPlayer(int id) {
-    return pf.getPlayer(id);
+    return db.getPlayer(id);
   }
 
   public List<Team> getAllTeams() {
-    return tf.getAllTeams();
+    return db.getAllTeams();
   }
 
   public List<Team> getOpposingTeams() {
-    return tf.getOpposingTeams();
+    return db.getOpposingTeams();
   }
 
   public Game getGameByDate(String date) {
@@ -120,32 +108,35 @@ public class Dashboard {
     }
   }
 
-  public Team setMyTeam(String name,
+  public Team addMyTeam(String name,
       String coach, String primary, String secondary) {
 
-    this.myTeam = tf.addTeam(name, coach, primary, secondary, true);
-
+    this.myTeam = db.createTeam(name, coach, primary, secondary, true);
     return this.myTeam;
   }
 
-  public Team addTeam(String name, String coach, String primary,
+  public void setMyTeam(int teamID) {
+    setMyTeam(db.getTeam(teamID));
+  }
+
+  public void setMyTeam(Team team) {
+    this.myTeam = team;
+    db.updateTeam(team, true);
+  }
+
+  public Team createTeam(String name, String coach, String primary,
       String secondary) {
 
-    Team t = tf.addTeam(name, coach, primary, secondary, false);
-    return t;
+    return db.createTeam(name, coach, primary, secondary, false);
   }
 
-  public Player addPlayer(String name, int teamID, int number, boolean current) {
-    Player p = pf.addPlayer(name, teamID, number, current);
-    if(current) {//TODO add current to player and check this further down the line
-      tf.addPlayer(p);
-    }
-    return p;
+  public Player createPlayer(String name, int teamID, int number, boolean current) {
+    return db.createPlayer(name, teamID, number, current);
   }
 
-  public OldGame getOldGame(int gameID) throws DashboardException {
+  public GameView getOldGame(int gameID) throws DashboardException {
     try {
-      return db.getGameByID(gameID, tf);
+      return db.getGameByID(gameID);
     } catch (GameException e) {
       throw new DashboardException(e.getMessage());
     }

@@ -70,7 +70,8 @@ function PlayToken(playName) {
 	
 	getHTML: function() {
 	    return "<td>"
-		+ "<button id=\"delete" + this.getID() + "\" class=\"delete_button\">Delete</button>"
+		+ "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
+		+ "<span class=\"glyphicon glyphicon-trash\"></span></button>"
 		+ "<span id=\"" + this.getID() + "\" class=\"playName\">"
 		+ playName + "</span>"
 		+ "</td>";
@@ -104,22 +105,22 @@ function Token(circle, location) {
 
 window.onload = function() {
     var loadColumn = $("#load_column");
-    loadColumn.css("height", window.innerHeight);
+    //loadColumn.css("height", window.innerHeight);
 
     var container = $("#canvas_container");
     width = container.width();
     height = Math.floor(width / 1.75);
     container.css("height", height);
     var containerTop = ((window.innerHeight - height) / 2);
-    container.css("top", containerTop);
+    //container.css("top", containerTop);
 
     var control = $("#control");
-    control.css("top", containerTop + 20);
+    //control.css("top", containerTop + 20);
 
     var above_court = $("#above_court");
     var above_court_height = $("#play_name").height();
-    above_court.css("top", containerTop - 20);
-    above_court.css("height", above_court_height);
+    //above_court.css("top", containerTop - 40);
+    //above_court.css("height", above_court_height);
 
     var offset = container.offset();
     paper = Raphael(offset.left, offset.top, width, height);
@@ -162,51 +163,8 @@ window.onload = function() {
     circ.drag(onmove, onstart, onend, t, t, t);
     tokens[10] = t;
 
-    $("#previous_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else if(currentFrame > 0) {
-	    setFrame(currentFrame - 1);
-	}
-    });
-
-    $("#next_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else if(currentFrame < maxFrame) {
-	    setFrame(currentFrame + 1);
-	}
-    });
-
-    $("#first_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    setFrame(0);
-	}
-    });
-
-    $("#last_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    setFrame(maxFrame);
-	}
-    });
-
-    $("#go_frame").on("click", function() {
-	if(playing) {
-	    stop();
-	} else {
-	    var frame = Number($("#current_frame")[0].value);
-	    if(frame < 0) {
-		setFrame(0);
-	    } else if(frame > maxFrame) {
-		setFrame(maxFrame);
-	    } else {
-		setFrame(frame);
-	    }
-	}
+    $("#frame_number").on("input", function() {
+	setFrame(parseInt(this.value));
     });
 
     $("#play").on("click", function() {
@@ -252,8 +210,15 @@ window.onload = function() {
 	}
     });
 
-    $("#to_dashboard").on("click", function() {
-	window.location.href = "/dashboard";
+    $("#hide-sidebar").on("click", function(e) {
+	e.preventDefault();
+	$("#wrapper").toggleClass("toggled");
+	var button = $("#hide-sidebar")[0];
+	if(button.innerHTML == "&gt;") {
+	    button.innerHTML = "&lt";
+	} else {
+	    button.innerHTML = "&gt";
+	}
     });
 
     $.get("/playmaker/playNames",
@@ -261,11 +226,40 @@ window.onload = function() {
 	  updateLoadBar,
 	  "json");
 
+    document.onkeydown = function(event) {
+	if(document.activeElement.type == "text") {
+	    return;
+	}
+	var keyCode = event.keyCode;
+	if(keyCode == 37) {//left
+	    previousFrame();
+	} else if(keyCode == 39) {//right
+	    nextFrame();
+	}
+    };
+
+}
+
+function previousFrame() {
+    if(currentFrame > 0) {
+	setFrame(currentFrame - 1);
+    }
+}
+
+function nextFrame() {
+    if(currentFrame < maxFrame) {
+	setFrame(currentFrame + 1);
+    }
 }
 
 function setFrame(frame) {
     currentFrame = frame;
-    $("#current_frame")[0].value = currentFrame;
+    if(currentFrame > maxFrame) {
+	maxFrame = currentFrame;
+	$("#frame_number").prop("max", maxFrame);
+    }
+    $("#frame_number").val(currentFrame);
+    $("#current_frame")[0].innerHTML = currentFrame;
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
 	if(t != grabbedToken) {
@@ -285,7 +279,7 @@ function onstart(x, y, event) {
     intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
 }
 
-function onmove(dx, dy, x, y, event) {//TODO limit drag to court graphic
+function onmove(dx, dy, x, y, event) {
     var insideX = true;
     var insideY = true;
     if(x < courtTopLeftCorner.x) {
@@ -337,13 +331,13 @@ function onend(event) {
 	    }
 	}
     }
+
 }
 
 function updatePath() {
     setFrame(currentFrame + 1);
     grabbedToken.path[currentFrame] = grabbedToken.location.copy();
     if(currentFrame > maxFrame) {
-	maxFrame = currentFrame;
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i];
 	    if(t.path[currentFrame] == undefined) {
@@ -396,7 +390,7 @@ function stepAnimation() {
 	    stop();
 	}
 	currentFrame++;
-	$("#current_frame")[0].value = currentFrame;
+	$("#current_frame")[0].innerHTML = currentFrame;
 	playTime += (playSpeed / FRAME_RATE)
     }
 }
@@ -404,6 +398,7 @@ function stepAnimation() {
 function setEditingName(playName) {
     edittingPlayName = playName;
     $("#editing_name")[0].innerHTML = edittingPlayName;
+    $("#editing_name").css("visibility", "visible");
 }
 
 function save(playName) {

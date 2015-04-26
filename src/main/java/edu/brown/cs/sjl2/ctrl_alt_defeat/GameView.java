@@ -8,7 +8,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
-public class OldGame {
+public class GameView {
 
   private int id;
   private LocalDate date;
@@ -17,7 +17,7 @@ public class OldGame {
   private BoxScore homeBoxScore;
   private BoxScore awayBoxScore;
 
-  public OldGame(DBManager db, int id, Team home, Team away, LocalDate date)
+  public GameView(DBManager db, int id, Team home, Team away, LocalDate date)
       throws GameException {
     this.id = id;
     this.home = home;

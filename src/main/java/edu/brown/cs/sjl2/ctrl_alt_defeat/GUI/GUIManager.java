@@ -71,7 +71,8 @@ public class GUIManager {
     Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
-    Spark.post("/dashboard/new", dashboardGUI.new DashboardSetupHandler(), freeMarker);
+    Spark.post("/dashboard/new",
+        dashboardGUI.new DashboardSetupHandler(), freeMarker);
     Spark.get("/dashboard/new/team",
         dashboardGUI.new NewTeamHandler(), freeMarker);
     Spark.post("/dashboard/new/team/results",
@@ -80,14 +81,17 @@ public class GUIManager {
         dashboardGUI.new NewPlayerHandler(), freeMarker);
     Spark.post("/dashboard/new/player/results",
         dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
-    Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
-    Spark.get("/dashboard/game/:id", dashboardGUI.new GameViewHandler(), freeMarker);
-    //Spark.get("/dashboard/team/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
-    //Spark.get("/dashboard/player/:id", dashboardGUI.new PlayerViewHandler(), freeMarker);
+    Spark.get("/dashboard/new/game",
+        dashboardGUI.new NewGameHandler(), freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
     Spark.get("/dashboard/getPlayers", dashboardGUI.new GetPlayersHandler());
-    
+
+    Spark.get("/game/view/:id", dashboardGUI.new GameViewHandler(), freeMarker);
+    Spark.get("/team/view/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
+    Spark.get("/player/view/:id",
+        dashboardGUI.new PlayerViewHandler(), freeMarker);
+
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new StatPageHandler());
 

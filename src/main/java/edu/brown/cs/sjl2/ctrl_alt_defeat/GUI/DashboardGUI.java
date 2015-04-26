@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.Collection;
 import java.util.Map;
 
 import spark.ModelAndView;
@@ -12,11 +13,12 @@ import spark.TemplateViewRoute;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.OldGame;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GameView;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 
@@ -65,7 +67,7 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      dash.addTeam(
+      dash.createTeam(
           qm.value("name"),
           qm.value("coach"),
           qm.value("color1"),
@@ -100,7 +102,7 @@ public class DashboardGUI {
       String color1 = qm.value("color1");
       String color2 = qm.value("color2");
 
-      dash.setMyTeam(name, coach, color1, color2);
+      dash.addMyTeam(name, coach, color1, color2);
 
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Dashboard Set-up", "errorMessage", "");
@@ -124,7 +126,7 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      dash.addPlayer(
+      dash.createPlayer(
           qm.value("name"),
           Integer.parseInt(qm.value("team")),
           Integer.parseInt(qm.value("number")),
@@ -143,7 +145,32 @@ public class DashboardGUI {
       int gameID = Integer.parseInt(request.params("id"));
       String error = "";
 
-      OldGame game = null;
+      GameView game = null;
+      try {
+        game = dash.getOldGame(gameID);
+      } catch (DashboardException e) {
+        error = "No game exists with that id.";
+
+        System.out.println(error);
+      }
+
+      Map<String, Object> variables =
+        ImmutableMap.of(
+            "tabTitle", game.toString(),
+            "game", game,
+            "errorMessage", error);
+      return new ModelAndView(variables, "game.ftl");
+    }
+
+  }
+
+  public class TeamViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int gameID = Integer.parseInt(request.params("id"));
+      String error = "";
+
+      GameView game = null;
       try {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
@@ -161,6 +188,29 @@ public class DashboardGUI {
 
   }
 
+  public class PlayerViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int playerID = Integer.parseInt(request.params("id"));
+      String error = "";
+
+      Player player = dash.getPlayer(playerID);
+      if (player == null) {
+        error = "Could not find player by that ID!";
+      } else {
+        // TODO get player's stats...
+      }
+
+      Map<String, Object> variables =
+        ImmutableMap.of(
+            "tabTitle", player.toString(),
+            "player", player,
+            "errorMessage", error);
+      return new ModelAndView(variables, "player.ftl");
+    }
+
+  }
+
   public class GetGameHandler implements Route {
 
     @Override
@@ -168,11 +218,7 @@ public class DashboardGUI {
       if (dash.getGame() == null) {
         Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
             .put("tabTitle", "Dashboard")
-            .put("teams", dbManager.getAllTeams())
-            .put("myTeam", dash.getMyTeam())
-            .put("isGame", false)
-            .put("game", "")
-            .put("errorMessage", "").build();
+            .put("isGame", false).build();
         return GSON.toJson(variables);
       } else {
         Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
@@ -218,13 +264,13 @@ public class DashboardGUI {
       QueryParamsMap qm = req.queryMap();
       int teamID = Integer.parseInt(qm.value("teamID"));
       Team team = dash.getTeam(teamID);
-
+      Collection<Player> players = team.getPlayers();
       Map<String, Object> variables =
-        ImmutableMap.of("playerList", team.getPlayers());
+        ImmutableMap.of("playerList", players);
 
       return GSON.toJson(variables);
     }
-    
+
   }
 
 }

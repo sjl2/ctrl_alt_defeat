@@ -4,15 +4,25 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 public class Player {
   private int id;
   private String name;
-  private int number;
   private int teamID;
+  private String teamName;
+  private int number;
+  private boolean current;
 
-  public Player(int id, String name, int number, int teamID) {
-    //TODO Add current variable
+  public Player(
+      int id,
+      String name,
+      int number,
+      int teamID,
+      String teamName,
+      boolean current) {
+
     this.id = id;
     this.name = name;
     this.number = number;
     this.teamID = teamID;
+    this.teamName = teamName;
+    this.current = current;
   }
 
   public int getID() {
@@ -29,6 +39,14 @@ public class Player {
 
   public int getTeamID() {
     return teamID;
+  }
+
+  public String getTeamName() {
+    return teamName;
+  }
+
+  public boolean getCurrent() {
+    return current;
   }
 
   @Override

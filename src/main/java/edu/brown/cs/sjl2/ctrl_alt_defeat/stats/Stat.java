@@ -9,9 +9,9 @@ public interface Stat {
 
   int getPeriod();
 
-  void execute(GameStats ps);
+  void execute(GameStats gs);
 
-  void undo(GameStats ps);
+  void undo(GameStats gs);
 
   Location getLocation();
 

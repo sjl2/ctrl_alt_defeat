@@ -11,8 +11,7 @@
 
 #opponentStarters {
     text-align: right;
-    width: 33%;
-    float: left;
+    overflow: hidden;
 }
 
 #submit {

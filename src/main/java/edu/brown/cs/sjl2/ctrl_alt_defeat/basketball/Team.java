@@ -3,7 +3,8 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-//import java.util.Random;
+
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class Team {
   private int id;
@@ -11,8 +12,9 @@ public class Team {
   private String coach;
   private String primary;
   private String secondary;
-  public Map<Integer, Player> playerIds;
-  private Map<String, Player> playerNames;
+  private Map<Integer, Player> playerIds;
+
+
 
   public Team(
       int id,
@@ -20,19 +22,16 @@ public class Team {
       String coach,
       String primary,
       String secondary,
-      PlayerFactory pf) {
+      DBManager db) {
 
     this.id = id;
     this.name =  name;
     this.coach = coach;
     this.primary = primary;
     this.secondary = secondary;
+    this.playerIds = new HashMap<>();
 
-    playerIds = new HashMap<>();
-    playerNames = new HashMap<>();
-
-    Collection<Player> players = pf.getTeamPlayers(this);
-
+    Collection<Player> players = db.getTeamPlayers(id);
     for (Player p : players) {
       addPlayer(p);
     }
@@ -45,10 +44,9 @@ public class Team {
     this.primary = null;
     this.secondary = null;
     this.playerIds = null;
-    this.playerNames = null;
   }
 
-  public static Team newGhostTeam(int id, String name) {
+  public static Team newTeamLink(int id, String name) {
     return new Team(id, name);
   }
 
@@ -72,19 +70,13 @@ public class Team {
     return playerIds.get(id);
   }
 
-  public Player getPlayerByName(String name) {
-    return playerNames.get(name);
-  }
-
   public Collection<Player> getPlayers() {
     return playerIds.values();
   }
 
-  void addPlayer(Player p) {
+  public void addPlayer(Player p) {
     playerIds.put(p.getID(), p);
-    playerNames.put(p.getName(), p);
   }
-
 
   @Override
   public String toString() {

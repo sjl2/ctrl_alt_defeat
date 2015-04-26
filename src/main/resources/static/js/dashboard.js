@@ -51,14 +51,13 @@ $.get("/dashboard/getgame", {}, function(responseJSON) {
 		scoreboard.homeTimeouts.attr({text : res.timeouts});
 		scoreboard.awayTimeouts.attr({text : res.timeouts});
 
-		window.setInterval(updateGame, 5000);
+		window.setInterval(updateGame, 2000);
 		
 	}
 });
 
 
 function updateGame() {
-	console.log("OMG");
 	$.get("/dashboard/updategame", {}, function(responseJSON) {
 		var res = JSON.parse(responseJSON);
 		scoreboard.homeScore.attr({text : res.homeScore});

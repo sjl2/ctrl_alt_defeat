@@ -11,7 +11,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Lineup;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.PlayerFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ProRules;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.RuleSet;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
@@ -34,8 +33,6 @@ public class Game {
 
   private LocalDate date;
   private int period;
-  private int homeScore;
-  private int awayScore;
   private int homeTO;
   private int awayTO;
   private boolean possession;
@@ -47,10 +44,19 @@ public class Game {
   private boolean awayDoubleBonus;
 
   private RuleSet rules;
-  private PlayerFactory pf;
   private StatFactory sf;
 
-  public Game(Team home, Team away, PlayerFactory pf, DBManager db,
+  private int homeWins;
+
+  private DBManager db;
+
+  private int homeLosses;
+
+  private int awayWins;
+
+  private int awayLosses;
+
+  public Game(Team home, Team away, DBManager db,
               Map<BasketballPosition, Integer> starterIDs)
       throws GameException {
 
@@ -66,6 +72,7 @@ public class Game {
     this.awayTeam = away;
     this.date = LocalDate.now();
     db.saveGame(this);
+    this.db = db;
 
     try {
       // Remaining fields
@@ -77,7 +84,6 @@ public class Game {
       this.homeBench = new Bench(home);
       this.awayBench = new Bench(away);
 
-      this.pf = pf;
       this.sf = new StatFactory(db, this);
 
       this.homeBonus = false;
@@ -121,6 +127,42 @@ public class Game {
 
   public Team getAway() {
     return awayTeam;
+  }
+
+  public int getHomeWins() {
+    if (homeWins == -1) {
+      homeWins = db.getTeamWins(getID(), homeTeam.getID(), date, false);
+    }
+    return homeWins;
+  }
+
+  public int getHomeLosses() {
+    if (homeLosses == -1) {
+      homeLosses = db.getTeamWins(getID(), homeTeam.getID(), date, false);
+    }
+    return homeLosses;
+  }
+
+  public int getAwayWins() {
+    if (awayWins == -1) {
+      awayWins = db.getTeamWins(getID(), awayTeam.getID(), date, false);
+    }
+    return awayWins;
+  }
+
+  public int getAwayLosses() {
+    if (awayLosses == -1) {
+      awayLosses = db.getTeamWins(getID(), awayTeam.getID(), date, false);
+    }
+    return awayLosses;
+  }
+
+  public int getHomeScore() {
+    return homeBoxScore.getScore();
+  }
+
+  public int getAwayScore() {
+    return awayBoxScore.getScore();
   }
 
   public BoxScore getHomeBoxScore() {
@@ -205,7 +247,7 @@ public class Game {
   public Stat addStat(String statID, int playerID, Location location)
       throws GameException {
 
-    Player p = pf.getPlayer(playerID);
+    Player p = db.getPlayer(playerID);
     return addStat(sf.addStat(statID, p, location, period));
   }
 
@@ -215,7 +257,7 @@ public class Game {
     Stat oldStat = sf.getStat(id);
     undoStat(oldStat);
 
-    Stat s = sf.updateStat(id, statID, pf.getPlayer(playerID), location);
+    Stat s = sf.updateStat(id, statID, db.getPlayer(playerID), location);
     addStat(s);
 
   }
@@ -243,13 +285,11 @@ public class Game {
   public Stat addStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.addStat(s);
-      homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
       updateBonuses();
 
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.addStat(s);
-      awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
       updateBonuses();
     } else {
@@ -265,12 +305,10 @@ public class Game {
   public void undoStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
       homeBoxScore.undoStat(s);
-      homeScore = homeBoxScore.getScore();
       homeFouls = homeBoxScore.getFouls();
       updateBonuses();
     } else if (s.getPlayer().getTeamID() == awayTeam.getID()) {
       awayBoxScore.undoStat(s);
-      awayScore = awayBoxScore.getScore();
       awayFouls = awayBoxScore.getFouls();
       updateBonuses();
     } else {
@@ -291,14 +329,6 @@ public class Game {
 
   public void setRules(RuleSet rules) {
     this.rules = rules;
-  }
-
-  public int getHomeScore() {
-    return homeScore;
-  }
-
-  public int getAwayScore() {
-    return awayScore;
   }
 
   public int getHomeFouls() {
@@ -326,15 +356,17 @@ public class Game {
   }
 
   public void placePlayers(Team h, Team a,
-                           Map<BasketballPosition, Integer> starterIDs) throws GameException {
+      Map<BasketballPosition, Integer> starterIDs) throws GameException {
 
     for(BasketballPosition bp : BasketballPosition.values()) {
       Integer playerID = starterIDs.get(bp);
-      if(playerID == null) continue;
-      Player p = pf.getPlayer(playerID);
+      if(playerID == null) {
+        continue;
+      }
+      Player p = db.getPlayer(playerID);
       lineup.addStarter(bp, p);
     }
-    
+
     Collection<Player> players =  h.getPlayers();
     Iterator<Player> homeIterator = players.iterator();
 
