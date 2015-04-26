@@ -1,4 +1,4 @@
-<#assign content>
+<#assign coachContent>
  	<link rel="stylesheet" href="/css/stats_entry.css">
 
 	<div id="court"></div>
@@ -17,4 +17,4 @@
 
 
 </#assign>
-<#include "main.ftl">
+<#include "coach.ftl">
