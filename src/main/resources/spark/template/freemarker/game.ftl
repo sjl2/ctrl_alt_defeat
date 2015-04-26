@@ -7,8 +7,8 @@
       <h2> 
         <#assign home = game.getHome()>
         <#assign away = game.getAway()>
-        <a href="/team/${away.getID()}">${away.getName()}</a> @  
-        <a href="/team/${home.getID()}">${home.getName()}</a> 
+        <a href="/team/view/${away.getID()}">${away.getName()}</a> @  
+        <a href="/team/view/${home.getID()}">${home.getName()}</a> 
         (${game.getDate().toString()})
       </h2>
       <h3>Home: ${game.getHomeScore()} </h3>
