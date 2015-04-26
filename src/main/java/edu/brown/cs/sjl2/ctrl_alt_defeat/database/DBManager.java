@@ -27,6 +27,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.TeamFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
@@ -92,10 +93,12 @@ public class DBManager {
    * @author sjl2
    */
   public void savePlay(Play play) {
+    long start = System.currentTimeMillis();
     String name = play.getName();
     if (!doesPlayExist(name)) {
       saveToPlaysTable(name, play.getNumFrames());
     }
+    System.out.println("Got name: " + ((start - System.currentTimeMillis()) / 1000.0));
 
     Location[][] paths = play.getPaths();
 
@@ -103,15 +106,16 @@ public class DBManager {
     int length = bballPositions.length;
 
     try (
-         PreparedStatement prep1 = conn.prepareStatement(
+        PreparedStatement prep1 = conn.prepareStatement(
             "DELETE FROM play_detail WHERE play = ?");
-         PreparedStatement prep2 = conn.prepareStatement(
+        PreparedStatement prep2 = conn.prepareStatement(
             "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
 
       prep1.setString(1, name);
+      System.out.println("Preparing to delete: " + ((start - System.currentTimeMillis()) / 1000.0));
       prep1.executeUpdate();
+      System.out.println("Deleted: " + ((start - System.currentTimeMillis()) / 1000.0));
 
-      conn.setAutoCommit(false);
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
@@ -126,8 +130,8 @@ public class DBManager {
         }
       }
       prep2.executeBatch();
-      conn.commit();
-      conn.setAutoCommit(true);
+      System.out.println("Batches executed: " + ((start - System.currentTimeMillis()) / 1000.0));
+
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -149,7 +153,7 @@ public class DBManager {
 
   private boolean doesPlayExist(String name) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name FROM play WHERE name == ? LIMIT 1;")) {
+        "SELECT name FROM play WHERE name = ? LIMIT 1;")) {
       prep.setString(1, name);
       ResultSet rs = prep.executeQuery();
       return rs.next();
@@ -434,6 +438,7 @@ public class DBManager {
             ps.setInt(i, v);
             i++;
           }
+          /* Setting the where clause */
           ps.setInt(i++, gs.getGameID());
           ps.setInt(i++, gs.getTeam().getID());
           ps.setInt(i, gs.getPlayer().getID());
@@ -648,7 +653,7 @@ public class DBManager {
 
   public boolean doesUsernameExist(String username) {
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name FROM user WHERE name == ? LIMIT 1;")) {
+        "SELECT name FROM user WHERE name = ? LIMIT 1;")) {
       prep.setString(1, username);
       ResultSet rs = prep.executeQuery();
       return rs.next();
@@ -663,7 +668,7 @@ public class DBManager {
       return -1;
     }
     try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT password, clearance FROM user WHERE name == ? LIMIT 1;")) {
+        "SELECT password, clearance FROM user WHERE name = ? LIMIT 1;")) {
       prep.setString(1, username);
       ResultSet rs = prep.executeQuery();
       if(rs.next()) {
@@ -865,12 +870,13 @@ public class DBManager {
 
   public void saveGame(Game game) {
 
-    String query = "INSERT INTO game VALUES(?, ?, ?, ?);";
+    String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, game.getID());
       prep.setString(2, game.getDate().toString());
-      prep.setInt(3, game.getHome().getID());
-      prep.setInt(4, game.getAway().getID());
+      prep.setInt(THREE, game.getHome().getID());
+      prep.setInt(FOUR, game.getAway().getID());
+      prep.setInt(FIVE, getChampionshipYear(game.getDate()));
 
       prep.executeUpdate();
     } catch (SQLException e) {
@@ -879,10 +885,18 @@ public class DBManager {
     }
   }
 
+  private int getChampionshipYear(LocalDate date) {
+    if (date.getMonthValue() < SEVEN) {
+      return date.getYear(); 
+    } else {
+      return date.getYear() + 1;
+    }
+  }
+
 
   public GameView getGameByID(int id)
       throws DashboardException, GameException {
-    String query = "SELECT * FROM game WHERE id = ?";
+    String query = "SELECT date, home, away FROM game WHERE id = ?";
     GameView g = null;
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
@@ -956,9 +970,186 @@ public class DBManager {
   }
   
   // table = either player_stats or team_stats, depending on whether you are getting player or team years, and id is for either team or player
-  public List<String> getYearsActive(String table, String id) {
-    String query = "SELECT DISTINCT SUBSTR(date, 1, 4) AS year FROM game WHERE id = (SELECT game FROM " + table + " WHERE id = ?) ORDER BY year DESC;";
-    return null;
+  public List<Integer> getYearsActive(String table, int id) {
+    String entity = "";
+    if (table.equals("player_stats")) {
+      entity = "player";
+    } else if (table.equals("team_stats")) {
+      entity = "team";      
+    } else {
+      throw new RuntimeException("You messed up calling getYearsActive...");
+    }
+
+    String query = "SELECT DISTINCT championship_year "
+        + "FROM game, " + table + " WHERE game.id = " + table + ".game AND "
+        + table + "." + entity + " = ? ORDER BY championship_year DESC;";
+
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, id);
+      ResultSet rs = prep.executeQuery();
+      
+      List<Integer> years = new ArrayList<>();
+      while (rs.next()) {
+        years.add(rs.getInt(1));
+      }
+
+      return years;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 
+  public List<GameStats> getSeparateGameStatsForYear(int year, String table, int id) {
+    String entity = "";
+    int cols;
+    if (table.equals("player_stats")) {
+      entity = "player";
+      cols = PlayerStats.getNumCols();
+    } else if (table.equals("team_stats")) {
+      entity = "team";
+      cols = TeamStats.getNumCols();
+    } else {
+      throw new RuntimeException("You messed up calling getYearsActive...");
+    }
+
+    String query = "SELECT * FROM " + table + ", game WHERE " + table + "." + entity + " = ? AND game.championship_year = ?;";
+    
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, id);
+      prep.setInt(1, year);
+      ResultSet rs = prep.executeQuery();
+      
+      List<GameStats> gameStats = new ArrayList<>();
+      
+      while (rs.next()) { 
+        List<Integer> values = new ArrayList<>();
+        for (int i = 1; i <= cols; i++) {
+          values.add(rs.getInt(i));
+        }
+        int gameID = values.get(1);
+        int teamID = values.get(2);
+        GameStats toAdd = null;
+        if (table.equals("player_stats")) {
+          toAdd = new PlayerStats(values, gameID, getTeam(teamID));
+        } else if (table.equals("team_stats")) {
+          toAdd = new TeamStats(values, gameID, getTeam(teamID));
+        }
+
+        gameStats.add(toAdd);
+      }
+
+      return gameStats;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * PLEASE PASS IN "SUM" or "AVG" for type!!!
+   * @param type
+   * @param year
+   * @param table
+   * @param id
+   * @return
+   */
+  public GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
+    StringBuilder query = new StringBuilder("SELECT ");
+    String entity = "";
+    int cols;
+    List<String> nonStatCols = null;
+    List<String> statCols = null;
+
+    if (table.equals("player_stats")) {
+      nonStatCols = PlayerStats.getNonStatCols();
+      statCols = PlayerStats.getStatCols();
+      entity = "player";
+      cols = PlayerStats.getNumCols();
+    } else if (table.equals("team_stats")) {
+      nonStatCols = TeamStats.getNonStatCols();
+      statCols = TeamStats.getStatCols();
+      entity = "team";
+      cols = TeamStats.getNumCols();
+    } else {
+      throw new IllegalArgumentException("You messed up aggregategamestatsforyearoftype!!!");
+    }
+
+    for (String nonStat : nonStatCols) {
+      query.append(nonStat);
+      query.append(", ");
+    }
+    
+    int i;
+    for (i = 0; i < statCols.size() - 1; i++) {
+      query.append(type);
+      query.append("(");
+      query.append(statCols.get(i));
+      query.append("), ");
+    }
+    
+    query.append(type);
+    query.append("(");
+    query.append(statCols.get(i));
+    query.append(") FROM ");
+    query.append(table);
+    query.append(", game WHERE ");
+    query.append(table);
+    query.append(".");
+    query.append(entity);
+    query.append(" = ? AND game.championship_year = ?;");
+
+    try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
+      prep.setInt(1, id);
+      prep.setInt(2, year);
+      ResultSet rs = prep.executeQuery();
+      
+      if (rs.next()) {
+        List<Integer> values = new ArrayList<>();
+        for (i = 1; i <= cols; i++) {
+          values.add(rs.getInt(i));
+        }
+        int gameID = values.get(1);
+        int teamID = values.get(2);
+        GameStats toReturn = null;
+        if (table.equals("player_stats")) {
+          toReturn = new PlayerStats(values, gameID, getTeam(teamID));
+        } else if (table.equals("team_stats")) {
+          toReturn = new TeamStats(values, gameID, getTeam(teamID));
+        }
+
+        return toReturn; 
+      } else {
+        throw new RuntimeException("No aggregate gamestats... this is bad");
+      }
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public Map<Integer, GameStats> getAggregateGameStatsForCareerOfType(String type, String table, int id) {
+    Map<Integer, GameStats> careerStats = new HashMap<>();
+    List<Integer> yearsActive = getYearsActive(table, id);
+    for (int year : yearsActive) {
+      GameStats gs = getAggregateGameStatsForYearOfType(type, year, table, id);
+      careerStats.put(year, gs);
+    }
+
+    return careerStats;
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
