@@ -13,11 +13,11 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 public class PlayerStats implements GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
-
-  private static final String[] COLS = {
-    "game", "team", "player", "MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA",
-    "FTM", "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF"
-  };
+  
+  private static final List<String> NON_STAT_COLS = Arrays.asList("game", "team", "player");
+  private static final List<String> STAT_COLS = Arrays.asList("MIN", "TwoPM", "TwoPA",
+      "ThreePM", "ThreePA", "FTM", "FTA", "ORB", "DRB", "AST", "STL",
+      "BLK", "TOV", "OF", "DF");
 
   private Player player;
   private Team team;
@@ -49,18 +49,30 @@ public class PlayerStats implements GameStats {
     this.player = team.getPlayerById(playerID);
 
     this.stats = HashMultiset.create();
+    List<String> cols = getCols();
+    int numCols = getNumCols();
 
-    for (int i = 0; i < COLS.length; i++) {
-      stats.setCount(COLS[i], values.get(i));
+    for (int i = 0; i < numCols; i++) {
+      stats.setCount(cols.get(i), values.get(i));
     }
   }
 
   public static List<String> getCols() {
-    return Arrays.asList(COLS);
+    List<String> toReturn = new ArrayList<>(NON_STAT_COLS);
+    toReturn.addAll(STAT_COLS);
+    return toReturn;
   }
 
   public static int getNumCols() {
-    return COLS.length;
+    return NON_STAT_COLS.size() + STAT_COLS.size();
+  }
+  
+  public static List<String> getNonStatCols() {
+    return NON_STAT_COLS;
+  }
+  
+  public static List<String> getStatCols() {
+    return STAT_COLS;
   }
 
   public List<Integer> getValues() {
