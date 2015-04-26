@@ -1079,7 +1079,7 @@ public class DBManager {
    * @return
    * @author sjl2
    */
-  public GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
+  private GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
     StringBuilder query = new StringBuilder("SELECT ");
     String entity = "";
     int cols;
