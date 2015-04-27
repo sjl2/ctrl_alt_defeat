@@ -206,7 +206,7 @@ public class DashboardGUI {
       } else {
         years = dbManager.getYearsActive("player_stats", playerID);
         rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
-        
+
       }
 
       Map<String, Object> variables =
