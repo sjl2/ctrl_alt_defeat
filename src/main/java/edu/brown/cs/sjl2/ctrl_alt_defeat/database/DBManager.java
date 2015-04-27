@@ -1100,12 +1100,14 @@ public class DBManager {
       throw new RuntimeException("You messed up calling getYearsActive...");
     }
 
-    String query = "SELECT * FROM " + table + ", game WHERE " + table + "." +
-        entity + " = ? AND game.championship_year = ?;";
+    String query = "SELECT * FROM " + table + ", game "
+        + "WHERE " + table + "." + entity + " = ? AND game.id = " + table + ".game "
+            + "AND game.championship_year = ? ORDER BY game.date ASC;";
+
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
-      prep.setInt(1, year);
+      prep.setInt(2, year);
       ResultSet rs = prep.executeQuery();
 
       List<GameStats> gameStats = new ArrayList<>();
@@ -1115,8 +1117,8 @@ public class DBManager {
         for (int i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toAdd = null;
         if (table.equals("player_stats")) {
           toAdd = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1186,7 +1188,9 @@ public class DBManager {
     query.append(table);
     query.append(".");
     query.append(entity);
-    query.append(" = ? AND game.championship_year = ?;");
+    query.append(" = ? AND game.id = ");
+    query.append(table);
+    query.append(".game AND game.championship_year = ?;");
 
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       prep.setInt(1, id);
@@ -1198,8 +1202,8 @@ public class DBManager {
         for (i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toReturn = null;
         if (table.equals("player_stats")) {
           toReturn = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1227,7 +1231,6 @@ public class DBManager {
 
     return careerStats;
   }
-
 }
 
 
