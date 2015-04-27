@@ -26,6 +26,7 @@ public class Game {
   private static final int NUMBER_OF_SEASONS = 1; // Years
   private static final int SEASON_SPAN = 3; // Months
 
+  private boolean homeGame;
   private int id;
   private Team homeTeam;
   private Team awayTeam;
@@ -61,9 +62,9 @@ public class Game {
   private int awayLosses;
 
   public Game(Team home, Team away, DBManager db,
-              Map<BasketballPosition, Integer> starterIDs)
+              Map<BasketballPosition, Integer> starterIDs, boolean homeGame)
       throws GameException {
-
+    this.homeGame = homeGame;
     if (home.getID() == away.getID()) {
       // Cannot play with yourselves
       String message = "This is no time to play with yourself!";
@@ -512,6 +513,10 @@ public class Game {
   @Override
   public String toString() {
     return awayTeam + " @ " + homeTeam + " (" + date + ")";
+  }
+
+  public boolean getHomeGame() {
+    return homeGame;
   }
 
   private static LocalDate getRandomDateInSeason() {

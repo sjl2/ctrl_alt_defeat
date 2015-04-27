@@ -50,6 +50,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 
 /**
  * DBManager class, handles connection to database.
@@ -68,6 +70,7 @@ public class DBManager {
   private PlayerFactory pf;
   private TeamFactory tf;
   private Multiset<String> nextIDs;
+  private Trie trie;
 
   /**
    * Constructor for DBManager class, sets up connection.
@@ -90,6 +93,7 @@ public class DBManager {
 
     this.pf = new PlayerFactory(this);
     this.tf = new TeamFactory(this);
+    this.trie = fillTrie();
   }
 
   public Connection getConnection() {
@@ -1292,5 +1296,40 @@ public class DBManager {
 
   public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
     return getShotsForEntityInGame(gameID, entityID, false, chartType);
+  }
+
+  private Trie fillTrie() {
+    ArrayList<Character> c = new ArrayList<Character>();
+    c.add('@');
+    c.add('$');
+    Trie t = new Trie(c);
+
+    try {
+      PreparedStatement prep = conn.prepareStatement(
+          "select name from player;");
+      ResultSet r = prep.executeQuery();
+      while (r.next()) {
+        t.addFirstWord(StringFormatter.treat(r.getString(1)));
+      }
+      prep.close();
+      r.close();
+      prep = conn.prepareStatement(
+          "select name from team;");
+      r = prep.executeQuery();
+      while (r.next()) {
+        t.addFirstWord(StringFormatter.treat(r.getString(1)));
+      }
+      prep.close();
+      r.close();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return t;
+  }
+
+  public Trie getTrie() {
+    return trie;
   }
 }

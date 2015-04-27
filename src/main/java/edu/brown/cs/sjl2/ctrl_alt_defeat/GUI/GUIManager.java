@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -22,6 +23,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GUI.PlaymakerGUI.PlaymakerHandler;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 import freemarker.template.Configuration;
 
 public class GUIManager {
@@ -37,13 +39,17 @@ public class GUIManager {
   private GameGUI gameGUI;
   private StatsEntryGUI statsEntryGUI;
   private PlaymakerGUI playmakerGUI;
+  private Trie trie;
 
   private static final Gson GSON = new Gson();
 
   public GUIManager(DBManager db) {
     this.dbManager = db;
+    this.trie = dbManager.getTrie();
+    trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
+
     this.dash = new Dashboard(dbManager);
-    this.dashboardGUI = new DashboardGUI(dash, dbManager);
+    this.dashboardGUI = new DashboardGUI(dash, dbManager, trie);
     this.gameGUI = new GameGUI(dash);
     this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);
@@ -68,11 +74,11 @@ public class GUIManager {
     // Setup Spark Routes
     Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
 
-    Spark.get("/login", new LoginViewHandler(), freeMarker);
+    //Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
     Spark.post("/dashboard/new",
-        dashboardGUI.new DashboardSetupHandler(), freeMarker);
+        dashboardGUI.new DashSetupHandler(), freeMarker);
     Spark.get("/dashboard/new/team",
         dashboardGUI.new NewTeamHandler(), freeMarker);
     Spark.post("/dashboard/new/team/results",
@@ -87,6 +93,7 @@ public class GUIManager {
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
     Spark.get("/dashboard/getPlayers", dashboardGUI.new GetPlayersHandler());
     Spark.post("/dashboard/shotchart", dashboardGUI.new GetShotChartData());
+    Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
 
     Spark.get("/game/view/:id", dashboardGUI.new GameViewHandler(), freeMarker);
     Spark.get("/team/view/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
@@ -94,7 +101,7 @@ public class GUIManager {
         dashboardGUI.new PlayerViewHandler(), freeMarker);
 
     Spark.post("/game/start", gameGUI.new StartHandler());
-    Spark.get("/game/roster", gameGUI.new StatPageHandler());
+    Spark.get("/game/roster", gameGUI.new StPgHandler());
 
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
@@ -145,6 +152,7 @@ public class GUIManager {
   public class LoginViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
+      System.out.println("a");
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
       return new ModelAndView(variables, "login.ftl");
