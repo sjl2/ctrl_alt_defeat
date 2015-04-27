@@ -22,7 +22,7 @@ court.style.height = Math.round(court_height);
 
 var positions = ["PG", "SG", "SF", "PF", "C"];
 var stats = [["Block", "DefensiveFoul", "DefensiveRebound", "FreeThrow","MissedFreeThrow", "MissedThreePointer", "MissedTwoPointer", "OffensiveFoul"],
-			["OffensiveRebound", "Steal", "TechnicalFoul", "Turnover","ThreePointer", "TwoPointer", "STEWART\nRANGE!!!!"]];
+			["OffensiveRebound", "Steal", "TechnicalFoul", "Turnover","ThreePointer", "TwoPointer", "Assist", "STEWART\nRANGE!!!!"]];
 
 var court_paper = Raphael(court, court.width, court.height);
 var buttons_paper = Raphael(buttons, buttons.width, 50);

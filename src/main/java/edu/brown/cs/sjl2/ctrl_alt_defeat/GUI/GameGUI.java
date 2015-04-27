@@ -27,7 +27,7 @@ public class GameGUI {
     this.dash = dash;
   }
 
-  public class StatPageHandler implements Route {
+  public class StPgHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
