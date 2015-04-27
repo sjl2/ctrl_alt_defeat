@@ -829,7 +829,7 @@ public class DBManager {
   /**
    * Generates a list of team names and id's for the create-player handler.
    */
-  private List<Team> getTeamLinks(boolean includeMyTeam) {
+  private List<Link> getTeamLinks(boolean includeMyTeam) {
     String query = "SELECT id, name FROM team";
 
     if (!includeMyTeam) {
@@ -838,13 +838,13 @@ public class DBManager {
     query = query + ";";
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
-      List<Team> teams = new ArrayList<>();
+      List<Link> teams = new ArrayList<>();
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        Team t = Team.newTeamLink(id, name);
-        teams.add(t);
+        String path = "/team/view/";
+        teams.add(new Link(id, path, name));
       }
 
       return teams;
@@ -854,7 +854,7 @@ public class DBManager {
     }
   }
 
-  public List<Team> getAllTeams() {
+  public List<Link> getAllTeams() {
     return getTeamLinks(true);
   }
 
@@ -862,7 +862,7 @@ public class DBManager {
    * @return Returns a list of opposing teams (all teams except my team)
    * @author sjl2
    */
-  public List<Team> getOpposingTeams() {
+  public List<Link> getOpposingTeams() {
     return getTeamLinks(false);
   }
 
@@ -1011,10 +1011,10 @@ public class DBManager {
       String home = rs.getString(2);
       String away = rs.getString(THREE);
 
-      String link = "/game/view/" + id;
+      String path = "/game/view/";
       String value = away + " @ " + home + "(" + date + ")";
 
-      return new Link(link, value);
+      return new Link(id, path, value);
     } catch (SQLException e) {
       String message = "Could not obtain link for game " + id + ". ";
       throw new RuntimeException(message + e.getMessage());
@@ -1150,12 +1150,12 @@ public class DBManager {
     }
   }
 
-  public Map<Integer, GameStats> getAggregateGameStatsForCareerOfType(String type, String table, int id) {
-    Map<Integer, GameStats> careerStats = new HashMap<>();
+  public List<GameStats> getAggregateGameStatsForCareerOfType(String type, String table, int id) {
+    List<GameStats> careerStats = new ArrayList<>();
     List<Integer> yearsActive = getYearsActive(table, id);
     for (int year : yearsActive) {
       GameStats gs = getAggregateGameStatsForYearOfType(type, year, table, id);
-      careerStats.put(year, gs);
+      careerStats.add(gs);
     }
 
     return careerStats;

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class TeamFactory {
@@ -44,14 +45,11 @@ public class TeamFactory {
     teams.put(t.getID(), t);
   }
 
-  public List<Team> getAllTeams() {
+  public List<Link> getAllTeams() {
     return db.getAllTeams();
   }
 
-  public List<Team> getOpposingTeams() {
+  public List<Link> getOpposingTeams() {
     return db.getOpposingTeams();
   }
-
-
-
 }

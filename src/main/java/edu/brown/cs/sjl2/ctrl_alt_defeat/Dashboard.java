@@ -76,11 +76,11 @@ public class Dashboard {
     return db.getPlayer(id);
   }
 
-  public List<Team> getAllTeams() {
+  public List<Link> getAllTeams() {
     return db.getAllTeams();
   }
 
-  public List<Team> getOpposingTeams() {
+  public List<Link> getOpposingTeams() {
     return db.getOpposingTeams();
   }
 

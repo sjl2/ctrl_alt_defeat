@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class Team {
@@ -36,19 +37,19 @@ public class Team {
       addPlayer(p);
     }
   }
-
-  private Team(int id, String name) {
-    this.id = id;
-    this.name = name;
-    this.coach = null;
-    this.primary = null;
-    this.secondary = null;
-    this.playerIds = null;
-  }
-
-  public static Team newTeamLink(int id, String name) {
-    return new Team(id, name);
-  }
+//
+//  private Team(int id, String name) {
+//    this.id = id;
+//    this.name = name;
+//    this.coach = null;
+//    this.primary = null;
+//    this.secondary = null;
+//    this.playerIds = null;
+//  }
+//
+//  public static Team newTeamLink(int id, String name) {
+//    return new Team(id, name);
+//  }
 
   public int getID() {
     return id;
@@ -89,6 +90,10 @@ public class Team {
 
   public String getCoach() {
     return coach;
+  }
+  
+  public Link getLink() {
+    return new Link(id, "/team/view/", name);
   }
 
 
