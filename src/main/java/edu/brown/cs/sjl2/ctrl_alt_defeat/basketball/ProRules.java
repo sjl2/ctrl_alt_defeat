@@ -1,29 +1,29 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
-public class ProRules implements RuleSet{
+public class ProRules implements RuleSet {
 
   @Override
-  public int timeouts() {
+  public int getTimeOuts() {
     return 6;
   }
 
   @Override
-  public int periods() {
+  public int getPeriods() {
     return 4;
   }
 
   @Override
-  public int periodMinutes() {
+  public int getPeriodMinutes() {
     return 12;
   }
 
   @Override
-  public int bonus() {
+  public int getBonus() {
     return 5;
   }
 
   @Override
-  public int doubleBonus() {
+  public int getDoubleBonus() {
     return Integer.MAX_VALUE;
   }
 

@@ -7,14 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -34,7 +31,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
 
 /**
@@ -49,11 +45,7 @@ public class DBManager {
   private static final int SIX = 6;
   private static final int SEVEN = 7;
   private static final int EIGHT = 8;
-  private static final int NUMBER_OF_PLAYERS = 12;
-  private static final int NUMBER_OF_ROUND_ROBINS = 50;
-  private static final int MAX_NUM_STATS = 11;
-  private static final int NUM_OF_STATS = 50;
-  private static final int NUMBER_BASE = 20;
+
 
   private Connection conn;
   private PlayerFactory pf;
@@ -81,6 +73,10 @@ public class DBManager {
 
     this.pf = new PlayerFactory(this);
     this.tf = new TeamFactory(this);
+  }
+
+  public Connection getConnection() {
+    return conn;
   }
 
   /**
@@ -220,13 +216,13 @@ public class DBManager {
         throw new RuntimeException(e);
       }
     }
-    
+
     Location[] ballPath = loadBallPath(name, numFrames);
     play.setPlayerPaths(paths);
     play.setBallPath(ballPath);
     return play;
   }
-  
+
   private Location[] loadBallPath(String name, int numFrames) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT frame, x, y "
@@ -932,7 +928,7 @@ public class DBManager {
     }
   }
 
-  private int createGame(LocalDate date, int home, int away) {
+  int createGame(LocalDate date, int home, int away) {
 
     String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
@@ -1230,171 +1226,6 @@ public class DBManager {
     }
 
     return careerStats;
-  }
-
-  public void populateDB() {
-    List<String> teamNames =
-        Arrays.asList(
-            "Cleveland Caveliers",
-            "Seattle Sonics",
-            "New York Knicks",
-            "Golden State Warriors");
-
-    List<String> players =
-        Arrays.asList(
-            "Lebron James",
-            "Ray Allen",
-            "Jahlil Okafor",
-            "Stephen Curry");
-
-    List<String> primary =
-        Arrays.asList(
-            "red", "green", "orange", "blue"
-            );
-
-    List<String> second =
-        Arrays.asList(
-            "white", "yellow", "blue", "yellow"
-            );
-
-    List<Team> teams = new ArrayList<>();
-
-    try {
-
-      conn.setAutoCommit(false);
-
-      // Create Players and Teams
-      for (int i = 0; i < teamNames.size(); i++) {
-        Team t = createTeam(
-            teamNames.get(i),
-            "Coach Bob " + i,
-            primary.get(i),
-            second.get(i),
-            false);
-
-        for (int j = 0; j < NUMBER_OF_PLAYERS; j++) {
-          String suffix = "";
-          if (j != 0) {
-            suffix +=  " " + j;
-          }
-
-          createPlayer(
-              players.get(i) + suffix,
-              t.getID(),
-              i + NUMBER_BASE,
-              true);
-
-        }
-
-        teams.add(t);
-      }
-
-      for (int i = 0; i < NUMBER_OF_ROUND_ROBINS; i++) {
-        for (Team home : teams) {
-          for (Team away :  teams) {
-            if (home.getID() != away.getID()) {
-              int game = createGame(
-                  getRandomDateInSeason(),
-                  home.getID(),
-                  away.getID());
-
-              generateRandomGameStats(game, home, away);
-            }
-          }
-        }
-      }
-
-      conn.commit();
-      conn.setAutoCommit(true);
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e.getMessage());
-    }
-  }
-
-  private void generateRandomGameStats(int game, Team home, Team away) {
-    Random r = new Random();
-    List<Team> gameTeams = Arrays.asList(home, away);
-
-    for (Team gameTeam : gameTeams) {
-      List<Integer> teamValues = new ArrayList<>();
-
-      int numCols = TeamStats.getNumCols();
-      for (int c = 0; c < numCols; c++) {
-        if (c == 0) {
-          teamValues.add(game);
-        } else if (c == 1) {
-          teamValues.add(gameTeam.getID());
-        } else {
-          teamValues.add(0);
-        }
-      }
-
-      List<PlayerStats> ps = new ArrayList<>();
-      for (Player p : gameTeam.getPlayers()) {
-        List<Integer> values = new ArrayList<>();
-        values.add(game);
-        values.add(gameTeam.getID());
-        values.add(p.getID());
-        int numStatCols = PlayerStats.getStatCols().size();
-        for (int s = 0; s < numStatCols; s++) {
-          int num;
-          if (s >= numStatCols - 2) {
-            num = r.nextInt(THREE);
-            values.add(num);
-            teamValues.set(2 + s, teamValues.get(2 + s) + num);
-          } else {
-            num = r.nextInt(MAX_NUM_STATS);
-            values.add(num);
-            teamValues.set(2 + s, teamValues.get(2 + s) + num);
-          }
-        }
-
-        generateRandomStats(p, game, r);
-
-        ps.add(new PlayerStats(values, game, gameTeam));
-      }
-
-      TeamStats ts = new TeamStats(teamValues, game, gameTeam);
-      createBoxScore(ps, ts);
-    }
-  }
-
-  private void generateRandomStats(Player p, int game, Random r) {
-    int numStats = new Double(r.nextDouble() * NUM_OF_STATS)
-    .intValue();
-
-    for (int z = 0; z < numStats; z++) {
-      List<String> types = StatFactory.getTypes();
-
-      int id = getNextID("stat");
-      Location loc = new Location(r.nextDouble(), r.nextDouble());
-      int period = r.nextInt(THREE) + 1;
-      Stat s = StatFactory.newStat(
-          types.get(r.nextInt(types.size())), id, p, loc, period);
-
-      createStat(s, game);
-    }
-
-  }
-
-  private LocalDate getRandomDateInSeason() {
-    Random r = new Random();
-
-    int year = LocalDate.now().getYear() + r.nextInt(FIVE);
-
-    int direction = r.nextInt(2);
-    int disp = r.nextInt(THREE);
-    int month;
-    if (direction == 1) {
-      month = 12 - disp;
-    } else {
-      month = 1 + disp;
-    }
-
-    int day = 1 + r.nextInt(Month.of(month).maxLength() - 1);
-
-    return LocalDate.of(year, month, day);
   }
 
 }

@@ -257,7 +257,7 @@ public class DashboardGUI {
       } else {
         Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("isGame", true)
-          .put("timeouts", dash.getGame().getRules().timeouts())
+          .put("timeouts", dash.getGame().getRules().getTimeOuts())
           .put("errorMessage", "").build();
         return GSON.toJson(variables);
       }

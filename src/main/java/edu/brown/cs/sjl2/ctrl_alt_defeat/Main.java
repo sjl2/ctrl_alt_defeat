@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GUI.GUIManager;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.BasketballDatabaseGenerator;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -51,7 +52,7 @@ public final class Main {
     DBManager dbManager = new DBManager(db);
 
     if (options.has("generate")) {
-      dbManager.populateDB();
+     BasketballDatabaseGenerator.populateDB(dbManager);
     }
 
     if (options.has("port")) {
