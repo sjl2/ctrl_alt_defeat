@@ -6,12 +6,14 @@ public class Play {
 
   private String name;
   private int numFrames;
-  private Location[][] paths;
+  private Location[][] playerPaths;
+  private Location[] ballPath;
 
-  public Play(String name, int numFrames, Location[][] paths) {
+  public Play(String name, int numFrames, Location[][] playerPaths, Location[] ballPath) {
     this.name = name;
     this.numFrames = numFrames;
-    this.paths = paths;
+    this.playerPaths = playerPaths;
+    this.ballPath = ballPath;
   }
 
   public Play(String name, int numFrames) {
@@ -25,10 +27,16 @@ public class Play {
   public int getNumFrames() {
     return this.numFrames;
   }
-  public Location[][] getPaths() {
-    return this.paths;
+  public Location[][] getPlayerPaths() {
+    return this.playerPaths;
   }
-  public void setPaths(Location[][] paths) {
-    this.paths = paths;
+  public void setPlayerPaths(Location[][] playerPaths) {
+    this.playerPaths = playerPaths;
+  }
+  public Location[] getBallPath() {
+    return this.ballPath;
+  }
+  public void setBallPath(Location[] ballPath) {
+    this.ballPath = ballPath;
   }
 }
