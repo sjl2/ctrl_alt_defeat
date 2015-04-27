@@ -40,8 +40,8 @@ public class GUIManager {
 
   private static final Gson GSON = new Gson();
 
-  public GUIManager(String db) {
-    this.dbManager = new DBManager(db);
+  public GUIManager(DBManager db) {
+    this.dbManager = db;
     this.dash = new Dashboard(dbManager);
     this.dashboardGUI = new DashboardGUI(dash, dbManager);
     this.gameGUI = new GameGUI(dash);
@@ -50,8 +50,8 @@ public class GUIManager {
     runServer();
   }
 
-  public GUIManager(String db, int port) {
-    this.dbManager = new DBManager(db);
+  public GUIManager(DBManager db, int port) {
+    this.dbManager = db;
     this.port = port;
     this.playmakerGUI = new PlaymakerGUI(dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);

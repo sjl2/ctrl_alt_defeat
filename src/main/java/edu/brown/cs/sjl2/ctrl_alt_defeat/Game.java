@@ -71,7 +71,7 @@ public class Game {
     this.homeTeam = home;
     this.awayTeam = away;
     this.date = LocalDate.now();
-    db.saveGame(this);
+    db.createGame(this);
     this.db = db;
 
     try {

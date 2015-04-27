@@ -7,11 +7,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -31,6 +34,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
 
 /**
@@ -45,6 +49,11 @@ public class DBManager {
   private static final int SIX = 6;
   private static final int SEVEN = 7;
   private static final int EIGHT = 8;
+  private static final int NUMBER_OF_PLAYERS = 12;
+  private static final int NUMBER_OF_ROUND_ROBINS = 50;
+  private static final int MAX_NUM_STATS = 11;
+  private static final int NUM_OF_STATS = 50;
+  private static final int NUMBER_BASE = 20;
 
   private Connection conn;
   private PlayerFactory pf;
@@ -113,7 +122,7 @@ public class DBManager {
       prep1.executeUpdate();
 
       conn.setAutoCommit(false);
-      
+
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
@@ -483,7 +492,7 @@ public class DBManager {
     }
   }
 
-  public Map<Integer, PlayerStats> loadPlayerStats(int gameID, Team team)
+  public Map<Integer, PlayerStats> getPlayerStats(int gameID, Team team)
       throws GameException {
 
     // Load All Plays
@@ -518,7 +527,7 @@ public class DBManager {
     return allGameStats;
   }
 
-  public TeamStats loadTeamStats(int gameID, Team team) throws GameException {
+  public TeamStats getTeamStats(int gameID, Team team) throws GameException {
 
     String query =
         "SELECT * FROM team_stats "
@@ -548,7 +557,7 @@ public class DBManager {
     return null;
   }
 
-  public void saveBoxScore(Collection<PlayerStats> stats, TeamStats ts) {
+  public void createBoxScore(Collection<PlayerStats> stats, TeamStats ts) {
     int numCols = PlayerStats.getNumCols();
     StringBuilder query = new StringBuilder("INSERT INTO player_stats VALUES (");
 
@@ -570,10 +579,10 @@ public class DBManager {
       String message = "Failed to save player stats to database. ";
       throw new RuntimeException(message + e.getMessage());
     }
-    saveTeamStats(ts);
+    createTeamStats(ts);
   }
 
-  private void saveTeamStats(TeamStats ts) {
+  private void createTeamStats(TeamStats ts) {
     StringBuilder query = new StringBuilder("INSERT INTO team_stats VALUES (");
     int numCols = TeamStats.getNumCols();
     for (int i = 0; i < (numCols - 1); i++) {
@@ -596,18 +605,18 @@ public class DBManager {
 
   }
 
-  public void storeStat(Stat s, String statType, Game game) {
+  public void createStat(Stat s, int game) {
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = conn.prepareStatement(query)) {
 
       ps.setInt(1, s.getID());
-      ps.setInt(2, game.getID());
+      ps.setInt(2, game);
       ps.setInt(THREE, s.getPlayer().getTeamID());
       ps.setInt(FOUR, s.getPlayer().getID());
-      ps.setString(FIVE, statType);
-      ps.setInt(SIX, game.getPeriod());
+      ps.setString(FIVE, s.getStatType());
+      ps.setInt(SIX, s.getPeriod());
       ps.setDouble(SEVEN, s.getLocation().getX());
       ps.setDouble(EIGHT, s.getLocation().getY());
 
@@ -638,7 +647,7 @@ public class DBManager {
     }
   }
 
-  public void removeStat(Stat s) throws GameException {
+  public void deleteStat(Stat s) throws GameException {
     String query = "DELETE FROM stat WHERE id = ? AND player = ?;";
     try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, s.getID());
@@ -717,7 +726,7 @@ public class DBManager {
       String secondary, boolean myTeam) {
 
     Team t = tf.getTeam(getNextID("team"), name, coach, primary, secondary);
-    saveTeam(t, myTeam);
+    createTeam(t, myTeam);
 
     return t;
   }
@@ -752,7 +761,7 @@ public class DBManager {
     }
   }
 
-  private void saveTeam(Team team, boolean myTeam) {
+  private void createTeam(Team team, boolean myTeam) {
     try (PreparedStatement prep = conn.prepareStatement(
         "INSERT INTO team VALUES(?, ?, ?, ?, ?, ?);")) {
       prep.setInt(1, team.getID());
@@ -779,7 +788,7 @@ public class DBManager {
         curr);
 
     t.addPlayer(p);
-    savePlayer(p);
+    createPlayer(p);
 
     return p;
   }
@@ -810,7 +819,7 @@ public class DBManager {
     }
   }
 
-  private void savePlayer(Player player) {
+  private void createPlayer(Player player) {
     String query = "INSERT INTO player VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, player.getID());
@@ -866,7 +875,7 @@ public class DBManager {
     return getTeamLinks(false);
   }
 
-  public void saveGame(Game game) {
+  public void createGame(Game game) {
 
     String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
@@ -879,6 +888,27 @@ public class DBManager {
       prep.executeUpdate();
     } catch (SQLException e) {
       String message = "Failed to save game data (" + game + ").";
+      throw new RuntimeException(message + e.getMessage());
+    }
+  }
+
+  private int createGame(LocalDate date, int home, int away) {
+
+    String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+
+      int id = getNextID("game");
+      prep.setInt(1, id);
+      prep.setString(2, date.toString());
+      prep.setInt(THREE, home);
+      prep.setInt(FOUR, away);
+      prep.setInt(FIVE, getChampionshipYear(date));
+
+      prep.executeUpdate();
+
+      return id;
+    } catch (SQLException e) {
+      String message = "Failed to save game data fake game date. ";
       throw new RuntimeException(message + e.getMessage());
     }
   }
@@ -1034,7 +1064,8 @@ public class DBManager {
       throw new RuntimeException("You messed up calling getYearsActive...");
     }
 
-    String query = "SELECT * FROM " + table + ", game WHERE " + table + "." + entity + " = ? AND game.championship_year = ?;";
+    String query = "SELECT * FROM " + table + ", game WHERE " + table + "." +
+        entity + " = ? AND game.championship_year = ?;";
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
@@ -1160,6 +1191,172 @@ public class DBManager {
 
     return careerStats;
   }
+
+  public void populateDB() {
+    List<String> teamNames =
+        Arrays.asList(
+            "Cleveland Caveliers",
+            "Seattle Sonics",
+            "New York Knicks",
+            "Golden State Warriors");
+
+    List<String> players =
+        Arrays.asList(
+            "Lebron James",
+            "Ray Allen",
+            "Jahlil Okafor",
+            "Stephen Curry");
+
+    List<String> primary =
+        Arrays.asList(
+            "red", "green", "orange", "blue"
+            );
+
+    List<String> second =
+        Arrays.asList(
+            "white", "yellow", "blue", "yellow"
+            );
+
+    List<Team> teams = new ArrayList<>();
+
+    try {
+
+      conn.setAutoCommit(false);
+
+      // Create Players and Teams
+      for (int i = 0; i < teamNames.size(); i++) {
+        Team t = createTeam(
+            teamNames.get(i),
+            "Coach Bob " + i,
+            primary.get(i),
+            second.get(i),
+            false);
+
+        for (int j = 0; j < NUMBER_OF_PLAYERS; j++) {
+          String suffix = "";
+          if (j != 0) {
+            suffix +=  " " + j;
+          }
+
+          createPlayer(
+              players.get(i) + suffix,
+              t.getID(),
+              i + NUMBER_BASE,
+              true);
+
+        }
+
+        teams.add(t);
+      }
+
+      for (int i = 0; i < NUMBER_OF_ROUND_ROBINS; i++) {
+        for (Team home : teams) {
+          for (Team away :  teams) {
+            if (home.getID() != away.getID()) {
+              int game = createGame(
+                  getRandomDateInSeason(),
+                  home.getID(),
+                  away.getID());
+
+              generateRandomGameStats(game, home, away);
+            }
+          }
+        }
+      }
+
+      conn.commit();
+      conn.setAutoCommit(true);
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
+  private void generateRandomGameStats(int game, Team home, Team away) {
+    Random r = new Random();
+    List<Team> gameTeams = Arrays.asList(home, away);
+
+    for (Team gameTeam : gameTeams) {
+      List<Integer> teamValues = new ArrayList<>();
+
+      int numCols = TeamStats.getNumCols();
+      for (int c = 0; c < numCols; c++) {
+        if (c == 0) {
+          teamValues.add(game);
+        } else if (c == 1) {
+          teamValues.add(gameTeam.getID());
+        } else {
+          teamValues.add(0);
+        }
+      }
+
+      List<PlayerStats> ps = new ArrayList<>();
+      for (Player p : gameTeam.getPlayers()) {
+        List<Integer> values = new ArrayList<>();
+        values.add(game);
+        values.add(gameTeam.getID());
+        values.add(p.getID());
+        int numStatCols = PlayerStats.getStatCols().size();
+        for (int s = 0; s < numStatCols; s++) {
+          int num;
+          if (s >= numStatCols - 2) {
+            num = r.nextInt(THREE);
+            values.add(num);
+            teamValues.set(2 + s, teamValues.get(2 + s) + num);
+          } else {
+            num = r.nextInt(MAX_NUM_STATS);
+            values.add(num);
+            teamValues.set(2 + s, teamValues.get(2 + s) + num);
+          }
+        }
+
+        generateRandomStats(p, game, r);
+
+        ps.add(new PlayerStats(values, game, gameTeam));
+      }
+
+      TeamStats ts = new TeamStats(teamValues, game, gameTeam);
+      createBoxScore(ps, ts);
+    }
+  }
+
+  private void generateRandomStats(Player p, int game, Random r) {
+    int numStats = new Double(r.nextDouble() * NUM_OF_STATS)
+    .intValue();
+
+    for (int z = 0; z < numStats; z++) {
+      List<String> types = StatFactory.getTypes();
+
+      int id = getNextID("stat");
+      Location loc = new Location(r.nextDouble(), r.nextDouble());
+      int period = r.nextInt(THREE) + 1;
+      Stat s = StatFactory.newStat(
+          types.get(r.nextInt(types.size())), id, p, loc, period);
+
+      createStat(s, game);
+    }
+
+  }
+
+  private LocalDate getRandomDateInSeason() {
+    Random r = new Random();
+
+    int year = LocalDate.now().getYear() + r.nextInt(FIVE);
+
+    int direction = r.nextInt(2);
+    int disp = r.nextInt(THREE);
+    int month;
+    if (direction == 1) {
+      month = 12 - disp;
+    } else {
+      month = 1 + disp;
+    }
+
+    int day = 1 + r.nextInt(Month.of(month).maxLength() - 1);
+
+    return LocalDate.of(year, month, day);
+  }
+
 }
 
 
