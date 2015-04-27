@@ -594,14 +594,19 @@ function save(playName) {
 
 function load(data) {
     var play = data.play;
-    var paths = play.paths;
-    for(i = 0; i < paths.length; i++) {
-	var path = paths[i];
+    var playerPaths = play.playerPaths;
+    for(i = 0; i < playerPaths.length; i++) {
+	var path = playerPaths[i];
 	tokens[i].path = [];
 	for(j = 0; j < path.length; j++) {
 	    var loc = Location(path[j].x, path[j].y);
 	    tokens[i].path[j] = loc;
 	}
+    }
+    var ballPath = play.ballPath;
+    ball.path = [];
+    for(i = 0; i < ballPath.length; i++) {
+	ball.path[i] = Location(ballPath[i].x, ballPath[i].y);
     }
     setMaxFrame(play.numFrames - 1);
     setFrame(0);
