@@ -19,6 +19,7 @@ import com.google.common.collect.Multiset;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameView;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
@@ -884,7 +885,7 @@ public class DBManager {
 
   private int getChampionshipYear(LocalDate date) {
     if (date.getMonthValue() < SEVEN) {
-      return date.getYear(); 
+      return date.getYear();
     } else {
       return date.getYear() + 1;
     }
@@ -965,14 +966,14 @@ public class DBManager {
   public void setMyTeam(Team team) {
     // TODO Auto-generated method stub
   }
-  
+
   // table = either player_stats or team_stats, depending on whether you are getting player or team years, and id is for either team or player
   public List<Integer> getYearsActive(String table, int id) {
     String entity = "";
     if (table.equals("player_stats")) {
       entity = "player";
     } else if (table.equals("team_stats")) {
-      entity = "team";      
+      entity = "team";
     } else {
       throw new RuntimeException("You messed up calling getYearsActive...");
     }
@@ -984,7 +985,7 @@ public class DBManager {
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
       ResultSet rs = prep.executeQuery();
-      
+
       List<Integer> years = new ArrayList<>();
       while (rs.next()) {
         years.add(rs.getInt(1));
@@ -994,6 +995,29 @@ public class DBManager {
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
+    }
+  }
+
+  public Link getGameLink(int id) {
+    String query = "SELECT g.date, home.name, away.name "
+        + "FROM game AS g, team AS home, team AS away "
+        + "WHERE g.id = ? AND home.id = g.home AND g.away = away.id";
+
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
+      ps.setInt(1, id);
+      ResultSet rs = ps.executeQuery();
+
+      String date = rs.getString(1);
+      String home = rs.getString(2);
+      String away = rs.getString(THREE);
+
+      String link = "/game/view/" + id;
+      String value = away + " @ " + home + "(" + date + ")";
+
+      return new Link(link, value);
+    } catch (SQLException e) {
+      String message = "Could not obtain link for game " + id + ". ";
+      throw new RuntimeException(message + e.getMessage());
     }
   }
 
@@ -1011,15 +1035,15 @@ public class DBManager {
     }
 
     String query = "SELECT * FROM " + table + ", game WHERE " + table + "." + entity + " = ? AND game.championship_year = ?;";
-    
+
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
       prep.setInt(1, year);
       ResultSet rs = prep.executeQuery();
-      
+
       List<GameStats> gameStats = new ArrayList<>();
-      
-      while (rs.next()) { 
+
+      while (rs.next()) {
         List<Integer> values = new ArrayList<>();
         for (int i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
@@ -1050,6 +1074,7 @@ public class DBManager {
    * @param table
    * @param id
    * @return
+   * @author sjl2
    */
   private GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
     StringBuilder query = new StringBuilder("SELECT ");
@@ -1076,7 +1101,7 @@ public class DBManager {
       query.append(nonStat);
       query.append(", ");
     }
-    
+
     int i;
     for (i = 0; i < statCols.size() - 1; i++) {
       query.append(type);
@@ -1115,7 +1140,7 @@ public class DBManager {
           toReturn = new TeamStats(values, gameID, getTeam(teamID));
         }
 
-        return toReturn; 
+        return toReturn;
       } else {
         throw new RuntimeException("No aggregate gamestats... this is bad");
       }
