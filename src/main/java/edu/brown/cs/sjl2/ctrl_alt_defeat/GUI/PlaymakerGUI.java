@@ -79,23 +79,32 @@ public class PlaymakerGUI {
       QueryParamsMap qm = request.queryMap();
       String name = qm.value("name");
       int numFrames = Integer.parseInt(qm.value("numFrames"));
-      String jsonString = qm.value("paths");
+      String jsonPlayerString = qm.value("paths");
+      String jsonBallString= qm.value("ballPath");
 
-      double[][][] jsonPaths = GSON.fromJson(jsonString, double[][][].class);
+      double[][][] playerPaths = GSON.fromJson(jsonPlayerString, double[][][].class);
       BasketballPosition[] bballPositions = BasketballPosition.values();
       int numBasketballPlayers = bballPositions.length;
-      Location[][] paths = new Location[numBasketballPlayers][];
+      Location[][] parsedPlayerPaths = new Location[numBasketballPlayers][];
       for (int position = 0; position < numBasketballPlayers; position++) {
         Location[] path = new Location[numFrames];
         for (int frame = 0; frame < numFrames; frame++) {
-          double x = jsonPaths[position][frame][0];
-          double y = jsonPaths[position][frame][1];
+          double x = playerPaths[position][frame][0];
+          double y = playerPaths[position][frame][1];
           path[frame] = new Location(x, y);
         }
-        paths[position] = path;
+        parsedPlayerPaths[position] = path;
       }
 
-      dbManager.savePlay(new Play(name, numFrames, paths));
+      double[][] ballPath = GSON.fromJson(jsonBallString, double[][].class);
+      Location[] parsedBallPath = new Location[numFrames];
+      for (int frame = 0; frame < numFrames; frame++) {
+        double x = ballPath[frame][0];
+        double y = ballPath[frame][1];
+        parsedBallPath[frame] = new Location(x, y);
+      }
+
+      dbManager.savePlay(new Play(name, numFrames, parsedPlayerPaths, parsedBallPath));
       return getPlayNamesFromDB();
     }
   }
@@ -158,9 +167,6 @@ public class PlaymakerGUI {
         BiMap<BasketballPosition, Player> players = game.getLineup().getPlayers();
         List<Integer> numbers = new ArrayList<>(10);
         for(BasketballPosition bp : BasketballPosition.values()) {
-          if(bp.equals(BasketballPosition.Ball)) {
-            continue;
-          }
           numbers.add(players.get(bp).getNumber());
         }
 

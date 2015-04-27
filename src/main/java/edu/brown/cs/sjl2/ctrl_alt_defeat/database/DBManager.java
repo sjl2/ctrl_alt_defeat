@@ -95,11 +95,14 @@ public class DBManager {
    */
   public void savePlay(Play play) {
     String name = play.getName();
+    int numFrames = play.getNumFrames();
+    Location[][] playerPaths = play.getPlayerPaths();
+    Location[] ballPath = play.getBallPath();
+
     if (!doesPlayExist(name)) {
       saveToPlaysTable(name, play.getNumFrames());
     }
 
-    Location[][] paths = play.getPaths();
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
@@ -117,8 +120,8 @@ public class DBManager {
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
-        for (int frame = 0; frame < paths[position].length; frame++) {
-          Location l = paths[position][frame];
+        for (int frame = 0; frame < numFrames; frame++) {
+          Location l = playerPaths[position][frame];
           prep2.setString(1, name);
           prep2.setString(2, bballPositions[position].getName());
           prep2.setInt(THREE, frame);
@@ -127,6 +130,18 @@ public class DBManager {
           prep2.addBatch();
         }
       }
+
+      // Adding ball
+      for (int frame = 0; frame < numFrames; frame++) {
+        Location l = ballPath[frame];
+        prep2.setString(1, name);
+        prep2.setString(2, "Ball");
+        prep2.setInt(THREE, frame);
+        prep2.setDouble(FOUR, l.getX());
+        prep2.setDouble(FIVE, l.getY());
+        prep2.addBatch();
+      }
+
       prep2.executeBatch();
       conn.commit();
       conn.setAutoCommit(true);
@@ -196,9 +211,34 @@ public class DBManager {
         throw new RuntimeException(e);
       }
     }
-
-    play.setPaths(paths);
+    
+    Location[] ballPath = loadBallPath(name, numFrames);
+    play.setPlayerPaths(paths);
+    play.setBallPath(ballPath);
     return play;
+  }
+  
+  private Location[] loadBallPath(String name, int numFrames) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT frame, x, y "
+        + "FROM play_detail "
+        + "WHERE play = ? AND position = ?;")) {
+
+      prep.setString(1, name);
+      prep.setString(2, "Ball");
+      ResultSet rs = prep.executeQuery();
+
+      Location[] path = new Location[numFrames];
+      while (rs.next()) {
+        Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
+        path[rs.getInt("frame")] = loc;
+      }
+
+      return path;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 
   private Play loadPlayMetaData(String name) {
