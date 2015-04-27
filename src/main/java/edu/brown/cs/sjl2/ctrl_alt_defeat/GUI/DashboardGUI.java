@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -205,8 +206,11 @@ public class DashboardGUI {
         error = "Could not find player by that ID!";
       } else {
         years = dbManager.getYearsActive("player_stats", playerID);
-        rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
-        
+        rows = dbManager.getSeparateGameStatsForYear(
+            years.get(0),
+            "player_stats",
+            playerID);
+
       }
 
       Map<String, Object> variables =
@@ -216,6 +220,8 @@ public class DashboardGUI {
           .put("player", player)
           .put("years", years)
           .put("rows", rows)
+          .put("seasonTotals", new ArrayList<>())
+          .put("seasonAverages", new ArrayList<>())
           .put("errorMessage", error).build();
       return new ModelAndView(variables, "player.ftl");
     }

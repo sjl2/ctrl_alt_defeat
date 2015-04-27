@@ -1000,6 +1000,29 @@ public class DBManager {
     }
   }
 
+  public Link getGameLink(int id) {
+    String query = "SELECT g.date, home.name, away.name "
+        + "FROM game AS g, team AS home, team AS away "
+        + "WHERE g.id = ? AND home.id = g.home AND g.away = away.id";
+
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
+      ps.setInt(1, id);
+      ResultSet rs = ps.executeQuery();
+
+      String date = rs.getString(1);
+      String home = rs.getString(2);
+      String away = rs.getString(THREE);
+
+      String link = "/game/view/" + id;
+      String value = away + " @ " + home + "(" + date + ")";
+
+      return new Link(link, value);
+    } catch (SQLException e) {
+      String message = "Could not obtain link for game " + id + ". ";
+      throw new RuntimeException(message + e.getMessage());
+    }
+  }
+
   public List<GameStats> getSeparateGameStatsForYear(int year, String table, int id) {
     String entity = "";
     int cols;
@@ -1044,30 +1067,6 @@ public class DBManager {
       close();
       throw new RuntimeException(e);
     }
-  }
-
-  public Link getGameLink(int id) {
-    String query = "SELECT g.date, home.name, away.name "
-        + "FROM game AS g, team AS home, team AS away "
-        + "WHERE g.id = ? AND home.id = g.home AND g.away = away.id";
-
-    try (PreparedStatement ps = conn.prepareStatement(query)) {
-      ps.setInt(1, id);
-      ResultSet rs = ps.executeQuery();
-
-      String date = rs.getString(1);
-      String home = rs.getString(2);
-      String away = rs.getString(THREE);
-
-      String link = "/game/view/" + id;
-      String value = away + " @ " + home + "(" + date + ")";
-
-      return new Link(link, value);
-    } catch (SQLException e) {
-      String message = "Could not obtain link for game " + id + ". ";
-      throw new RuntimeException(message + e.getMessage());
-    }
-
   }
 
   /**
