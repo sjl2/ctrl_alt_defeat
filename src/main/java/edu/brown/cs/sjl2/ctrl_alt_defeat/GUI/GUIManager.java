@@ -45,7 +45,7 @@ public class GUIManager {
     this.dash = new Dashboard(dbManager);
     this.dashboardGUI = new DashboardGUI(dash, dbManager);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -53,7 +53,7 @@ public class GUIManager {
   public GUIManager(String db, int port) {
     this.dbManager = new DBManager(db);
     this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -94,12 +94,13 @@ public class GUIManager {
 
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new StatPageHandler());
-
+    
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
     Spark.post("/playmaker/delete", playmakerGUI.new DeleteHandler());
     Spark.get("/playmaker/playNames", playmakerGUI.new PlayNamesHandler());
+    Spark.get("/playmaker/getPlayerNumbers", playmakerGUI.new PlayerNumberHandler());
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());

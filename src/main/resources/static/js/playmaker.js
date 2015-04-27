@@ -10,7 +10,9 @@ var maxFrame = 0;
 var width = 0;
 var height = 0;
 
-var radius;
+var playerRadius;
+var ballRadius;
+var ballAngle = 0;
 
 var courtTopLeftCorner;
 var courtBottomRightCorner;
@@ -20,6 +22,8 @@ var paper;
 var angle = 0;
 
 var tokens = [];
+var ball;
+var posessionToken;
 
 var intervalVar;
 var grabbedToken;
@@ -90,19 +94,78 @@ function PlayToken(playName) {
 	
 }
 
-function Token(circle, location) {
+function Ball(playerToken, angle) {
+    var newBall =  {
+	location: Location(0, 0),
+	circle: undefined,
+	path: [],
+	
+	checkCollision: function(playerToken) {
+	    var dx = this.location.x - playerToken.location.x;
+	    var dy = this.location.y - playerToken.location.y;
+	    var distanceSquared = dx * dx + dy * dy;
+	    return distanceSquared < (playerRadius + ballRadius) * (playerRadius + ballRadius);
+	},
+
+	setLocationWithXY: function(x, y) {
+	    this.circle.attr("cx", x * width);
+	    this.circle.attr("cy", y * height);
+	    this.location.x = x;
+	    this.location.y = y;
+	},
+
+	setLocationWithLoc: function(loc) {
+	    this.setLocationWithXY(loc.x, loc.y);
+	},
+
+	translate: function(dx, dy) {
+	    this.circle.attr("cx", this.circle.attr("cx") + dx);
+	    this.circle.attr("cy", this.circle.attr("cy") + dy);
+	    this.location.translate(dx / width, dy / height);
+	},
+
+	getRelativeLocation: function(playerToken, angle) {
+	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
+	    var y = playerToken.location.y + playerRadius * Math.sin(angle);
+	    return Location(x, y);
+	},
+
+	setRelativeLocation: function(playerToken, angle) {
+	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
+	    var y = playerToken.location.y + playerRadius * Math.sin(angle);
+	    this.setLocationWithXY(x, y);
+	    return Location(x, y);
+	}
+    }
+    var location = newBall.getRelativeLocation(playerToken, angle);
+    newBall.circle = paper.circle(location.x * width, location.y * height, ballRadius * width).attr("fill", "#FA8320");
+    newBall.circle.drag(onmove, onballstart, onballend, newBall, newBall, newBall);
+    newBall.setLocationWithXY(location.x, location.y);
+    newBall.path[0] = newBall.location.copy();
+    return newBall;
+}
+
+function Token(circle, text, location) {
     return {
 	circle: circle,
+	text: paper.text(location.x * width, location.y * height, text).attr({"font-size": "20", "fill":"#FFFFFF"}),
 	path: [location.copy()],
 	location: location.copy(),
 	translate: function(dx, dy) {
 	    this.circle.attr("cx", circle.attr("cx") + dx);
 	    this.circle.attr("cy", circle.attr("cy") + dy);
-	    this.location.translate(dx, dy);
+	    this.text.attr("x", circle.attr("cx"));
+	    this.text.attr("y", circle.attr("cy"));
+	    this.location.translate(dx / width, dy / height);
 	},
 	setLocationWithXY: function(x, y) {
-	    this.circle.attr("cx", x);
-	    this.circle.attr("cy", y);
+	    if(x > 1){
+		console.log(x, y);
+	    }
+	    this.circle.attr("cx", x * width);
+	    this.circle.attr("cy", y * height);
+	    this.text.attr("x", x * width);
+	    this.text.attr("y", y * height);
 	    this.location.x = x;
 	    this.location.y = y;
 	},
@@ -145,38 +208,47 @@ window.onload = function() {
 
     var court = paper.image("images/Basketball-Court.png", 0, 0, width, height);
     
-    var startingLocations = [Location(35, 50),
-			     Location(26, 17.54),
-			     Location(6, 82.46),
-			     Location(7.5, 32.456),
-			     Location(19, 66.666),
-			     Location(29, 50),
-			     Location(22, 24.561),
-			     Location(6, 71.93),
-			     Location(7.5, 42.982),
-			     Location(15, 59.649)];
-    radius = width * 0.025;
+    var startingLocations = [Location(0.35, 0.50),
+			     Location(0.26, 0.1754),
+			     Location(0.06, 0.8246),
+			     Location(0.075, 0.32456),
+			     Location(0.19, 0.6666),
+			     Location(0.29, 0.5),
+			     Location(0.22, 0.24561),
+			     Location(0.06, 0.7193),
+			     Location(0.075, 0.42982),
+			     Location(0.15, 0.59649)];
+    var positionAbrevs = ["PG", "SG", "SF", "PF", "C",
+			  "PG", "SG", "SF", "PF", "C"];
+    playerRadius = 0.025;
+    ballRadius = playerRadius * 0.5;
     for(i = 0; i < 10; i++) {
 	var loc = startingLocations[i];
-	loc.x = loc.x * width / 100;
-	loc.y = loc.y * height / 100;
-	var circ2 = paper.circle(loc.x, loc.y, radius);
+	loc.x = loc.x;
+	loc.y = loc.y;
+	var circ2 = paper.circle(loc.x * width, loc.y * height, playerRadius * width);
 	if(i < 5) {
 	    circ2.attr("fill", "#00f");
 	} else {
 	    circ2.attr("fill", "#f00");
 	}
-	var t = Token(circ2, loc);
+	var t = Token(circ2, positionAbrevs[i], loc);
 	circ2.drag(onmove, onstart, onend, t, t, t);
 	tokens[i] = t;
     }
+    posessionToken = tokens[0];
 
-    var circ = paper.circle(width / 2, height / 2, 27);
-    circ.attr("fill", "url(images/Basketball-small.png)");
-    var ballLoc = Location(width / 2, height / 2);//TODO make ball follow player
-    var t = Token(circ, ballLoc);
-    circ.drag(onmove, onstart, onend, t, t, t);
-    tokens[10] = t;
+    $.get("/playmaker/getPlayerNumbers", {}, function(data) {
+	var playerNumbers = JSON.parse(data).playerNumbers;
+	if(playerNumbers != undefined) {
+	    for(i = 0; i < playerNumbers.length; i++) {
+		tokens[i].text.attr("text", playerNumbers[i].toString());
+	    }
+	}
+    });
+
+    ball = Ball(posessionToken, 0);
+    //circ.drag(onmove, onstart, onend, t, t, t);
 
     $("#frame_number").on("input", function() {
 	setFrame(parseInt(this.value));
@@ -303,6 +375,14 @@ function setFrame(frame) {
 	    } else {
 		t.setLocationWithLoc(t.path[currentFrame]);
 	    }
+	} 
+    }
+
+    if(ball != grabbedToken) {
+	if(currentFrame >= ball.path.length) {
+	    ball.setLocationWithLoc(ball.path[ball.path.length - 1]);
+	} else {
+	    ball.setLocationWithLoc(ball.path[currentFrame]);
 	}
     }
 }
@@ -314,6 +394,12 @@ function onstart(x, y, event) {
     if(!edittingLocations) {
 	intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
     }
+}
+
+function onballstart(x, y, event) {
+    this.dx = 0;
+    this.dy = 0;
+    this.grabbed = true;
 }
 
 function onmove(dx, dy, x, y, event) {
@@ -375,9 +461,22 @@ function onend(event) {
 
 }
 
+function onballend(event) {
+    this.grabbed = false;
+    for(i = 0; i < tokens.length; i++) {
+	var t = tokens[i];
+	if(this.checkCollision(t)) {
+	    posessionToken = t;
+	}
+    }
+    ball.setRelativeLocation(posessionToken, ballAngle);
+}
+
 function updatePath() {
     setFrame(currentFrame + 1);
     grabbedToken.path[currentFrame] = grabbedToken.location.copy();
+    ball.path[currentFrame] = ball.setRelativeLocation(posessionToken, ballAngle);
+    ballAngle += 5 * Math.PI / 180;
     if(currentFrame > maxFrame) {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i];
@@ -397,6 +496,7 @@ function play() {
 	    var t = tokens[i]
 	    t.circle.undrag();
 	}
+	ball.circle.undrag();
     }
 }
 
@@ -408,6 +508,7 @@ function stop() {
 	    var t = tokens[i]
 	    t.circle.drag(onmove, onstart, onend, t, t, t);
 	}
+	ball.circle.drag(onmove, onballstart, onballend, ball, ball, ball);
     }
 }
 
@@ -421,16 +522,32 @@ function stepAnimation() {
 	    } else {
 		nextLoc = t.path[currentFrame];
 	    }
-	    t.circle.animate({cx:nextLoc.x, cy:nextLoc.y},
+	    t.circle.animate({cx:nextLoc.x * width, cy:nextLoc.y * height},
+			     1000.0 / (FRAME_RATE * playSpeed),
+			     "linear",
+			     undefined);
+	    t.text.animate({x:nextLoc.x, y:nextLoc.y},
 			     1000.0 / (FRAME_RATE * playSpeed),
 			     "linear",
 			     undefined);
 	}
 
+	var nextLoc;
+	if(currentFrame >= ball.path.length) {
+	    nextLoc = ball.path[ball.path.length - 1];
+	} else {
+	    nextLoc = ball.path[currentFrame];
+	}
+	ball.circle.animate({cx:nextLoc.x * width, cy:nextLoc.y * height},
+			 1000.0 / (FRAME_RATE * playSpeed),
+			 "linear",
+			 undefined);
+
 	if(currentFrame >= maxFrame - 1) {
 	    stop();
 	}
 	currentFrame++;
+	$("#frame_number").val(currentFrame);
 	$("#current_frame")[0].innerHTML = currentFrame;
 	playTime += (playSpeed / FRAME_RATE)
     }
@@ -453,15 +570,20 @@ function save(playName) {
 	var tokenPath = tokens[i].path;
 	var path = [];
 	for(j = 0; j < tokenPath.length; j++) {
-	    path[j] = [Math.round(tokenPath[j].x),
-		       Math.round(tokenPath[j].y)];
+	    path[j] = [tokenPath[j].x, tokenPath[j].y];
 	}
 	paths[i] = path;
+    }
+    var ballPath = ball.path;
+    var path = [];
+    for(i = 0; i < ballPath.length; i++) {
+	path[i] = [ballPath[i].x, ballPath[i].y];
     }
     var data = {
 	name: playName,
 	numFrames: maxFrame + 1,
-	paths: JSON.stringify(paths)
+	paths: JSON.stringify(paths),
+	ballPath: JSON.stringify(path)
     };
     $.post("/playmaker/save",
 	   data,
