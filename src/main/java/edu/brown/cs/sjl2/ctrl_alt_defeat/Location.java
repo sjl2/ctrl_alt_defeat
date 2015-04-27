@@ -17,23 +17,20 @@ public class Location {
     return y;
   }
 
-	public Location withX(double newX) {
-		return new Location(newX, y);
-	}
+  public static Location adjustForShotChart(double x, double y) {
+    // Reflection
+    if (x > .5) {
+      x =- (2 * (x - .5));
+    }
 
-	public Location withY(double newY) {
-		return new Location(x, newY);
-	}
-//
-//	public Location add(Location loc) {
-//		return new Location(x + loc.getX(), y + loc.getY());
-//	}
-//
-//	public Location multiply(double s) {
-//		return new Location(x * s, y * s);
-//	}
-//
-//	public static Location interpolate(Location loc1, Location loc2, double interp) {
-//		return loc1.multiply(interp).add(loc2.multiply(1 - interp));
-//	}
+    if (y > .5) {
+      y =- (2 * (y - .5));
+    }
+
+    // Rotation
+    double _x = .5 * y;
+    double _y = 1 - (2 * x);
+
+    return new Location(_x, _y);
+  }
 }

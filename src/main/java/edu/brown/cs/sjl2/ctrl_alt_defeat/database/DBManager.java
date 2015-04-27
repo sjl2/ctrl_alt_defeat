@@ -1,13 +1,31 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.database;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.NClob;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
+import java.sql.Ref;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +63,6 @@ public class DBManager {
   private static final int SIX = 6;
   private static final int SEVEN = 7;
   private static final int EIGHT = 8;
-
 
   private Connection conn;
   private PlayerFactory pf;
@@ -1231,18 +1248,49 @@ public class DBManager {
 
     return careerStats;
   }
+
+  /**
+   * Generates list of shot locations
+   * @param gameID - ID of game to get data for
+   * @param entityID - either player or team id
+   * @param makes - True if you want makes, false if you want misses
+   * @param chartType - "team" or "player"
+   * @return
+   */
+  private List<Location> getShotsForEntityInGame(int gameID, int entityID, boolean makes, String chartType) {
+    String statType = "";
+    if (makes) {
+      statType = "(type = \"MadeTwoPointer\" OR type = \"MadeThreePointer\");";
+    } else {
+      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\");";
+    }
+
+    String query = "SELECT x, y FROM stat WHERE " + chartType + " = ? AND game = ? AND " + statType;
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, entityID);
+      prep.setInt(2, gameID);
+      ResultSet rs = prep.executeQuery();
+
+      List<Location> shots = new ArrayList<>();
+      while(rs.next()) {
+        double x = rs.getDouble(1);
+        double y = rs.getDouble(2);
+        Location adjustedLoc = Location.adjustForShotChart(x, y);
+        shots.add(adjustedLoc);
+      }
+
+      return shots;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public List<Location> getMakesForEntityInGame(int gameID, int entityID, String chartType) {
+    return getShotsForEntityInGame(gameID, entityID, true, chartType);
+  }
+
+  public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
+    return getShotsForEntityInGame(gameID, entityID, false, chartType);
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

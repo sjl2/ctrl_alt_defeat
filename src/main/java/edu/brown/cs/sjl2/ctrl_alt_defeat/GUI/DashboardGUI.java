@@ -20,6 +20,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameView;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
@@ -168,7 +169,7 @@ public class DashboardGUI {
 
   public class TeamViewHandler implements TemplateViewRoute {
     @Override
-    public ModelAndView handle(Request request, Response response) {      
+    public ModelAndView handle(Request request, Response response) {
       int teamID = -1;
       Team team = null;
       List<Integer> years = null;
@@ -225,6 +226,7 @@ public class DashboardGUI {
         } else {
           years = dbManager.getYearsActive("player_stats", playerID);
           rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          System.out.println("Rows: " + rows.size());
           seasonAverages = dbManager.getAggregateGameStatsForCareerOfType("AVG", "player_stats", playerID);
           seasonTotals = dbManager.getAggregateGameStatsForCareerOfType("SUM", "player_stats", playerID);
         }
@@ -244,6 +246,45 @@ public class DashboardGUI {
           .put("errorMessage", error).build();
       return new ModelAndView(variables, "player.ftl");
     }
+  }
+
+  public class GetShotChartData implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      boolean player;
+      List<Location> makes = null;
+      List<Location> misses = null;
+      String error = "";
+      try {
+        player = Boolean.parseBoolean(qm.value("player"));
+        if (player) {
+          int playerID = Integer.parseInt(qm.value("id"));
+          makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
+          misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
+        } else {
+          boolean us = Boolean.parseBoolean(qm.value("us"));
+          if () {
+            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), entityID, "team");
+            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), entityID, "team");
+          } else {
+            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), entityID, "team");
+            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), entityID, "team");
+          }
+        }
+      } catch (NumberFormatException e) {
+        error = "Invalid player id!";
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes)
+          .put("misses", misses)
+          .put("error", error)
+          .build();
+      return variables;
+    }
+
   }
 
   public class GetGameHandler implements Route {

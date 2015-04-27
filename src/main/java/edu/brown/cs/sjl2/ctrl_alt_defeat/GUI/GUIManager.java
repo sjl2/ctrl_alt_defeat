@@ -86,6 +86,7 @@ public class GUIManager {
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
     Spark.get("/dashboard/getPlayers", dashboardGUI.new GetPlayersHandler());
+    Spark.post("/dashboard/shotchart", dashboardGUI.new GetShotChartData());
 
     Spark.get("/game/view/:id", dashboardGUI.new GameViewHandler(), freeMarker);
     Spark.get("/team/view/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
@@ -94,7 +95,7 @@ public class GUIManager {
 
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new StatPageHandler());
-    
+
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());

@@ -23,8 +23,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class Game {
   private static final String TABLE = "game";
-  private static final int YEAR_SPAN = 5;
-  private static final int SEASON_SPAN = 3;
+  private static final int NUMBER_OF_SEASONS = 1; // Years
+  private static final int SEASON_SPAN = 3; // Months
 
   private int id;
   private Team homeTeam;
@@ -517,12 +517,13 @@ public class Game {
   private static LocalDate getRandomDateInSeason() {
     Random r = new Random();
 
-    int year = LocalDate.now().getYear() + r.nextInt(YEAR_SPAN);
+    int year = LocalDate.now().getYear() + r.nextInt(NUMBER_OF_SEASONS);
 
     int direction = r.nextInt(2);
     int disp = r.nextInt(SEASON_SPAN);
     int month;
     if (direction == 1) {
+      year = year - 1;
       month = 12 - disp;
     } else {
       month = 1 + disp;

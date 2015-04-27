@@ -98,7 +98,7 @@
             <tr> 
               <td>${row.getPlayer().getNumber()}</td>
               <#assign link = row.getPlayer().getLink() >
-              <td><a href="link.getURL()}">${link.getText()}</a></td>
+              <td><a href="${link.getURL()}">${link.getText()}</a></td>
               <td>${row.getMinutes()}</td>
               <td>${row.getPoints()}</td>
               <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
@@ -143,7 +143,8 @@
           <#list game.getAwayBoxScore().getAllPlayerStats() as row>
             <tr class="player-stats"> 
               <td>${row.getPlayer().getNumber()}</td>
-              <td><a href="/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
+              <#assign link = row.getPlayer().getLink() >
+              <td><a href="${link.getURL()}">${link.getText()}</a></td>
               <td>${row.getMinutes()}</td>
               <td>${row.getPoints()}</td>
               <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
