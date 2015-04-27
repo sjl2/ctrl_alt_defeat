@@ -49,6 +49,7 @@ public final class Main {
       System.out.println("ERROR: Please input a basketball database.");
       return;
     }
+
     DBManager dbManager = new DBManager(db);
 
     if (options.has("generate")) {

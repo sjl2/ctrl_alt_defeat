@@ -18,10 +18,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 public class BasketballDatabaseGenerator {
 
   private static final int NUMBER_OF_PLAYERS = 12;
-  private static final int NUMBER_OF_ROUND_ROBINS = 50;
+  private static final int NUMBER_OF_ROUND_ROBINS = 10;
   private static final int NUM_OF_STATS = 25;
   private static final int NUMBER_BASE = 20;
   private static final double HALF = 0.5;
+  private static final double DEPLETING_RATIO = 0.9;
+  private static final int BATCH_SIZE = 5;
 
   public static void populateDB(DBManager db) {
     Connection conn = db.getConnection();
@@ -74,7 +76,7 @@ public class BasketballDatabaseGenerator {
           db.createPlayer(
               players.get(i) + suffix,
               t.getID(),
-              i + NUMBER_BASE,
+              j + NUMBER_BASE,
               true);
 
         }
@@ -82,13 +84,22 @@ public class BasketballDatabaseGenerator {
         teams.add(t);
       }
 
+      int numGames =
+          NUMBER_OF_ROUND_ROBINS * teams.size() * (teams.size() - 1);
+      int gamesCompleted = 0;
+
       for (int i = 0; i < NUMBER_OF_ROUND_ROBINS; i++) {
         for (Team home : teams) {
           for (Team away :  teams) {
             if (home.getID() != away.getID()) {
               Game game = new Game(home, away, db);
-
               randomGameStats(game, home, away, db);
+              if (gamesCompleted % BATCH_SIZE == 0) {
+                String status = "Progress: " + gamesCompleted + " of "
+                    + numGames + " completed.";
+                System.out.println(status);
+              }
+              gamesCompleted++;
             }
           }
         }
@@ -113,14 +124,15 @@ public class BasketballDatabaseGenerator {
     List<Team> gameTeams = Arrays.asList(home, away);
 
     for (Team gameTeam : gameTeams) {
+      double percent = 1;
       for (Player p : gameTeam.getPlayers()) {
-        randomPlayerStats(game, p, db);
+        randomPlayerStats(game, p, db, percent * DEPLETING_RATIO);
       }
     }
   }
 
-  private static void randomPlayerStats(Game game, Player p, DBManager db)
-      throws GameException {
+  private static void randomPlayerStats(Game game, Player p, DBManager db,
+      Double percentOfGame) throws GameException {
 
     Random r = new Random();
     List<String> types = StatFactory.getTypes();
@@ -130,20 +142,21 @@ public class BasketballDatabaseGenerator {
       int numStats = new Double(HALF * r.nextDouble() * NUM_OF_STATS)
         .intValue();
 
-      // TODO Finish Tailoring the number of stats.
       switch (type) {
-        case "TwoPointer":
-
+        case "OffensiveFoul":
+          if (numStats > 2) {
+            numStats = 2;
+          }
+        case "DefensiveFoul":
+          if (numStats > 2) {
+            numStats = new Double(r.nextDouble() * 2)
+              .intValue();
+          }
           break;
-        case "MissedTwoPointer":
-
-          break;
-        case "ThreePointer":
-
-          break;
-        case "MissedThreePointer":
-
-          break;
+        default:
+          if (numStats > 5) {
+            numStats = numStats / 2;
+          }
       }
 
       for (int z = 0; z < numStats; z++) {

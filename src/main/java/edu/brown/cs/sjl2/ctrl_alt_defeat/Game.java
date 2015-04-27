@@ -23,8 +23,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class Game {
   private static final String TABLE = "game";
-  private static final int YEAR_SPAN = 0;
-  private static final int SEASON_SPAN = 0;
+  private static final int YEAR_SPAN = 5;
+  private static final int SEASON_SPAN = 3;
 
   private int id;
   private Team homeTeam;

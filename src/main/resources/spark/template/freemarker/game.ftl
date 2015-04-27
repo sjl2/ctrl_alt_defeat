@@ -76,9 +76,6 @@
       <div class="col-md-12">
         <table class="table table-hover boxscore">
           <tr>
-            <th>Home: ${home.getName()}</th>
-          </tr>
-          <tr>
             <th>#</th>
             <th>Name</th>
             <th>MIN</th>
@@ -125,9 +122,6 @@
     <div class="row">
       <div class="col-md-12">
         <table class="table table-hover boxscore">
-          <tr>
-            <th>Home: ${away.getName()}</th>
-          </tr>
           <tr>
             <th>#</th>
             <th>Name</th>
