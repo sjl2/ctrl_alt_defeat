@@ -22,6 +22,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 public class Game {
   private static final String TABLE = "game";
 
+  private boolean homeGame;
   private int id;
   private Team homeTeam;
   private Team awayTeam;
@@ -57,9 +58,9 @@ public class Game {
   private int awayLosses;
 
   public Game(Team home, Team away, DBManager db,
-              Map<BasketballPosition, Integer> starterIDs)
+              Map<BasketballPosition, Integer> starterIDs, boolean homeGame)
       throws GameException {
-
+    this.homeGame = homeGame;
     if (home.getID() == away.getID()) {
       // Cannot play with yourselves
       String message = "This is no time to play with yourself!";
@@ -417,6 +418,10 @@ public class Game {
   @Override
   public String toString() {
     return awayTeam + " @ " + homeTeam + " (" + date + ")";
+  }
+
+  public boolean getHomeGame() {
+    return homeGame;
   }
 
 
