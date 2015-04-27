@@ -1,13 +1,18 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import spark.ModelAndView;
@@ -28,6 +33,7 @@ import spark.TemplateViewRoute;
 public class PlaymakerGUI {
 
   private DBManager dbManager;
+  private Dashboard dash;
   private static final Gson GSON = new Gson();
 
   /**
@@ -35,8 +41,9 @@ public class PlaymakerGUI {
    * @param dbManager - DBManager, allows handlers to get data
    * @author awainger
    */
-  public PlaymakerGUI(DBManager dbManager) {
+  public PlaymakerGUI(Dashboard dash, DBManager dbManager) {
     this.dbManager = dbManager;
+    this.dash = dash;
   }
 
   /**
@@ -72,23 +79,32 @@ public class PlaymakerGUI {
       QueryParamsMap qm = request.queryMap();
       String name = qm.value("name");
       int numFrames = Integer.parseInt(qm.value("numFrames"));
-      String jsonString = qm.value("paths");
+      String jsonPlayerString = qm.value("paths");
+      String jsonBallString= qm.value("ballPath");
 
-      double[][][] jsonPaths = GSON.fromJson(jsonString, double[][][].class);
+      double[][][] playerPaths = GSON.fromJson(jsonPlayerString, double[][][].class);
       BasketballPosition[] bballPositions = BasketballPosition.values();
       int numBasketballPlayers = bballPositions.length;
-      Location[][] paths = new Location[numBasketballPlayers][];
+      Location[][] parsedPlayerPaths = new Location[numBasketballPlayers][];
       for (int position = 0; position < numBasketballPlayers; position++) {
         Location[] path = new Location[numFrames];
         for (int frame = 0; frame < numFrames; frame++) {
-          double x = jsonPaths[position][frame][0];
-          double y = jsonPaths[position][frame][1];
+          double x = playerPaths[position][frame][0];
+          double y = playerPaths[position][frame][1];
           path[frame] = new Location(x, y);
         }
-        paths[position] = path;
+        parsedPlayerPaths[position] = path;
       }
 
-      dbManager.savePlay(new Play(name, numFrames, paths));
+      double[][] ballPath = GSON.fromJson(jsonBallString, double[][].class);
+      Location[] parsedBallPath = new Location[numFrames];
+      for (int frame = 0; frame < numFrames; frame++) {
+        double x = ballPath[frame][0];
+        double y = ballPath[frame][1];
+        parsedBallPath[frame] = new Location(x, y);
+      }
+
+      dbManager.savePlay(new Play(name, numFrames, parsedPlayerPaths, parsedBallPath));
       return getPlayNamesFromDB();
     }
   }
@@ -134,6 +150,32 @@ public class PlaymakerGUI {
     public Object handle(Request request, Response response) {
       return getPlayNamesFromDB();
     }
+  }
+
+  public class PlayerNumberHandler implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      Game game = dash.getGame();
+
+      Map<String, Object> variables;
+      
+      if(game == null) {
+        variables = new ImmutableMap.Builder<String, Object>()
+          .put("errorMessage", "").build();
+      } else {
+        BiMap<BasketballPosition, Player> players = game.getLineup().getPlayers();
+        List<Integer> numbers = new ArrayList<>(10);
+        for(BasketballPosition bp : BasketballPosition.values()) {
+          numbers.add(players.get(bp).getNumber());
+        }
+
+        variables = new ImmutableMap.Builder<String, Object>().put("playerNumbers", numbers).put("errorMessage", "").build();
+      }
+
+      return GSON.toJson(variables);
+    }
+    
   }
 
 

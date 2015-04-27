@@ -43,22 +43,23 @@ public class GUIManager {
 
   private static final Gson GSON = new Gson();
 
-  public GUIManager(String db) {
-    this.dbManager = new DBManager(db);
+  public GUIManager(DBManager db) {
+    this.dbManager = db;
     this.trie = dbManager.getTrie();
     trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
+
     this.dash = new Dashboard(dbManager);
     this.dashboardGUI = new DashboardGUI(dash, dbManager, trie);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
 
-  public GUIManager(String db, int port) {
-    this.dbManager = new DBManager(db);
+  public GUIManager(DBManager db, int port) {
+    this.dbManager = db;
     this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -106,6 +107,7 @@ public class GUIManager {
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
     Spark.post("/playmaker/delete", playmakerGUI.new DeleteHandler());
     Spark.get("/playmaker/playNames", playmakerGUI.new PlayNamesHandler());
+    Spark.get("/playmaker/getPlayerNumbers", playmakerGUI.new PlayerNumberHandler());
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());

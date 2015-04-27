@@ -221,6 +221,10 @@
 #hide-sidebar {
 }
 
+.playNameHolder {
+    font-size: 130%;
+}
+
 /*
 
 #save {
@@ -235,12 +239,6 @@
     position: relative;
     margin: 0px auto;
     text-align: center;
-}
-
-.playName {
-    text-align: center;
-    font-size: 30px;
-    padding: 15px;
 }
 
 #to_dashboard {

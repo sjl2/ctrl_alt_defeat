@@ -23,7 +23,7 @@
     Opponent Team:
     <select id="opponent">
       <#list teams as team>
-	<option id="team${team.getID()}">${team.getName()}</option>
+	<option id="team${team.getID()}">${team.getText()}</option>
       </#list>
     </select>
 

@@ -19,6 +19,7 @@ import com.google.common.collect.Multiset;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameView;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
@@ -46,6 +47,7 @@ public class DBManager {
   private static final int SIX = 6;
   private static final int SEVEN = 7;
   private static final int EIGHT = 8;
+
 
   private Connection conn;
   private PlayerFactory pf;
@@ -77,6 +79,10 @@ public class DBManager {
     this.trie = fillTrie();
   }
 
+  public Connection getConnection() {
+    return conn;
+  }
+
   /**
    * Call any time there is an error or you are done with the DBManager.
    * @author sjl2
@@ -98,11 +104,14 @@ public class DBManager {
    */
   public void savePlay(Play play) {
     String name = play.getName();
+    int numFrames = play.getNumFrames();
+    Location[][] playerPaths = play.getPlayerPaths();
+    Location[] ballPath = play.getBallPath();
+
     if (!doesPlayExist(name)) {
       saveToPlaysTable(name, play.getNumFrames());
     }
 
-    Location[][] paths = play.getPaths();
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
@@ -116,12 +125,12 @@ public class DBManager {
       prep1.executeUpdate();
 
       conn.setAutoCommit(false);
-      
+
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
-        for (int frame = 0; frame < paths[position].length; frame++) {
-          Location l = paths[position][frame];
+        for (int frame = 0; frame < numFrames; frame++) {
+          Location l = playerPaths[position][frame];
           prep2.setString(1, name);
           prep2.setString(2, bballPositions[position].getName());
           prep2.setInt(THREE, frame);
@@ -130,6 +139,18 @@ public class DBManager {
           prep2.addBatch();
         }
       }
+
+      // Adding ball
+      for (int frame = 0; frame < numFrames; frame++) {
+        Location l = ballPath[frame];
+        prep2.setString(1, name);
+        prep2.setString(2, "Ball");
+        prep2.setInt(THREE, frame);
+        prep2.setDouble(FOUR, l.getX());
+        prep2.setDouble(FIVE, l.getY());
+        prep2.addBatch();
+      }
+
       prep2.executeBatch();
       conn.commit();
       conn.setAutoCommit(true);
@@ -200,8 +221,33 @@ public class DBManager {
       }
     }
 
-    play.setPaths(paths);
+    Location[] ballPath = loadBallPath(name, numFrames);
+    play.setPlayerPaths(paths);
+    play.setBallPath(ballPath);
     return play;
+  }
+
+  private Location[] loadBallPath(String name, int numFrames) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT frame, x, y "
+        + "FROM play_detail "
+        + "WHERE play = ? AND position = ?;")) {
+
+      prep.setString(1, name);
+      prep.setString(2, "Ball");
+      ResultSet rs = prep.executeQuery();
+
+      Location[] path = new Location[numFrames];
+      while (rs.next()) {
+        Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
+        path[rs.getInt("frame")] = loc;
+      }
+
+      return path;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 
   private Play loadPlayMetaData(String name) {
@@ -486,7 +532,7 @@ public class DBManager {
     }
   }
 
-  public Map<Integer, PlayerStats> loadPlayerStats(int gameID, Team team)
+  public Map<Integer, PlayerStats> getPlayerStats(int gameID, Team team)
       throws GameException {
 
     // Load All Plays
@@ -521,7 +567,7 @@ public class DBManager {
     return allGameStats;
   }
 
-  public TeamStats loadTeamStats(int gameID, Team team) throws GameException {
+  public TeamStats getTeamStats(int gameID, Team team) throws GameException {
 
     String query =
         "SELECT * FROM team_stats "
@@ -551,7 +597,7 @@ public class DBManager {
     return null;
   }
 
-  public void saveBoxScore(Collection<PlayerStats> stats, TeamStats ts) {
+  public void createBoxScore(Collection<PlayerStats> stats, TeamStats ts) {
     int numCols = PlayerStats.getNumCols();
     StringBuilder query = new StringBuilder("INSERT INTO player_stats VALUES (");
 
@@ -573,10 +619,10 @@ public class DBManager {
       String message = "Failed to save player stats to database. ";
       throw new RuntimeException(message + e.getMessage());
     }
-    saveTeamStats(ts);
+    createTeamStats(ts);
   }
 
-  private void saveTeamStats(TeamStats ts) {
+  private void createTeamStats(TeamStats ts) {
     StringBuilder query = new StringBuilder("INSERT INTO team_stats VALUES (");
     int numCols = TeamStats.getNumCols();
     for (int i = 0; i < (numCols - 1); i++) {
@@ -599,18 +645,18 @@ public class DBManager {
 
   }
 
-  public void storeStat(Stat s, String statType, Game game) {
+  public void createStat(Stat s, int game) {
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = conn.prepareStatement(query)) {
 
       ps.setInt(1, s.getID());
-      ps.setInt(2, game.getID());
+      ps.setInt(2, game);
       ps.setInt(THREE, s.getPlayer().getTeamID());
       ps.setInt(FOUR, s.getPlayer().getID());
-      ps.setString(FIVE, statType);
-      ps.setInt(SIX, game.getPeriod());
+      ps.setString(FIVE, s.getStatType());
+      ps.setInt(SIX, s.getPeriod());
       ps.setDouble(SEVEN, s.getLocation().getX());
       ps.setDouble(EIGHT, s.getLocation().getY());
 
@@ -641,7 +687,7 @@ public class DBManager {
     }
   }
 
-  public void removeStat(Stat s) throws GameException {
+  public void deleteStat(Stat s) throws GameException {
     String query = "DELETE FROM stat WHERE id = ? AND player = ?;";
     try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, s.getID());
@@ -720,7 +766,7 @@ public class DBManager {
       String secondary, boolean myTeam) {
 
     Team t = tf.getTeam(getNextID("team"), name, coach, primary, secondary);
-    saveTeam(t, myTeam);
+    createTeam(t, myTeam);
 
     return t;
   }
@@ -755,7 +801,7 @@ public class DBManager {
     }
   }
 
-  private void saveTeam(Team team, boolean myTeam) {
+  private void createTeam(Team team, boolean myTeam) {
     try (PreparedStatement prep = conn.prepareStatement(
         "INSERT INTO team VALUES(?, ?, ?, ?, ?, ?);")) {
       prep.setInt(1, team.getID());
@@ -782,7 +828,7 @@ public class DBManager {
         curr);
 
     t.addPlayer(p);
-    savePlayer(p);
+    createPlayer(p);
 
     return p;
   }
@@ -813,7 +859,7 @@ public class DBManager {
     }
   }
 
-  private void savePlayer(Player player) {
+  private void createPlayer(Player player) {
     String query = "INSERT INTO player VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, player.getID());
@@ -832,7 +878,7 @@ public class DBManager {
   /**
    * Generates a list of team names and id's for the create-player handler.
    */
-  private List<Team> getTeamLinks(boolean includeMyTeam) {
+  private List<Link> getTeamLinks(boolean includeMyTeam) {
     String query = "SELECT id, name FROM team";
 
     if (!includeMyTeam) {
@@ -841,13 +887,13 @@ public class DBManager {
     query = query + ";";
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
-      List<Team> teams = new ArrayList<>();
+      List<Link> teams = new ArrayList<>();
       ResultSet rs = prep.executeQuery();
       while (rs.next()) {
         int id = rs.getInt("id");
         String name = rs.getString("name");
-        Team t = Team.newTeamLink(id, name);
-        teams.add(t);
+        String path = "/team/view/";
+        teams.add(new Link(id, path, name));
       }
 
       return teams;
@@ -857,7 +903,7 @@ public class DBManager {
     }
   }
 
-  public List<Team> getAllTeams() {
+  public List<Link> getAllTeams() {
     return getTeamLinks(true);
   }
 
@@ -865,11 +911,11 @@ public class DBManager {
    * @return Returns a list of opposing teams (all teams except my team)
    * @author sjl2
    */
-  public List<Team> getOpposingTeams() {
+  public List<Link> getOpposingTeams() {
     return getTeamLinks(false);
   }
 
-  public void saveGame(Game game) {
+  public void createGame(Game game) {
 
     String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
@@ -886,9 +932,30 @@ public class DBManager {
     }
   }
 
+  int createGame(LocalDate date, int home, int away) {
+
+    String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+
+      int id = getNextID("game");
+      prep.setInt(1, id);
+      prep.setString(2, date.toString());
+      prep.setInt(THREE, home);
+      prep.setInt(FOUR, away);
+      prep.setInt(FIVE, getChampionshipYear(date));
+
+      prep.executeUpdate();
+
+      return id;
+    } catch (SQLException e) {
+      String message = "Failed to save game data fake game date. ";
+      throw new RuntimeException(message + e.getMessage());
+    }
+  }
+
   private int getChampionshipYear(LocalDate date) {
     if (date.getMonthValue() < SEVEN) {
-      return date.getYear(); 
+      return date.getYear();
     } else {
       return date.getYear() + 1;
     }
@@ -969,14 +1036,14 @@ public class DBManager {
   public void setMyTeam(Team team) {
     // TODO Auto-generated method stub
   }
-  
+
   // table = either player_stats or team_stats, depending on whether you are getting player or team years, and id is for either team or player
   public List<Integer> getYearsActive(String table, int id) {
     String entity = "";
     if (table.equals("player_stats")) {
       entity = "player";
     } else if (table.equals("team_stats")) {
-      entity = "team";      
+      entity = "team";
     } else {
       throw new RuntimeException("You messed up calling getYearsActive...");
     }
@@ -988,7 +1055,7 @@ public class DBManager {
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
       ResultSet rs = prep.executeQuery();
-      
+
       List<Integer> years = new ArrayList<>();
       while (rs.next()) {
         years.add(rs.getInt(1));
@@ -998,6 +1065,29 @@ public class DBManager {
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
+    }
+  }
+
+  public Link getGameLink(int id) {
+    String query = "SELECT g.date, home.name, away.name "
+        + "FROM game AS g, team AS home, team AS away "
+        + "WHERE g.id = ? AND home.id = g.home AND g.away = away.id";
+
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
+      ps.setInt(1, id);
+      ResultSet rs = ps.executeQuery();
+
+      String date = rs.getString(1);
+      String home = rs.getString(2);
+      String away = rs.getString(THREE);
+
+      String path = "/game/view/";
+      String value = away + " @ " + home + "(" + date + ")";
+
+      return new Link(id, path, value);
+    } catch (SQLException e) {
+      String message = "Could not obtain link for game " + id + ". ";
+      throw new RuntimeException(message + e.getMessage());
     }
   }
 
@@ -1014,22 +1104,25 @@ public class DBManager {
       throw new RuntimeException("You messed up calling getYearsActive...");
     }
 
-    String query = "SELECT * FROM " + table + ", game WHERE " + table + "." + entity + " = ? AND game.championship_year = ?;";
-    
+    String query = "SELECT * FROM " + table + ", game "
+        + "WHERE " + table + "." + entity + " = ? AND game.id = " + table + ".game "
+            + "AND game.championship_year = ? ORDER BY game.date ASC;";
+
+
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
-      prep.setInt(1, year);
+      prep.setInt(2, year);
       ResultSet rs = prep.executeQuery();
-      
+
       List<GameStats> gameStats = new ArrayList<>();
-      
-      while (rs.next()) { 
+
+      while (rs.next()) {
         List<Integer> values = new ArrayList<>();
         for (int i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toAdd = null;
         if (table.equals("player_stats")) {
           toAdd = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1054,6 +1147,7 @@ public class DBManager {
    * @param table
    * @param id
    * @return
+   * @author sjl2
    */
   private GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
     StringBuilder query = new StringBuilder("SELECT ");
@@ -1080,7 +1174,7 @@ public class DBManager {
       query.append(nonStat);
       query.append(", ");
     }
-    
+
     int i;
     for (i = 0; i < statCols.size() - 1; i++) {
       query.append(type);
@@ -1098,7 +1192,9 @@ public class DBManager {
     query.append(table);
     query.append(".");
     query.append(entity);
-    query.append(" = ? AND game.championship_year = ?;");
+    query.append(" = ? AND game.id = ");
+    query.append(table);
+    query.append(".game AND game.championship_year = ?;");
 
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       prep.setInt(1, id);
@@ -1110,8 +1206,8 @@ public class DBManager {
         for (i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toReturn = null;
         if (table.equals("player_stats")) {
           toReturn = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1119,7 +1215,7 @@ public class DBManager {
           toReturn = new TeamStats(values, gameID, getTeam(teamID));
         }
 
-        return toReturn; 
+        return toReturn;
       } else {
         throw new RuntimeException("No aggregate gamestats... this is bad");
       }
@@ -1129,12 +1225,12 @@ public class DBManager {
     }
   }
 
-  public Map<Integer, GameStats> getAggregateGameStatsForCareerOfType(String type, String table, int id) {
-    Map<Integer, GameStats> careerStats = new HashMap<>();
+  public List<GameStats> getAggregateGameStatsForCareerOfType(String type, String table, int id) {
+    List<GameStats> careerStats = new ArrayList<>();
     List<Integer> yearsActive = getYearsActive(table, id);
     for (int year : yearsActive) {
       GameStats gs = getAggregateGameStatsForYearOfType(type, year, table, id);
-      careerStats.put(year, gs);
+      careerStats.add(gs);
     }
 
     return careerStats;

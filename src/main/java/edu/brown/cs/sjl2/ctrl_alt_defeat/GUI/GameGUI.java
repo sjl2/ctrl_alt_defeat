@@ -59,7 +59,6 @@ public class GameGUI {
         return null;
       }
     }
-
   }
 
   public class StartHandler implements Route {

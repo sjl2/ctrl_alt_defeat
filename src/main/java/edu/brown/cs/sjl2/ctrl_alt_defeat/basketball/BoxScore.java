@@ -34,7 +34,7 @@ public class BoxScore {
 
     // Initialize all of the game stats in the db
     Collection<PlayerStats> stats = playerStats.values();
-    db.saveBoxScore(stats, teamStats);
+    db.createBoxScore(stats, teamStats);
 
 
     this.team = team;
@@ -61,8 +61,8 @@ public class BoxScore {
   public static BoxScore getOldBoxScore(DBManager db, int gameID, Team team)
       throws GameException {
 
-    Map<Integer, PlayerStats> playerStats = db.loadPlayerStats(gameID, team);
-    TeamStats teamStats = db.loadTeamStats(gameID, team);
+    Map<Integer, PlayerStats> playerStats = db.getPlayerStats(gameID, team);
+    TeamStats teamStats = db.getTeamStats(gameID, team);
     return new BoxScore(db, team, playerStats, teamStats);
   }
 

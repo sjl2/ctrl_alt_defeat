@@ -10,7 +10,9 @@ var maxFrame = 0;
 var width = 0;
 var height = 0;
 
-var radius;
+var playerRadius;
+var ballRadius;
+var ballAngle = 0;
 
 var courtTopLeftCorner;
 var courtBottomRightCorner;
@@ -20,6 +22,8 @@ var paper;
 var angle = 0;
 
 var tokens = [];
+var ball;
+var posessionToken;
 
 var intervalVar;
 var grabbedToken;
@@ -55,6 +59,7 @@ function PlayToken(playName) {
 		   {name:playName},
 		   updateLoadBar,
 		   "json");
+	    existingPlays[playName] = undefined;
 	},
 
 	getID: function() {
@@ -70,39 +75,84 @@ function PlayToken(playName) {
 	},
 	
 	getHTML: function() {
-	    if(edittingPlayName == playName) {
-		return "<td class=\"selected-row\">"
-		    + "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
-		    + "<span class=\"glyphicon glyphicon-trash\"></span></button>"
-		    + "<span id=\"" + this.getID() + "\" class=\"playName\">"
-		    + playName + "</span>"
-		    + "</td>";
-	    } else {
-		return "<li class=\"list-group-item\">"
-		    + "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
-		    + "<span class=\"glyphicon glyphicon-trash\"></span></button>"
-		    + "<span id=\"" + this.getID() + "\" class=\"playName\">"
-		    + playName + "</span>"
-		    + "</li>";
-	    }
+	    return "<li id=\"" + this.getID() + "\" class=\"list-group-item playNameHolder\">"
+		+ "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
+		+ "<span class=\"glyphicon glyphicon-trash\"></span></button>"
+		+ playName + "</li>";
 	}
     }
 	
 }
 
-function Token(circle, location) {
+function Ball(playerToken, angle) {
+    var newBall =  {
+	location: Location(0, 0),
+	circle: undefined,
+	path: [],
+	
+	checkCollision: function(playerToken) {
+	    var dx = this.location.x - playerToken.location.x;
+	    var dy = this.location.y - playerToken.location.y;
+	    var distanceSquared = dx * dx + dy * dy;
+	    return distanceSquared < (playerRadius + ballRadius) * (playerRadius + ballRadius);
+	},
+
+	setLocationWithXY: function(x, y) {
+	    this.circle.attr("cx", x * width);
+	    this.circle.attr("cy", y * height);
+	    this.location.x = x;
+	    this.location.y = y;
+	},
+
+	setLocationWithLoc: function(loc) {
+	    this.setLocationWithXY(loc.x, loc.y);
+	},
+
+	translate: function(dx, dy) {
+	    this.circle.attr("cx", this.circle.attr("cx") + dx);
+	    this.circle.attr("cy", this.circle.attr("cy") + dy);
+	    this.location.translate(dx / width, dy / height);
+	},
+
+	getRelativeLocation: function(playerToken, angle) {
+	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
+	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(angle);
+	    return Location(x, y);
+	},
+
+	setRelativeLocation: function(playerToken, angle) {
+	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
+	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(angle);
+	    this.setLocationWithXY(x, y);
+	    return Location(x, y);
+	}
+    }
+    var location = newBall.getRelativeLocation(playerToken, angle);
+    newBall.circle = paper.circle(location.x * width, location.y * height, ballRadius * width).attr("fill", "#FA8320");
+    newBall.circle.drag(onmove, onballstart, onballend, newBall, newBall, newBall);
+    newBall.setLocationWithXY(location.x, location.y);
+    newBall.path[0] = newBall.location.copy();
+    return newBall;
+}
+
+function Token(circle, text, location) {
     return {
 	circle: circle,
+	text: paper.text(location.x * width, location.y * height, text).attr({"font-size": "20", "fill":"#FFFFFF"}),
 	path: [location.copy()],
 	location: location.copy(),
 	translate: function(dx, dy) {
 	    this.circle.attr("cx", circle.attr("cx") + dx);
 	    this.circle.attr("cy", circle.attr("cy") + dy);
-	    this.location.translate(dx, dy);
+	    this.text.attr("x", circle.attr("cx"));
+	    this.text.attr("y", circle.attr("cy"));
+	    this.location.translate(dx / width, dy / height);
 	},
 	setLocationWithXY: function(x, y) {
-	    this.circle.attr("cx", x);
-	    this.circle.attr("cy", y);
+	    this.circle.attr("cx", x * width);
+	    this.circle.attr("cy", y * height);
+	    this.text.attr("x", x * width);
+	    this.text.attr("y", y * height);
 	    this.location.x = x;
 	    this.location.y = y;
 	},
@@ -143,40 +193,48 @@ window.onload = function() {
     courtTopLeftCorner = Location(offset.left, offset.top);
     courtBottomRightCorner = Location(offset.left + container.width(), offset.top + container.height());
 
-    var court = paper.image("images/Basketball-Court.png", 0, 0, width, height);
+    var court = paper.image("images/Basketball-Court-Playmaker.png", 0, 0, width, height);
     
-    var startingLocations = [Location(35, 50),
-			     Location(26, 17.54),
-			     Location(6, 82.46),
-			     Location(7.5, 32.456),
-			     Location(19, 66.666),
-			     Location(29, 50),
-			     Location(22, 24.561),
-			     Location(6, 71.93),
-			     Location(7.5, 42.982),
-			     Location(15, 59.649)];
-    radius = width * 0.025;
+    var startingLocations = [Location(0.35, 0.50),
+			     Location(0.26, 0.1754),
+			     Location(0.06, 0.8246),
+			     Location(0.075, 0.32456),
+			     Location(0.19, 0.6666),
+			     Location(0.29, 0.5),
+			     Location(0.22, 0.24561),
+			     Location(0.06, 0.7193),
+			     Location(0.075, 0.42982),
+			     Location(0.15, 0.59649)];
+    var positionAbrevs = ["PG", "SG", "SF", "PF", "C",
+			  "PG", "SG", "SF", "PF", "C"];
+    playerRadius = 0.025;
+    ballRadius = playerRadius * 0.5;
     for(i = 0; i < 10; i++) {
 	var loc = startingLocations[i];
-	loc.x = loc.x * width / 100;
-	loc.y = loc.y * height / 100;
-	var circ2 = paper.circle(loc.x, loc.y, radius);
+	loc.x = loc.x;
+	loc.y = loc.y;
+	var circ2 = paper.circle(loc.x * width, loc.y * height, playerRadius * width);
 	if(i < 5) {
-	    circ2.attr("fill", "#00f");
+	    circ2.attr("fill", "#337ab7");
 	} else {
-	    circ2.attr("fill", "#f00");
+	    circ2.attr("fill", "#dc2300");
 	}
-	var t = Token(circ2, loc);
+	var t = Token(circ2, positionAbrevs[i], loc);
 	circ2.drag(onmove, onstart, onend, t, t, t);
 	tokens[i] = t;
     }
+    posessionToken = tokens[0];
 
-    var circ = paper.circle(width / 2, height / 2, 27);
-    circ.attr("fill", "url(images/Basketball-small.png)");
-    var ballLoc = Location(width / 2, height / 2);//TODO make ball follow player
-    var t = Token(circ, ballLoc);
-    circ.drag(onmove, onstart, onend, t, t, t);
-    tokens[10] = t;
+    $.get("/playmaker/getPlayerNumbers", {}, function(data) {
+	var playerNumbers = JSON.parse(data).playerNumbers;
+	if(playerNumbers != undefined) {
+	    for(i = 0; i < playerNumbers.length; i++) {
+		tokens[i].text.attr("text", playerNumbers[i].toString());
+	    }
+	}
+    });
+
+    ball = Ball(posessionToken, Math.PI);
 
     $("#frame_number").on("input", function() {
 	setFrame(parseInt(this.value));
@@ -303,6 +361,14 @@ function setFrame(frame) {
 	    } else {
 		t.setLocationWithLoc(t.path[currentFrame]);
 	    }
+	} 
+    }
+
+    if(ball != grabbedToken) {
+	if(currentFrame >= ball.path.length) {
+	    ball.setLocationWithLoc(ball.path[ball.path.length - 1]);
+	} else {
+	    ball.setLocationWithLoc(ball.path[currentFrame]);
 	}
     }
 }
@@ -316,22 +382,28 @@ function onstart(x, y, event) {
     }
 }
 
+function onballstart(x, y, event) {
+    this.dx = 0;
+    this.dy = 0;
+    this.grabbed = true;
+}
+
 function onmove(dx, dy, x, y, event) {
     var insideX = true;
     var insideY = true;
     if(x < courtTopLeftCorner.x) {
 	insideX = false;
-	this.translate(-this.location.x, 0);
+	this.translate(-this.location.x * width, 0);
     } else if(x > courtBottomRightCorner.x) {
 	insideX = false;
-	this.translate(width - this.location.x, 0);
+	this.translate(width - this.location.x * width, 0);
     } 
     if(y < courtTopLeftCorner.y) {
 	insideY = false;
-	this.translate(0, -this.location.y);
+	this.translate(0, -this.location.y * height);
     } else if(y > courtBottomRightCorner.y) {
 	insideY = false;
-	this.translate(0, height - this.location.y);
+	this.translate(0, height - this.location.y * height);
     } 
     
     if(insideX){
@@ -375,9 +447,22 @@ function onend(event) {
 
 }
 
+function onballend(event) {
+    this.grabbed = false;
+    for(i = 0; i < tokens.length; i++) {
+	var t = tokens[i];
+	if(this.checkCollision(t)) {
+	    posessionToken = t;
+	}
+    }
+    ball.setRelativeLocation(posessionToken, ballAngle);
+}
+
 function updatePath() {
     setFrame(currentFrame + 1);
     grabbedToken.path[currentFrame] = grabbedToken.location.copy();
+    ball.path[currentFrame] = ball.setRelativeLocation(posessionToken, ballAngle);
+    ballAngle = Math.atan2(0.5 - ball.location.y, 0.06 - ball.location.x);
     if(currentFrame > maxFrame) {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i];
@@ -397,6 +482,7 @@ function play() {
 	    var t = tokens[i]
 	    t.circle.undrag();
 	}
+	ball.circle.undrag();
     }
 }
 
@@ -408,6 +494,7 @@ function stop() {
 	    var t = tokens[i]
 	    t.circle.drag(onmove, onstart, onend, t, t, t);
 	}
+	ball.circle.drag(onmove, onballstart, onballend, ball, ball, ball);
     }
 }
 
@@ -421,16 +508,32 @@ function stepAnimation() {
 	    } else {
 		nextLoc = t.path[currentFrame];
 	    }
-	    t.circle.animate({cx:nextLoc.x, cy:nextLoc.y},
+	    t.circle.animate({cx:nextLoc.x * width, cy:nextLoc.y * height},
+			     1000.0 / (FRAME_RATE * playSpeed),
+			     "linear",
+			     undefined);
+	    t.text.animate({x:nextLoc.x, y:nextLoc.y},
 			     1000.0 / (FRAME_RATE * playSpeed),
 			     "linear",
 			     undefined);
 	}
 
+	var nextLoc;
+	if(currentFrame >= ball.path.length) {
+	    nextLoc = ball.path[ball.path.length - 1];
+	} else {
+	    nextLoc = ball.path[currentFrame];
+	}
+	ball.circle.animate({cx:nextLoc.x * width, cy:nextLoc.y * height},
+			 1000.0 / (FRAME_RATE * playSpeed),
+			 "linear",
+			 undefined);
+
 	if(currentFrame >= maxFrame - 1) {
 	    stop();
 	}
 	currentFrame++;
+	$("#frame_number").val(currentFrame);
 	$("#current_frame")[0].innerHTML = currentFrame;
 	playTime += (playSpeed / FRAME_RATE)
     }
@@ -453,15 +556,20 @@ function save(playName) {
 	var tokenPath = tokens[i].path;
 	var path = [];
 	for(j = 0; j < tokenPath.length; j++) {
-	    path[j] = [Math.round(tokenPath[j].x),
-		       Math.round(tokenPath[j].y)];
+	    path[j] = [tokenPath[j].x, tokenPath[j].y];
 	}
 	paths[i] = path;
+    }
+    var ballPath = ball.path;
+    var path = [];
+    for(i = 0; i < ballPath.length; i++) {
+	path[i] = [ballPath[i].x, ballPath[i].y];
     }
     var data = {
 	name: playName,
 	numFrames: maxFrame + 1,
-	paths: JSON.stringify(paths)
+	paths: JSON.stringify(paths),
+	ballPath: JSON.stringify(path)
     };
     $.post("/playmaker/save",
 	   data,
@@ -472,46 +580,49 @@ function save(playName) {
 
 function load(data) {
     var play = data.play;
-    var paths = play.paths;
-    for(i = 0; i < paths.length; i++) {
-	var path = paths[i];
+    var playerPaths = play.playerPaths;
+    for(i = 0; i < playerPaths.length; i++) {
+	var path = playerPaths[i];
 	tokens[i].path = [];
 	for(j = 0; j < path.length; j++) {
 	    var loc = Location(path[j].x, path[j].y);
 	    tokens[i].path[j] = loc;
 	}
     }
+    var ballPath = play.ballPath;
+    ball.path = [];
+    for(i = 0; i < ballPath.length; i++) {
+	ball.path[i] = Location(ballPath[i].x, ballPath[i].y);
+    }
     setMaxFrame(play.numFrames - 1);
     setFrame(0);
-    $.get("/playmaker/playNames",
-	  {},
-	  updateLoadBar,
-	  "json");
 }
 
 function updateLoadBar(data) {
     var table = $("#plays");
     var plays = data.plays;
-    table.innerHTML = "";
+    table[0].innerHTML = "";
     for(i = 0; i < plays.length; i++) {
 	var playToken = PlayToken(plays[i]);
 	existingPlays[plays[i]] = playToken;
 	table.append(playToken.getHTML());
-	$("#" + playToken.getID()).on("click", function() {
-	    if(deletingPlays) {
-		return;
-	    }
-	    var playName = this.id.replace(/_/g, " ").substring(8);
-	    $.get("/playmaker/load",
-		  {
-		      name: playName
-		  },
-		  load,
-		  "json");
-	    setEditingName(playName);
-	});
 	$("#delete" + playToken.getID()).on("click", playToken.delete);
     }
+    $(".playNameHolder").on("click", function() {
+	if(deletingPlays) {
+	    return;
+	}
+	$(".playNameHolder").removeClass("selected-row");
+	this.className = "list-group-item playNameHolder selected-row";
+	var playName = this.id.replace(/_/g, " ").substring(8);
+	$.get("/playmaker/load",
+	      {
+		  name: playName
+	      },
+	      load,
+	      "json");
+	setEditingName(playName);
+    });
     $("#delete_plays")[0].innerHTML = "Delete Plays";
     deletingPlays = false;
 }
