@@ -19,6 +19,7 @@ public class GameView {
 
   public GameView(DBManager db, int id, Team home, Team away, LocalDate date)
       throws GameException {
+
     this.id = id;
     this.home = home;
     this.away = away;

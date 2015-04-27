@@ -1,5 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
+
 
 public class Player {
   private int id;
@@ -52,5 +54,9 @@ public class Player {
   @Override
   public String toString() {
     return name + " (#" + number + ") " + getID();
+  }
+
+  public Link getLink() {
+    return new Link(id, "/player/view/", name);
   }
 }

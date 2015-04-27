@@ -13,10 +13,12 @@ public class TeamStats implements GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
 
-  private static final List<String> NON_STAT_COLS = Arrays.asList("game", "team");
-  private static final List<String> STAT_COLS = Arrays.asList("MIN", "TwoPM", "TwoPA",
-      "ThreePM", "ThreePA", "FTM", "FTA", "ORB", "DRB", "AST", "STL",
-      "BLK", "TOV", "OF", "DF");
+  private static final List<String> NON_STAT_COLS =
+      Arrays.asList("game", "team");
+
+  private static final List<String> STAT_COLS =
+      Arrays.asList("MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA", "FTM",
+          "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF");
 
   private Team team;
   private int gameID;
@@ -58,11 +60,11 @@ public class TeamStats implements GameStats {
   public static int getNumCols() {
     return NON_STAT_COLS.size() + STAT_COLS.size();
   }
-  
+
   public static List<String> getNonStatCols() {
     return NON_STAT_COLS;
   }
-  
+
   public static List<String> getStatCols() {
     return STAT_COLS;
   }

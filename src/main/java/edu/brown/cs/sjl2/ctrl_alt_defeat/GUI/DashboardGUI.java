@@ -166,47 +166,70 @@ public class DashboardGUI {
 
   }
 
-  /* TODO THIS IS STILL COPY PASTED FROM GAMEVIEW HANDLER, ACTUALLY WRITE THIS! */
   public class TeamViewHandler implements TemplateViewRoute {
     @Override
-    public ModelAndView handle(Request request, Response response) {
-      int gameID = Integer.parseInt(request.params("id"));
+    public ModelAndView handle(Request request, Response response) {      
+      int teamID = -1;
+      Team team = null;
+      List<Integer> years = null;
+      List<GameStats> rows = null;
+      List<GameStats> seasonAverages = null;
+      List<GameStats> seasonTotals = null;
       String error = "";
 
-      GameView game = null;
       try {
-        game = dash.getOldGame(gameID);
-      } catch (DashboardException e) {
-        error = e.getMessage();
-        System.out.println(error);
+        teamID = Integer.parseInt(request.params("id"));
+        team = dash.getTeam(teamID);
+        if (team == null) {
+          error = "Could not find team by that ID!";
+        } else {
+          years = dbManager.getYearsActive("team_stats", teamID);
+          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
+          seasonAverages = dbManager.getAggregateGameStatsForCareerOfType("AVG", "team_stats", teamID);
+          seasonTotals = dbManager.getAggregateGameStatsForCareerOfType("SUM", "team_stats", teamID);
+        }
+      } catch (NumberFormatException e) {
+        error = "That's not a valid team id!";
       }
 
       Map<String, Object> variables =
-        ImmutableMap.of(
-            "tabTitle", game.toString(),
-            "game", game,
-            "errorMessage", error);
-      return new ModelAndView(variables, "game.ftl");
+          new ImmutableMap.Builder<String, Object>()
+          .put("tabTitle", team.toString())
+          .put("db", dbManager)
+          .put("team", team)
+          .put("years", years)
+          .put("rows", rows)
+          .put("seasonTotals", seasonTotals)
+          .put("seasonAverages", seasonAverages)
+          .put("errorMessage", error).build();
+      return new ModelAndView(variables, "team.ftl");
     }
-
   }
 
   public class PlayerViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
-      int playerID = Integer.parseInt(request.params("id"));
+      int playerID = -1;
       String error = "";
-
-      Player player = dash.getPlayer(playerID);
+      Player player = null;
       List<Integer> years = null;
       List<GameStats> rows = null;
+      List<GameStats> seasonAverages = null;
+      List<GameStats> seasonTotals = null;
 
-      if (player == null) {
-        error = "Could not find player by that ID!";
-      } else {
-        years = dbManager.getYearsActive("player_stats", playerID);
-        rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
-        
+      try {
+        playerID = Integer.parseInt(request.params("id"));
+        player = dash.getPlayer(playerID);
+        if (player == null) {
+          error = "Could not find player by that ID!";
+        } else {
+          years = dbManager.getYearsActive("player_stats", playerID);
+          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          seasonAverages = dbManager.getAggregateGameStatsForCareerOfType("AVG", "player_stats", playerID);
+          seasonTotals = dbManager.getAggregateGameStatsForCareerOfType("SUM", "player_stats", playerID);
+        }
+      } catch (NumberFormatException e) {
+        error = "That's not a valid player id!";
       }
 
       Map<String, Object> variables =
@@ -216,13 +239,14 @@ public class DashboardGUI {
           .put("player", player)
           .put("years", years)
           .put("rows", rows)
+          .put("seasonTotals", seasonTotals)
+          .put("seasonAverages", seasonAverages)
           .put("errorMessage", error).build();
       return new ModelAndView(variables, "player.ftl");
     }
   }
 
   public class GetGameHandler implements Route {
-
     @Override
     public Object handle(Request arg0, Response arg1) {
       if (dash.getGame() == null) {
@@ -238,7 +262,6 @@ public class DashboardGUI {
         return GSON.toJson(variables);
       }
     }
-
   }
 
   public class UpdateGameHandler implements Route {
@@ -262,9 +285,7 @@ public class DashboardGUI {
         .put("errorMessage", "").build();
 
       return GSON.toJson(variables);
-
     }
-
   }
 
   public class GetPlayersHandler implements Route {
