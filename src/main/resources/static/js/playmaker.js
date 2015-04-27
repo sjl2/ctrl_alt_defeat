@@ -147,6 +147,11 @@ function Token(circle, text, location) {
 	    this.text.attr("x", circle.attr("cx"));
 	    this.text.attr("y", circle.attr("cy"));
 	    this.location.translate(dx / width, dy / height);
+	    if(posessionToken == this) {
+		ball.translate(dx, dy);
+		updateBallAngle();
+		ball.setRelativeLocation(posessionToken, ballAngle);
+	    }
 	},
 	setLocationWithXY: function(x, y) {
 	    this.circle.attr("cx", x * width);
@@ -233,11 +238,23 @@ window.onload = function() {
 	    }
 	}
     });
-
-    ball = Ball(posessionToken, Math.PI);
+    
+    ballAngle = Math.PI
+    ball = Ball(posessionToken, ballAngle);
 
     $("#frame_number").on("input", function() {
+	if(playing) {
+	    stop();
+	}
 	setFrame(parseInt(this.value));
+    });
+    
+    $("#playSpeed").on("input", function() {
+	playSpeed = parseFloat($("#playSpeed").val());
+    });
+
+    $("#tokenRadius").on("input", function() {
+	updateRadii(parseFloat($("#tokenRadius").val()));
     });
 
     $("#play").on("click", function() {
@@ -283,14 +300,25 @@ window.onload = function() {
 	}
     });
 
-    $("#hide-sidebar").on("click", function(e) {
+    $("#hide-load-sidebar").on("click", function(e) {
 	e.preventDefault();
-	$("#wrapper").toggleClass("toggled");
-	var img = $("#hide-img")[0];
-	if($("#wrapper").hasClass("toggled")) {
+	$("#load-sidebar-col").toggleClass("toggled");
+	var img = $("#load-hide-img")[0];
+	if($("#load-sidebar-col").hasClass("toggled")) {
 	    img.className = "glyphicon glyphicon-folder-open";
 	} else {
 	    img.className = "glyphicon glyphicon-chevron-left";
+	}
+    });
+
+    $("#hide-settings-sidebar").on("click", function(e) {
+	e.preventDefault();
+	$("#settings-sidebar-col").toggleClass("toggled");
+	var img = $("#settings-hide-img")[0];
+	if($("#settings-sidebar-col").hasClass("toggled")) {
+	    img.className = "glyphicon glyphicon-cog";
+	} else {
+	    img.className = "glyphicon glyphicon-chevron-right";
 	}
     });
 
@@ -334,6 +362,15 @@ window.onload = function() {
 
 }
 
+function updateRadii(newPlayerRadius) {
+    playerRadius = newPlayerRadius;
+    ballRadius = playerRadius * 0.5;
+    for(i = 0; i < tokens.length; i++) {
+	tokens[i].circle.attr("r", playerRadius * width);
+    }
+    ball.circle.attr("r", ballRadius * width);
+}
+
 function previousFrame() {
     if(currentFrame > 0) {
 	setFrame(currentFrame - 1);
@@ -371,6 +408,10 @@ function setFrame(frame) {
 	    ball.setLocationWithLoc(ball.path[currentFrame]);
 	}
     }
+}
+
+function updateBallAngle() {
+    ballAngle = Math.atan2(0.5 - ball.location.y, 0.08125 - ball.location.x);
 }
 
 function onstart(x, y, event) {
@@ -455,6 +496,7 @@ function onballend(event) {
 	    posessionToken = t;
 	}
     }
+    updateBallAngle();
     ball.setRelativeLocation(posessionToken, ballAngle);
 }
 
@@ -462,7 +504,7 @@ function updatePath() {
     setFrame(currentFrame + 1);
     grabbedToken.path[currentFrame] = grabbedToken.location.copy();
     ball.path[currentFrame] = ball.setRelativeLocation(posessionToken, ballAngle);
-    ballAngle = Math.atan2(0.5 - ball.location.y, 0.06 - ball.location.x);
+    updateBallAngle();
     if(currentFrame > maxFrame) {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i];
@@ -512,7 +554,7 @@ function stepAnimation() {
 			     1000.0 / (FRAME_RATE * playSpeed),
 			     "linear",
 			     undefined);
-	    t.text.animate({x:nextLoc.x, y:nextLoc.y},
+	    t.text.animate({x:nextLoc.x * width, y:nextLoc.y * height},
 			     1000.0 / (FRAME_RATE * playSpeed),
 			     "linear",
 			     undefined);

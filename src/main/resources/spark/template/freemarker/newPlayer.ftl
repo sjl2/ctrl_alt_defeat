@@ -6,11 +6,11 @@
   <form method="POST" action="/dashboard/new/player/results">
 
     Player name:<br>
-    <input type="text" name="name">
+    <input type="text" name="name" required>
     <br>
 
     Jersey Number:<br>
-    <input type="number" name="number" min="0" max="99">
+    <input type="number" name="number" min="0" max="99" required>
     <br>
 
     Select Team:<br>
