@@ -11,9 +11,11 @@
     </div>
 
     <div class="row">
-      <#list years as year>
-        <option value="${year}">${year - 1} - ${year}</option>
-      </#list>
+      <select class="form-control">
+        <#list years as year>
+          <option value="${year}">${year - 1} - ${year}</option>
+        </#list>
+      </select>
     </div>
 
     <div class="row" id="schedule-player">
@@ -37,9 +39,9 @@
         </tr>
         <#list rows as row>
           <tr> 
-            <#assign link = db.getGameTitle(row.getGameID())>
+            <#assign link = db.getGameLink(row.getGameID())>
             <td>
-              <a class="btn btn-link" href="${link.getLink()}">${link.getValue()}</a>
+              <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
             </td>
             <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
@@ -60,7 +62,6 @@
       </table>
     </div>
 
-    <!--
     <div class="row">
       <h3>Totals</h3>
       <table class="table table-hover boxscore">
@@ -81,10 +82,11 @@
           <th>TO</th>
           <th>PF</th>
         </tr>
-        <#list seasonTotals as row>
+        <#assign l = years.size()>
+        <#list 0..l as i>
+          <#assign row = seasonTotals.get(i)>
           <tr class="player-stats"> 
-            <td>${row.getPlayer().getNumber()}</td>
-            <td><a href="/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
+            <td>${years.get(i) - 1} - ${years.get(i)}</td>
             <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
@@ -123,10 +125,11 @@
           <th>TO</th>
           <th>PF</th>
         </tr>
-        <#list game.getAwayBoxScore().getAllPlayerStats() as row>
+        <#assign l = years.size()>
+        <#list 0..l as i>
+          <#assign row = seasonTotals.get(i)>
           <tr class="player-stats"> 
-            <td>${row.getPlayer().getNumber()}</td>
-            <td><a href="/player/${row.getPlayer().getID()}">${row.getPlayer().getName()}</a></td>
+            <td>${years.get(i) - 1} - ${years.get(i)}</td>
             <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
@@ -143,9 +146,7 @@
             <td>${row.getPersonalFouls()}</td>
           </tr>
         </#list>
-      </table>
     </div>
-  -->
   </div>
 </#assign>
 <#include "coach.ftl">
