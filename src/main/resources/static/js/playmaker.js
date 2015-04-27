@@ -26,6 +26,7 @@ var grabbedToken;
 
 var edittingPlayName = "";
 
+var edittingLocations = false;
 var deletingPlays = false;
 
 var existingPlays = [];
@@ -69,12 +70,21 @@ function PlayToken(playName) {
 	},
 	
 	getHTML: function() {
-	    return "<td>"
-		+ "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
-		+ "<span class=\"glyphicon glyphicon-trash\"></span></button>"
-		+ "<span id=\"" + this.getID() + "\" class=\"playName\">"
-		+ playName + "</span>"
-		+ "</td>";
+	    if(edittingPlayName == playName) {
+		return "<td class=\"selected-row\">"
+		    + "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
+		    + "<span class=\"glyphicon glyphicon-trash\"></span></button>"
+		    + "<span id=\"" + this.getID() + "\" class=\"playName\">"
+		    + playName + "</span>"
+		    + "</td>";
+	    } else {
+		return "<li class=\"list-group-item\">"
+		    + "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
+		    + "<span class=\"glyphicon glyphicon-trash\"></span></button>"
+		    + "<span id=\"" + this.getID() + "\" class=\"playName\">"
+		    + playName + "</span>"
+		    + "</li>";
+	    }
 	}
     }
 	
@@ -124,6 +134,11 @@ window.onload = function() {
 
     var offset = container.offset();
     paper = Raphael(offset.left, offset.top, width, height);
+
+    var loadColumn = $("#load_column");
+    var loadHeader = $("#load_header");
+    var loadContent = $("#load_content");
+    loadContent.css("height", loadColumn.height() - loadHeader.height());
 
     courtTopLeftCorner = Location(offset.left, offset.top);
     courtBottomRightCorner = Location(offset.left + container.width(), offset.top + container.height());
@@ -213,11 +228,28 @@ window.onload = function() {
     $("#hide-sidebar").on("click", function(e) {
 	e.preventDefault();
 	$("#wrapper").toggleClass("toggled");
-	var button = $("#hide-sidebar")[0];
-	if(button.innerHTML == "&gt;") {
-	    button.innerHTML = "&lt";
+	var img = $("#hide-img")[0];
+	if($("#wrapper").hasClass("toggled")) {
+	    img.className = "glyphicon glyphicon-folder-open";
 	} else {
-	    button.innerHTML = "&gt";
+	    img.className = "glyphicon glyphicon-chevron-left";
+	}
+    });
+
+    $("#edit_pos").on("click", function(e) {
+	if(edittingLocations) {
+	    $("#edit_pos")[0].className = "btn btn-primary";
+	    edittingLocations = false;
+	    $("#play").prop("disabled", false);
+	    $("#stop").prop("disabled", false);
+	    $("#frame_number").prop("disabled", false);
+	} else {
+	    $("#edit_pos")[0].className = "btn btn-warning";
+	    edittingLocations = true;
+	    setFrame(0);
+	    $("#play").prop("disabled", true);
+	    $("#stop").prop("disabled", true);
+	    $("#frame_number").prop("disabled", true);
 	}
     });
 
@@ -232,9 +264,13 @@ window.onload = function() {
 	}
 	var keyCode = event.keyCode;
 	if(keyCode == 37) {//left
-	    previousFrame();
+	    if(!edittingLocations) {
+		previousFrame();
+	    }
 	} else if(keyCode == 39) {//right
-	    nextFrame();
+	    if(!edittingLocations) {
+		nextFrame();
+	    }
 	}
     };
 
@@ -255,8 +291,7 @@ function nextFrame() {
 function setFrame(frame) {
     currentFrame = frame;
     if(currentFrame > maxFrame) {
-	maxFrame = currentFrame;
-	$("#frame_number").prop("max", maxFrame);
+	setMaxFrame(currentFrame);
     }
     $("#frame_number").val(currentFrame);
     $("#current_frame")[0].innerHTML = currentFrame;
@@ -276,7 +311,9 @@ function onstart(x, y, event) {
     this.dx = 0;
     this.dy = 0;
     grabbedToken = this;
-    intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
+    if(!edittingLocations) {
+	intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
+    }
 }
 
 function onmove(dx, dy, x, y, event) {
@@ -311,14 +348,18 @@ function onend(event) {
     window.clearInterval(intervalVar);
     var prevPath = grabbedToken.path;
     grabbedToken.path = [];
-    for (i = 0; i <= currentFrame; i++) {
-	grabbedToken.path[i] = prevPath[i];
+    if(!edittingLocations) {
+	for (i = 0; i <= currentFrame; i++) {
+	    grabbedToken.path[i] = prevPath[i];
+	}
+    } else {
+	grabbedToken.path[0] = grabbedToken.location.copy();
     }
     grabbedToken = undefined;
     maxFrame = 0;
     for(i = 0; i < tokens.length; i++) {
 	if(tokens[i].path.length - 1 > maxFrame) {
-	    maxFrame = tokens[i].path.length - 1;
+	    setMaxFrame(tokens[i].path.length - 1);
 	}
     }
     for(i = 0; i < tokens.length; i++) {
@@ -401,6 +442,11 @@ function setEditingName(playName) {
     $("#editing_name").css("visibility", "visible");
 }
 
+function setMaxFrame(frameNumber) {
+    maxFrame = frameNumber;
+    $("#frame_number").prop("max", maxFrame);
+}
+
 function save(playName) {
     var paths = [];
     for(i = 0; i < tokens.length; i++) {
@@ -435,19 +481,22 @@ function load(data) {
 	    tokens[i].path[j] = loc;
 	}
     }
-    maxFrame = play.numFrames - 1;
+    setMaxFrame(play.numFrames - 1);
     setFrame(0);
+    $.get("/playmaker/playNames",
+	  {},
+	  updateLoadBar,
+	  "json");
 }
 
 function updateLoadBar(data) {
-    var table = $("#plays")[0];
+    var table = $("#plays");
     var plays = data.plays;
     table.innerHTML = "";
     for(i = 0; i < plays.length; i++) {
 	var playToken = PlayToken(plays[i]);
 	existingPlays[plays[i]] = playToken;
-	var row = table.insertRow();
-	row.innerHTML = playToken.getHTML();
+	table.append(playToken.getHTML());
 	$("#" + playToken.getID()).on("click", function() {
 	    if(deletingPlays) {
 		return;

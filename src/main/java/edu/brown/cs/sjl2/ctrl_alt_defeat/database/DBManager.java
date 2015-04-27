@@ -94,12 +94,10 @@ public class DBManager {
    * @author sjl2
    */
   public void savePlay(Play play) {
-    long start = System.currentTimeMillis();
     String name = play.getName();
     if (!doesPlayExist(name)) {
       saveToPlaysTable(name, play.getNumFrames());
     }
-    System.out.println("Got name: " + ((start - System.currentTimeMillis()) / 1000.0));
 
     Location[][] paths = play.getPaths();
     BasketballPosition[] bballPositions = BasketballPosition.values();
@@ -112,10 +110,10 @@ public class DBManager {
             "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
 
       prep1.setString(1, name);
-      System.out.println("Preparing to delete: " + ((start - System.currentTimeMillis()) / 1000.0));
       prep1.executeUpdate();
-      System.out.println("Deleted: " + ((start - System.currentTimeMillis()) / 1000.0));
 
+      conn.setAutoCommit(false);
+      
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
@@ -130,8 +128,8 @@ public class DBManager {
         }
       }
       prep2.executeBatch();
-      System.out.println("Batches executed: " + ((start - System.currentTimeMillis()) / 1000.0));
-
+      conn.commit();
+      conn.setAutoCommit(true);
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
