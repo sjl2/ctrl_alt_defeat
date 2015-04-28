@@ -217,7 +217,7 @@ public class DBManager {
     play.setBallPath(ballPath);
     return play;
   }
-  
+
   private Location[] loadBallPath(String name, int numFrames) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT frame, x, y "
@@ -1201,17 +1201,3 @@ public class DBManager {
     return careerStats;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
