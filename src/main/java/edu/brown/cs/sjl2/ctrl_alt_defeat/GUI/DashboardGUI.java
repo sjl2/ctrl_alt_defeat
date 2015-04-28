@@ -452,7 +452,6 @@ public class DashboardGUI {
 
         }
         Map<String, Object> variables = builder.build();
-        System.out.println(variables);
       return GSON.toJson(variables);
     }
   }

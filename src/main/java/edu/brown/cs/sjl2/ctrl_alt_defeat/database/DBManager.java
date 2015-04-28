@@ -1266,9 +1266,9 @@ public class DBManager {
     int numGames = gameIDs.size();
     String statType = "";
     if (makes) {
-      statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\");";
+      statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\")";
     } else {
-      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\");";
+      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\")";
     }
 
     StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
@@ -1280,12 +1280,12 @@ public class DBManager {
       query.append("?, ");
     }
     query.append("?);");
-
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       prep.setInt(1, entityID);
       int i = 2;
       for (int gameID : gameIDs) {
         prep.setInt(i, gameID);
+        i++;
       }
       ResultSet rs = prep.executeQuery();
 
@@ -1314,7 +1314,6 @@ public class DBManager {
       while (rs.next()) {
         gameIDs.add(rs.getInt("id"));
       }
-
       return gameIDs;
     } catch (SQLException e) {
       close();

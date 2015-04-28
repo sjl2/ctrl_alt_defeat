@@ -92,7 +92,7 @@
         </tr>
         <#list years as year>
           <#assign row = seasonTotals[year_index]>
-          <tr class="player-stats"> 
+          <tr class="player-stats" onclick="clickPlayerSeason(${player.getID()}, ${year})"> 
             <td>${year - 1} - ${year}</td>
             <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
