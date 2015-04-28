@@ -11,11 +11,13 @@
     </div>
 
     <div class="row">
-      <select class="form-control">
-        <#list years as year>
-          <option value="${year}">${year - 1} - ${year}</option>
-        </#list>
-      </select>
+      <div class="col-md-2 col-md-offset-10">
+        <select class="form-control">
+          <#list years as year>
+            <option value="${year}">${year - 1} - ${year}</option>
+          </#list>
+        </select>
+      </div>
     </div>
 
     <div class="row" id="schedule-player">
@@ -82,11 +84,10 @@
           <th>TO</th>
           <th>PF</th>
         </tr>
-        <#assign l = years.size()>
-        <#list 0..l as i>
-          <#assign row = seasonTotals.get(i)>
+        <#list years as year>
+          <#assign row = seasonTotals[year_index]>
           <tr class="player-stats"> 
-            <td>${years.get(i) - 1} - ${years.get(i)}</td>
+            <td>${year - 1} - ${year}</td>
             <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
@@ -125,11 +126,10 @@
           <th>TO</th>
           <th>PF</th>
         </tr>
-        <#assign l = years.size()>
-        <#list 0..l as i>
-          <#assign row = seasonTotals.get(i)>
+        <#list years as year>
+          <#assign row = seasonAverages[year_index]>
           <tr class="player-stats"> 
-            <td>${years.get(i) - 1} - ${years.get(i)}</td>
+            <td>${year - 1} - ${year}</td>
             <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>

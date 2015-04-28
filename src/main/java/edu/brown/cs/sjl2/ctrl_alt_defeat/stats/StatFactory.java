@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,14 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
 public class StatFactory {
 
+  // TODO add back assist
+  private static final List<String> types =
+      Arrays.asList("Block", "DefensiveFoul", "FreeThrow",
+          "MissedFreeThrow", "MissedTwoPointer", "MissedThreePointer",
+          "OffensiveFoul", "OffensiveRebound", "DefensiveRebound", "Steal",
+          "TechnicalFoul", "ThreePointer", "Turnover", "TwoPointer"
+          );
+
   private DBManager db;
   private Game game;
   private Map<Integer, Stat> stats;
@@ -21,6 +30,10 @@ public class StatFactory {
     this.db = db;
     this.game = game;
     this.stats = new LinkedHashMap<>();
+  }
+
+  public static List<String> getTypes() {
+    return types;
   }
 
   public Stat getStat(int id) {
@@ -45,13 +58,15 @@ public class StatFactory {
 
     Stat s = newStat(statType, id, p, location, period);
 
-    db.storeStat(s, statType, game);
+    db.createStat(s, game.getID());
     stats.put(s.getID(), s);
 
     return s;
   }
 
-  public Stat newStat(String statType, int id, Player p, Location location, int period) {
+  public static Stat newStat(String statType, int id, Player p,
+      Location location, int period) {
+
     Stat s = null;
 
     switch (statType) {
@@ -97,6 +112,8 @@ public class StatFactory {
       case "TwoPointer":
         s = new TwoPointer(id, p, location, period);
         break;
+      case "Assist":
+        s = new Assist(id, p, location, period);
       default:
         throw new RuntimeException("Unrecognized statID \"" + statType + "\".");
     }
@@ -107,7 +124,7 @@ public class StatFactory {
   public Stat removeStat(int id) throws GameException {
     Stat s = getStat(id);
     stats.remove(id);
-    db.removeStat(s);
+    db.deleteStat(s);
     return s;
   }
 

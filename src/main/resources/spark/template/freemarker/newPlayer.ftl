@@ -16,7 +16,7 @@
     Select Team:<br>
     <select name="team">
       <#list teams as team>
-	<option value="${team.getID()}">${team.getName()}</option>
+	<option value="${team.getID()}">${team.getText()}</option>
       </#list>
     </select>
     <br>

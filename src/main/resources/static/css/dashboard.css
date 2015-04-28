@@ -4,3 +4,7 @@
 	width : 400px;
 	height : 200px;
 }
+
+#PG, #SG, #SF, #PF, #C p {
+	font-size : large;
+}

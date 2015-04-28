@@ -59,6 +59,7 @@ function PlayToken(playName) {
 		   {name:playName},
 		   updateLoadBar,
 		   "json");
+	    existingPlays[playName] = undefined;
 	},
 
 	getID: function() {
@@ -74,21 +75,10 @@ function PlayToken(playName) {
 	},
 	
 	getHTML: function() {
-	    if(edittingPlayName == playName) {
-		return "<td class=\"selected-row\">"
-		    + "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
-		    + "<span class=\"glyphicon glyphicon-trash\"></span></button>"
-		    + "<span id=\"" + this.getID() + "\" class=\"playName\">"
-		    + playName + "</span>"
-		    + "</td>";
-	    } else {
-		return "<li class=\"list-group-item\">"
-		    + "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
-		    + "<span class=\"glyphicon glyphicon-trash\"></span></button>"
-		    + "<span id=\"" + this.getID() + "\" class=\"playName\">"
-		    + playName + "</span>"
-		    + "</li>";
-	    }
+	    return "<li id=\"" + this.getID() + "\" class=\"list-group-item playNameHolder\">"
+		+ "<button id=\"delete" + this.getID() + "\" class=\"btn btn-danger delete_button\">"
+		+ "<span class=\"glyphicon glyphicon-trash\"></span></button>"
+		+ playName + "</li>";
 	}
     }
 	
@@ -126,13 +116,13 @@ function Ball(playerToken, angle) {
 
 	getRelativeLocation: function(playerToken, angle) {
 	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
-	    var y = playerToken.location.y + playerRadius * Math.sin(angle);
+	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(angle);
 	    return Location(x, y);
 	},
 
 	setRelativeLocation: function(playerToken, angle) {
 	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
-	    var y = playerToken.location.y + playerRadius * Math.sin(angle);
+	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(angle);
 	    this.setLocationWithXY(x, y);
 	    return Location(x, y);
 	}
@@ -159,9 +149,6 @@ function Token(circle, text, location) {
 	    this.location.translate(dx / width, dy / height);
 	},
 	setLocationWithXY: function(x, y) {
-	    if(x > 1){
-		console.log(x, y);
-	    }
 	    this.circle.attr("cx", x * width);
 	    this.circle.attr("cy", y * height);
 	    this.text.attr("x", x * width);
@@ -206,7 +193,7 @@ window.onload = function() {
     courtTopLeftCorner = Location(offset.left, offset.top);
     courtBottomRightCorner = Location(offset.left + container.width(), offset.top + container.height());
 
-    var court = paper.image("images/Basketball-Court.png", 0, 0, width, height);
+    var court = paper.image("images/Basketball-Court-Playmaker.png", 0, 0, width, height);
     
     var startingLocations = [Location(0.35, 0.50),
 			     Location(0.26, 0.1754),
@@ -228,9 +215,9 @@ window.onload = function() {
 	loc.y = loc.y;
 	var circ2 = paper.circle(loc.x * width, loc.y * height, playerRadius * width);
 	if(i < 5) {
-	    circ2.attr("fill", "#00f");
+	    circ2.attr("fill", "#337ab7");
 	} else {
-	    circ2.attr("fill", "#f00");
+	    circ2.attr("fill", "#dc2300");
 	}
 	var t = Token(circ2, positionAbrevs[i], loc);
 	circ2.drag(onmove, onstart, onend, t, t, t);
@@ -247,8 +234,7 @@ window.onload = function() {
 	}
     });
 
-    ball = Ball(posessionToken, 0);
-    //circ.drag(onmove, onstart, onend, t, t, t);
+    ball = Ball(posessionToken, Math.PI);
 
     $("#frame_number").on("input", function() {
 	setFrame(parseInt(this.value));
@@ -407,17 +393,17 @@ function onmove(dx, dy, x, y, event) {
     var insideY = true;
     if(x < courtTopLeftCorner.x) {
 	insideX = false;
-	this.translate(-this.location.x, 0);
+	this.translate(-this.location.x * width, 0);
     } else if(x > courtBottomRightCorner.x) {
 	insideX = false;
-	this.translate(width - this.location.x, 0);
+	this.translate(width - this.location.x * width, 0);
     } 
     if(y < courtTopLeftCorner.y) {
 	insideY = false;
-	this.translate(0, -this.location.y);
+	this.translate(0, -this.location.y * height);
     } else if(y > courtBottomRightCorner.y) {
 	insideY = false;
-	this.translate(0, height - this.location.y);
+	this.translate(0, height - this.location.y * height);
     } 
     
     if(insideX){
@@ -476,7 +462,7 @@ function updatePath() {
     setFrame(currentFrame + 1);
     grabbedToken.path[currentFrame] = grabbedToken.location.copy();
     ball.path[currentFrame] = ball.setRelativeLocation(posessionToken, ballAngle);
-    ballAngle += 5 * Math.PI / 180;
+    ballAngle = Math.atan2(0.5 - ball.location.y, 0.06 - ball.location.x);
     if(currentFrame > maxFrame) {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i];
@@ -594,46 +580,49 @@ function save(playName) {
 
 function load(data) {
     var play = data.play;
-    var paths = play.paths;
-    for(i = 0; i < paths.length; i++) {
-	var path = paths[i];
+    var playerPaths = play.playerPaths;
+    for(i = 0; i < playerPaths.length; i++) {
+	var path = playerPaths[i];
 	tokens[i].path = [];
 	for(j = 0; j < path.length; j++) {
 	    var loc = Location(path[j].x, path[j].y);
 	    tokens[i].path[j] = loc;
 	}
     }
+    var ballPath = play.ballPath;
+    ball.path = [];
+    for(i = 0; i < ballPath.length; i++) {
+	ball.path[i] = Location(ballPath[i].x, ballPath[i].y);
+    }
     setMaxFrame(play.numFrames - 1);
     setFrame(0);
-    $.get("/playmaker/playNames",
-	  {},
-	  updateLoadBar,
-	  "json");
 }
 
 function updateLoadBar(data) {
     var table = $("#plays");
     var plays = data.plays;
-    table.innerHTML = "";
+    table[0].innerHTML = "";
     for(i = 0; i < plays.length; i++) {
 	var playToken = PlayToken(plays[i]);
 	existingPlays[plays[i]] = playToken;
 	table.append(playToken.getHTML());
-	$("#" + playToken.getID()).on("click", function() {
-	    if(deletingPlays) {
-		return;
-	    }
-	    var playName = this.id.replace(/_/g, " ").substring(8);
-	    $.get("/playmaker/load",
-		  {
-		      name: playName
-		  },
-		  load,
-		  "json");
-	    setEditingName(playName);
-	});
 	$("#delete" + playToken.getID()).on("click", playToken.delete);
     }
+    $(".playNameHolder").on("click", function() {
+	if(deletingPlays) {
+	    return;
+	}
+	$(".playNameHolder").removeClass("selected-row");
+	this.className = "list-group-item playNameHolder selected-row";
+	var playName = this.id.replace(/_/g, " ").substring(8);
+	$.get("/playmaker/load",
+	      {
+		  name: playName
+	      },
+	      load,
+	      "json");
+	setEditingName(playName);
+    });
     $("#delete_plays")[0].innerHTML = "Delete Plays";
     deletingPlays = false;
 }

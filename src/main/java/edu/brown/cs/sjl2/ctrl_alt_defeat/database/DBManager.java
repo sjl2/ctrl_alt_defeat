@@ -1,13 +1,31 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.database;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.NClob;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
+import java.sql.Ref;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +50,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 
 /**
  * DBManager class, handles connection to database.
@@ -50,6 +70,7 @@ public class DBManager {
   private PlayerFactory pf;
   private TeamFactory tf;
   private Multiset<String> nextIDs;
+  private Trie trie;
 
   /**
    * Constructor for DBManager class, sets up connection.
@@ -72,6 +93,11 @@ public class DBManager {
 
     this.pf = new PlayerFactory(this);
     this.tf = new TeamFactory(this);
+    this.trie = fillTrie();
+  }
+
+  public Connection getConnection() {
+    return conn;
   }
 
   /**
@@ -116,7 +142,7 @@ public class DBManager {
       prep1.executeUpdate();
 
       conn.setAutoCommit(false);
-      
+
       // Loops through entire play, each location[] represents a given
       // player's path, each entry in the location[] represents a frame
       for (int position = 0; position < length; position++) {
@@ -211,7 +237,7 @@ public class DBManager {
         throw new RuntimeException(e);
       }
     }
-    
+
     Location[] ballPath = loadBallPath(name, numFrames);
     play.setPlayerPaths(paths);
     play.setBallPath(ballPath);
@@ -523,7 +549,7 @@ public class DBManager {
     }
   }
 
-  public Map<Integer, PlayerStats> loadPlayerStats(int gameID, Team team)
+  public Map<Integer, PlayerStats> getPlayerStats(int gameID, Team team)
       throws GameException {
 
     // Load All Plays
@@ -558,7 +584,7 @@ public class DBManager {
     return allGameStats;
   }
 
-  public TeamStats loadTeamStats(int gameID, Team team) throws GameException {
+  public TeamStats getTeamStats(int gameID, Team team) throws GameException {
 
     String query =
         "SELECT * FROM team_stats "
@@ -588,7 +614,7 @@ public class DBManager {
     return null;
   }
 
-  public void saveBoxScore(Collection<PlayerStats> stats, TeamStats ts) {
+  public void createBoxScore(Collection<PlayerStats> stats, TeamStats ts) {
     int numCols = PlayerStats.getNumCols();
     StringBuilder query = new StringBuilder("INSERT INTO player_stats VALUES (");
 
@@ -610,10 +636,10 @@ public class DBManager {
       String message = "Failed to save player stats to database. ";
       throw new RuntimeException(message + e.getMessage());
     }
-    saveTeamStats(ts);
+    createTeamStats(ts);
   }
 
-  private void saveTeamStats(TeamStats ts) {
+  private void createTeamStats(TeamStats ts) {
     StringBuilder query = new StringBuilder("INSERT INTO team_stats VALUES (");
     int numCols = TeamStats.getNumCols();
     for (int i = 0; i < (numCols - 1); i++) {
@@ -636,18 +662,18 @@ public class DBManager {
 
   }
 
-  public void storeStat(Stat s, String statType, Game game) {
+  public void createStat(Stat s, int game) {
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     try (PreparedStatement ps = conn.prepareStatement(query)) {
 
       ps.setInt(1, s.getID());
-      ps.setInt(2, game.getID());
+      ps.setInt(2, game);
       ps.setInt(THREE, s.getPlayer().getTeamID());
       ps.setInt(FOUR, s.getPlayer().getID());
-      ps.setString(FIVE, statType);
-      ps.setInt(SIX, game.getPeriod());
+      ps.setString(FIVE, s.getStatType());
+      ps.setInt(SIX, s.getPeriod());
       ps.setDouble(SEVEN, s.getLocation().getX());
       ps.setDouble(EIGHT, s.getLocation().getY());
 
@@ -678,7 +704,7 @@ public class DBManager {
     }
   }
 
-  public void removeStat(Stat s) throws GameException {
+  public void deleteStat(Stat s) throws GameException {
     String query = "DELETE FROM stat WHERE id = ? AND player = ?;";
     try (PreparedStatement ps = conn.prepareStatement(query)) {
       ps.setInt(1, s.getID());
@@ -757,7 +783,7 @@ public class DBManager {
       String secondary, boolean myTeam) {
 
     Team t = tf.getTeam(getNextID("team"), name, coach, primary, secondary);
-    saveTeam(t, myTeam);
+    createTeam(t, myTeam);
 
     return t;
   }
@@ -792,7 +818,7 @@ public class DBManager {
     }
   }
 
-  private void saveTeam(Team team, boolean myTeam) {
+  private void createTeam(Team team, boolean myTeam) {
     try (PreparedStatement prep = conn.prepareStatement(
         "INSERT INTO team VALUES(?, ?, ?, ?, ?, ?);")) {
       prep.setInt(1, team.getID());
@@ -819,7 +845,7 @@ public class DBManager {
         curr);
 
     t.addPlayer(p);
-    savePlayer(p);
+    createPlayer(p);
 
     return p;
   }
@@ -850,7 +876,7 @@ public class DBManager {
     }
   }
 
-  private void savePlayer(Player player) {
+  private void createPlayer(Player player) {
     String query = "INSERT INTO player VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, player.getID());
@@ -906,7 +932,7 @@ public class DBManager {
     return getTeamLinks(false);
   }
 
-  public void saveGame(Game game) {
+  public void createGame(Game game) {
 
     String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
@@ -919,6 +945,27 @@ public class DBManager {
       prep.executeUpdate();
     } catch (SQLException e) {
       String message = "Failed to save game data (" + game + ").";
+      throw new RuntimeException(message + e.getMessage());
+    }
+  }
+
+  int createGame(LocalDate date, int home, int away) {
+
+    String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+
+      int id = getNextID("game");
+      prep.setInt(1, id);
+      prep.setString(2, date.toString());
+      prep.setInt(THREE, home);
+      prep.setInt(FOUR, away);
+      prep.setInt(FIVE, getChampionshipYear(date));
+
+      prep.executeUpdate();
+
+      return id;
+    } catch (SQLException e) {
+      String message = "Failed to save game data fake game date. ";
       throw new RuntimeException(message + e.getMessage());
     }
   }
@@ -1074,11 +1121,14 @@ public class DBManager {
       throw new RuntimeException("You messed up calling getYearsActive...");
     }
 
-    String query = "SELECT * FROM " + table + ", game WHERE " + table + "." + entity + " = ? AND game.championship_year = ?;";
+    String query = "SELECT * FROM " + table + ", game "
+        + "WHERE " + table + "." + entity + " = ? AND game.id = " + table + ".game "
+            + "AND game.championship_year = ? ORDER BY game.date ASC;";
+
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
-      prep.setInt(1, year);
+      prep.setInt(2, year);
       ResultSet rs = prep.executeQuery();
 
       List<GameStats> gameStats = new ArrayList<>();
@@ -1088,8 +1138,8 @@ public class DBManager {
         for (int i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toAdd = null;
         if (table.equals("player_stats")) {
           toAdd = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1159,7 +1209,9 @@ public class DBManager {
     query.append(table);
     query.append(".");
     query.append(entity);
-    query.append(" = ? AND game.championship_year = ?;");
+    query.append(" = ? AND game.id = ");
+    query.append(table);
+    query.append(".game AND game.championship_year = ?;");
 
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       prep.setInt(1, id);
@@ -1171,8 +1223,8 @@ public class DBManager {
         for (i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toReturn = null;
         if (table.equals("player_stats")) {
           toReturn = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1199,5 +1251,85 @@ public class DBManager {
     }
 
     return careerStats;
+  }
+
+  /**
+   * Generates list of shot locations
+   * @param gameID - ID of game to get data for
+   * @param entityID - either player or team id
+   * @param makes - True if you want makes, false if you want misses
+   * @param chartType - "team" or "player"
+   * @return
+   */
+  private List<Location> getShotsForEntityInGame(int gameID, int entityID, boolean makes, String chartType) {
+    String statType = "";
+    if (makes) {
+      statType = "(type = \"MadeTwoPointer\" OR type = \"MadeThreePointer\");";
+    } else {
+      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\");";
+    }
+
+    String query = "SELECT x, y FROM stat WHERE " + chartType + " = ? AND game = ? AND " + statType;
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setInt(1, entityID);
+      prep.setInt(2, gameID);
+      ResultSet rs = prep.executeQuery();
+
+      List<Location> shots = new ArrayList<>();
+      while(rs.next()) {
+        double x = rs.getDouble(1);
+        double y = rs.getDouble(2);
+        Location adjustedLoc = Location.adjustForShotChart(x, y);
+        shots.add(adjustedLoc);
+      }
+
+      return shots;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+  public List<Location> getMakesForEntityInGame(int gameID, int entityID, String chartType) {
+    return getShotsForEntityInGame(gameID, entityID, true, chartType);
+  }
+
+  public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
+    return getShotsForEntityInGame(gameID, entityID, false, chartType);
+  }
+
+  private Trie fillTrie() {
+    ArrayList<Character> c = new ArrayList<Character>();
+    c.add('@');
+    c.add('$');
+    Trie t = new Trie(c);
+
+    try {
+      PreparedStatement prep = conn.prepareStatement(
+          "select name from player;");
+      ResultSet r = prep.executeQuery();
+      while (r.next()) {
+        t.addFirstWord(StringFormatter.treat(r.getString(1)));
+      }
+      prep.close();
+      r.close();
+      prep = conn.prepareStatement(
+          "select name from team;");
+      r = prep.executeQuery();
+      while (r.next()) {
+        t.addFirstWord(StringFormatter.treat(r.getString(1)));
+      }
+      prep.close();
+      r.close();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return t;
+  }
+
+  public Trie getTrie() {
+    return trie;
   }
 }

@@ -3,6 +3,11 @@
 
 }
 
+.input-append .btn.dropdown-toggle {
+    float: none;
+    margin-bottom: 5px;
+}
+
 #thumb {
     height : 48px;
     width : 48px;

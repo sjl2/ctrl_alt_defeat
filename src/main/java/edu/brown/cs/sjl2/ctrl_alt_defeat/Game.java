@@ -1,10 +1,12 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Bench;
@@ -21,7 +23,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class Game {
   private static final String TABLE = "game";
+  private static final int NUMBER_OF_SEASONS = 1; // Years
+  private static final int SEASON_SPAN = 3; // Months
 
+  private boolean homeGame;
   private int id;
   private Team homeTeam;
   private Team awayTeam;
@@ -57,9 +62,9 @@ public class Game {
   private int awayLosses;
 
   public Game(Team home, Team away, DBManager db,
-              Map<BasketballPosition, Integer> starterIDs)
+              Map<BasketballPosition, Integer> starterIDs, boolean homeGame)
       throws GameException {
-
+    this.homeGame = homeGame;
     if (home.getID() == away.getID()) {
       // Cannot play with yourselves
       String message = "This is no time to play with yourself!";
@@ -71,7 +76,8 @@ public class Game {
     this.homeTeam = home;
     this.awayTeam = away;
     this.date = LocalDate.now();
-    db.saveGame(this);
+    db.createGame(this);
+
     this.db = db;
 
     try {
@@ -90,8 +96,8 @@ public class Game {
       this.homeDoubleBonus = false;
       this.awayBonus = false;
       this.awayDoubleBonus = false;
-      this.homeTO = rules.timeouts();
-      this.awayTO = rules.timeouts();
+      this.homeTO = rules.getTimeOuts();
+      this.awayTO = rules.getTimeOuts();
       this.period = 1;
 
       placePlayers(home, away, starterIDs);
@@ -103,6 +109,54 @@ public class Game {
     }
 
   }
+
+  public Game(Team home, Team away, DBManager db)
+    throws GameException {
+
+    if (home.getID() == away.getID()) {
+    // Cannot play with yourselves
+    String message = "This is no time to play with yourself!";
+    throw new GameException(message);
+    }
+
+    // Game Fields in DB
+    this.id = db.getNextID(TABLE);
+    this.homeTeam = home;
+    this.awayTeam = away;
+    this.date = getRandomDateInSeason();
+    db.createGame(this);
+    this.db = db;
+
+    try {
+    // Remaining fields
+    this.rules = new ProRules(); // TODO Change in settings
+
+    this.homeBoxScore = new BoxScore(db, this, home);
+    this.awayBoxScore = new BoxScore(db, this, away);
+    this.lineup = new Lineup();
+    this.homeBench = new Bench(home);
+    this.awayBench = new Bench(away);
+
+    this.sf = new StatFactory(db, this);
+
+    this.homeBonus = false;
+    this.homeDoubleBonus = false;
+    this.awayBonus = false;
+    this.awayDoubleBonus = false;
+    this.homeTO = rules.getTimeOuts();
+    this.awayTO = rules.getTimeOuts();
+    this.period = 1;
+
+    defaultStartingLineup(home, away);
+
+    } catch (GameException e) {
+    db.deleteGame(id);
+    String message = e.getMessage() + " Game information deleted "
+      + "from database.";
+    throw new GameException(message);
+}
+
+}
 
   public int getID() {
     return id;
@@ -119,6 +173,10 @@ public class Game {
    */
   public boolean isHome(Team team) {
     return this.homeTeam.getID() == team.getID();
+  }
+
+  public boolean isHome(int teamID) {
+    return this.homeTeam.getID() == teamID;
   }
 
   public Team getHome() {
@@ -206,7 +264,7 @@ public class Game {
   }
 
   public void incrementPeriod() throws GameException {
-    if (this.period == rules.periods()) {
+    if (this.period == rules.getPeriods()) {
       String message = "Cannot increment, game is already in period "
           + this.period + "!";
       throw new GameException(message);
@@ -268,16 +326,16 @@ public class Game {
   }
 
   public void updateBonuses() {
-    if (homeFouls >= rules.bonus()) {
+    if (homeFouls >= rules.getBonus()) {
       homeBonus = true;
     }
-    if (homeFouls >= rules.doubleBonus()) {
+    if (homeFouls >= rules.getDoubleBonus()) {
       homeDoubleBonus = true;
     }
-    if (awayFouls >= rules.bonus()) {
+    if (awayFouls >= rules.getBonus()) {
       awayBonus = true;
     }
-    if (awayFouls >= rules.doubleBonus()) {
+    if (awayFouls >= rules.getDoubleBonus()) {
       awayDoubleBonus = true;
     }
   }
@@ -397,6 +455,44 @@ public class Game {
 
   }
 
+  public void defaultStartingLineup(Team h, Team a) throws GameException {
+
+    Collection<Player> players =  h.getPlayers();
+    Iterator<Player> homeIterator = players.iterator();
+
+    if (players.size() < 5) {
+      throw new GameException("Not enough players on the home team.");
+    }
+
+    lineup.addStarter(BasketballPosition.HomePG, homeIterator.next())
+      .addStarter(BasketballPosition.HomeSG, homeIterator.next())
+      .addStarter(BasketballPosition.HomeSF, homeIterator.next())
+      .addStarter(BasketballPosition.HomePF, homeIterator.next())
+      .addStarter(BasketballPosition.HomeC, homeIterator.next());
+
+    while (homeIterator.hasNext()) {
+      homeBench.getPlayers().add(homeIterator.next());
+    }
+
+    players =  a.getPlayers();
+    Iterator<Player> awayIterator = players.iterator();
+
+    if (players.size() < 5) {
+      throw new GameException("Not enough players on the away team.");
+    }
+
+    lineup.addStarter(BasketballPosition.AwayPG, awayIterator.next())
+      .addStarter(BasketballPosition.AwaySG, awayIterator.next())
+      .addStarter(BasketballPosition.AwaySF, awayIterator.next())
+      .addStarter(BasketballPosition.AwayPF, awayIterator.next())
+      .addStarter(BasketballPosition.AwayC, awayIterator.next());
+
+    while (awayIterator.hasNext()) {
+      awayBench.getPlayers().add(awayIterator.next());
+    }
+
+  }
+
   public LocalDate getDate() {
     return date;
   }
@@ -419,5 +515,28 @@ public class Game {
     return awayTeam + " @ " + homeTeam + " (" + date + ")";
   }
 
+  public boolean getHomeGame() {
+    return homeGame;
+  }
+
+  private static LocalDate getRandomDateInSeason() {
+    Random r = new Random();
+
+    int year = LocalDate.now().getYear() + r.nextInt(NUMBER_OF_SEASONS);
+
+    int direction = r.nextInt(2);
+    int disp = r.nextInt(SEASON_SPAN);
+    int month;
+    if (direction == 1) {
+      year = year - 1;
+      month = 12 - disp;
+    } else {
+      month = 1 + disp;
+    }
+
+    int day = 1 + r.nextInt(Month.of(month).maxLength() - 1);
+
+    return LocalDate.of(year, month, day);
+  }
 
 }

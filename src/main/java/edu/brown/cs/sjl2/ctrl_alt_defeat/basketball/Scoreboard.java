@@ -20,8 +20,8 @@ public class Scoreboard {
     this.quarter = 1;
     this.homeScore = 0;
     this.awayScore = 0;
-    this.homeTO = l.timeouts();
-    this.awayTO = l.timeouts();
+    this.homeTO = l.getTimeOuts();
+    this.awayTO = l.getTimeOuts();
     this.possession = true;
     this.awayFouls = 0;
     this.homeFouls = 0;
