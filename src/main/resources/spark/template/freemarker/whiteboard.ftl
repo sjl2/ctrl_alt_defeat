@@ -13,6 +13,9 @@
           <input type="radio" name="groupa" id="erase" value="0">Erase
           <br>
           <input class="btn btn-default" type="button" value="Clear All" onclick = "clearAll()">
+	  <br>
+	  <input type="color" id="colorPicker" onchange="updateColor()">
+	  <input type="range" min="3" max="20" value="3" oninput="updateStrokeSize()" id="strokeSize">
         </div>
       </div>
   </div>

@@ -4,10 +4,10 @@
   <h1>Make a Team</h1>
   <form method="POST" action="/dashboard/new/team/results">
     Team name:<br>
-    <input type="text" name="name">
+    <input type="text" name="name" required>
     <br>
     Coach's name:<br>
-    <input type="text" name="coach">
+    <input type="text" name="coach" required>
     <br>
     Primary Color:<br>
     <input type="color" name="color1">

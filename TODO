@@ -60,9 +60,10 @@
 - Add Option to Build this table from scratch (translate the .schema to java). 
 
 Tyler:
-	Finish styling side bar (list groups)
-	Make sidebar button relative to top corner of sidebar
 	Start positions for tokens
 	Ball following player
 	http://getbootstrap.com/components/
+	Ball doesn't change it's first frame. 
+	If player with possesion is being edited, the ball's future path should 	also be cleared. 
+	Ball sometimes get's lost
 
