@@ -1,11 +1,18 @@
-/*
+
 #canvas_container {
-    width: 50%;
-    position: relative;
-    margin: 0px auto;
-    outline: #000000 solid thick;
 }
-*/
+
+svg text {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+svg image {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
 
 #control {
     text-align: center;
@@ -16,6 +23,9 @@
 }
 
 #current_frame {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
     width: 47px;
     margin: 0px auto;
 }
@@ -32,7 +42,7 @@
 #wrapper.toggled {
 }
 
-#sidebar-wrapper {
+#load-sidebar-wrapper {
     z-index: 1000;
     position: absolute;
     left: 250px;
@@ -47,11 +57,34 @@
     transition: all 0.5s ease;
 }
 
-#sidebar-col {
+#settings-sidebar-wrapper {
+    z-index: 1000;
+    position: absolute;
+    right: 250px;
+    width: 45px;
+    height: 100%;
+    margin-right: -250px;
+    overflow-y: hidden;
+    overflow-x: auto;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#load-sidebar-col {
     height: 500px;
 }
 
-#wrapper.toggled #sidebar-wrapper {
+#settings-sidebar-col {
+    height: 500px;
+}
+
+#load-sidebar-col.toggled #load-sidebar-wrapper {
+    width: 250px;
+}
+
+#settings-sidebar-col.toggled #settings-sidebar-wrapper {
     width: 250px;
 }
 
@@ -70,7 +103,26 @@
     transition: all 0.5s ease;
 }
 
-#wrapper.toggled #load_column {
+#settings_column {
+    background: #555;
+    position: absolute;
+    width: 0px;
+    right: 0px;
+    top: 0px;
+    height: 100%;
+    overflow-y: hidden;
+    overflow-x: auto;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#load-sidebar-col.toggled #load_column {
+    width: 200px;
+}
+
+#settings-sidebar-col.toggled #settings_column {
     width: 200px;
 }
 
@@ -79,9 +131,14 @@
     position: absolute;
 }
 
-#wrapper.toggled #page-content-wrapper {
+#load-sidebar-col.toggled #page-content-wrapper {
     position: absolute;
     margin-right: -250px;
+}
+
+#settings-sidebar-col.toggled #page-content-wrapper {
+    position: absolute;
+    margin-left: -250px;
 }
 
 /* Sidebar Styles */
@@ -138,11 +195,19 @@
     #wrapper.toggled {
     }
 
-    #sidebar-wrapper {
+    #load-sidebar-wrapper {
         width: 250px;
     }
 
-    #wrapper.toggled #sidebar-wrapper {
+    #settings-sidebar-wrapper {
+        width: 250px;
+    }
+
+    #load-sidebar-col.toggled #load-sidebar-wrapper {
+        width: 45px;
+    }
+
+    #settings-sidebar-col.toggled #settings-sidebar-wrapper {
         width: 45px;
     }
 
@@ -157,7 +222,22 @@
 	overflow-x: hidden;
     }
 
-    #wrapper.toggled #load_column {
+    #settings_column {
+	background: #555;
+	position: absolute;
+	width: 200px;
+	right: 0px;
+	top: 0px;
+	height: 100%;
+	overflow-y: hidden;
+	overflow-x: hidden;
+    }
+
+    #load-sidebar-col.toggled #load_column {
+	width: 0px;
+    }
+
+    #settings-sidebar-col.toggled #settings_column {
 	width: 0px;
     }
 
@@ -166,10 +246,21 @@
         position: relative;
     }
 
-    #wrapper.toggled #page-content-wrapper {
+    #load-sidebar-col.toggled #page-content-wrapper {
         position: relative;
         margin-right: 0;
     }
+
+    #settings-sidebar-col.toggled #page-content-wrapper {
+        position: relative;
+        margin-left: 0;
+    }
+}
+
+#settings_column p {
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
 }
 
 #delete_plays {
@@ -218,7 +309,10 @@
     float: right;
 }
 
-#hide-sidebar {
+#hide-load-sidebar {
+}
+
+#hide-settings-sidebar {
 }
 
 .playNameHolder {

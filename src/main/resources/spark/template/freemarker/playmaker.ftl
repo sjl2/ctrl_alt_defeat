@@ -3,10 +3,10 @@
   <script src="/js/playmaker.js"></script>
   <link rel="stylesheet" href="/css/playmaker.css">
   
-  <div id="wrapper" class="toggled">
+  <div id="wrapper">
     <div class="row">
-      <div class="col-md-2" id="sidebar-col">
-	<div id="sidebar-wrapper">
+      <div class="col-md-2 toggled" id="load-sidebar-col">
+	<div id="load-sidebar-wrapper">
 	  <div id="load_column" class="pull-left">
 	    <div id="load_header">
 	      <button id="delete_plays" class="btn btn-primary">Delete Plays</button>
@@ -16,8 +16,8 @@
 	    </div>
 	  </div>
 	  <div id="shown">
-	    <button class="btn btn-primary" id="hide-sidebar">
-	      <span class="glyphicon glyphicon-folder-open" id="hide-img">
+	    <button class="btn btn-primary" id="hide-load-sidebar">
+	      <span class="glyphicon glyphicon-folder-open" id="load-hide-img">
 	      </span>
 	    </button>
 	  </div>
@@ -53,7 +53,22 @@
 	  </button>
 	</div>
       </div>
-      <div class="col-md-2"></div>
+      <div class="col-md-2 toggled" id="settings-sidebar-col">
+	<div id="settings-sidebar-wrapper">
+	  <div id="shown" class="pull-left">
+	    <button class="btn btn-primary" id="hide-settings-sidebar">
+	      <span class="glyphicon glyphicon-cog" id="settings-hide-img">
+	      </span>
+	    </button>
+	  </div>
+	  <div id="settings_column" class="pull-right">
+	    <p>Playback Speed</p>
+	    <input type="range" min="0.5" max="3" step="0.05" value="1" id="playSpeed">
+	    <p>Token Size</p>
+	    <input type="range" min="0.01" max="0.05" step="0.0005" value="0.025" id="tokenRadius">
+	  </div>
+	</div>
+      </div>
     </div>
   </div>
 

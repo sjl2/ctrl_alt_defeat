@@ -3,10 +3,10 @@
   <h3>To deliver our top quality service, we need a little information from you.</h3>
 	<form method="POST" action="/dashboard/new">
 		Team name:<br>
-		<input type="text" name="name">
+		<input type="text" name="name" required>
 		<br>
 		Coach's name:<br>
-		<input type="text" name="coach">
+		<input type="text" name="coach" required>
 		<br>
 		Primary Color:<br>
 		<input type="color" name="color1">
