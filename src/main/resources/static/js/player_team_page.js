@@ -1,10 +1,19 @@
-$("#current-season").on('change', function () {
+$(function () {
 
-	postParameters = {
-		year: $("#current-season").val(), 
-		
-	}
-	$.post("/player/get/year", postParameters, function (responseHTML) {
+	$("#season").change(function () {
 
+		console.log("Current Season changed.");
+
+		postParameters = {
+			year: $("#season").val(), 
+			playerID: $("#id").val()
+		}
+		console.log("Year: "+ postParameters.year);
+
+		$.post("/player/get/year", postParameters, function (responseHTML) {
+
+		})
 	})
+	
 })
+

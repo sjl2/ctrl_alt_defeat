@@ -127,6 +127,7 @@ public class GUIManager {
     File templates = new File("src/main/resources/spark/template/freemarker");
     try {
       config.setDirectoryForTemplateLoading(templates);
+      config.setNumberFormat("0.######");
     } catch (IOException ioe) {
       System.out.printf("ERROR: Unable use %s for template loading.%n",
           templates);
