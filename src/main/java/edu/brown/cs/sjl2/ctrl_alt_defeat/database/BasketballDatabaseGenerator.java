@@ -17,7 +17,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class BasketballDatabaseGenerator {
 
-  private static final int NUMBER_OF_ROUND_ROBINS = 3;
+  private static final int NUMBER_OF_ROUND_ROBINS = 7;
   private static final int NUM_OF_STATS = 15;
   private static final double HALF = 0.5;
   private static final double DEPLETING_RATIO = 0.6;
