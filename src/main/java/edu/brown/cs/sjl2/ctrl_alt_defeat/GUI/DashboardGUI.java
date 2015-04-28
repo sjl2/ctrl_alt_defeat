@@ -255,6 +255,39 @@ public class DashboardGUI {
       return new ModelAndView(variables, "player.ftl");
     }
   }
+  
+
+  public class GetGameStats implements TemplateViewRoute {
+
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String error = "";
+      List<GameStats> rows = null;
+
+      try {
+        int year = Integer.parseInt(qm.value("year"));
+        int id = Integer.parseInt(qm.value("id"));
+        boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+        String table;
+        if (isPlayer) {
+          table = "player_stats";
+        } else {
+          table = "team_stats";
+        }
+        rows = dbManager.getSeparateGameStatsForYear(year, table, id);
+      } catch (NumberFormatException e) {
+        error = "That's either an invalid year or ID!";
+      }
+
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
+          .put("db", dbManager)
+          .put("rows", rows)
+          .put("errorMessage", error).build();
+      return new ModelAndView(variables, "season.ftl");
+    }
+  }
 
   public class GetShotChartData implements Route {
 
@@ -495,31 +528,6 @@ public class DashboardGUI {
       variables.put("res", resOneString);
 
       return GSON.toJson(variables);
-    }
-  }
-
-  public class PlayerSeasonHandler implements TemplateViewRoute {
-
-    @Override
-    public ModelAndView handle(Request request, Response response) {
-      QueryParamsMap qm = request.queryMap();
-      String error = "";
-      List<GameStats> rows = null;
-
-      try {
-        int year = Integer.parseInt(qm.value("year"));
-        int playerID = Integer.parseInt(qm.value("playerID"));
-        rows = dbManager.getSeparateGameStatsForYear(year, "player_stats", playerID);
-      } catch (NumberFormatException e) {
-        error = "That's either an invalid year or playerID!";
-      }
-
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-          .put("db", dbManager)
-          .put("rows", rows)
-          .put("errorMessage", error).build();
-      return new ModelAndView(variables, "season.ftl");
     }
   }
 }

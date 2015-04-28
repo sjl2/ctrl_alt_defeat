@@ -98,7 +98,7 @@ public class GUIManager {
     Spark.get("/player/view/:id",
         dashboardGUI.new PlayerViewHandler(), freeMarker);
     Spark.post("player/get/year",
-        dashboardGUI.new PlayerSeasonHandler(), freeMarker);
+        dashboardGUI.new GetGameStats(), freeMarker);
 
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new StPgHandler());
