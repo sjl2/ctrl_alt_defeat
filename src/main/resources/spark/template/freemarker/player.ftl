@@ -4,6 +4,9 @@
 
   <div class="container">
     <div class = "jumbotron">
+
+    <div id="forCharts"></div>
+
       <h2>${player.getName()}</h2>
       <h3>
         <a href="/team/view/${player.getTeamID()}">${player.getTeamName()}</a>
@@ -22,7 +25,7 @@
 
     <div class="row" id="schedule-player">
       <table class="table table-hover boxscore">
-        <tr>
+        <tr onclick="clickPlayerGame(${player.getID}, ${row.getGameID()})">
           <th>Game</th>
           <th>MIN</th>
           <th>PTS</th>

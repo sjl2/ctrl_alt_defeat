@@ -20,15 +20,16 @@ public class Location {
   public static Location adjustForShotChart(double x, double y) {
     // Reflection
     if (x > .5) {
-      x =- (2 * (x - .5));
-    }
-
-    if (y > .5) {
-      y =- (2 * (y - .5));
+      x -= (2 * (x - .5));
+      if (y > .5) {
+        y -= (2 * (y - .5));
+      } else {
+        y += (2 * (.5 - y));
+      }
     }
 
     // Rotation
-    double _x = .5 * y;
+    double _x = y;
     double _y = 1 - (2 * x);
 
     return new Location(_x, _y);

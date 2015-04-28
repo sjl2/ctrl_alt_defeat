@@ -293,7 +293,7 @@ public class DashboardGUI {
           .put("misses", misses)
           .put("error", error)
           .build();
-      return variables;
+      return GSON.toJson(variables);
     }
   }
 
