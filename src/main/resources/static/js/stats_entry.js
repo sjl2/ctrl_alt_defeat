@@ -26,7 +26,7 @@ var stats = [["Block", "DefensiveFoul", "DefensiveRebound", "FreeThrow","MissedF
 
 
 var court_paper = Raphael(court, court.width, court.height);
-var buttons_paper = Raphael(buttons, buttons.width, 50);
+
 var home_team_paper = Raphael(home_team_div, 80, 360);
 var away_team_paper = Raphael(away_team_div, 80, 360);
 var control_paper = Raphael(control_div, 831, 90);
@@ -46,26 +46,7 @@ home_team_paper.mainBoxes = home_team_paper.set();
 away_team_paper.mainTexts = away_team_paper.set();
 away_team_paper.mainBoxes = away_team_paper.set();
 
-buttons_paper.mainTexts = buttons_paper.set();
-buttons_paper.mainButtons = buttons_paper.set();
 
-
-for (var i=0; i < 8; i++) {
-    for (var j = 0; j < 2; j++) {
-	var tempButton = buttons_paper.circle(45 + 90 * i, 45 + 80 * j, 35).attr({fill: '#8a8a89', "stroke-width" : 2})
-	    .data("thing", "stat");
-	var tempText = buttons_paper.text(45 + 90 * i,45 + 80 * j, stats[j][i]);
-	tempText.box = tempButton;
-	tempButton.glowColor = "#646a00";
-	tempButton.clickAccent = "#a4a4a2";
-	tempButton.normalColor = "#8a8a89";
-	
-	tempButton.statID = stats[j][i];
-
-	buttons_paper.mainTexts.push(tempText);
-	buttons_paper.mainButtons.push(tempButton);
-    }
-}
 
 control_paper.sendStat = control_paper.rect(150, 0, 50, 50).attr({fill : "red", "stroke-width" : 2});
 control_paper.sendStat.click(function (e) {
@@ -93,32 +74,6 @@ control_paper.awayTimeout.words = control_paper.text(control_paper.width - 25, 5
 
 
 
-buttons_paper.mainButtons.mousedown(function(e) {
-    this.attr({fill: this.clickAccent});
-    mousedowninsomething = true;
-
-});
-buttons_paper.mainButtons.mouseup(function(e) {
-    clickThing(this);
-    mousedowninsomething = false;
-
-});
-buttons_paper.mainButtons.mouseout(function(e) {
-    if (mousedowninsomething) {
-	clickThing(this);
-	mousedowninsomething = false;
-    }
-});
-
-buttons_paper.mainButtons.mouseover(function (event) {
-    this.g = this.glow({
-	opacity: 0.85,
-	color: this.glowColor,
-	width: 15
-    });
-}).mouseout(function (event) {
-    this.g.remove();
-});
 
 $("#court").click(function(e) {
     if (!(clickedPoint === undefined)) clickedPoint.remove();
@@ -330,16 +285,6 @@ $.get("/game/roster", function(responseJSON) {
 	mousedowninsomething = false;
     });
 
-    buttons_paper.mainTexts.mousedown(function(e) {
-	this.box.attr({fill: this.box.clickAccent});
-	mousedowninsomething = true;
-
-    });
-    buttons_paper.mainTexts.mouseup(function(e) {
-	clickThing(this.box);
-	mousedowninsomething = false;
-    });
-
     home_team_paper.mainTexts.mouseover(function(e) {
 	this.box.g = this.box.glow({
 	    opacity: 0.85,
@@ -360,15 +305,7 @@ $.get("/game/roster", function(responseJSON) {
 	this.box.g.remove();
     });
 
-    buttons_paper.mainTexts.mouseover(function(e) {
-	this.box.g = this.box.glow({
-	    opacity: 0.85,
-	    color: this.box.glowColor,
-	    width: 15
-	});
-    }).mouseout(function (e) {
-	this.box.g.remove();
-    });
+
 
 
 
@@ -683,10 +620,6 @@ function clickThing(b) {
 	if (!(clickedPlayer === undefined)) clickedPlayer.attr({fill: clickedPlayer.normalColor});
 	clickedPlayer = b;
 	clickedPlayer.attr({fill: clickedPlayer.clickAccent});
-    } else if (b.data("thing") == "stat") {
-	if (!(clickedStat === undefined)) clickedStat.attr({fill: clickedStat.normalColor});
-	clickedStat = b;
-	clickedStat.attr({fill: clickedStat.clickAccent});
     }
 } 
 
@@ -696,15 +629,14 @@ function addStat() {
 	postParameters = {
 	    x: clickedPoint.data("ratioX"),
 	    y: clickedPoint.data("ratioY"),
-	    statID: clickedStat.statID,
+	    statID: clickedStat,
 	    playerID: clickedPlayer.player.id
 	};
 	clickedPoint.remove();
 	clickedPoint = undefined;
 	clickedPlayer.attr({fill: clickedPlayer.normalColor});
 	clickedPlayer = undefined;
-	clickedStat.attr({fill: clickedStat.normalColor});
-	clickedStat = undefined;
+
 
 	console.log(postParameters);
 	
@@ -808,10 +740,7 @@ function updateStat() {
 
     }
     if (clickedStat !== undefined) {
-	postParameters.statID = clickedStat.statID;
-	clickedStat.attr({fill: clickedStat.normalColor});
-	clickedStat = undefined;
-
+	postParameters.statID = clickedStat;
     }
     if (clickedPlayer !== undefined) {
 	postParameters.playerID = clickedPlayer.player.id;
@@ -853,6 +782,14 @@ function makeDarker(h) {
     var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
 
     return "rgb(" + r * .75 + "," + g * .75 + "," +  b * .75 + ")";
+}
+
+function setSelectedStat(str) {
+	if (clickedStat !== undefined) clickedStat.button.style.backgroundColor = "white";
+	clickedStat = {};
+	clickedStat.statID = str;
+	clickedStat.button = document.getElementById(str + "Button");
+	document.getElementById(str + "Button").style.backgroundColor = "green";
 }
 
 
