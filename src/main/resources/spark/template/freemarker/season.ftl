@@ -1,4 +1,4 @@
-<table class="table table-hover boxscore">
+<table class="table table-hover">
   <tr>
     <th>Game</th>
     <th>MIN</th>

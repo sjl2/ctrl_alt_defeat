@@ -6,20 +6,18 @@ $(document).ready(function(){
 	paper = Raphael(document.getElementById("forCharts"), 450, 420);
 	paper.shots = paper.set();
 	paper.image("/images/Basketball-Court-half.png",0,0,450,420).attr({"fill" : "white"});
-	paper.rect(0,0,450,420).attr({fill : "rgba(150,150,150,.3)"})
+	paper.rect(0,0,450,420).attr({fill : "rgba(150,150,150,.3)"});
 
 	$("#season").change(function () {
 
-		console.log("Current Season changed.");
-
 		postParameters = {
 			year: $("#season").val(), 
-			playerID: $("#id").val()
+			playerID: id
 		}
 		console.log("Year: "+ postParameters.year);
 
 		$.post("/player/get/year", postParameters, function (responseHTML) {
-
+				$("#season-player").html(responseHTML); 
 		});
 	});
 

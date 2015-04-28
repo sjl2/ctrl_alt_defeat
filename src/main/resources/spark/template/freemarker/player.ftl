@@ -1,12 +1,10 @@
 <#assign coachContent>
-  <script src="/js/player_team_page.js"></script>
+  <script src="/js/player_team_page.js"></script> 
+  <script type="text/javascript">var id = ${player.getID()}</script> 
   <link rel="stylesheet" href="/css/player_team_page.css">
 
-  <div id="id" hidden>${player.getID()}</div>
   <div class="container">
     <div class = "jumbotron">
-
-    
 
       <h2>${player.getName()}</h2>
       <h3>
