@@ -305,6 +305,45 @@ public class DashboardGUI {
       return GSON.toJson(variables);
     }
   }
+  
+  public class GetHeatMapData implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      boolean player;
+      int entityID;
+      String type;
+      int championshipYear;
+      List<Location> makes = null;
+      List<Location> misses = null;
+      String error = "";
+      try {
+        player = Boolean.parseBoolean(qm.value("player"));
+        entityID = Integer.parseInt(qm.value("id"));
+        championshipYear = Integer.parseInt(qm.value("championshipYear"));
+
+        if (player) {
+          type = "player";
+        } else {
+          type = "team";
+        }
+
+        makes = dbManager.getMakesForYear(championshipYear, entityID, type);
+        misses = dbManager.getMissesForYear(championshipYear, entityID, type);
+      } catch (NumberFormatException e) {
+        error = "Invalid id format!";
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes)
+          .put("misses", misses)
+          .put("error", error)
+          .build();
+      return GSON.toJson(variables);
+      
+    }
+  }
 
   public class GetGameHandler implements Route {
     @Override
