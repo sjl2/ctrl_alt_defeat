@@ -1262,7 +1262,6 @@ public class DBManager {
       query.append("?, ");
     }
     query.append("?);");
-
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       prep.setInt(1, entityID);
       int i = 2;
@@ -1297,7 +1296,6 @@ public class DBManager {
       while (rs.next()) {
         gameIDs.add(rs.getInt("id"));
       }
-
       return gameIDs;
     } catch (SQLException e) {
       close();

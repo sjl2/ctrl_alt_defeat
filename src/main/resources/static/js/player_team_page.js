@@ -5,7 +5,8 @@ $(document).ready(function(){
 	console.log(document.getElementById("forCharts"));
 	paper = Raphael(document.getElementById("forCharts"), 450, 420);
 	paper.shots = paper.set();
-	paper.image("/images/Basketball-Court-half.png", 0, 0, 450, 420).attr({"fill" : "white"});
+	paper.image("/images/Basketball-Court-half.png",0,0,450,420).attr({"fill" : "white"});
+	paper.rect(0,0,450,420).attr({fill : "rgba(150,150,150,.3)"});
 
 	$("#season").change(function () {
 
@@ -26,4 +27,9 @@ $(document).ready(function(){
 function clickPlayerGame(playerID, gameID) {
 	paper.shots.remove();
 	drawShotChart(playerID, gameID, paper);
+}
+
+function clickPlayerSeason(playerID, year, b) {
+	paper.shots.remove();
+	drawHeatMap(playerID, true, year, paper);
 }
