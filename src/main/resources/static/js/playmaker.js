@@ -12,14 +12,11 @@ var height = 0;
 
 var playerRadius;
 var ballRadius;
-var ballAngle = 0;
 
 var courtTopLeftCorner;
 var courtBottomRightCorner;
 
 var paper;
-
-var angle = 0;
 
 var tokens = [];
 var ball;
@@ -91,6 +88,7 @@ function Ball(playerToken, angle) {
 	circle: undefined,
 	path: [],
 	possession: [],
+	angle: 0,
 	
 	checkCollision: function(playerToken) {
 	    var dx = this.location.x - playerToken.location.x;
@@ -98,7 +96,7 @@ function Ball(playerToken, angle) {
 	    var distanceSquared = dx * dx + dy * dy;
 	    return distanceSquared < (playerRadius + ballRadius) * (playerRadius + ballRadius);
 	},
-
+	
 	setLocationWithXY: function(x, y) {
 	    this.circle.attr("cx", x * width);
 	    this.circle.attr("cy", y * height);
@@ -122,9 +120,10 @@ function Ball(playerToken, angle) {
 	    return Location(x, y);
 	},
 
-	setRelativeLocation: function(playerToken, angle) {
-	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
-	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(angle);
+	setRelativeLocation: function(playerToken) {
+	    this.angle = Math.atan2(0.5 - playerToken.location.y, 0.08125 - playerToken.location.x);
+	    var x = playerToken.location.x + playerRadius * Math.cos(this.angle);
+	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(this.angle);
 	    this.setLocationWithXY(x, y);
 	    return Location(x, y);
 	}
@@ -151,10 +150,8 @@ function Token(circle, text, location, index) {
 	    this.text.attr("x", circle.attr("cx"));
 	    this.text.attr("y", circle.attr("cy"));
 	    this.location.translate(dx / width, dy / height);
-	    if(possessionToken == this) {
-		ball.translate(dx, dy);
-		updateBallAngle();
-		ball.setRelativeLocation(possessionToken, ballAngle);
+	    if(possessionToken.index == this.index) {
+		ball.setRelativeLocation(possessionToken);
 	    }
 	},
 	setLocationWithXY: function(x, y) {
@@ -374,7 +371,7 @@ function updateRadii(newPlayerRadius) {
 	tokens[i].circle.attr("r", playerRadius * width);
     }
     ball.circle.attr("r", ballRadius * width);
-    ball.setRelativeLocation(possessionToken, ballAngle);
+    ball.setRelativeLocation(possessionToken);
 }
 
 function previousFrame() {
@@ -399,27 +396,11 @@ function setFrame(frame) {
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
 	if(t != grabbedToken) {
-	    if(currentFrame >= t.path.length) {
-		t.setLocationWithLoc(t.path[t.path.length - 1]);
-	    } else {
-		t.setLocationWithLoc(t.path[currentFrame]);
-	    }
+	    t.setLocationWithLoc(t.path[currentFrame]);
 	} 
     }
     possessionToken = tokens[ball.possession[currentFrame]];
-    updateBallAngle();
-    ball.setRelativeLocation(possessionToken, ballAngle);
-    /*if(ball != grabbedToken) {
-	if(currentFrame >= ball.path.length) {
-	    ball.setLocationWithLoc(ball.path[ball.path.length - 1]);
-	} else {
-	    ball.setLocationWithLoc(ball.path[currentFrame]);
-	}
-    }*/
-}
-
-function updateBallAngle() {
-    ballAngle = Math.atan2(0.5 - ball.location.y, 0.08125 - ball.location.x);
+    ball.setRelativeLocation(possessionToken);
 }
 
 function onstart(x, y, event) {
@@ -427,7 +408,7 @@ function onstart(x, y, event) {
     this.dy = 0;
     grabbedToken = this;
     if(!edittingLocations) {
-	intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
+	intervalVar = window.setInterval(updatePath, 1000.0 / (FRAME_RATE * playSpeed));
     }
 }
 
@@ -471,7 +452,7 @@ function onend(event) {
     grabbedToken.path = [];
     if(!edittingLocations) {
 	for (i = 0; i <= currentFrame; i++) {
-	    grabbedToken.path[i] = prevPath[i];
+	    grabbedToken.path[i] = prevPath[i].copy();
 	}
     } else {
 	grabbedToken.path[0] = grabbedToken.location.copy();
@@ -489,16 +470,6 @@ function onend(event) {
 	    setMaxFrame(tokens[i].path.length - 1);
 	}
     }
-    for(i = 0; i < tokens.length; i++) {
-	var t = tokens[i];
-	if(t.path.length - 1 < maxFrame) {
-	    var path = t.path;
-	    var length = path.length;
-	    for(j = length; j <= maxFrame; j++) {
-		path[j] = path[length - 1];
-	    }
-	}
-    }
 
 }
 
@@ -508,32 +479,33 @@ function onballend(event) {
 	var t = tokens[i];
 	if(this.checkCollision(t)) {
 	    possessionToken = t;
+	    ball.possession[currentFrame] = possessionToken.index;
 	}
     }
-    updateBallAngle();
-    ball.setRelativeLocation(possessionToken, ballAngle);
+    ball.path[currentFrame] = ball.setRelativeLocation(possessionToken);
 }
 
 function updatePath() {
-    ball.possession[currentFrame + 1] = possessionToken.index;
-    setFrame(currentFrame + 1);
-    grabbedToken.path[currentFrame] = grabbedToken.location.copy();
-    ball.path[currentFrame] = ball.setRelativeLocation(possessionToken, ballAngle);
-    updateBallAngle();
-    if(currentFrame > maxFrame) {
-	for(i = 0; i < tokens.length; i++) {
-	    var t = tokens[i];
-	    if(t.path[currentFrame] == undefined) {
-		t.path[currentFrame] = t.path[currentFrame - 1];
-	    }
+    for(i = 0; i < tokens.length; i++) {
+	var t = tokens[i];
+	if(t.path[currentFrame + 1] == undefined) {
+	    t.path[currentFrame + 1] = t.location.copy();
 	}
+    }
+    //grabbedToken.path[currentFrame + 1] = grabbedToken.location.copy();
+    ball.path[currentFrame + 1] = ball.setRelativeLocation(possessionToken);
+    ball.possession[currentFrame + 1] = possessionToken.index;
+
+    setFrame(currentFrame + 1);
+
+    if(currentFrame > maxFrame) {
+	setMaxFrame(currentFrame);
     }
 }
 
 function play() {
     if(playing == false){
 	playing = true;
-	playTime = currentFrame / FRAME_RATE;
 	playIntervalVar = window.setInterval(stepAnimation, 1000.0 / (FRAME_RATE * playSpeed));
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i]
@@ -557,14 +529,12 @@ function stop() {
 
 function stepAnimation() {
     if(playing) {
+	currentFrame++;
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i];
 	    var nextLoc;
-	    if(currentFrame >= t.path.length) {
-		nextLoc = t.path[t.path.length - 1];
-	    } else {
-		nextLoc = t.path[currentFrame];
-	    }
+	    nextLoc = t.path[currentFrame];
+	    t.location = nextLoc.copy();
 	    t.circle.animate({cx:nextLoc.x * width, cy:nextLoc.y * height},
 			     1000.0 / (FRAME_RATE * playSpeed),
 			     "linear",
@@ -576,23 +546,19 @@ function stepAnimation() {
 	}
 
 	var nextLoc;
-	if(currentFrame >= ball.path.length) {
-	    nextLoc = ball.path[ball.path.length - 1];
-	} else {
-	    nextLoc = ball.path[currentFrame];
-	}
+	nextLoc = ball.path[currentFrame];
+	ball.location = nextLoc.copy();
 	ball.circle.animate({cx:nextLoc.x * width, cy:nextLoc.y * height},
 			 1000.0 / (FRAME_RATE * playSpeed),
 			 "linear",
 			 undefined);
 
-	if(currentFrame >= maxFrame - 1) {
+	if(currentFrame >= maxFrame) {
 	    stop();
 	}
-	currentFrame++;
+	possessionToken = tokens[ball.possession[currentFrame]];
 	$("#frame_number").val(currentFrame);
 	$("#current_frame")[0].innerHTML = currentFrame;
-	playTime += (playSpeed / FRAME_RATE)
     }
 }
 
