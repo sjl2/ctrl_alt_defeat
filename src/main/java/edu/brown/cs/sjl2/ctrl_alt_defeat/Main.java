@@ -32,7 +32,8 @@ public final class Main {
   private void run() {
     OptionParser parser = new OptionParser();
 
-    parser.accepts("random");
+    OptionSpec<Integer> roundRobins =
+        parser.accepts("random").withRequiredArg().ofType(Integer.class);
     OptionSpec<Integer>  portSpec =
       parser.accepts("port").withRequiredArg().ofType(Integer.class);
 
@@ -53,7 +54,8 @@ public final class Main {
     DBManager dbManager = new DBManager(db);
 
     if (options.has("random")) {
-     BasketballDatabaseGenerator.populateDB(dbManager);
+     BasketballDatabaseGenerator.populateDB(dbManager,
+         options.valueOf(roundRobins));
     }
 
     if (options.has("port")) {

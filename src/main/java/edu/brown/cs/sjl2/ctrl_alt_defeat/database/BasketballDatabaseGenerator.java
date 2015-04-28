@@ -17,7 +17,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class BasketballDatabaseGenerator {
 
-  private static final int NUMBER_OF_ROUND_ROBINS = 7;
   private static final int NUM_OF_STATS = 15;
   private static final double HALF = 0.5;
   private static final double DEPLETING_RATIO = 0.6;
@@ -27,7 +26,7 @@ public class BasketballDatabaseGenerator {
   private static final int NUM_FG = 4;
   private static final double BUFFER = 0.05;
 
-  public static void populateDB(DBManager db) {
+  public static void populateDB(DBManager db, int roundRobins) {
     Connection conn = db.getConnection();
 
     List<String> teamNames =
@@ -166,11 +165,11 @@ public class BasketballDatabaseGenerator {
       }
 
       int numGames =
-          NUMBER_OF_ROUND_ROBINS * teams.size() * (teams.size() - 1);
+          roundRobins * teams.size() * (teams.size() - 1);
       int gamesCompleted = 0;
 
       // Play multiple round robin tournaments in random years.
-      for (int i = 0; i < NUMBER_OF_ROUND_ROBINS; i++) {
+      for (int i = 0; i < roundRobins; i++) {
         for (Team home : teams) {
           for (Team away :  teams) {
             if (home.getID() != away.getID()) {
