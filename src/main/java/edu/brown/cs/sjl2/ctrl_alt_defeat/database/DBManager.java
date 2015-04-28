@@ -25,6 +25,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1255,24 +1256,37 @@ public class DBManager {
 
   /**
    * Generates list of shot locations
-   * @param gameID - ID of game to get data for
+   * @param gameIDs - List of IDs of game to get data for
    * @param entityID - either player or team id
    * @param makes - True if you want makes, false if you want misses
    * @param chartType - "team" or "player"
    * @return
    */
-  private List<Location> getShotsForEntityInGame(int gameID, int entityID, boolean makes, String chartType) {
+  private List<Location> getShotsForEntityInGames(List<Integer> gameIDs, int entityID, boolean makes, String chartType) {
+    int numGames = gameIDs.size();
     String statType = "";
     if (makes) {
-      statType = "(type = \"MadeTwoPointer\" OR type = \"MadeThreePointer\");";
+      statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\");";
     } else {
       statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\");";
     }
 
-    String query = "SELECT x, y FROM stat WHERE " + chartType + " = ? AND game = ? AND " + statType;
-    try (PreparedStatement prep = conn.prepareStatement(query)) {
+    StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
+    query.append(chartType);
+    query.append(" = ? AND ");
+    query.append(statType);
+    query.append("AND game in (");
+    for (int i = 0; i < numGames -1; i++) {
+      query.append("?, ");
+    }
+    query.append("?);");
+
+    try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       prep.setInt(1, entityID);
-      prep.setInt(2, gameID);
+      int i = 2;
+      for (int gameID : gameIDs) {
+        prep.setInt(i, gameID);
+      }
       ResultSet rs = prep.executeQuery();
 
       List<Location> shots = new ArrayList<>();
@@ -1289,13 +1303,41 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
+  
+  public List<Integer> getGameIDsInYear(int championshipYear) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT id FROM game WHERE championship_year = ?;")) {
+      prep.setInt(1, championshipYear);
+      ResultSet rs = prep.executeQuery();
+
+      List<Integer> gameIDs = new ArrayList<>();
+      while (rs.next()) {
+        gameIDs.add(rs.getInt("id"));
+      }
+
+      return gameIDs;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
 
   public List<Location> getMakesForEntityInGame(int gameID, int entityID, String chartType) {
-    return getShotsForEntityInGame(gameID, entityID, true, chartType);
+    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, true, chartType);
   }
 
   public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
-    return getShotsForEntityInGame(gameID, entityID, false, chartType);
+    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, false, chartType);
+  }
+  
+  public List<Location> getMakesForYear(int championshipYear, int entityID, String chartType) {
+    List<Integer> gameIDs = getGameIDsInYear(championshipYear);
+    return getShotsForEntityInGames(gameIDs, entityID, true, chartType);
+  }
+
+  public List<Location> getMissesForYear(int championshipYear, int entityID, String chartType) {
+    List<Integer> gameIDs = getGameIDsInYear(championshipYear);
+    return getShotsForEntityInGames(gameIDs, entityID, false, chartType);
   }
 
   private Trie fillTrie() {
