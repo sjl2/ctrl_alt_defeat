@@ -60,6 +60,8 @@
           <p> TO: </p> 
         </div>
         <div class = "col-md-6">
+          <div id="shotChartTitle"></div>
+
           <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
               Action <span class="caret"></span>
@@ -70,7 +72,8 @@
               <li id="sfList" onclick="shotchart('sf')">Name</li>
               <li id="pfList" onclick="shotchart('pf')">Name</li>
               <li id="cList" onclick="shotchart('c')">Name</li>
-              <li onclick="shotchart('team')">Team</li>
+              <li onclick="shotchart('us')">Team Shot Chart</li>
+              <li onclick="shotchart('them')">Opponent Shot Chart</li>
             </ul>
           </div>
           <div  id="shotChart"></div>

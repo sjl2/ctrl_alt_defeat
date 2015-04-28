@@ -5,11 +5,16 @@
   <div id="id" hidden>${player.getID()}</div>
   <div class="container">
     <div class = "jumbotron">
+
+    
+
       <h2>${player.getName()}</h2>
       <h3>
         <a href="/team/view/${player.getTeamID()}">${player.getTeamName()}</a>
       </h3>
     </div>
+
+    <div id="forCharts" style="height:500px"></div>
 
     <div class="row">
       <div class="col-md-2 col-md-offset-10">
@@ -41,7 +46,7 @@
           <th>PF</th>
         </tr>
         <#list rows as row>
-          <tr> 
+          <tr onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})"> 
             <#assign link = db.getGameLink(row.getGameID())>
             <td>
               <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>

@@ -1,22 +1,18 @@
-var currentPlayerIds = {};
-currentPlayerIds["PG"] = undefined;
-currentPlayerIds["SG"] = undefined;
-currentPlayerIds["SF"] = undefined;
-currentPlayerIds["PF"] = undefined;
-currentPlayerIds["C"] = undefined;
+var currentPlayers = {};
+currentPlayers["PG"] = undefined;
+currentPlayers["SG"] = undefined;
+currentPlayers["SF"] = undefined;
+currentPlayers["PF"] = undefined;
+currentPlayers["C"] = undefined;
 
 var scoreboard = Raphael(document.getElementById("scoreboard"), 400, 200);
 var statTicker = Raphael(document.getElementById("statTicker"), 200, 90);
-var shotChart = Raphael(document.getElementById("shotChart"), 300, 300);
+var shotChart = Raphael(document.getElementById("shotChart"), 300, 280);
 shotChart.makes = shotChart.set();
 shotChart.misses = shotChart.set();
+shotChart.curr = undefined;
 shotChart.image("images/Basketball-Court-half.png", 0, 0, 15 * 20, 14 * 20)
 
-
-for (var i = .1; i < .8; i += .1) {
-	shotChart.makes.push(makeObjectAroundPoint(true, i, i));
-	shotChart.misses.push(makeObjectAroundPoint(false, i, (1-i)));
-}
 
 statTicker.rect(0,0,200,90).attr({fill : "white"});
 statTicker.words = statTicker.text(100, 15, "N/A");
@@ -80,8 +76,8 @@ $.get("/dashboard/getgame", {}, function(responseJSON) {
 		scoreboard.homeTimeouts.attr({text : res.timeouts});
 		scoreboard.awayTimeouts.attr({text : res.timeouts});
 		initStatTable();
-		window.setInterval(displayTicker, 5000);
-		window.setInterval(updateGame, 5000);
+		window.setInterval(displayTicker, 2000);
+		window.setInterval(updateGame, 2000);
 		
 	}
 });
@@ -119,16 +115,16 @@ function updateGame() {
 		updateStats("PF", res.pfStats);
 		updateStats("C", res.cStats);
 
-		document.getElementById("pgList").html(res.pgStats.player.name);
-		currentPlayerIds["PG"] = res.pgStats.player.id;
-		document.getElementById("sgList").html(res.sgStats.player.name);
-		currentPlayerIds["SG"] = res.sgStats.player.id;
-		document.getElementById("sfList").html(res.sfStats.player.name);
-		currentPlayerIds["SF"] = res.sfStats.player.id;
-		document.getElementById("pfList").html(res.pfStats.player.name);
-		currentPlayerIds["PF"] = res.pfStats.player.id;
-		document.getElementById("cList").html(res.cStats.player.name);
-		currentPlayerIds["C"] = res.cStats.player.id;
+		document.getElementById("pgList").innerHTML = (res.pgStats.player.name);
+		currentPlayers["PG"] = res.pgStats.player;
+		document.getElementById("sgList").innerHTML = (res.sgStats.player.name);
+		currentPlayers["SG"] = res.sgStats.player;
+		document.getElementById("sfList").innerHTML = (res.sfStats.player.name);
+		currentPlayers["SF"] = res.sfStats.player;
+		document.getElementById("pfList").innerHTML = (res.pfStats.player.name);
+		currentPlayers["PF"] = res.pfStats.player;
+		document.getElementById("cList").innerHTML = (res.cStats.player.name);
+		currentPlayers["C"] = res.cStats.player;
 
 		console.log("res ", res);
 		if (res.ourFGAttempted == 0) statTable["fieldGoalPercentage"].us = 0;
@@ -166,6 +162,8 @@ function updateGame() {
 		statTable["threePointAttempted"].them = res.their3ptAttempted;
 		statTable["freeThrowMade"].them = res.theirFTMade;
 		statTable["freeThrowAttempted"].them = res.theirFTAttempted;
+
+		if (shotChart.curr !== undefined) shotchart(shotChart.curr);
 
 	});
 }
@@ -337,8 +335,58 @@ function makeObjectAroundPoint(b, x, y) {
 }
 
 function shotchart(arg) {
-	console.log(arg);
+	shotChart.curr = arg;
+	var postParams = {};
+	postParams.currentGame = true;
+	if (arg == 'us') {
+		postParams.us = true;
+		postParams.player = false;
+		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for Team");
 
+	} else if (arg == 'them') {
+		postParams.us = false;
+		postParams.player = false;
+		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for Opponent");
 
-	$.post("/dashboard/shotchart")
+	} else if (arg == 'pg') {
+		postParams.player = true;
+		postParams.id = currentPlayers["PG"].id;
+		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["PG"].name);
+
+	} else if (arg == 'sg') {
+		postParams.player = true;
+		postParams.id = currentPlayers["SG"].id;
+		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["SG"].name);
+
+	} else if (arg == 'sf') {
+		postParams.player = true;
+		postParams.id = currentPlayers["SF"].id;
+		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["SF"].name);
+
+	} else if (arg == 'pf') {
+		postParams.player = true;
+		postParams.id = currentPlayers["PF"].id;
+		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["PF"].name);
+
+	} else if (arg == 'c') {
+		postParams.player = true;
+		postParams.id = currentPlayers["C"].id;
+		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["C"].name);
+
+	}
+
+	console.log("params", postParams);
+
+	$.post("/dashboard/shotchart", postParams, function(responseJSON) {
+		var res = JSON.parse(responseJSON);
+		shotChart.makes.remove();
+		shotChart.misses.remove();
+		console.log(res);
+		for (var i=0; i<res.makes.length; i++) {
+			shotChart.makes.push(makeObjectAroundPoint(true, res.makes[i].x, res.makes[i].y));
+		}
+		for (var i=0; i<res.misses.length; i++) {
+			shotChart.misses.push(makeObjectAroundPoint(false, res.misses[i].x, res.misses[i].y));
+		}
+	});
 }

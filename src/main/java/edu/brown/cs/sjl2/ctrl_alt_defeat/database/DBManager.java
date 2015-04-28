@@ -1264,7 +1264,7 @@ public class DBManager {
   private List<Location> getShotsForEntityInGame(int gameID, int entityID, boolean makes, String chartType) {
     String statType = "";
     if (makes) {
-      statType = "(type = \"MadeTwoPointer\" OR type = \"MadeThreePointer\");";
+      statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\");";
     } else {
       statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\");";
     }
