@@ -1,6 +1,6 @@
 <#assign coachContent>
-  <script src="/js/game.js"></script>
-  <link rel="stylesheet" href="/css/game.css">
+  <script src="/js/player_team_page.js"></script>
+  <link rel="stylesheet" href="/css/player_team_page.css">
 
   <div class="container">
     <div class = "jumbotron">
@@ -12,7 +12,7 @@
 
     <div class="row">
       <div class="col-md-2 col-md-offset-10">
-        <select class="form-control">
+        <select class="form-control" id="current-season">
           <#list years as year>
             <option value="${year}">${year - 1} - ${year}</option>
           </#list>
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <div class="row" id="schedule-player">
+    <div class="row" id="season-player">
       <table class="table table-hover boxscore">
         <tr>
           <th>Game</th>
@@ -127,7 +127,7 @@
           <th>PF</th>
         </tr>
         <#list years as year>
-          <#assign row = seasonAverages[year_index]>
+          <#assign row = year_index[seasonAverages]>
           <tr class="player-stats"> 
             <td>${year - 1} - ${year}</td>
             <td>${row.getMinutes()}</td>
