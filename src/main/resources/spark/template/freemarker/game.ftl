@@ -11,7 +11,8 @@
         <a href="/team/view/${home.getID()}">${home.getName()}</a> 
       </h2>
       <h3>${game.getAwayScore()} - ${game.getHomeScore()} </h3>
-      <h3>${game.getDate().toString()}</h3>
+      <#assign date = game.getDate() >
+      <h3>${date.getMonth()} ${date.getDayOfMonth()}, ${date.getYear()}</h3>
     </div>
 
     <div class="row">
@@ -35,7 +36,8 @@
           </tr>
           <tr>
               <#assign homeStats = game.getHomeBoxScore().getTeamStats()>
-              <td>${home.getName()}</td>
+              <#assign link = home.getLink()>
+              <td><a href=${link.getURL()}>${link.getText()}</a></td>
               <td>${homeStats.getPoints()}</td>
               <td>${homeStats.getFieldGoals()} - ${homeStats.getFieldGoalsA()}</td>
               <td>${homeStats.getTwoPointers()} - ${homeStats.getTwoPointersA()}</td>
@@ -52,9 +54,10 @@
           </tr>
           <tr>
               <#assign teamStats = game.getAwayBoxScore().getTeamStats()>
-              <td>${away.getName()}</td>
+              <#assign link = away.getLink()>
+              <td><a href=${link.getURL()}>${link.getText()}</a></td>
               <td>${teamStats.getPoints()}</td> 
-              <td>${teamStats.getFieldGoals()} - ${teamStats.getFieldGoalsA()}</td>          
+              <td>${teamStats.getFieldGoals()} - ${teamStats.getFieldGoalsA()}</td>        
               <td>${teamStats.getTwoPointers()} - ${teamStats.getTwoPointersA()}</td>
               <td>${teamStats.getThreePointers()} - ${teamStats.getThreePointersA()}</td>
               <td>${teamStats.getFreeThrows()} - ${teamStats.getFreeThrowsA()}</td>

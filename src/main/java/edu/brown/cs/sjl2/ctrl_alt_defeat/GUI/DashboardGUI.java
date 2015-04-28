@@ -305,7 +305,7 @@ public class DashboardGUI {
       return GSON.toJson(variables);
     }
   }
-  
+
   public class GetHeatMapData implements Route {
 
     @Override
@@ -341,7 +341,7 @@ public class DashboardGUI {
           .put("error", error)
           .build();
       return GSON.toJson(variables);
-      
+
     }
   }
 
@@ -473,7 +473,7 @@ public class DashboardGUI {
 
   }
 
-  class AutocompleteHandler implements Route {
+  public class AutocompleteHandler implements Route {
 
     @Override
     public Object handle(Request req, Response arg1) {
@@ -499,4 +499,28 @@ public class DashboardGUI {
     }
   }
 
+  public class PlayerSeasonHandler implements TemplateViewRoute {
+
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String error = "";
+      List<GameStats> rows = null;
+
+      try {
+        int year = Integer.parseInt(qm.value("year"));
+        int playerID = Integer.parseInt(qm.value("playerID"));
+        rows = dbManager.getSeparateGameStatsForYear(year, "player_stats", playerID);
+      } catch (NumberFormatException e) {
+        error = "That's either an invalid year or playerID!";
+      }
+
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
+          .put("db", dbManager)
+          .put("rows", rows)
+          .put("errorMessage", error).build();
+      return new ModelAndView(variables, "season.ftl");
+    }
+  }
 }

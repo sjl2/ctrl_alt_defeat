@@ -25,6 +25,7 @@ public class BasketballDatabaseGenerator {
   private static final int NUM_FOULS = 3;
   private static final int NUM_FG = 4;
   private static final double BUFFER = 0.05;
+  private static final int DEPLETE_STALL = 3;
 
   public static void populateDB(DBManager db, int roundRobins) {
     Connection conn = db.getConnection();
@@ -94,7 +95,8 @@ public class BasketballDatabaseGenerator {
             "Alexey Shved-1",
             "Jason Smith-14",
             "Lance Thomas-42",
-            "Travis Wear-6"));
+            "Travis Wear-6",
+            "Jahlil Okafor-15"));
 
     players.add(
         Arrays.asList(
@@ -117,14 +119,10 @@ public class BasketballDatabaseGenerator {
 
 
     List<String> primary =
-        Arrays.asList(
-            "#3A61A3", "#860038", "#06730B", "#0953A0", "#04529C"
-            );
+        Arrays.asList("#3A61A3", "#860038", "#06730B", "#0953A0", "#04529C");
 
     List<String> second =
-        Arrays.asList(
-            "#F29687", "#FDBB30", "#FFBF0D", "#FF7518", "#FFCC33"
-            );
+        Arrays.asList("#F29687", "#FDBB30", "#FFBF0D", "#FF7518", "#FFCC33");
 
     List<Team> teams = new ArrayList<>();
 
@@ -202,6 +200,8 @@ public class BasketballDatabaseGenerator {
   private static void randomGameStats(Game game, Team home, Team away,
       DBManager db) throws GameException {
 
+    Random r = new Random();
+
     List<Team> gameTeams = Arrays.asList(home, away);
 
     for (Team gameTeam : gameTeams) {
@@ -209,7 +209,7 @@ public class BasketballDatabaseGenerator {
       for (Player p : gameTeam.getPlayers()) {
         randomPlayerStats(game, p, db, percent);
 
-        if (p.getID() % 2 == 0) {
+        if (r.nextInt(DEPLETE_STALL) == 0) {
           percent = percent * DEPLETING_RATIO;
         }
       }
