@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -20,8 +19,6 @@ import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.GUI.PlaymakerGUI.PlaymakerHandler;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 import freemarker.template.Configuration;
@@ -31,7 +28,6 @@ public class GUIManager {
   private DBManager dbManager;
   private int port = 8585;
   private final static int STATUS = 500;
-  private final static int TEN_THOUSAND_AND_FOUR = 10004;
 
   private Dashboard dash;
 
