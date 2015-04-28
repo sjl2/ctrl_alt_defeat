@@ -112,7 +112,6 @@ public class StatsEntryGUI {
       } catch (Exception e) {
         e.printStackTrace();
       }
-
       return 28;
     }
   }

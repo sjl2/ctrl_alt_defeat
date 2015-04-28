@@ -35,9 +35,9 @@ public class Dashboard {
   }
 
   private Game newGame(Team home, Team away,
-      Map<BasketballPosition, Integer> starterIDs) throws GameException {
+      Map<BasketballPosition, Integer> starterIDs, boolean b) throws GameException {
 
-    return new Game(home, away, db, starterIDs);
+    return new Game(home, away, db, starterIDs, b);
   }
 
 
@@ -51,9 +51,9 @@ public class Dashboard {
     } else if (currentGame == null) {
       try {
         if (home) {
-          currentGame = newGame(myTeam, db.getTeam(opponentID), starterIDs);
+          currentGame = newGame(myTeam, db.getTeam(opponentID), starterIDs, true);
         } else {
-          currentGame = newGame(db.getTeam(opponentID), myTeam, starterIDs);
+          currentGame = newGame(db.getTeam(opponentID), myTeam, starterIDs, false);
         }
       } catch (GameException e) {
         throw new DashboardException("Cannot start game. " + e.getMessage());

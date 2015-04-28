@@ -46,7 +46,7 @@
 - Load GameStats from DB
 - PlayMaker/Whiteboard half court option 
 - PlayMaker/Whiteboard reflect option
-- PlayMaker/Whiteboard rotate option if they prefer court to be vertical on the screen. 
+- PlayMaker/Whiteboard rotate option f they prefer court to be vertical on the screen. 
 - Whiteboard
 	- Clear
 	- Eraser
@@ -58,14 +58,6 @@
 	- 404 Pages for Teams, Games, Players, that do not exist
 	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
 - Add Option to Build this table from scratch (translate the .schema to java). 
-
-
-
-
-
-
-
-
 
 Tyler:
 	Start positions for tokens

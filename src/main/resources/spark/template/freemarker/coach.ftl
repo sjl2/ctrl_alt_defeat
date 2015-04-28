@@ -25,16 +25,32 @@
               </li>
               <li><a href="/whiteboard">Whiteboard</a></li>
             </ul>
-
+            <form class="navbar-form navbar-left" role="search">
+              <div class="input-append btn-group">
+                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px" autocomplete = "off" onkeyup = "suggestions()" list="suggestions1" id="playerTeamSearch">
+                <datalist id="suggestions1"></datalist>
+                  <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" >
+                    <span class="caret"></span>
+                  </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a href="#"><i class="icon-pencil"></i> Search as Player</a></li>
+                  <li><a href="#"><i class="icon-trash"></i> Search as Team</a></li>
+                  
+                </ul>
+              </div>
+            </form>
           </div>
          </div>
       </nav>
+
+    <datalist id="suggestions1"></datalist>
+
       <div id = "coachContent"> 
         ${coachContent} 
       </div>
 
   </div>
- 
+  <script src="/js/coach.js"></script>
  <link rel="stylesheet" href="/css/coach.css">
 
 </#assign>

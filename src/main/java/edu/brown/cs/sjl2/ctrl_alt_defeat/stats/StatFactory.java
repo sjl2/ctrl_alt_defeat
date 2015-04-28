@@ -112,6 +112,8 @@ public class StatFactory {
       case "TwoPointer":
         s = new TwoPointer(id, p, location, period);
         break;
+      case "Assist":
+        s = new Assist(id, p, location, period);
       default:
         throw new RuntimeException("Unrecognized statID \"" + statType + "\".");
     }

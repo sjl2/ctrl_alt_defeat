@@ -1,6 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GUI.GUIManager;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.BasketballDatabaseGenerator;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -31,7 +32,7 @@ public final class Main {
   private void run() {
     OptionParser parser = new OptionParser();
 
-    parser.accepts("generate");
+    parser.accepts("random");
     OptionSpec<Integer>  portSpec =
       parser.accepts("port").withRequiredArg().ofType(Integer.class);
 
@@ -48,10 +49,11 @@ public final class Main {
       System.out.println("ERROR: Please input a basketball database.");
       return;
     }
+
     DBManager dbManager = new DBManager(db);
 
-    if (options.has("generate")) {
-      dbManager.populateDB();
+    if (options.has("random")) {
+     BasketballDatabaseGenerator.populateDB(dbManager);
     }
 
     if (options.has("port")) {

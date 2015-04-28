@@ -1,20 +1,36 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.database;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.NClob;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
+import java.sql.Ref;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -34,8 +50,9 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 
 /**
  * DBManager class, handles connection to database.
@@ -49,16 +66,12 @@ public class DBManager {
   private static final int SIX = 6;
   private static final int SEVEN = 7;
   private static final int EIGHT = 8;
-  private static final int NUMBER_OF_PLAYERS = 12;
-  private static final int NUMBER_OF_ROUND_ROBINS = 50;
-  private static final int MAX_NUM_STATS = 11;
-  private static final int NUM_OF_STATS = 50;
-  private static final int NUMBER_BASE = 20;
 
   private Connection conn;
   private PlayerFactory pf;
   private TeamFactory tf;
   private Multiset<String> nextIDs;
+  private Trie trie;
 
   /**
    * Constructor for DBManager class, sets up connection.
@@ -81,6 +94,11 @@ public class DBManager {
 
     this.pf = new PlayerFactory(this);
     this.tf = new TeamFactory(this);
+    this.trie = fillTrie();
+  }
+
+  public Connection getConnection() {
+    return conn;
   }
 
   /**
@@ -220,13 +238,13 @@ public class DBManager {
         throw new RuntimeException(e);
       }
     }
-    
+
     Location[] ballPath = loadBallPath(name, numFrames);
     play.setPlayerPaths(paths);
     play.setBallPath(ballPath);
     return play;
   }
-  
+
   private Location[] loadBallPath(String name, int numFrames) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT frame, x, y "
@@ -932,7 +950,7 @@ public class DBManager {
     }
   }
 
-  private int createGame(LocalDate date, int home, int away) {
+  int createGame(LocalDate date, int home, int away) {
 
     String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
@@ -1104,12 +1122,14 @@ public class DBManager {
       throw new RuntimeException("You messed up calling getYearsActive...");
     }
 
-    String query = "SELECT * FROM " + table + ", game WHERE " + table + "." +
-        entity + " = ? AND game.championship_year = ?;";
+    String query = "SELECT * FROM " + table + ", game "
+        + "WHERE " + table + "." + entity + " = ? AND game.id = " + table + ".game "
+            + "AND game.championship_year = ? ORDER BY game.date ASC;";
+
 
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setInt(1, id);
-      prep.setInt(1, year);
+      prep.setInt(2, year);
       ResultSet rs = prep.executeQuery();
 
       List<GameStats> gameStats = new ArrayList<>();
@@ -1119,8 +1139,8 @@ public class DBManager {
         for (int i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toAdd = null;
         if (table.equals("player_stats")) {
           toAdd = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1190,7 +1210,9 @@ public class DBManager {
     query.append(table);
     query.append(".");
     query.append(entity);
-    query.append(" = ? AND game.championship_year = ?;");
+    query.append(" = ? AND game.id = ");
+    query.append(table);
+    query.append(".game AND game.championship_year = ?;");
 
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       prep.setInt(1, id);
@@ -1202,8 +1224,8 @@ public class DBManager {
         for (i = 1; i <= cols; i++) {
           values.add(rs.getInt(i));
         }
-        int gameID = values.get(1);
-        int teamID = values.get(2);
+        int gameID = values.get(0);
+        int teamID = values.get(1);
         GameStats toReturn = null;
         if (table.equals("player_stats")) {
           toReturn = new PlayerStats(values, gameID, getTeam(teamID));
@@ -1232,183 +1254,124 @@ public class DBManager {
     return careerStats;
   }
 
-  public void populateDB() {
-    List<String> teamNames =
-        Arrays.asList(
-            "Cleveland Caveliers",
-            "Seattle Sonics",
-            "New York Knicks",
-            "Golden State Warriors");
+  /**
+   * Generates list of shot locations
+   * @param gameIDs - List of IDs of game to get data for
+   * @param entityID - either player or team id
+   * @param makes - True if you want makes, false if you want misses
+   * @param chartType - "team" or "player"
+   * @return
+   */
+  private List<Location> getShotsForEntityInGames(List<Integer> gameIDs, int entityID, boolean makes, String chartType) {
+    int numGames = gameIDs.size();
+    String statType = "";
+    if (makes) {
+      statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\");";
+    } else {
+      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\");";
+    }
 
-    List<String> players =
-        Arrays.asList(
-            "Lebron James",
-            "Ray Allen",
-            "Jahlil Okafor",
-            "Stephen Curry");
+    StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
+    query.append(chartType);
+    query.append(" = ? AND ");
+    query.append(statType);
+    query.append("AND game in (");
+    for (int i = 0; i < numGames -1; i++) {
+      query.append("?, ");
+    }
+    query.append("?);");
 
-    List<String> primary =
-        Arrays.asList(
-            "red", "green", "orange", "blue"
-            );
+    try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
+      prep.setInt(1, entityID);
+      int i = 2;
+      for (int gameID : gameIDs) {
+        prep.setInt(i, gameID);
+      }
+      ResultSet rs = prep.executeQuery();
 
-    List<String> second =
-        Arrays.asList(
-            "white", "yellow", "blue", "yellow"
-            );
-
-    List<Team> teams = new ArrayList<>();
-
-    try {
-
-      conn.setAutoCommit(false);
-
-      // Create Players and Teams
-      for (int i = 0; i < teamNames.size(); i++) {
-        Team t = createTeam(
-            teamNames.get(i),
-            "Coach Bob " + i,
-            primary.get(i),
-            second.get(i),
-            false);
-
-        for (int j = 0; j < NUMBER_OF_PLAYERS; j++) {
-          String suffix = "";
-          if (j != 0) {
-            suffix +=  " " + j;
-          }
-
-          createPlayer(
-              players.get(i) + suffix,
-              t.getID(),
-              i + NUMBER_BASE,
-              true);
-
-        }
-
-        teams.add(t);
+      List<Location> shots = new ArrayList<>();
+      while(rs.next()) {
+        double x = rs.getDouble(1);
+        double y = rs.getDouble(2);
+        Location adjustedLoc = Location.adjustForShotChart(x, y);
+        shots.add(adjustedLoc);
       }
 
-      for (int i = 0; i < NUMBER_OF_ROUND_ROBINS; i++) {
-        for (Team home : teams) {
-          for (Team away :  teams) {
-            if (home.getID() != away.getID()) {
-              int game = createGame(
-                  getRandomDateInSeason(),
-                  home.getID(),
-                  away.getID());
-
-              generateRandomGameStats(game, home, away);
-            }
-          }
-        }
-      }
-
-      conn.commit();
-      conn.setAutoCommit(true);
+      return shots;
     } catch (SQLException e) {
       close();
-      throw new RuntimeException(e.getMessage());
+      throw new RuntimeException(e);
     }
   }
+  
+  public List<Integer> getGameIDsInYear(int championshipYear) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT id FROM game WHERE championship_year = ?;")) {
+      prep.setInt(1, championshipYear);
+      ResultSet rs = prep.executeQuery();
 
-  private void generateRandomGameStats(int game, Team home, Team away) {
-    Random r = new Random();
-    List<Team> gameTeams = Arrays.asList(home, away);
-
-    for (Team gameTeam : gameTeams) {
-      List<Integer> teamValues = new ArrayList<>();
-
-      int numCols = TeamStats.getNumCols();
-      for (int c = 0; c < numCols; c++) {
-        if (c == 0) {
-          teamValues.add(game);
-        } else if (c == 1) {
-          teamValues.add(gameTeam.getID());
-        } else {
-          teamValues.add(0);
-        }
+      List<Integer> gameIDs = new ArrayList<>();
+      while (rs.next()) {
+        gameIDs.add(rs.getInt("id"));
       }
 
-      List<PlayerStats> ps = new ArrayList<>();
-      for (Player p : gameTeam.getPlayers()) {
-        List<Integer> values = new ArrayList<>();
-        values.add(game);
-        values.add(gameTeam.getID());
-        values.add(p.getID());
-        int numStatCols = PlayerStats.getStatCols().size();
-        for (int s = 0; s < numStatCols; s++) {
-          int num;
-          if (s >= numStatCols - 2) {
-            num = r.nextInt(THREE);
-            values.add(num);
-            teamValues.set(2 + s, teamValues.get(2 + s) + num);
-          } else {
-            num = r.nextInt(MAX_NUM_STATS);
-            values.add(num);
-            teamValues.set(2 + s, teamValues.get(2 + s) + num);
-          }
-        }
+      return gameIDs;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
 
-        generateRandomStats(p, game, r);
+  public List<Location> getMakesForEntityInGame(int gameID, int entityID, String chartType) {
+    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, true, chartType);
+  }
 
-        ps.add(new PlayerStats(values, game, gameTeam));
+  public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
+    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, false, chartType);
+  }
+  
+  public List<Location> getMakesForYear(int championshipYear, int entityID, String chartType) {
+    List<Integer> gameIDs = getGameIDsInYear(championshipYear);
+    return getShotsForEntityInGames(gameIDs, entityID, true, chartType);
+  }
+
+  public List<Location> getMissesForYear(int championshipYear, int entityID, String chartType) {
+    List<Integer> gameIDs = getGameIDsInYear(championshipYear);
+    return getShotsForEntityInGames(gameIDs, entityID, false, chartType);
+  }
+
+  private Trie fillTrie() {
+    ArrayList<Character> c = new ArrayList<Character>();
+    c.add('@');
+    c.add('$');
+    Trie t = new Trie(c);
+
+    try {
+      PreparedStatement prep = conn.prepareStatement(
+          "select name from player;");
+      ResultSet r = prep.executeQuery();
+      while (r.next()) {
+        t.addFirstWord(StringFormatter.treat(r.getString(1)));
       }
-
-      TeamStats ts = new TeamStats(teamValues, game, gameTeam);
-      createBoxScore(ps, ts);
-    }
-  }
-
-  private void generateRandomStats(Player p, int game, Random r) {
-    int numStats = new Double(r.nextDouble() * NUM_OF_STATS)
-    .intValue();
-
-    for (int z = 0; z < numStats; z++) {
-      List<String> types = StatFactory.getTypes();
-
-      int id = getNextID("stat");
-      Location loc = new Location(r.nextDouble(), r.nextDouble());
-      int period = r.nextInt(THREE) + 1;
-      Stat s = StatFactory.newStat(
-          types.get(r.nextInt(types.size())), id, p, loc, period);
-
-      createStat(s, game);
+      prep.close();
+      r.close();
+      prep = conn.prepareStatement(
+          "select name from team;");
+      r = prep.executeQuery();
+      while (r.next()) {
+        t.addFirstWord(StringFormatter.treat(r.getString(1)));
+      }
+      prep.close();
+      r.close();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
+    return t;
   }
 
-  private LocalDate getRandomDateInSeason() {
-    Random r = new Random();
-
-    int year = LocalDate.now().getYear() + r.nextInt(FIVE);
-
-    int direction = r.nextInt(2);
-    int disp = r.nextInt(THREE);
-    int month;
-    if (direction == 1) {
-      month = 12 - disp;
-    } else {
-      month = 1 + disp;
-    }
-
-    int day = 1 + r.nextInt(Month.of(month).maxLength() - 1);
-
-    return LocalDate.of(year, month, day);
+  public Trie getTrie() {
+    return trie;
   }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
