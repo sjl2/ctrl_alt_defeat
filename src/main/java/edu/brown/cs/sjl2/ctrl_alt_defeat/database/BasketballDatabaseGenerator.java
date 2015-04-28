@@ -17,12 +17,15 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class BasketballDatabaseGenerator {
 
-  private static final int NUMBER_OF_ROUND_ROBINS = 5;
-  private static final int NUM_OF_STATS = 20;
+  private static final int NUMBER_OF_ROUND_ROBINS = 3;
+  private static final int NUM_OF_STATS = 15;
   private static final double HALF = 0.5;
-  private static final double DEPLETING_RATIO = 0.7;
+  private static final double DEPLETING_RATIO = 0.6;
+  private static final double FRONT_COURT = 0.8;
   private static final int BATCH_SIZE = 5;
   private static final int NUM_FOULS = 3;
+  private static final int NUM_FG = 4;
+  private static final double BUFFER = 0.05;
 
   public static void populateDB(DBManager db) {
     Connection conn = db.getConnection();
@@ -45,7 +48,8 @@ public class BasketballDatabaseGenerator {
             "Alex Wainger-7",
             "Tyler Schicke-53",
             "Ankit Shah-99",
-            "Jessica Liang-98"));
+            "Jessica Liang-98",
+            "Gabe Lyons-97"));
 
 
     players.add(
@@ -209,7 +213,6 @@ public class BasketballDatabaseGenerator {
         if (p.getID() % 2 == 0) {
           percent = percent * DEPLETING_RATIO;
         }
-
       }
     }
   }
@@ -226,10 +229,47 @@ public class BasketballDatabaseGenerator {
           new Double(percentOfGame * r.nextDouble() * NUM_OF_STATS).intValue();
 
       switch (type) {
+        case "TwoPointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * numStats)
+              .intValue();
+          }
+          break;
+        case "ThreePointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * numStats)
+              .intValue();
+          }
+          break;
+        case "MissedThreePointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * NUM_FG)
+              .intValue();
+          }
+          break;
+        case "MissedTwoPointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * NUM_FG)
+              .intValue();
+          }
+          break;
+        case "FreeThrow":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * NUM_FG)
+              .intValue();
+          }
+          break;
+        case "MissedFreeThrow":
+          if (numStats > 2) {
+            numStats = new Double(r.nextDouble() * NUM_FG)
+              .intValue();
+          }
+          break;
         case "OffensiveFoul":
           if (numStats > NUM_FOULS) {
             numStats = NUM_FOULS;
           }
+          break;
         case "DefensiveFoul":
           if (numStats > NUM_FOULS) {
             numStats = new Double(r.nextDouble() * NUM_FOULS)
@@ -249,20 +289,39 @@ public class BasketballDatabaseGenerator {
         int numPeriods = game.getRules().getPeriods();
         int period = r.nextInt(numPeriods - 1) + 1;
 
-        Location loc;
+        double x;
+        double y;
         if (game.isHome(p.getTeamID())) {
           if ((double) period / numPeriods < HALF) {
-            loc = new Location(HALF + HALF * r.nextDouble(), r.nextDouble());
+            x = 1 - FRONT_COURT * HALF * r.nextDouble();
+            y = r.nextDouble();
           } else {
-            loc = new Location(r.nextDouble(), r.nextDouble());
+            x = FRONT_COURT * HALF * r.nextDouble();
+            y = r.nextDouble();
           }
         } else {
           if ((double) period / numPeriods < HALF) {
-            loc = new Location(r.nextDouble(), r.nextDouble());
+            x = FRONT_COURT * HALF * r.nextDouble();
+            y = r.nextDouble();
           } else {
-            loc = new Location(HALF + HALF * r.nextDouble(), r.nextDouble());
+            x = 1 - FRONT_COURT * HALF * r.nextDouble();
+            y = r.nextDouble();
           }
         }
+
+        if (x < BUFFER) {
+          x = BUFFER;
+        } else if (x > 1 - BUFFER) {
+          x = 1 - BUFFER;
+        }
+
+        if (y < BUFFER) {
+          y = BUFFER;
+        } else if (y > 1 - BUFFER) {
+          y = 1 - BUFFER;
+        }
+
+        Location loc =  new Location(x,  y);
 
         Stat s = StatFactory.newStat(type, id, p, loc, period);
         db.createStat(s, game.getID());

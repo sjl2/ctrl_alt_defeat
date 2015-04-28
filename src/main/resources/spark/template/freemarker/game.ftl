@@ -3,16 +3,15 @@
   <link rel="stylesheet" href="/css/game.css">
 
   <div class="container">
-    <div class = "jumbotron">
+    <div class = "jumbotron" id="game-header">
       <h2> 
         <#assign home = game.getHome()>
         <#assign away = game.getAway()>
         <a href="/team/view/${away.getID()}">${away.getName()}</a> @  
         <a href="/team/view/${home.getID()}">${home.getName()}</a> 
-        (${game.getDate().toString()})
       </h2>
-      <h3>Home: ${game.getHomeScore()} </h3>
-      <h3>Away: ${game.getAwayScore()} </h3>
+      <h3>${game.getAwayScore()} - ${game.getHomeScore()} </h3>
+      <h3>${game.getDate().toString()}</h3>
     </div>
 
     <div class="row">
