@@ -2,6 +2,7 @@
   <script src="/js/player_team_page.js"></script>
   <link rel="stylesheet" href="/css/player_team_page.css">
 
+  <div id="id" hidden>${player.getID()}</div>
   <div class="container">
     <div class = "jumbotron">
 
@@ -17,7 +18,7 @@
 
     <div class="row">
       <div class="col-md-2 col-md-offset-10">
-        <select class="form-control" id="current-season">
+        <select class="form-control" id="season">
           <#list years as year>
             <option value="${year}">${year - 1} - ${year}</option>
           </#list>

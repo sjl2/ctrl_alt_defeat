@@ -17,7 +17,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class BasketballDatabaseGenerator {
 
-  private static final int NUMBER_OF_ROUND_ROBINS = 3;
+  private static final int NUMBER_OF_ROUND_ROBINS = 5;
   private static final int NUM_OF_STATS = 20;
   private static final double HALF = 0.5;
   private static final double DEPLETING_RATIO = 0.7;
@@ -265,6 +265,7 @@ public class BasketballDatabaseGenerator {
         }
 
         Stat s = StatFactory.newStat(type, id, p, loc, period);
+        db.createStat(s, game.getID());
         game.addStat(s);
       }
 

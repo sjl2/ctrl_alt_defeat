@@ -7,21 +7,23 @@ $(document).ready(function(){
 	paper.shots = paper.set();
 	paper.image("/images/Basketball-Court-half.png",0,0,450,420).attr({"fill" : "white"});
 
+	$("#season").change(function () {
 
+		console.log("Current Season changed.");
+
+		postParameters = {
+			year: $("#season").val(), 
+			playerID: $("#id").val()
+		}
+		console.log("Year: "+ postParameters.year);
+
+		$.post("/player/get/year", postParameters, function (responseHTML) {
+
+		});
+	});
 
 });
 
-
-$("#current-season").on('change', function () {
-
-	postParameters = {
-		year: $("#current-season").val(), 
-		
-	}
-	$.post("/player/get/year", postParameters, function (responseHTML) {
-
-	})
-})
 
 function clickPlayerGame(playerID, gameID) {
 	paper.shots.remove();
