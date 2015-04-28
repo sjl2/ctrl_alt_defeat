@@ -50,4 +50,3 @@ Tyler:
 	Ball doesn't change it's first frame. 
 	If player with possesion is being edited, the ball's future path should 	also be cleared. 
 	Ball sometimes get's lost
-
