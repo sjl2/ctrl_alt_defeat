@@ -23,7 +23,8 @@ var angle = 0;
 
 var tokens = [];
 var ball;
-var posessionToken;
+var possessionToken;
+
 
 var intervalVar;
 var grabbedToken;
@@ -89,6 +90,7 @@ function Ball(playerToken, angle) {
 	location: Location(0, 0),
 	circle: undefined,
 	path: [],
+	possession: [],
 	
 	checkCollision: function(playerToken) {
 	    var dx = this.location.x - playerToken.location.x;
@@ -132,11 +134,13 @@ function Ball(playerToken, angle) {
     newBall.circle.drag(onmove, onballstart, onballend, newBall, newBall, newBall);
     newBall.setLocationWithXY(location.x, location.y);
     newBall.path[0] = newBall.location.copy();
+    newBall.possession[0] = 0;
     return newBall;
 }
 
-function Token(circle, text, location) {
+function Token(circle, text, location, index) {
     return {
+	index: index,
 	circle: circle,
 	text: paper.text(location.x * width, location.y * height, text).attr({"font-size": "20", "fill":"#FFFFFF"}),
 	path: [location.copy()],
@@ -147,10 +151,10 @@ function Token(circle, text, location) {
 	    this.text.attr("x", circle.attr("cx"));
 	    this.text.attr("y", circle.attr("cy"));
 	    this.location.translate(dx / width, dy / height);
-	    if(posessionToken == this) {
+	    if(possessionToken == this) {
 		ball.translate(dx, dy);
 		updateBallAngle();
-		ball.setRelativeLocation(posessionToken, ballAngle);
+		ball.setRelativeLocation(possessionToken, ballAngle);
 	    }
 	},
 	setLocationWithXY: function(x, y) {
@@ -224,11 +228,12 @@ window.onload = function() {
 	} else {
 	    circ2.attr("fill", "#dc2300");
 	}
-	var t = Token(circ2, positionAbrevs[i], loc);
+	var t = Token(circ2, positionAbrevs[i], loc, i);
 	circ2.drag(onmove, onstart, onend, t, t, t);
+	t.text.drag(onmove, onstart, onend, t, t, t);
 	tokens[i] = t;
     }
-    posessionToken = tokens[0];
+    possessionToken = tokens[0];
 
     $.get("/playmaker/getPlayerNumbers", {}, function(data) {
 	var playerNumbers = JSON.parse(data).playerNumbers;
@@ -240,7 +245,7 @@ window.onload = function() {
     });
     
     ballAngle = Math.PI
-    ball = Ball(posessionToken, ballAngle);
+    ball = Ball(possessionToken, ballAngle);
 
     $("#frame_number").on("input", function() {
 	if(playing) {
@@ -369,6 +374,7 @@ function updateRadii(newPlayerRadius) {
 	tokens[i].circle.attr("r", playerRadius * width);
     }
     ball.circle.attr("r", ballRadius * width);
+    ball.setRelativeLocation(possessionToken, ballAngle);
 }
 
 function previousFrame() {
@@ -400,14 +406,16 @@ function setFrame(frame) {
 	    }
 	} 
     }
-
-    if(ball != grabbedToken) {
+    possessionToken = tokens[ball.possession[currentFrame]];
+    updateBallAngle();
+    ball.setRelativeLocation(possessionToken, ballAngle);
+    /*if(ball != grabbedToken) {
 	if(currentFrame >= ball.path.length) {
 	    ball.setLocationWithLoc(ball.path[ball.path.length - 1]);
 	} else {
 	    ball.setLocationWithLoc(ball.path[currentFrame]);
 	}
-    }
+    }*/
 }
 
 function updateBallAngle() {
@@ -467,6 +475,12 @@ function onend(event) {
 	}
     } else {
 	grabbedToken.path[0] = grabbedToken.location.copy();
+	if(this.index == possessionToken.index) {
+	    ball.path = [];
+	    ball.possession = [];
+	    ball.path[0] = ball.getRelativeLocation(possessionToken, ballAngle);
+	    ball.possession[0] = possessionToken.index;
+	}
     }
     grabbedToken = undefined;
     maxFrame = 0;
@@ -493,17 +507,18 @@ function onballend(event) {
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
 	if(this.checkCollision(t)) {
-	    posessionToken = t;
+	    possessionToken = t;
 	}
     }
     updateBallAngle();
-    ball.setRelativeLocation(posessionToken, ballAngle);
+    ball.setRelativeLocation(possessionToken, ballAngle);
 }
 
 function updatePath() {
+    ball.possession[currentFrame + 1] = possessionToken.index;
     setFrame(currentFrame + 1);
     grabbedToken.path[currentFrame] = grabbedToken.location.copy();
-    ball.path[currentFrame] = ball.setRelativeLocation(posessionToken, ballAngle);
+    ball.path[currentFrame] = ball.setRelativeLocation(possessionToken, ballAngle);
     updateBallAngle();
     if(currentFrame > maxFrame) {
 	for(i = 0; i < tokens.length; i++) {

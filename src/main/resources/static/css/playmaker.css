@@ -1,11 +1,18 @@
-/*
+
 #canvas_container {
-    width: 50%;
-    position: relative;
-    margin: 0px auto;
-    outline: #000000 solid thick;
 }
-*/
+
+svg text {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+svg image {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
 
 #control {
     text-align: center;
@@ -16,6 +23,9 @@
 }
 
 #current_frame {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
     width: 47px;
     margin: 0px auto;
 }

@@ -9,6 +9,7 @@ drag = false;
 ctx.lineWidth = 3;
 
 canvas.addEventListener("mousedown", function(e){
+    e.preventDefault();
     drag = true;
     ctx.beginPath();
     ctx.moveTo(e.offsetX, e.offsetY);
