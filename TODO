@@ -35,6 +35,8 @@
 	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
 - Add Option to Build this table from scratch (translate the .schema to java). 
 
+- Make new game page select first five players by default, instead of all the same player
+
 Testing:
 - Handler JUnits (Maybe? Prolly not a bad idea)
 - Dashboard JUnit
