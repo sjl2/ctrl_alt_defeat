@@ -1266,16 +1266,16 @@ public class DBManager {
     int numGames = gameIDs.size();
     String statType = "";
     if (makes) {
-      statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\");";
+      statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\")";
     } else {
-      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\");";
+      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\")";
     }
 
     StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
     query.append(chartType);
     query.append(" = ? AND ");
     query.append(statType);
-    query.append("AND game in (");
+    query.append(" AND game in (");
     for (int i = 0; i < numGames -1; i++) {
       query.append("?, ");
     }
@@ -1286,6 +1286,7 @@ public class DBManager {
       int i = 2;
       for (int gameID : gameIDs) {
         prep.setInt(i, gameID);
+        i++;
       }
       ResultSet rs = prep.executeQuery();
 
@@ -1303,7 +1304,7 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-  
+
   public List<Integer> getGameIDsInYear(int championshipYear) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT id FROM game WHERE championship_year = ?;")) {
@@ -1329,7 +1330,7 @@ public class DBManager {
   public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
     return getShotsForEntityInGames(Arrays.asList(gameID), entityID, false, chartType);
   }
-  
+
   public List<Location> getMakesForYear(int championshipYear, int entityID, String chartType) {
     List<Integer> gameIDs = getGameIDsInYear(championshipYear);
     return getShotsForEntityInGames(gameIDs, entityID, true, chartType);
