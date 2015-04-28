@@ -337,6 +337,7 @@ function makeObjectAroundPoint(b, x, y) {
 function shotchart(arg) {
 	shotChart.curr = arg;
 	var postParams = {};
+	postParams.currentGame = true;
 	if (arg == 'us') {
 		postParams.us = true;
 		postParams.player = false;

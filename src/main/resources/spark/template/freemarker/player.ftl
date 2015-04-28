@@ -5,13 +5,15 @@
   <div class="container">
     <div class = "jumbotron">
 
-    <div id="forCharts"></div>
+    
 
       <h2>${player.getName()}</h2>
       <h3>
         <a href="/team/view/${player.getTeamID()}">${player.getTeamName()}</a>
       </h3>
     </div>
+
+    <div id="forCharts" style="height:500px"></div>
 
     <div class="row">
       <div class="col-md-2 col-md-offset-10">
@@ -25,7 +27,7 @@
 
     <div class="row" id="season-player">
       <table class="table table-hover boxscore">
-        <tr onclick="clickPlayerGame(${player.getID}, ${row.getGameID()})">
+        <tr>
           <th>Game</th>
           <th>MIN</th>
           <th>PTS</th>
@@ -43,7 +45,7 @@
           <th>PF</th>
         </tr>
         <#list rows as row>
-          <tr> 
+          <tr onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})"> 
             <#assign link = db.getGameLink(row.getGameID())>
             <td>
               <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
@@ -130,7 +132,7 @@
           <th>PF</th>
         </tr>
         <#list years as year>
-          <#assign row = year_index[seasonAverages]>
+          <#assign row = seasonAverages[year_index]>
           <tr class="player-stats"> 
             <td>${year - 1} - ${year}</td>
             <td>${row.getMinutes()}</td>

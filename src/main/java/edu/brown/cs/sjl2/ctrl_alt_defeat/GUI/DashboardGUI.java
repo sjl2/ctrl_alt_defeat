@@ -262,11 +262,14 @@ public class DashboardGUI {
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
       boolean player;
+      boolean currentGame;
       List<Location> makes = null;
       List<Location> misses = null;
       String error = "";
       try {
         player = Boolean.parseBoolean(qm.value("player"));
+        currentGame = Boolean.parseBoolean(qm.value("currentGame"));
+        if (currentGame) {
         if (player) {
           int playerID = Integer.parseInt(qm.value("id"));
           makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
@@ -283,6 +286,12 @@ public class DashboardGUI {
             makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
             misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
           }
+        }
+        } else {
+          int playerID = Integer.parseInt(qm.value("id"));
+          int gameID = Integer.parseInt(qm.value("gameID"));
+          makes = dbManager.getMakesForEntityInGame(gameID, playerID, "player");
+          misses = dbManager.getMissesForEntityInGame(gameID, playerID, "player");
         }
       } catch (NumberFormatException e) {
         error = "Invalid player id!";

@@ -27,20 +27,25 @@ function drawHeatMap(playerID, gameIDs, paper) {
 }
 
 function drawShotChart(playerID, gameID, paper) {
+	console.log(playerID, gameID);
 	postParams = {};
 	postParams.player = true;
 	postParams.id = playerID;
+	postParams.gameID = gameID;
+	postParams.currentGame = false;
 	$.post("/dashboard/shotchart", postParams, function(responseJSON) {
+		var res = JSON.parse(responseJSON);
+		console.log(res);
 		for (var i=0; i<res.makes.length; i++) {
-			var centerX = x * shotChart.width;
-			var centerY = y * shotChart.height;
-			paper.circle(centerX, centerY, 4).attr({stroke : "green", "stroke-width" : 2});
+			var centerX = res.makes[i].x * paper.width;
+			var centerY = res.makes[i].y * paper.height;
+			paper.shots.push(paper.circle(centerX, centerY, 4).attr({stroke : "green", "stroke-width" : 2}));
 		}
 		for (var i=0; i<res.misses.length; i++) {
-			var centerX = x * shotChart.width;
-			var centerY = y * shotChart.height;
-			return shotChart.path("M" + (centerX - 3) + "," + (centerY - 3) + "L" + (centerX + 3) + "," + (centerY + 3) +
-				"M" + (centerX + 3) + "," + (centerY - 3) + "L" + (centerX - 3) + "," + (centerY + 3)).attr({"stroke" : "red", "stroke-width" : 2});
+			var centerX = res.misses[i].x * paper.width;
+			var centerY = res.misses[i].y * paper.height;
+			paper.shots.push(paper.path("M" + (centerX - 3) + "," + (centerY - 3) + "L" + (centerX + 3) + "," + (centerY + 3) +
+				"M" + (centerX + 3) + "," + (centerY - 3) + "L" + (centerX - 3) + "," + (centerY + 3)).attr({"stroke" : "red", "stroke-width" : 2}));
 	
 		}
 	});
