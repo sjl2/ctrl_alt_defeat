@@ -12,7 +12,8 @@ $(document).ready(function(){
 
 		postParameters = {
 			year: $("#season").val(), 
-			playerID: id
+			id: id,
+			isPlayer: isPlayer
 		}
 		console.log("Year: "+ postParameters.year);
 

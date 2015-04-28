@@ -1,7 +1,6 @@
 <table class="table table-hover">
   <tr>
     <th>Game</th>
-    <th>MIN</th>
     <th>PTS</th>
     <th>FGM-A</th>
     <th>2PM-A</th>
@@ -21,8 +20,7 @@
       <#assign link = db.getGameLink(row.getGameID())>
       <td>
         <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
-      </td>
-      <td>${row.getMinutes()}</td>
+      </td>     
       <td>${row.getPoints()}</td>
       <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
       <td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>

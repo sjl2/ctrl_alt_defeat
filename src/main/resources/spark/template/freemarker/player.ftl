@@ -1,6 +1,9 @@
 <#assign coachContent>
   <script src="/js/player_team_page.js"></script> 
-  <script type="text/javascript">var id = ${player.getID()}</script> 
+  <script type="text/javascript">
+    var id = ${player.getID()};
+    var isPlayer = true; 
+  </script> 
   <link rel="stylesheet" href="/css/player_team_page.css">
 
   <div class="container">
@@ -24,11 +27,10 @@
       </div>
     </div>
 
-    <div class="row" id="season-player">
+    <div class="row" id="season">
       <table class="table table-hover boxscore">
         <tr>
           <th>Game</th>
-          <th>MIN</th>
           <th>PTS</th>
           <th>FGM-A</th>
           <th>2PM-A</th>
@@ -49,7 +51,6 @@
             <td>
               <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
             </td>
-            <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
             <td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>
@@ -73,7 +74,6 @@
       <table class="table table-hover boxscore">
         <tr>
           <th>Season</th>
-          <th>MIN</th>
           <th>PTS</th>
           <th>FGM-A</th>
           <th>2PM-A</th>
@@ -92,7 +92,6 @@
           <#assign row = seasonTotals[year_index]>
           <tr class="player-stats" onclick="clickPlayerSeason(${player.getID()}, ${year})"> 
             <td>${year - 1} - ${year}</td>
-            <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
             <td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>
@@ -115,7 +114,6 @@
       <table class="table table-hover boxscore">
         <tr>
           <th>Season</th>
-          <th>MIN</th>
           <th>PTS</th>
           <th>FGM-A</th>
           <th>2PM-A</th>
@@ -134,7 +132,6 @@
           <#assign row = seasonAverages[year_index]>
           <tr class="player-stats"> 
             <td>${year - 1} - ${year}</td>
-            <td>${row.getMinutes()}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
             <td>${row.getTwoPointers()} - ${row.getTwoPointersA()}</td>

@@ -1,6 +1,9 @@
 <#assign coachContent>
   <script src="/js/player_team_page.js"></script> 
-  <script type="text/javascript">var id = ${team.getID()}</script> 
+  <script type="text/javascript">
+    var id = ${team.getID()};
+    var isPlayer = false; 
+  </script> 
   <link rel="stylesheet" href="/css/player_team_page.css">
 
   <div class="container">
