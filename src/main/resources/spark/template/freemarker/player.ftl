@@ -1,18 +1,24 @@
 <#assign coachContent>
-  <script src="/js/game.js"></script>
-  <link rel="stylesheet" href="/css/game.css">
+  <script src="/js/player_team_page.js"></script>
+  <link rel="stylesheet" href="/css/player_team_page.css">
 
+  <div id="id" hidden>${player.getID()}</div>
   <div class="container">
     <div class = "jumbotron">
+
+    
+
       <h2>${player.getName()}</h2>
       <h3>
         <a href="/team/view/${player.getTeamID()}">${player.getTeamName()}</a>
       </h3>
     </div>
 
+    <div id="forCharts" style="height:500px"></div>
+
     <div class="row">
       <div class="col-md-2 col-md-offset-10">
-        <select class="form-control">
+        <select class="form-control" id="season">
           <#list years as year>
             <option value="${year}">${year - 1} - ${year}</option>
           </#list>
@@ -20,7 +26,7 @@
       </div>
     </div>
 
-    <div class="row" id="schedule-player">
+    <div class="row" id="season-player">
       <table class="table table-hover boxscore">
         <tr>
           <th>Game</th>
@@ -40,7 +46,7 @@
           <th>PF</th>
         </tr>
         <#list rows as row>
-          <tr> 
+          <tr onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})"> 
             <#assign link = db.getGameLink(row.getGameID())>
             <td>
               <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>

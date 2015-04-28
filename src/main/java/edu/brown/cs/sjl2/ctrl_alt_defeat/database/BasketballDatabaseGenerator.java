@@ -17,10 +17,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 public class BasketballDatabaseGenerator {
 
-  private static final int NUMBER_OF_ROUND_ROBINS = 1;
-  private static final int NUM_OF_STATS = 25;
+  private static final int NUMBER_OF_ROUND_ROBINS = 5;
+  private static final int NUM_OF_STATS = 20;
   private static final double HALF = 0.5;
-  private static final double DEPLETING_RATIO = 0.8;
+  private static final double DEPLETING_RATIO = 0.7;
   private static final int BATCH_SIZE = 5;
   private static final int NUM_FOULS = 3;
 
@@ -29,12 +29,24 @@ public class BasketballDatabaseGenerator {
 
     List<String> teamNames =
         Arrays.asList(
+            "Parsers",
             "Cleveland Caveliers",
             "Seattle Sonics",
             "New York Knicks",
             "Golden State Warriors");
 
     List<List<String>> players = new ArrayList<>();
+
+    players.add(
+        Arrays.asList(
+            "jj-32",
+            "Nick Goelz-30",
+            "Stewart Lynch-15",
+            "Alex Wainger-7",
+            "Tyler Schicke-53",
+            "Ankit Shah-99",
+            "Jessica Liang-98"));
+
 
     players.add(
         Arrays.asList(
@@ -103,12 +115,12 @@ public class BasketballDatabaseGenerator {
 
     List<String> primary =
         Arrays.asList(
-            "red", "green", "blue", "blue"
+            "#3A61A3", "#860038", "#06730B", "#0953A0", "#04529C"
             );
 
     List<String> second =
         Arrays.asList(
-            "white", "yellow", "orange", "yellow"
+            "#F29687", "#FDBB30", "#FFBF0D", "#FF7518", "#FFCC33"
             );
 
     List<Team> teams = new ArrayList<>();
@@ -117,14 +129,21 @@ public class BasketballDatabaseGenerator {
 
       conn.setAutoCommit(false);
 
-      // Create Players and Teams
+      // Create Players and Teams -> Make a list of teams to play games
       for (int i = 0; i < teamNames.size(); i++) {
+
+        boolean myTeam = false;
+
+        if (i == 0) {
+          myTeam = true;
+        }
+
         Team t = db.createTeam(
             teamNames.get(i),
             "Coach Ankit",
             primary.get(i),
             second.get(i),
-            false);
+            myTeam);
 
         for (String p : players.get(i)) {
           String[] p_split = p.split("-");
@@ -137,13 +156,16 @@ public class BasketballDatabaseGenerator {
               true);
 
         }
+
         teams.add(t);
+
       }
 
       int numGames =
           NUMBER_OF_ROUND_ROBINS * teams.size() * (teams.size() - 1);
       int gamesCompleted = 0;
 
+      // Play multiple round robin tournaments in random years.
       for (int i = 0; i < NUMBER_OF_ROUND_ROBINS; i++) {
         for (Team home : teams) {
           for (Team away :  teams) {
@@ -243,6 +265,7 @@ public class BasketballDatabaseGenerator {
         }
 
         Stat s = StatFactory.newStat(type, id, p, loc, period);
+        db.createStat(s, game.getID());
         game.addStat(s);
       }
 
