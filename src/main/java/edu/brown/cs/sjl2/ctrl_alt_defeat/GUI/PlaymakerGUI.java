@@ -97,15 +97,9 @@ public class PlaymakerGUI {
         parsedPlayerPaths[position] = path;
       }
 
-      double[][] ballPath = GSON.fromJson(jsonBallString, double[][].class);
-      Location[] parsedBallPath = new Location[numFrames];
-      for (int frame = 0; frame < numFrames; frame++) {
-        double x = ballPath[frame][0];
-        double y = ballPath[frame][1];
-        parsedBallPath[frame] = new Location(x, y);
-      }
+      int[] ballPath = GSON.fromJson(jsonBallString, int[].class);
 
-      playmakerDB.savePlay(new Play(name, numFrames, parsedPlayerPaths, parsedBallPath));
+      playmakerDB.savePlay(new Play(name, numFrames, parsedPlayerPaths, ballPath));
       return getPlayNamesFromDB();
     }
   }
