@@ -12,7 +12,6 @@ $(document).ready(function(){
     paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
 
     $("#years").change(function () {
-
 	postParameters = {
 	    year: $("#years").val(), 
 	    id: id,
@@ -22,9 +21,7 @@ $(document).ready(function(){
 	$.post("/season/get", postParameters, function (responseHTML) {
 	    $("#season").html(responseHTML); 
 	});
-	});
     });
-
 });
 
 
