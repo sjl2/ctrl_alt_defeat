@@ -60,3 +60,4 @@ Playmaker bugs:
  - Move player, edit his starting position, play, console errors
  - Load a play, both sf's and the red pf are unmovable
  - Show user that they are editting default pos's even when sidebar is closed
+ - New play button doesn't clear max frame, tons of console errors when you press play
