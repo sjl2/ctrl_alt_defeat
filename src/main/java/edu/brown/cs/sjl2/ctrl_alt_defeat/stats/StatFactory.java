@@ -114,6 +114,7 @@ public class StatFactory {
         break;
       case "Assist":
         s = new Assist(id, p, location, period);
+        break;
       default:
         throw new RuntimeException("Unrecognized statID \"" + statType + "\".");
     }
