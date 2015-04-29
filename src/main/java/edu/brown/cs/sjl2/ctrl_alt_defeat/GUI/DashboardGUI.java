@@ -31,6 +31,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 
 
+/**
+ * Houses all handlers that deal with dashboard-related events. 
+ * @author awainger
+ */
 public class DashboardGUI {
 
   private final static Gson GSON = new Gson();
@@ -38,12 +42,23 @@ public class DashboardGUI {
   private Dashboard dash;
   private Trie trie;
 
+  /**
+   * Constructor for dashboardgui class.
+   * @param dash - Dashboard, a reference.
+   * @param dbManager - DBManager, to retrieve data from the database.
+   * @param trie - Used for autocorrecting the coach's search bar.
+   */
   public DashboardGUI(Dashboard dash, DBManager dbManager, Trie trie) {
     this.dbManager = dbManager;
     this.dash = dash;
     this.trie = trie;
   }
 
+  /**
+   * Loads dashboard setup page if myTeam has not been set, otherwise
+   * loads regular dashboard page.
+   * @author awainger
+   */
   public class DashboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
@@ -63,6 +78,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads new team creation page.
+   * @author awainger
+   */
   public class NewTeamHandler implements TemplateViewRoute {
 
     @Override
@@ -71,9 +90,12 @@ public class DashboardGUI {
           ImmutableMap.of("tabTitle", "New Team", "errorMessage", "");
       return new ModelAndView(variables, "newTeam.ftl");
     }
-
   }
 
+  /**
+   * Loads results page after creating a new team.
+   * @author awainger
+   */
   public class NewTeamResultsHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
