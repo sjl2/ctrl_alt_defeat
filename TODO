@@ -45,6 +45,9 @@ Testing:
 - GameStats JUnit
 - PlayMaker JUnit (for threadinging and saving and shit)
 
+Nick:
+	Autocomplete doesn't always work
+
 Tyler:
 	Start positions for tokens
 	Ball following player
@@ -54,7 +57,6 @@ Tyler:
 	Ball sometimes get's lost
 
 Playmaker bugs:
- - Load a play, drag the slider, ton of errors pop up on console
- - Starting a fresh play?
  - Move player, edit his starting position, play, console errors
  - Load a play, both sf's and the red pf are unmovable
+ - Show user that they are editting default pos's even when sidebar is closed

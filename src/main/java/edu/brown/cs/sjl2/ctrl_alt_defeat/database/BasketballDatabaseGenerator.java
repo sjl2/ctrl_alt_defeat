@@ -47,9 +47,8 @@ public class BasketballDatabaseGenerator {
             "Stewart Lynch-15",
             "Alex Wainger-7",
             "Tyler Schicke-53",
-            "Ankit Shah-99",
-            "Jessica Liang-98",
-            "Gabe Lyons-97"));
+            "Ankit Shah-21",
+            "Gabe Lyons-64"));
 
 
     players.add(

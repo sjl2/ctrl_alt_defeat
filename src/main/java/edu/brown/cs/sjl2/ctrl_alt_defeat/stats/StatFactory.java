@@ -16,7 +16,7 @@ public class StatFactory {
 
   // TODO add back assist
   private static final List<String> types =
-      Arrays.asList("Block", "DefensiveFoul", "FreeThrow",
+      Arrays.asList("Assist", "Block", "DefensiveFoul", "FreeThrow",
           "MissedFreeThrow", "MissedTwoPointer", "MissedThreePointer",
           "OffensiveFoul", "OffensiveRebound", "DefensiveRebound", "Steal",
           "TechnicalFoul", "ThreePointer", "Turnover", "TwoPointer"

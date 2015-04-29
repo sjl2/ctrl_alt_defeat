@@ -31,19 +31,34 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 
 
+/**
+ * Houses all handlers that deal with dashboard-related events.
+ * @author awainger
+ */
 public class DashboardGUI {
 
   private final static Gson GSON = new Gson();
-  private DBManager dbManager;
+  private DBManager db;
   private Dashboard dash;
   private Trie trie;
 
+  /**
+   * Constructor for dashboardgui class.
+   * @param dash - Dashboard, a reference.
+   * @param dbManager - DBManager, to retrieve data from the database.
+   * @param trie - Used for autocorrecting the coach's search bar.
+   */
   public DashboardGUI(Dashboard dash, DBManager dbManager, Trie trie) {
-    this.dbManager = dbManager;
+    this.db = dbManager;
     this.dash = dash;
     this.trie = trie;
   }
 
+  /**
+   * Loads dashboard setup page if myTeam has not been set, otherwise
+   * loads regular dashboard page.
+   * @author awainger
+   */
   public class DashboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
@@ -54,15 +69,25 @@ public class DashboardGUI {
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
+      Team opponent = db.getTeam(db.getOpposingTeams().get(0).getID());
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Dashboard",
-                          "teams", dbManager.getOpposingTeams(),
-                          "myTeam", dash.getMyTeam(),
-                          "errorMessage", "");
+          new ImmutableMap.Builder<String, Object>()
+          .put("tabTitle", "Dashboard")
+          .put("myTeam", dash.getMyTeam())
+          .put("players", dash.getMyTeam().getPlayers())
+          .put("teams", db.getOpposingTeams())
+          .put("opposingPlayers", opponent.getPlayers())
+          .put("isGame", dash.getGame() != null)
+          .put("errorMessage", "").build();
+
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }
 
+  /**
+   * Loads new team creation page.
+   * @author awainger
+   */
   public class NewTeamHandler implements TemplateViewRoute {
 
     @Override
@@ -71,9 +96,12 @@ public class DashboardGUI {
           ImmutableMap.of("tabTitle", "New Team", "errorMessage", "");
       return new ModelAndView(variables, "newTeam.ftl");
     }
-
   }
 
+  /**
+   * Loads results page after creating a new team.
+   * @author awainger
+   */
   public class NewTeamResultsHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -90,6 +118,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for starting a new game.
+   * @author awainger
+   */
   public class NewGameHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -102,6 +134,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Set up handler for the dashboard.
+   * @author awainger
+   */
   public class DashSetupHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -122,17 +158,25 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads form for creating new player.
+   * @author awainger
+   */
   public class NewPlayerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Player",
-                          "teams", dbManager.getAllTeams(),
+                          "teams", db.getAllTeams(),
                           "errorMessage", "");
       return new ModelAndView(variables, "newPlayer.ftl");
     }
   }
 
+  /**
+   * Loads results page for creating a new player.
+   * @author awainger
+   */
   public class NewPlayerResultsHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -150,6 +194,10 @@ public class DashboardGUI {
 
   }
 
+  /**
+   * Loads all data needed to view a game page.
+   * @author awainger
+   */
   public class GameViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -161,7 +209,6 @@ public class DashboardGUI {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
         error = "No game exists with that id.";
-
         System.out.println(error);
       }
 
@@ -172,9 +219,12 @@ public class DashboardGUI {
             "errorMessage", error);
       return new ModelAndView(variables, "game.ftl");
     }
-
   }
 
+  /**
+   * Loads all data needed to view a team page.
+   * @author awainger
+   */
   public class TeamViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -192,10 +242,10 @@ public class DashboardGUI {
         if (team == null) {
           error = "Could not find team by that ID!";
         } else {
-          years = dbManager.getYearsActive("team_stats", teamID);
-          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
-          seasonAverages = dbManager.getAggregateGameStatsForCareerOfType("AVG", "team_stats", teamID);
-          seasonTotals = dbManager.getAggregateGameStatsForCareerOfType("SUM", "team_stats", teamID);
+          years = db.getYearsActive("team_stats", teamID);
+          rows = db.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
+          seasonAverages = db.getAggregateGameStatsForCareerOfType("AVG", "team_stats", teamID);
+          seasonTotals = db.getAggregateGameStatsForCareerOfType("SUM", "team_stats", teamID);
         }
       } catch (NumberFormatException e) {
         error = "That's not a valid team id!";
@@ -204,7 +254,7 @@ public class DashboardGUI {
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", team.toString())
-          .put("db", dbManager)
+          .put("db", db)
           .put("team", team)
           .put("years", years)
           .put("rows", rows)
@@ -215,6 +265,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads all data needed to view a player page.
+   * @author awainger
+   */
   public class PlayerViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -232,11 +286,11 @@ public class DashboardGUI {
         if (player == null) {
           error = "Could not find player by that ID!";
         } else {
-          years = dbManager.getYearsActive("player_stats", playerID);
-          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          years = db.getYearsActive("player_stats", playerID);
+          rows = db.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
           System.out.println("Rows: " + rows.size());
-          seasonAverages = dbManager.getAggregateGameStatsForCareerOfType("AVG", "player_stats", playerID);
-          seasonTotals = dbManager.getAggregateGameStatsForCareerOfType("SUM", "player_stats", playerID);
+          seasonAverages = db.getAggregateGameStatsForCareerOfType("AVG", "player_stats", playerID);
+          seasonTotals = db.getAggregateGameStatsForCareerOfType("SUM", "player_stats", playerID);
         }
       } catch (NumberFormatException e) {
         error = "That's not a valid player id!";
@@ -245,7 +299,7 @@ public class DashboardGUI {
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", player.toString())
-          .put("db", dbManager)
+          .put("db", db)
           .put("player", player)
           .put("years", years)
           .put("rows", rows)
@@ -257,6 +311,10 @@ public class DashboardGUI {
   }
 
 
+  /**
+   * Handler for updating the season table on either player or team pages.
+   * @author awainger
+   */
   public class GetGameStats implements TemplateViewRoute {
 
     @Override
@@ -275,20 +333,24 @@ public class DashboardGUI {
         } else {
           table = "team_stats";
         }
-        rows = dbManager.getSeparateGameStatsForYear(year, table, id);
+        rows = db.getSeparateGameStatsForYear(year, table, id);
       } catch (NumberFormatException e) {
         error = "That's either an invalid year or ID!";
       }
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("db", dbManager)
+          .put("db", db)
           .put("rows", rows)
           .put("errorMessage", error).build();
       return new ModelAndView(variables, "season.ftl");
     }
   }
 
+  /**
+   * Handler for retrieving shot chart data.
+   * @author awainger
+   */
   public class GetShotChartData implements Route {
 
     @Override
@@ -305,26 +367,26 @@ public class DashboardGUI {
         if (currentGame) {
           if (player) {
             int playerID = Integer.parseInt(qm.value("id"));
-            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
-            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
+            makes = db.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
+            misses = db.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
           } else {
             boolean us = Boolean.parseBoolean(qm.value("us"));
             int teamID;
             if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
               teamID = dash.getGame().getHome().getID();
-              makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-              misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
             } else {
               teamID = dash.getGame().getAway().getID();
-              makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-              misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
             }
           }
         } else {
           int playerID = Integer.parseInt(qm.value("id"));
           int gameID = Integer.parseInt(qm.value("gameID"));
-          makes = dbManager.getMakesForEntityInGame(gameID, playerID, "player");
-          misses = dbManager.getMissesForEntityInGame(gameID, playerID, "player");
+          makes = db.getMakesForEntityInGame(gameID, playerID, "player");
+          misses = db.getMissesForEntityInGame(gameID, playerID, "player");
         }
       } catch (NumberFormatException e) {
         errorMessage = "Invalid player id!";
@@ -339,6 +401,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for retrieving heat map data.
+   * @author awainger
+   */
   public class GetHeatMapData implements Route {
 
     @Override
@@ -362,8 +428,8 @@ public class DashboardGUI {
           type = "team";
         }
 
-        makes = dbManager.getMakesForYear(championshipYear, entityID, type);
-        misses = dbManager.getMissesForYear(championshipYear, entityID, type);
+        makes = db.getMakesForYear(championshipYear, entityID, type);
+        misses = db.getMissesForYear(championshipYear, entityID, type);
       } catch (NumberFormatException e) {
         error = "Invalid id format!";
       }
@@ -378,6 +444,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for populating the scoreboard on the dashboard.
+   * @author awainger
+   */
   public class GetGameHandler implements Route {
     @Override
     public Object handle(Request arg0, Response arg1) {
@@ -396,6 +466,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Gets latest game information to display on dashboard.
+   * @author awainger
+   */
   public class UpdateGameHandler implements Route {
 
     @Override
@@ -489,6 +563,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Returns players for the given teamID.
+   * @author awainger
+   */
   public class GetPlayersHandler implements Route {
 
     @Override
@@ -505,6 +583,10 @@ public class DashboardGUI {
 
   }
 
+  /**
+   * Handler for autocomplete request.
+   * @author awainger
+   */
   public class AutocompleteHandler implements Route {
 
     @Override
@@ -530,7 +612,11 @@ public class DashboardGUI {
       return GSON.toJson(variables);
     }
   }
-  
+
+  /**
+   * Handler for search bar results.
+   * @author awainger
+   */
   public class SearchBarResultsHandler implements Route {
 
     @Override
@@ -538,7 +624,7 @@ public class DashboardGUI {
       QueryParamsMap qm = request.queryMap();
       String searchString = qm.value("searchString");
       Boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
-      List<Integer> ids = dbManager.searchBarResults(searchString, isPlayer);
+      List<Integer> ids = db.searchBarResults(searchString, isPlayer);
 
       if (ids.isEmpty()) {
         return GSON.toJson(new ImmutableMap.Builder<String, Object>()
@@ -548,7 +634,7 @@ public class DashboardGUI {
         if (isPlayer) {
           List<Player> players = new ArrayList<>();
           for (int id : ids) {
-            players.add(dbManager.getPlayer(id));
+            players.add(db.getPlayer(id));
           }
           return GSON.toJson(new ImmutableMap.Builder<String, Object>()
               .put("errorMessage", "")
@@ -557,7 +643,7 @@ public class DashboardGUI {
         } else {
           List<Team> teams = new ArrayList<>();
           for (int id : ids) {
-            teams.add(dbManager.getTeam(id));
+            teams.add(db.getTeam(id));
           }
           return GSON.toJson(new ImmutableMap.Builder<String, Object>()
               .put("errorMessage", "")

@@ -60,7 +60,7 @@
       </nav>
 
     <datalist id="suggestions1"></datalist>
-
+      <div class="alert alert-danger alert-dismissible" role="alert" id="error" hidden>${errorMessage}</div>
       <div id = "coachContent"> 
         ${coachContent} 
       </div>

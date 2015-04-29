@@ -6,7 +6,7 @@
   <h1>Create New Game</h1>
   
   <#assign pos=["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"]>
-  <div id="myStarters">
+  <div class="form-group" class=id="myStarters">
     Select starters:
     <br>
     <#list 0..4 as i>
@@ -19,11 +19,11 @@
     </#list>
   </div>
 
-  <div id="selectors">
+  <div class="form-group" id="selectors">
     Opponent Team:
     <select id="opponent">
       <#list teams as team>
-	<option id="team${team.getID()}">${team.getText()}</option>
+	     <option id="team${team.getID()}">${team.getText()}</option>
       </#list>
     </select>
 
@@ -35,7 +35,7 @@
 
   </div>
 
-  <div id="opponentStarters">
+  <div class="form-group" id="opponentStarters">
     Opponent Starters:
     <br>
     <#list 0..4 as i>
@@ -45,7 +45,7 @@
     </#list>
   </div>
   
-  <div id="submit">
+  <div class="form-group" id="submit">
     <button id="createGame">Start Game</button>
   </div>
 
