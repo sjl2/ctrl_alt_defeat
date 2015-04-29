@@ -91,19 +91,24 @@ $.get("/game/roster", function(responseJSON) {
     }
 
     var homeColor = home.primary;
+    var homeTextColor = whiteOrBlack(Raphael.color(home.primary));
 
     var homeClick = makeDarker(Raphael.color(home.primary).hex);
     var homeAccent = home.secondary;
 
     var awayColor = away.primary;
+    var awayTextColor = whiteOrBlack(Raphael.color(away.primary));
+
     var awayClick = makeDarker(Raphael.color(away.primary).hex);
     var awayAccent = away.secondary;
 
+    //R*0.299 + G*0.587 + B*0.114.
     
+
     for (var i = 0; i < 5; i++) {
 	var tempBox = home_team_paper.rect(10, 10 + 55 * i, 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
 	    .data("thing", "player").data("bench", false).data("home", true);
-	var tempText = home_team_paper.text(35, 10 + 55 * i + 25, home.onCourt[i].number).attr({"font-family": "Arial", "font-size":16});
+	var tempText = home_team_paper.text(35, 10 + 55 * i + 25, home.onCourt[i].number).attr({"font-family": "Arial", "font-size":16, stroke:homeTextColor});
 	tempText.box = tempBox;
 	tempBox.glowColor = homeAccent;
 	tempBox.clickAccent = homeClick;
@@ -120,7 +125,7 @@ $.get("/game/roster", function(responseJSON) {
     for (var i = 0; i < home.bench.length; i++) {
 	var tempBox = home_team_paper.rect(10, 10 + 30 * (i), 50, 25, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
 	    .data("thing", "player").data("bench", true).data("home", true);
-	var tempText = home_team_paper.text(35, 10 + 30 * (i) + 12.5, home.bench[i].number).attr({"font-family": "Arial", "font-size":16});
+	var tempText = home_team_paper.text(35, 10 + 30 * (i) + 12.5, home.bench[i].number).attr({"font-family": "Arial", "font-size":16, stroke:homeTextColor});
 	tempText.box = tempBox;
 	tempBox.glowColor = homeAccent;
 	tempBox.clickAccent = homeClick;
@@ -141,7 +146,7 @@ $.get("/game/roster", function(responseJSON) {
     for (var i = 0; i < 5; i++) {
 	var tempBox = away_team_paper.rect(10, 10 + 55 * i, 50, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
 	    .data("thing", "player").data("bench", false).data("home", false);
-	var tempText = away_team_paper.text(35, 10 + 55 * i + 25, away.onCourt[i].number).attr({"font-family": "Arial", "font-size":16});
+	var tempText = away_team_paper.text(35, 10 + 55 * i + 25, away.onCourt[i].number).attr({"font-family": "Arial", "font-size":16, stroke:awayTextColor});
 	tempText.box = tempBox;
 	tempBox.glowColor = awayAccent;
 	tempBox.clickAccent = awayClick;
@@ -159,7 +164,7 @@ $.get("/game/roster", function(responseJSON) {
 	console.log("but they have a bench...");
 	var tempBox = away_team_paper.rect(10, 10 + 30 * (i), 50, 25, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
 	    .data("thing", "player").data("bench", true).data("home", false);
-	var tempText = away_team_paper.text(35, 10 + 30 * (i) + 12.5, away.bench[i].number).attr({"font-family": "Arial", "font-size":16});
+	var tempText = away_team_paper.text(35, 10 + 30 * (i) + 12.5, away.bench[i].number).attr({"font-family": "Arial", "font-size":16, stroke:awayTextColor});
 	tempText.box = tempBox;
 	tempBox.glowColor = awayAccent;
 	tempBox.clickAccent = awayClick;
@@ -550,6 +555,13 @@ function clickThing(b) {
 
 
 function addStat() {
+	if ((clickedStat.statID != "TwoPointer") && (clickedStat.statID != "MissedTwoPointer") && (clickedStat.statID != "ThreePointer") && (clickedStat.statID != "MissedThreePointer")) {
+		if (clickedPoint === undefined) {
+			clickedPoint = court_paper.circle(0,0,0).data("ratioX", -1).data("ratioY", -1);
+		}
+	} else {
+				if (clickedPoint === undefined) alert("You must give a location for all field goal attempts");
+	}
     if (!(clickedPoint === undefined || clickedStat === undefined || clickedPlayer === undefined)) {
 	postParameters = {
 	    x: clickedPoint.data("ratioX"),
@@ -568,13 +580,7 @@ function addStat() {
 	console.log(postParameters);
 	
 	$.post("/stats/add", postParameters, function(response) {
-	    /*console.log(responseJSON);
-	    var r = JSON.parse(responseJSON);
-	    var res = r.stat;
-	    logStat(res, r.statType);*/
-	    console.log($("#ticker")[0].innerHTML);
 	    logStat(response);
-	    console.log($("#ticker")[0].innerHTML);
 	});
 
     }
@@ -593,6 +599,11 @@ function makeDarker(h) {
     var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
 
     return "rgb(" + r * .75 + "," + g * .75 + "," +  b * .75 + ")";
+}
+
+function whiteOrBlack(color) {
+	if (color.r*0.299 + color.g*0.587 + color.b*0.114 > 186) return "black";
+	else return "white";
 }
 
 function setSelectedStat(str) {

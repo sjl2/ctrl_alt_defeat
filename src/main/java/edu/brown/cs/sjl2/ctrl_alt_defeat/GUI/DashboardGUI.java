@@ -605,15 +605,15 @@ public class DashboardGUI {
       QueryParamsMap qm = req.queryMap();
       String[] resOneString = new String[5];
 
-      ArrayList<Pair<List<Character>, Pair<Integer, Integer>>> resOne;
+      ArrayList<String> resOne;
       String start = qm.value("spot");
       if (start.length() != 0) {
-        resOne = trie.evaluateWord(StringFormatter.treat(start), null);
+        resOne = trie.evaluateWord(StringFormatter.treat(start.toLowerCase()), null);
       } else {
-        resOne = new ArrayList<Pair<List<Character>, Pair<Integer, Integer>>>();
+        resOne = new ArrayList<String>();
       }
       for (int i = 0; i < resOne.size(); i++) {
-        resOneString[i] = StringFormatter.unlist(resOne.get(i).getFirst());
+        resOneString[i] = resOne.get(i);
       }
       Map<String, Object> variables = new HashMap<String, Object>();
       variables.put("title", "Updated");
