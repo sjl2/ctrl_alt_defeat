@@ -28,19 +28,24 @@ function textSearch(isPlayer) {
 		console.log(responseJSON);
 		console.log("there");
 		var res = JSON.parse(responseJSON);
-		if (res.work) {
 			if (res.errorMessage.length > 0) {
 				//error
 			} else {
 				var a;
 				if (isPlayer) a = "player";
 				else a = "team";
-				for (var i=0; i<res.list.length; i++) {
-					$("#linkList").append("<a href=\"/" + a + "/view/" + res.list[i].id + "\">" + res.list[i].name + " (#" + );
-				}	
-				$('#multipleresults').modal('show');
+				if (res.list.length = 1) {
+
+					window.location.href("/" + a + "/view/" + res.list[0].id);
+				} else {
+					for (var i=0; i<res.list.length; i++) {
+						$("#linkList").append("<a href=\"/" + a + "/view/" + res.list[i].id + "\">" + res.list[i].name + " (#" + res.list[i].number + " " + res.list[i].teamName + ")</a><br>");
+					}	
+					$('#multipleresults').modal('show');
+				}
 			}
-		}
+		
 
 	});
 }
+//window.location.href
