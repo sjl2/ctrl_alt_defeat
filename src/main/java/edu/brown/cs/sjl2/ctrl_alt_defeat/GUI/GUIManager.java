@@ -47,7 +47,7 @@ public class GUIManager {
     this.dash = new Dashboard(dbManager);
     this.dashboardGUI = new DashboardGUI(dash, dbManager, trie);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -55,7 +55,7 @@ public class GUIManager {
   public GUIManager(DBManager db, int port) {
     this.dbManager = db;
     this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }

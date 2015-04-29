@@ -42,12 +42,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
  */
 public class DBManager {
 
-  private static final int THREE = 3;
-  private static final int FOUR = 4;
-  private static final int FIVE = 5;
-  private static final int SIX = 6;
-  private static final int SEVEN = 7;
-  private static final int EIGHT = 8;
+  public static final int THREE = 3;
+  public static final int FOUR = 4;
+  public static final int FIVE = 5;
+  public static final int SIX = 6;
+  public static final int SEVEN = 7;
+  public static final int EIGHT = 8;
 
   private Connection conn;
   private PlayerFactory pf;
@@ -78,14 +78,14 @@ public class DBManager {
     this.tf = new TeamFactory(this);
     this.trie = fillTrie();
   }
-
-  public Connection getConnection() {
-    return conn;
+  
+  public PlaymakerDB getPlaymakerDB() {
+    return new PlaymakerDB(conn);
   }
-
+  
   /**
    * Call any time there is an error or you are done with the DBManager.
-   * @author sjl2
+   * @author awainger
    */
   public void close() {
     try {
@@ -97,218 +97,9 @@ public class DBManager {
     }
   }
 
-  /**
-   * Saves the inputted play name and data into the database.
-   * @param play - Play, with name, frames and paths set from front end.
-   * @author sjl2
-   */
-  public void savePlay(Play play) {
-    String name = play.getName();
-    int numFrames = play.getNumFrames();
-    Location[][] playerPaths = play.getPlayerPaths();
-    Location[] ballPath = play.getBallPath();
 
-    if (!doesPlayExist(name)) {
-      saveToPlaysTable(name, play.getNumFrames());
-    }
-
-    BasketballPosition[] bballPositions = BasketballPosition.values();
-    int length = bballPositions.length;
-
-    try (
-        PreparedStatement prep1 = conn.prepareStatement(
-            "DELETE FROM play_detail WHERE play = ?");
-        PreparedStatement prep2 = conn.prepareStatement(
-            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
-
-      prep1.setString(1, name);
-      prep1.executeUpdate();
-
-      conn.setAutoCommit(false);
-
-      // Loops through entire play, each location[] represents a given
-      // player's path, each entry in the location[] represents a frame
-      for (int position = 0; position < length; position++) {
-        for (int frame = 0; frame < numFrames; frame++) {
-          Location l = playerPaths[position][frame];
-          prep2.setString(1, name);
-          prep2.setString(2, bballPositions[position].getName());
-          prep2.setInt(THREE, frame);
-          prep2.setDouble(FOUR, l.getX());
-          prep2.setDouble(FIVE, l.getY());
-          prep2.addBatch();
-        }
-      }
-
-      // Adding ball
-      for (int frame = 0; frame < numFrames; frame++) {
-        Location l = ballPath[frame];
-        prep2.setString(1, name);
-        prep2.setString(2, "Ball");
-        prep2.setInt(THREE, frame);
-        prep2.setDouble(FOUR, l.getX());
-        prep2.setDouble(FIVE, l.getY());
-        prep2.addBatch();
-      }
-
-      prep2.executeBatch();
-      conn.commit();
-      conn.setAutoCommit(true);
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void saveToPlaysTable(String name, int numFrames) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "INSERT INTO play VALUES(?, ?);")) {
-
-      prep.setString(1, name);
-      prep.setInt(2, numFrames);
-      prep.executeUpdate();
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  private boolean doesPlayExist(String name) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name FROM play WHERE name = ? LIMIT 1;")) {
-      prep.setString(1, name);
-      ResultSet rs = prep.executeQuery();
-      return rs.next();
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Fetches all the data associated with a single play to send
-   * to the front end.
-   * @param name - String, corresponding to play front end is requesting
-   * @return Play, with all fields set.
-   */
-  public Play loadPlay(String name) {
-    Play play = loadPlayMetaData(name);
-    int numFrames = play.getNumFrames();
-    BasketballPosition[] bballPositions = BasketballPosition.values();
-    int length = bballPositions.length;
-    Location[][] paths = new Location[length][];
-
-    for (int i = 0; i < length; i++) {
-      try (PreparedStatement prep = conn.prepareStatement(
-          "SELECT frame, x, y "
-          + "FROM play_detail "
-          + "WHERE play = ? AND position = ?;")) {
-
-        prep.setString(1, name);
-        prep.setString(2, bballPositions[i].getName());
-        ResultSet rs = prep.executeQuery();
-
-        Location[] path = new Location[numFrames];
-        while (rs.next()) {
-          Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
-          path[rs.getInt("frame")] = loc;
-        }
-
-        paths[i] = path;
-      } catch (SQLException e) {
-        close();
-        throw new RuntimeException(e);
-      }
-    }
-
-    Location[] ballPath = loadBallPath(name, numFrames);
-    play.setPlayerPaths(paths);
-    play.setBallPath(ballPath);
-    return play;
-  }
-
-  private Location[] loadBallPath(String name, int numFrames) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT frame, x, y "
-        + "FROM play_detail "
-        + "WHERE play = ? AND position = ?;")) {
-
-      prep.setString(1, name);
-      prep.setString(2, "Ball");
-      ResultSet rs = prep.executeQuery();
-
-      Location[] path = new Location[numFrames];
-      while (rs.next()) {
-        Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
-        path[rs.getInt("frame")] = loc;
-      }
-
-      return path;
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  private Play loadPlayMetaData(String name) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT numFrames FROM play WHERE name = ?")) {
-      prep.setString(1, name);
-      ResultSet rs = prep.executeQuery();
-
-      if (rs.next()) {
-        int numFrames = rs.getInt("numFrames");
-        Play toReturn = new Play(name, numFrames);
-        assert (!rs.next());
-        return toReturn;
-      } else {
-        throw new RuntimeException("ERROR: Play not found.");
-      }
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Loads play names to pass to front end
-   * @return List strings, play names
-   * @author sjl2
-   */
-  public List<String> loadPlayNames() {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name FROM play;")) {
-      List<String> plays = new ArrayList<>();
-      ResultSet rs = prep.executeQuery();
-      while (rs.next()) {
-        plays.add(rs.getString("name"));
-      }
-      return plays;
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Deletes the indicated play from the database.
-   * @param name - String, name of play to delete
-   * @author sjl2
-   */
-  public void deletePlay(String name) {
-    try (
-        PreparedStatement prep1 = conn.prepareStatement(
-            "DELETE FROM play WHERE name = ?");
-        PreparedStatement prep2 = conn.prepareStatement(
-            "DELETE FROM play_detail WHERE play = ?") ) {
-      prep1.setString(1, name);
-      prep2.setString(1, name);
-      prep2.executeUpdate();
-      prep1.executeUpdate();
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
+  public Connection getConnection() {
+    return conn;
   }
 
   /**
