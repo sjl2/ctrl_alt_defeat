@@ -45,6 +45,9 @@ Testing:
 - GameStats JUnit
 - PlayMaker JUnit (for threadinging and saving and shit)
 
+Nick:
+	Autocomplete doesn't always work
+
 Tyler:
 	Start positions for tokens
 	Ball following player
