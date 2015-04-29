@@ -97,11 +97,50 @@ public class DBManager {
     }
   }
 
-
   public Connection getConnection() {
     return conn;
   }
+  
+  /* LOGIN METHODS */
+  public boolean doesUsernameExist(String username) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT name FROM user WHERE name = ? LIMIT 1;")) {
+      prep.setString(1, username);
+      ResultSet rs = prep.executeQuery();
+      return rs.next();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
 
+  public int checkPassword(String username, String password) {
+    if(!doesUsernameExist(username)) {
+      return -1;
+    }
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT password, clearance FROM user WHERE name = ? LIMIT 1;")) {
+      prep.setString(1, username);
+      ResultSet rs = prep.executeQuery();
+      if(rs.next()) {
+        String dbPassword = rs.getString(1);
+        int clearance = rs.getInt(2);
+        if(dbPassword.equals(password)) {
+          return clearance;
+        } else {
+          return -1;
+        }
+      } else {
+        return -1;
+      }
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+
+
+  /* TEAM AND PLAYER METHODS */
   /**
    * Gets player from database.
    * @param id - Int, corresponding to player to get
@@ -145,23 +184,7 @@ public class DBManager {
 
     return player;
   }
-
-  public String getTeamNameByID(int teamID) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name FROM team WHERE id = ?;")) {
-      prep.setInt(1, teamID);
-      ResultSet rs = prep.executeQuery();
-
-      if (rs.next()) {
-        return rs.getString("name");
-      } else {
-        return "Team name could not be found ... This should be looked into...";
-      }
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
+  
 
   /**
    * Gets team from database.
@@ -254,6 +277,9 @@ public class DBManager {
 
     return players;
   }
+  
+  
+  /******* STAT METHODS *******/
 
   public void updateBoxscore(Collection<PlayerStats> gameStats, TeamStats ts) {
     StringBuilder query = new StringBuilder("UPDATE player_stats SET ");
@@ -489,42 +515,6 @@ public class DBManager {
     }
   }
 
-  public boolean doesUsernameExist(String username) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT name FROM user WHERE name = ? LIMIT 1;")) {
-      prep.setString(1, username);
-      ResultSet rs = prep.executeQuery();
-      return rs.next();
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
-
-  public int checkPassword(String username, String password) {
-    if(!doesUsernameExist(username)) {
-      return -1;
-    }
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT password, clearance FROM user WHERE name = ? LIMIT 1;")) {
-      prep.setString(1, username);
-      ResultSet rs = prep.executeQuery();
-      if(rs.next()) {
-        String dbPassword = rs.getString(1);
-        int clearance = rs.getInt(2);
-        if(dbPassword.equals(password)) {
-          return clearance;
-        } else {
-          return -1;
-        }
-      } else {
-        return -1;
-      }
-    } catch (SQLException e) {
-      close();
-      throw new RuntimeException(e);
-    }
-  }
 
   public int getNextID(String table) {
     int nextID = nextIDs.count(table);
@@ -664,7 +654,30 @@ public class DBManager {
       throw new RuntimeException(e.getMessage());
     }
   }
+  
+  /****** LINK METHODS ******/
+  public Link getGameLink(int id) {
+    String query = "SELECT g.date, home.name, away.name "
+        + "FROM game AS g, team AS home, team AS away "
+        + "WHERE g.id = ? AND home.id = g.home AND g.away = away.id";
 
+    try (PreparedStatement ps = conn.prepareStatement(query)) {
+      ps.setInt(1, id);
+      ResultSet rs = ps.executeQuery();
+
+      String date = rs.getString(1);
+      String home = rs.getString(2);
+      String away = rs.getString(THREE);
+
+      String path = "/game/view/";
+      String value = away + " @ " + home + "(" + date + ")";
+
+      return new Link(id, path, value);
+    } catch (SQLException e) {
+      String message = "Could not obtain link for game " + id + ". ";
+      throw new RuntimeException(message + e.getMessage());
+    }
+  }
 
   /**
    * Generates a list of team names and id's for the create-player handler.
@@ -828,6 +841,8 @@ public class DBManager {
     // TODO Auto-generated method stub
   }
 
+  
+  /****** PLAYER AND TEAM STAT PAGE POPULATION METHODS ******/
   // table = either player_stats or team_stats, depending on whether you are getting player or team years, and id is for either team or player
   public List<Integer> getYearsActive(String table, int id) {
     String entity = "";
@@ -856,29 +871,6 @@ public class DBManager {
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
-    }
-  }
-
-  public Link getGameLink(int id) {
-    String query = "SELECT g.date, home.name, away.name "
-        + "FROM game AS g, team AS home, team AS away "
-        + "WHERE g.id = ? AND home.id = g.home AND g.away = away.id";
-
-    try (PreparedStatement ps = conn.prepareStatement(query)) {
-      ps.setInt(1, id);
-      ResultSet rs = ps.executeQuery();
-
-      String date = rs.getString(1);
-      String home = rs.getString(2);
-      String away = rs.getString(THREE);
-
-      String path = "/game/view/";
-      String value = away + " @ " + home + "(" + date + ")";
-
-      return new Link(id, path, value);
-    } catch (SQLException e) {
-      String message = "Could not obtain link for game " + id + ". ";
-      throw new RuntimeException(message + e.getMessage());
     }
   }
 
@@ -1026,6 +1018,10 @@ public class DBManager {
 
     return careerStats;
   }
+  
+  
+  
+  /****** SHOT CHART AND HEAT MAP METHODS ******/
 
   /**
    * Generates list of shot locations
@@ -1112,6 +1108,8 @@ public class DBManager {
     return getShotsForEntityInGames(gameIDs, entityID, false, chartType);
   }
 
+  
+  /****** AUTOCORRECT METHODS ******/
   private Trie fillTrie() {
     ArrayList<Character> c = new ArrayList<Character>();
     c.add('@');
@@ -1145,5 +1143,36 @@ public class DBManager {
 
   public Trie getTrie() {
     return trie;
+  }
+  
+  /**
+   * Lookup requested name in database, return first matching id.
+   * @param name - Name of player or team
+   * @param isPlayer - Boolean, representing if name is of player or team
+   * @return - int, id of matching player / team
+   */
+  public List<Integer> searchBarResults(String name, boolean isPlayer) {
+    String table = "";
+    if (isPlayer) {
+      table = "player";
+    } else {
+      table = "team";
+    }
+
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT id FROM " + table + " WHERE name = ?;")) {
+      prep.setString(1, name);
+      ResultSet rs = prep.executeQuery();
+      
+      List<Integer> ids = new ArrayList<Integer>();
+      while (rs.next()) {
+         ids.add(rs.getInt(1));
+      }
+
+      return ids;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 }
