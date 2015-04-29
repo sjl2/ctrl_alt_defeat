@@ -22,6 +22,18 @@ var tokens = [];
 var ball;
 var possessionToken;
 
+var startingLocations = [Location(0.35, 0.50),
+			 Location(0.26, 0.1754),
+			 Location(0.06, 0.8246),
+			 Location(0.075, 0.32456),
+			 Location(0.19, 0.6666),
+			 Location(0.29, 0.5),
+			 Location(0.22, 0.24561),
+			 Location(0.06, 0.7193),
+			 Location(0.075, 0.42982),
+			 Location(0.15, 0.59649)];
+var positionAbrevs = ["PG", "SG", "SF", "PF", "C",
+		      "PG", "SG", "SF", "PF", "C"];
 
 var intervalVar;
 var grabbedToken;
@@ -86,7 +98,6 @@ function Ball(playerToken, angle) {
     var newBall =  {
 	location: Location(0, 0),
 	circle: undefined,
-	path: [],
 	possession: [],
 	angle: 0,
 	
@@ -132,7 +143,6 @@ function Ball(playerToken, angle) {
     newBall.circle = paper.circle(location.x * width, location.y * height, ballRadius * width).attr("fill", "#FA8320");
     newBall.circle.drag(onmove, onballstart, onballend, newBall, newBall, newBall);
     newBall.setLocationWithXY(location.x, location.y);
-    newBall.path[0] = newBall.location.copy();
     newBall.possession[0] = 0;
     return newBall;
 }
@@ -170,23 +180,11 @@ function Token(circle, text, location, index) {
 }
 
 window.onload = function() {
-    var loadColumn = $("#load_column");
-    //loadColumn.css("height", window.innerHeight);
 
     var container = $("#canvas_container");
     width = container.width();
     height = Math.floor(width / 1.75);
     container.css("height", height);
-    var containerTop = ((window.innerHeight - height) / 2);
-    //container.css("top", containerTop);
-
-    var control = $("#control");
-    //control.css("top", containerTop + 20);
-
-    var above_court = $("#above_court");
-    var above_court_height = $("#play_name").height();
-    //above_court.css("top", containerTop - 40);
-    //above_court.css("height", above_court_height);
 
     var offset = container.offset();
     paper = Raphael(offset.left, offset.top, width, height);
@@ -201,18 +199,6 @@ window.onload = function() {
 
     var court = paper.image("images/Basketball-Court-Playmaker.png", 0, 0, width, height);
     
-    var startingLocations = [Location(0.35, 0.50),
-			     Location(0.26, 0.1754),
-			     Location(0.06, 0.8246),
-			     Location(0.075, 0.32456),
-			     Location(0.19, 0.6666),
-			     Location(0.29, 0.5),
-			     Location(0.22, 0.24561),
-			     Location(0.06, 0.7193),
-			     Location(0.075, 0.42982),
-			     Location(0.15, 0.59649)];
-    var positionAbrevs = ["PG", "SG", "SF", "PF", "C",
-			  "PG", "SG", "SF", "PF", "C"];
     playerRadius = 0.025;
     ballRadius = playerRadius * 0.5;
     for(i = 0; i < 10; i++) {
@@ -274,16 +260,36 @@ window.onload = function() {
     });
 
     $("#save_play").on("click", function() {
-	var playName = $("#play_name")[0].value;
-	if(playName != ""){
-	    if(existingPlays[playName] == undefined) {//saving play with name that doesn't exist 
-		save(playName);
-	    } else if(edittingPlayName == playName) {//saving the play that is currently being editted
-		save(playName);
-	    } else if(confirm("Play " + playName + " already exists. Do you want to overwrite it?")){//Trying to overwrite another play
-		save(playName);
+	bootbox.prompt({
+	    title: "Enter Play Name",
+	    backdrop: true,
+	    buttons: {
+		confirm: {
+		    label: "Save",
+		    className: "btn-success"
+		},
+
+		cancel: {
+		    label: "Cancel",
+		    className: "btn-danger"
+		}
+	    },
+	    callback: function(result) {
+		if(result == "" || result === null) {
+		    bootbox.alert("Please Enter a Play Name");
+		    return false;
+		} else if (existingPlays[result] != undefined) {
+		    bootbox.confirm("Are you sure you want to overwrite: " + result, function(r) {
+			if(r) {
+			    save(result);
+			    console.log(result + " saved");
+			}
+		    });
+		} else {
+		    save(result);
+		}
 	    }
-	}
+	});
     });
 
     $("#delete_plays").on("click", function() {
@@ -362,6 +368,16 @@ window.onload = function() {
 	}
     };
 
+}
+
+function newPlay() {
+    for(i = 0; i < tokens.length; i++) {
+	tokens[i].path = [startingLocations[i]];
+	tokens[i].setLocationWithLoc(startingLocations[i]);
+    }
+    possessionToken = tokens[0];
+    ball.setRelativeLocation(possessionToken);
+    ball.possession = [0];
 }
 
 function updateRadii(newPlayerRadius) {
@@ -457,9 +473,7 @@ function onend(event) {
     } else {
 	grabbedToken.path[0] = grabbedToken.location.copy();
 	if(this.index == possessionToken.index) {
-	    ball.path = [];
 	    ball.possession = [];
-	    ball.path[0] = ball.getRelativeLocation(possessionToken, ballAngle);
 	    ball.possession[0] = possessionToken.index;
 	}
     }
@@ -482,7 +496,6 @@ function onballend(event) {
 	    ball.possession[currentFrame] = possessionToken.index;
 	}
     }
-    ball.path[currentFrame] = ball.setRelativeLocation(possessionToken);
 }
 
 function updatePath() {
@@ -492,8 +505,7 @@ function updatePath() {
 	    t.path[currentFrame + 1] = t.location.copy();
 	}
     }
-    //grabbedToken.path[currentFrame + 1] = grabbedToken.location.copy();
-    ball.path[currentFrame + 1] = ball.setRelativeLocation(possessionToken);
+
     ball.possession[currentFrame + 1] = possessionToken.index;
 
     setFrame(currentFrame + 1);
@@ -544,10 +556,10 @@ function stepAnimation() {
 			     "linear",
 			     undefined);
 	}
-
-	var nextLoc;
-	nextLoc = ball.path[currentFrame];
-	ball.location = nextLoc.copy();
+	
+	possessionToken = tokens[ball.possession[currentFrame]];
+	var nextLoc = ball.getRelativeLocation(possessionToken);
+	ball.location = nextLoc;
 	ball.circle.animate({cx:nextLoc.x * width, cy:nextLoc.y * height},
 			 1000.0 / (FRAME_RATE * playSpeed),
 			 "linear",
@@ -556,7 +568,6 @@ function stepAnimation() {
 	if(currentFrame >= maxFrame) {
 	    stop();
 	}
-	possessionToken = tokens[ball.possession[currentFrame]];
 	$("#frame_number").val(currentFrame);
 	$("#current_frame")[0].innerHTML = currentFrame;
     }
@@ -565,7 +576,6 @@ function stepAnimation() {
 function setEditingName(playName) {
     edittingPlayName = playName;
     $("#editing_name")[0].innerHTML = edittingPlayName;
-    $("#editing_name").css("visibility", "visible");
 }
 
 function setMaxFrame(frameNumber) {
@@ -583,16 +593,12 @@ function save(playName) {
 	}
 	paths[i] = path;
     }
-    var ballPath = ball.path;
-    var path = [];
-    for(i = 0; i < ballPath.length; i++) {
-	path[i] = [ballPath[i].x, ballPath[i].y];
-    }
+
     var data = {
 	name: playName,
 	numFrames: maxFrame + 1,
 	paths: JSON.stringify(paths),
-	ballPath: JSON.stringify(path)
+	ballPath: JSON.stringify(ball.possession)
     };
     $.post("/playmaker/save",
 	   data,
@@ -612,11 +618,8 @@ function load(data) {
 	    tokens[i].path[j] = loc;
 	}
     }
-    var ballPath = play.ballPath;
-    ball.path = [];
-    for(i = 0; i < ballPath.length; i++) {
-	ball.path[i] = Location(ballPath[i].x, ballPath[i].y);
-    }
+    ball.possession = play.ballPath;
+    
     setMaxFrame(play.numFrames - 1);
     setFrame(0);
 }
