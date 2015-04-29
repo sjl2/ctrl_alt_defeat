@@ -90,6 +90,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for starting a new game.
+   * @author awainger
+   */
   public class NewGameHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -102,6 +106,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Set up handler for the dashboard.
+   * @author awainger
+   */
   public class DashSetupHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -122,6 +130,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads form for creating new player.
+   * @author awainger
+   */
   public class NewPlayerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -133,6 +145,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads results page for creating a new player.
+   * @author awainger
+   */
   public class NewPlayerResultsHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -150,6 +166,10 @@ public class DashboardGUI {
 
   }
 
+  /**
+   * Loads all data needed to view a game page.
+   * @author awainger
+   */
   public class GameViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -161,7 +181,6 @@ public class DashboardGUI {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
         error = "No game exists with that id.";
-
         System.out.println(error);
       }
 
@@ -172,9 +191,12 @@ public class DashboardGUI {
             "errorMessage", error);
       return new ModelAndView(variables, "game.ftl");
     }
-
   }
 
+  /**
+   * Loads all data needed to view a team page.
+   * @author awainger
+   */
   public class TeamViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -215,6 +237,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads all data needed to view a player page.
+   * @author awainger
+   */
   public class PlayerViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -257,6 +283,10 @@ public class DashboardGUI {
   }
 
 
+  /**
+   * Handler for updating the season table on either player or team pages.
+   * @author awainger
+   */
   public class GetGameStats implements TemplateViewRoute {
 
     @Override
@@ -289,6 +319,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for retrieving shot chart data.
+   * @author awainger
+   */
   public class GetShotChartData implements Route {
 
     @Override
@@ -339,6 +373,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for retrieving heat map data.
+   * @author awainger
+   */
   public class GetHeatMapData implements Route {
 
     @Override
@@ -378,6 +416,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for populating the scoreboard on the dashboard.
+   * @author awainger
+   */
   public class GetGameHandler implements Route {
     @Override
     public Object handle(Request arg0, Response arg1) {
