@@ -323,10 +323,11 @@ public class DashboardGUI {
       String error = "";
       List<GameStats> rows = null;
 
+      boolean isPlayer = false;
       try {
         int year = Integer.parseInt(qm.value("year"));
         int id = Integer.parseInt(qm.value("id"));
-        boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+        isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
         String table;
         if (isPlayer) {
           table = "player_stats";
@@ -342,7 +343,9 @@ public class DashboardGUI {
           new ImmutableMap.Builder<String, Object>()
           .put("db", db)
           .put("rows", rows)
-          .put("errorMessage", error).build();
+          .put("errorMessage", error)
+          .put("isPlayer", isPlayer).build();
+      
       return new ModelAndView(variables, "season.ftl");
     }
   }
