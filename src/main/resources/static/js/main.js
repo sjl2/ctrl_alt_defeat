@@ -57,28 +57,34 @@ function drawHeatMap(id, playerBoolean, year, paper) {
 	});
 }
 
-function drawShotChart(playerID, gameID, paper) {
-	console.log(playerID, gameID);
+function drawShotChart(id, forPlayer, gameID, paper) {
 	postParams = {};
-	postParams.player = true;
-	postParams.id = playerID;
+	postParams.player = forPlayer;
+	postParams.id = id;
 	postParams.gameID = gameID;
 	postParams.currentGame = false;
+
 	$.post("/dashboard/shotchart", postParams, function(responseJSON) {
 		var res = JSON.parse(responseJSON);
 		console.log(res);
-		for (var i=0; i<res.makes.length; i++) {
-			var centerX = res.makes[i].x * paper.width;
-			var centerY = res.makes[i].y * paper.height;
-			paper.shots.push(paper.circle(centerX, centerY, 4).attr({stroke : "green", "stroke-width" : 2}));
+
+		if (res.errorMessage.length == 0) {
+			for (var i=0; i<res.makes.length; i++) {
+				var centerX = res.makes[i].x * paper.width;
+				var centerY = res.makes[i].y * paper.height;
+				paper.shots.push(paper.circle(centerX, centerY, 4).attr({stroke : "green", "stroke-width" : 2}));
+			}
+			for (var i=0; i<res.misses.length; i++) {
+				var centerX = res.misses[i].x * paper.width;
+				var centerY = res.misses[i].y * paper.height;
+				paper.shots.push(paper.path("M" + (centerX - 3) + "," + (centerY - 3) + "L" + (centerX + 3) + "," + (centerY + 3) +
+					"M" + (centerX + 3) + "," + (centerY - 3) + "L" + (centerX - 3) + "," + (centerY + 3)).attr({"stroke" : "red", "stroke-width" : 2}));
+			}
+		} else {
+			$("#error").html(res.errorMessage);
 		}
-		for (var i=0; i<res.misses.length; i++) {
-			var centerX = res.misses[i].x * paper.width;
-			var centerY = res.misses[i].y * paper.height;
-			paper.shots.push(paper.path("M" + (centerX - 3) + "," + (centerY - 3) + "L" + (centerX + 3) + "," + (centerY + 3) +
-				"M" + (centerX + 3) + "," + (centerY - 3) + "L" + (centerX - 3) + "," + (centerY + 3)).attr({"stroke" : "red", "stroke-width" : 2}));
-	
-		}
+
+
 	});
 }
 

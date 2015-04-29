@@ -255,7 +255,7 @@ public class DashboardGUI {
       return new ModelAndView(variables, "player.ftl");
     }
   }
-  
+
 
   public class GetGameStats implements TemplateViewRoute {
 
@@ -298,7 +298,7 @@ public class DashboardGUI {
       boolean currentGame;
       List<Location> makes = null;
       List<Location> misses = null;
-      String error = "";
+      String errorMessage = "";
       try {
         player = Boolean.parseBoolean(qm.value("player"));
         currentGame = Boolean.parseBoolean(qm.value("currentGame"));
@@ -327,13 +327,13 @@ public class DashboardGUI {
           misses = dbManager.getMissesForEntityInGame(gameID, playerID, "player");
         }
       } catch (NumberFormatException e) {
-        error = "Invalid player id!";
+        errorMessage = "Invalid player id!";
       }
 
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("makes", makes)
           .put("misses", misses)
-          .put("error", error)
+          .put("errorMessage", errorMessage)
           .build();
       return GSON.toJson(variables);
     }

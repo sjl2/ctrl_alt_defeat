@@ -16,9 +16,8 @@
     <script src="/js/main.js"></script>
   </head>
   <body>
-
+      <div class="alert alert-danger alert-dismissible" role="alert" id="error">${errorMessage}</div>
       ${content}
-    <div id="error">${errorMessage}</div>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

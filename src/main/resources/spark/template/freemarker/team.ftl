@@ -33,7 +33,7 @@
 
     <div class="row">
       <div class="col-md-2 col-md-offset-10">
-        <select class="form-control" id="season">
+        <select class="form-control" id="years">
           <#list years as year>
             <option value="${year}">${year - 1} - ${year}</option>
           </#list>
@@ -60,7 +60,7 @@
           <th>PF</th>
         </tr>
         <#list rows as row>
-          <tr onclick="clickPlayerGame(${team.getID()}, ${row.getGameID()})"> 
+          <tr onclick="clickTeamGame(${team.getID()}, ${row.getGameID()})"> 
             <#assign link = db.getGameLink(row.getGameID())>
             <td>
               <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
@@ -104,7 +104,7 @@
         </tr>
         <#list years as year>
           <#assign row = seasonTotals[year_index]>
-          <tr class="player-stats"> 
+          <tr onclick="clickTeamSeason(${team.getID()}, ${year})"> 
             <td>${year - 1} - ${year}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>

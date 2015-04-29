@@ -16,7 +16,7 @@
     <th>PF</th>
   </tr>
   <#list rows as row>
-    <tr> 
+    <tr onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})"> 
       <#assign link = db.getGameLink(row.getGameID())>
       <td>
         <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
