@@ -9,7 +9,9 @@
 
   <div class="container">
     <div class = "jumbotron">
-
+      <button class="btn btn-xs btn-warning pull-right" data-toggle="modal" data-target="#edit_player_modal">
+        <span class="glyphicon glyphicon-pencil"></span>
+      </button>
       <h2 id="playerName">${player.getName()}</h2>
       <h3>
         <a href="/team/view/${player.getTeamID()}">${player.getTeamName()}</a>
@@ -26,6 +28,30 @@
             </button>
           </div>
           <div id="forCharts"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" tabindex="-1" aria-hidden="true" id = "edit_player_modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span id="chart-title"></span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="forCharts" class="form-group">
+              Player name:<br>
+              <input type="text" name="name" value = ${player.getName()} id = "playerFormName">
+              <br>
+              Jersey Number:<br>
+              <input type="number" name="number" min="0" max="99" value = ${player.getNumber()} id = "playerFormNumber">
+              <button class = "btn btn-lg btn-success pull-right" onclick = "updatePlayer()" data-dismiss="modal" aria-label="Close">
+                <span class="glyphicon glyphicon-ok"></span>
+                Update Player
+              </button>
+          </div>
         </div>
       </div>
     </div>

@@ -47,7 +47,7 @@ public class GUIManager {
     this.dash = new Dashboard(dbManager);
     this.dashboardGUI = new DashboardGUI(dash, dbManager, trie);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -55,7 +55,7 @@ public class GUIManager {
   public GUIManager(DBManager db, int port) {
     this.dbManager = db;
     this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager);
+    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -91,6 +91,7 @@ public class GUIManager {
     Spark.post("/dashboard/shotchart", dashboardGUI.new GetShotChartData());
     Spark.post("/dashboard/heatmap", dashboardGUI.new GetHeatMapData());
     Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
+    Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
 
     Spark.get("/game/view/:id", dashboardGUI.new GameViewHandler(), freeMarker);
 
@@ -111,7 +112,7 @@ public class GUIManager {
     Spark.get("/playmaker/getPlayerNumbers", playmakerGUI.new PlayerNumberHandler());
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
-		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
+		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler(), freeMarker);
     Spark.post("/stats/update", statsEntryGUI.new UpdateStatHandler());
     Spark.post("/stats/delete", statsEntryGUI.new DeleteStatHandler());
 		Spark.post("/stats/changepossession",

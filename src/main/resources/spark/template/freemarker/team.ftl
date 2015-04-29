@@ -8,10 +8,43 @@
 
   <div class="container">
     <div class = "jumbotron">
+    <button class="btn btn-xs btn-warning pull-right" data-toggle="modal" data-target="#edit_team_modal">
+        <span class="glyphicon glyphicon-pencil"></span>
+      </button>
       <h2>
         <a href="/team/view/${team.getID()}">${team.getName()}</a>
       </h2>
       <h3>Coach: ${team.getCoach()}</h3>
+    </div>
+
+    <div class="modal fade" tabindex="-1" aria-hidden="true" id = "edit_team_modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span id="chart-title"></span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="form-group">
+              Team name:<br>
+              <input type="text" name="name" value = "${team.getName()}" id="teamFormName">
+              <br>
+              Coach's name:<br>
+              <input type="text" name="coach" value = "${team.getCoach()}" id="teamFormCoach">
+              <br>
+              Primary Color:<br>
+              <input type="color" name="color1" value = ${team.getPrimary()} id="teamFormPrimary">
+              <br>
+              Secondary Color:<br>
+              <input type="color" name="color2" value = ${team.getSecondary()} id="teamFormSecondary">
+              <button class = "btn btn-lg btn-success pull-top" onclick = "updateTeam()" data-dismiss="modal" aria-label="Close">
+                <span class="glyphicon glyphicon-ok"></span>
+                Update Team
+              </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="forCharts" style="height:500px"></div>

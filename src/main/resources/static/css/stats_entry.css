@@ -1,36 +1,19 @@
 #court {
 	background-size: cover; 
-	width : 650px;
 }
 
 #content {
-
 	"user-select": none;
 }
 
-#buttons {
-	height : 160px;
+div, button {
+	padding : 4px;
 }
 
-#control {
-	height : 100px;
-	margin : 0px;
+.col-md-2 {
+	text-align:center
 }
 
-#home_team {
-	margin : 0px;
-	padding : 0px;
-}
-
-#away_team {
-	margin : 0px;
-	padding : 0px;
-}
-
-#stats_feed {
-	padding : 0px;
-}
-
-.col-md-9, .col-md-2, .col-md-11 {
-	padding : 0px;
+#home_team, #away_team {
+	margin : auto;
 }

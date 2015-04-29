@@ -14,7 +14,6 @@ import spark.Route;
 import spark.TemplateViewRoute;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
@@ -32,6 +31,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 
 
+/**
+ * Houses all handlers that deal with dashboard-related events.
+ * @author awainger
+ */
 public class DashboardGUI {
 
   private final static Gson GSON = new Gson();
@@ -39,12 +42,23 @@ public class DashboardGUI {
   private Dashboard dash;
   private Trie trie;
 
+  /**
+   * Constructor for dashboardgui class.
+   * @param dash - Dashboard, a reference.
+   * @param dbManager - DBManager, to retrieve data from the database.
+   * @param trie - Used for autocorrecting the coach's search bar.
+   */
   public DashboardGUI(Dashboard dash, DBManager dbManager, Trie trie) {
     this.db = dbManager;
     this.dash = dash;
     this.trie = trie;
   }
 
+  /**
+   * Loads dashboard setup page if myTeam has not been set, otherwise
+   * loads regular dashboard page.
+   * @author awainger
+   */
   public class DashboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
@@ -70,6 +84,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads new team creation page.
+   * @author awainger
+   */
   public class NewTeamHandler implements TemplateViewRoute {
 
     @Override
@@ -78,9 +96,12 @@ public class DashboardGUI {
           ImmutableMap.of("tabTitle", "New Team", "errorMessage", "");
       return new ModelAndView(variables, "newTeam.ftl");
     }
-
   }
 
+  /**
+   * Loads results page after creating a new team.
+   * @author awainger
+   */
   public class NewTeamResultsHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -97,6 +118,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for starting a new game.
+   * @author awainger
+   */
   public class NewGameHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -109,6 +134,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Set up handler for the dashboard.
+   * @author awainger
+   */
   public class DashSetupHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -129,6 +158,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads form for creating new player.
+   * @author awainger
+   */
   public class NewPlayerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -140,6 +173,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads results page for creating a new player.
+   * @author awainger
+   */
   public class NewPlayerResultsHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -157,6 +194,10 @@ public class DashboardGUI {
 
   }
 
+  /**
+   * Loads all data needed to view a game page.
+   * @author awainger
+   */
   public class GameViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -168,7 +209,6 @@ public class DashboardGUI {
         game = dash.getOldGame(gameID);
       } catch (DashboardException e) {
         error = "No game exists with that id.";
-
         System.out.println(error);
       }
 
@@ -179,9 +219,12 @@ public class DashboardGUI {
             "errorMessage", error);
       return new ModelAndView(variables, "game.ftl");
     }
-
   }
 
+  /**
+   * Loads all data needed to view a team page.
+   * @author awainger
+   */
   public class TeamViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -222,6 +265,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Loads all data needed to view a player page.
+   * @author awainger
+   */
   public class PlayerViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
@@ -264,6 +311,10 @@ public class DashboardGUI {
   }
 
 
+  /**
+   * Handler for updating the season table on either player or team pages.
+   * @author awainger
+   */
   public class GetGameStats implements TemplateViewRoute {
 
     @Override
@@ -296,6 +347,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for retrieving shot chart data.
+   * @author awainger
+   */
   public class GetShotChartData implements Route {
 
     @Override
@@ -310,23 +365,23 @@ public class DashboardGUI {
         player = Boolean.parseBoolean(qm.value("player"));
         currentGame = Boolean.parseBoolean(qm.value("currentGame"));
         if (currentGame) {
-        if (player) {
-          int playerID = Integer.parseInt(qm.value("id"));
-          makes = db.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
-          misses = db.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
-        } else {
-          boolean us = Boolean.parseBoolean(qm.value("us"));
-          int teamID;
-          if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
-            teamID = dash.getGame().getHome().getID();
-            makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+          if (player) {
+            int playerID = Integer.parseInt(qm.value("id"));
+            makes = db.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
+            misses = db.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
           } else {
-            teamID = dash.getGame().getAway().getID();
-            makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            boolean us = Boolean.parseBoolean(qm.value("us"));
+            int teamID;
+            if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
+              teamID = dash.getGame().getHome().getID();
+              makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            } else {
+              teamID = dash.getGame().getAway().getID();
+              makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            }
           }
-        }
         } else {
           int playerID = Integer.parseInt(qm.value("id"));
           int gameID = Integer.parseInt(qm.value("gameID"));
@@ -346,6 +401,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for retrieving heat map data.
+   * @author awainger
+   */
   public class GetHeatMapData implements Route {
 
     @Override
@@ -385,6 +444,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Handler for populating the scoreboard on the dashboard.
+   * @author awainger
+   */
   public class GetGameHandler implements Route {
     @Override
     public Object handle(Request arg0, Response arg1) {
@@ -403,6 +466,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Gets latest game information to display on dashboard.
+   * @author awainger
+   */
   public class UpdateGameHandler implements Route {
 
     @Override
@@ -496,6 +563,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Returns players for the given teamID.
+   * @author awainger
+   */
   public class GetPlayersHandler implements Route {
 
     @Override
@@ -512,6 +583,10 @@ public class DashboardGUI {
 
   }
 
+  /**
+   * Handler for autocomplete request.
+   * @author awainger
+   */
   public class AutocompleteHandler implements Route {
 
     @Override
@@ -535,6 +610,47 @@ public class DashboardGUI {
       variables.put("res", resOneString);
 
       return GSON.toJson(variables);
+    }
+  }
+
+  /**
+   * Handler for search bar results.
+   * @author awainger
+   */
+  public class SearchBarResultsHandler implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String searchString = qm.value("searchString");
+      Boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+      List<Integer> ids = db.searchBarResults(searchString, isPlayer);
+
+      if (ids.isEmpty()) {
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+            .put("errorMessage", "Sorry, no players or teams matched your search.")
+            .build());
+      } else {
+        if (isPlayer) {
+          List<Player> players = new ArrayList<>();
+          for (int id : ids) {
+            players.add(db.getPlayer(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("list", players)
+              .build());
+        } else {
+          List<Team> teams = new ArrayList<>();
+          for (int id : ids) {
+            teams.add(db.getTeam(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("list", teams)
+              .build());
+        }
+      }
     }
   }
 }

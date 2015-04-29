@@ -50,3 +50,13 @@ function clickTeamSeason(teamID, year) {
 	paper.shots.remove();
 	drawHeatMap(teamID, false, year, paper);
 }
+
+function updatePlayer() {
+	console.log($("#playerFormName")[0].value, $("#playerFormNumber")[0].value);
+	alert("Wish we could!");
+}
+
+function updateTeam() {
+	console.log($("#teamFormName")[0].value, $("#teamFormCoach")[0].value, $("#teamFormPrimary")[0].value, $("#teamFormSecondary")[0].value)
+	alert("Wish we could!");
+}
