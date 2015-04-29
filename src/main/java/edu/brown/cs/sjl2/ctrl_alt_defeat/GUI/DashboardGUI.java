@@ -303,23 +303,23 @@ public class DashboardGUI {
         player = Boolean.parseBoolean(qm.value("player"));
         currentGame = Boolean.parseBoolean(qm.value("currentGame"));
         if (currentGame) {
-        if (player) {
-          int playerID = Integer.parseInt(qm.value("id"));
-          makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
-          misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
-        } else {
-          boolean us = Boolean.parseBoolean(qm.value("us"));
-          int teamID;
-          if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
-            teamID = dash.getGame().getHome().getID();
-            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+          if (player) {
+            int playerID = Integer.parseInt(qm.value("id"));
+            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
+            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
           } else {
-            teamID = dash.getGame().getAway().getID();
-            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            boolean us = Boolean.parseBoolean(qm.value("us"));
+            int teamID;
+            if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
+              teamID = dash.getGame().getHome().getID();
+              makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            } else {
+              teamID = dash.getGame().getAway().getID();
+              makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            }
           }
-        }
         } else {
           int playerID = Integer.parseInt(qm.value("id"));
           int gameID = Integer.parseInt(qm.value("gameID"));
