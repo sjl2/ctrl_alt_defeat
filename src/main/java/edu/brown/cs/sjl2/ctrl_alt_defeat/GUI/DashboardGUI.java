@@ -530,4 +530,52 @@ public class DashboardGUI {
       return GSON.toJson(variables);
     }
   }
+  
+  public class SearchBarResultsHandler implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String searchString = qm.value("searchString");
+      Boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+      List<Integer> ids = dbManager.searchBarResults(searchString, isPlayer);
+
+      if (ids.isEmpty()) {
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+            .put("errorMessage", "Sorry, no players or teams matched your search.")
+            .put("work", true).build());
+      } else if (ids.size() == 1) {
+        if (isPlayer) {
+          response.redirect("/player/view/" + ids.get(0));  
+        } else {
+          response.redirect("/team/view/" + ids.get(0));
+        }
+
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+            .put("work", false).build());
+      } else {
+        if (isPlayer) {
+          List<Player> players = new ArrayList<>();
+          for (int id : ids) {
+            players.add(dbManager.getPlayer(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("work", true)
+              .put("list", players)
+              .build());
+        } else {
+          List<Team> teams = new ArrayList<>();
+          for (int id : ids) {
+            teams.add(dbManager.getTeam(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("work", true)
+              .put("list", teams)
+              .build());
+        }
+      }
+    }
+  }
 }

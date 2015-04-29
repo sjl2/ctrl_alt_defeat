@@ -91,6 +91,7 @@ public class GUIManager {
     Spark.post("/dashboard/shotchart", dashboardGUI.new GetShotChartData());
     Spark.post("/dashboard/heatmap", dashboardGUI.new GetHeatMapData());
     Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
+    Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
 
     Spark.get("/game/view/:id", dashboardGUI.new GameViewHandler(), freeMarker);
 

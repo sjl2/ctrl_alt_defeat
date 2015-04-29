@@ -13,7 +13,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.PlaymakerDB;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import spark.ModelAndView;
