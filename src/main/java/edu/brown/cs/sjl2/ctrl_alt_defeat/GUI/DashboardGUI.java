@@ -543,16 +543,7 @@ public class DashboardGUI {
       if (ids.isEmpty()) {
         return GSON.toJson(new ImmutableMap.Builder<String, Object>()
             .put("errorMessage", "Sorry, no players or teams matched your search.")
-            .put("work", true).build());
-      } else if (ids.size() == 1) {
-        if (isPlayer) {
-          response.redirect("/player/view/" + ids.get(0));  
-        } else {
-          response.redirect("/team/view/" + ids.get(0));
-        }
-
-        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
-            .put("work", false).build());
+            .build());
       } else {
         if (isPlayer) {
           List<Player> players = new ArrayList<>();
@@ -561,7 +552,6 @@ public class DashboardGUI {
           }
           return GSON.toJson(new ImmutableMap.Builder<String, Object>()
               .put("errorMessage", "")
-              .put("work", true)
               .put("list", players)
               .build());
         } else {
@@ -571,7 +561,6 @@ public class DashboardGUI {
           }
           return GSON.toJson(new ImmutableMap.Builder<String, Object>()
               .put("errorMessage", "")
-              .put("work", true)
               .put("list", teams)
               .build());
         }
