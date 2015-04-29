@@ -396,6 +396,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Gets latest game information to display on dashboard.
+   * @author awainger
+   */
   public class UpdateGameHandler implements Route {
 
     @Override
@@ -489,6 +493,10 @@ public class DashboardGUI {
     }
   }
 
+  /**
+   * Returns players for the given teamID.
+   * @author awainger
+   */
   public class GetPlayersHandler implements Route {
 
     @Override
@@ -505,6 +513,10 @@ public class DashboardGUI {
 
   }
 
+  /**
+   * Handler for autocomplete request.
+   * @author awainger
+   */
   public class AutocompleteHandler implements Route {
 
     @Override
@@ -531,6 +543,10 @@ public class DashboardGUI {
     }
   }
   
+  /**
+   * Handler for search bar results.
+   * @author awainger
+   */
   public class SearchBarResultsHandler implements Route {
 
     @Override
