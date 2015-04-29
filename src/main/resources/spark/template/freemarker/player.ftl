@@ -43,11 +43,11 @@
           </div>
           <div id="forCharts" class="form-group">
               Player name:<br>
-              <input type="text" name="name" value = ${player.getName()} id = "playerName">
+              <input type="text" name="name" value = ${player.getName()} id = "playerFormName">
               <br>
               Jersey Number:<br>
-              <input type="number" name="number" min="0" max="99" value = ${player.getNumber()} id = "playerNumber">
-              <button class = "btn btn-lg btn-success pull-right" onclick = "updatePlayer()">
+              <input type="number" name="number" min="0" max="99" value = ${player.getNumber()} id = "playerFormNumber">
+              <button class = "btn btn-lg btn-success pull-right" onclick = "updatePlayer()" data-dismiss="modal" aria-label="Close">
                 <span class="glyphicon glyphicon-ok"></span>
                 Update Player
               </button>

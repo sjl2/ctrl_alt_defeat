@@ -49,6 +49,11 @@ function clickTeamSeason(teamID, year) {
 }
 
 function updatePlayer() {
-	console.log($("#playerName")[0].value, $("#playerNumber")[0].value)
+	console.log($("#playerFormName")[0].value, $("#playerFormNumber")[0].value);
+	alert("Wish we could!");
+}
+
+function updateTeam() {
+	console.log($("#teamFormName")[0].value, $("#teamFormCoach")[0].value, $("#teamFormPrimary")[0].value, $("#teamFormSecondary")[0].value)
 	alert("Wish we could!");
 }
