@@ -256,6 +256,39 @@ public class DashboardGUI {
     }
   }
 
+
+  public class GetGameStats implements TemplateViewRoute {
+
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String error = "";
+      List<GameStats> rows = null;
+
+      try {
+        int year = Integer.parseInt(qm.value("year"));
+        int id = Integer.parseInt(qm.value("id"));
+        boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+        String table;
+        if (isPlayer) {
+          table = "player_stats";
+        } else {
+          table = "team_stats";
+        }
+        rows = dbManager.getSeparateGameStatsForYear(year, table, id);
+      } catch (NumberFormatException e) {
+        error = "That's either an invalid year or ID!";
+      }
+
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
+          .put("db", dbManager)
+          .put("rows", rows)
+          .put("errorMessage", error).build();
+      return new ModelAndView(variables, "season.ftl");
+    }
+  }
+
   public class GetShotChartData implements Route {
 
     @Override
@@ -265,28 +298,28 @@ public class DashboardGUI {
       boolean currentGame;
       List<Location> makes = null;
       List<Location> misses = null;
-      String error = "";
+      String errorMessage = "";
       try {
         player = Boolean.parseBoolean(qm.value("player"));
         currentGame = Boolean.parseBoolean(qm.value("currentGame"));
         if (currentGame) {
-        if (player) {
-          int playerID = Integer.parseInt(qm.value("id"));
-          makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
-          misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
-        } else {
-          boolean us = Boolean.parseBoolean(qm.value("us"));
-          int teamID;
-          if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
-            teamID = dash.getGame().getHome().getID();
-            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+          if (player) {
+            int playerID = Integer.parseInt(qm.value("id"));
+            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
+            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
           } else {
-            teamID = dash.getGame().getAway().getID();
-            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            boolean us = Boolean.parseBoolean(qm.value("us"));
+            int teamID;
+            if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
+              teamID = dash.getGame().getHome().getID();
+              makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            } else {
+              teamID = dash.getGame().getAway().getID();
+              makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+              misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            }
           }
-        }
         } else {
           int playerID = Integer.parseInt(qm.value("id"));
           int gameID = Integer.parseInt(qm.value("gameID"));
@@ -294,13 +327,13 @@ public class DashboardGUI {
           misses = dbManager.getMissesForEntityInGame(gameID, playerID, "player");
         }
       } catch (NumberFormatException e) {
-        error = "Invalid player id!";
+        errorMessage = "Invalid player id!";
       }
 
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("makes", makes)
           .put("misses", misses)
-          .put("error", error)
+          .put("errorMessage", errorMessage)
           .build();
       return GSON.toJson(variables);
     }
@@ -497,29 +530,52 @@ public class DashboardGUI {
       return GSON.toJson(variables);
     }
   }
-
-  public class PlayerSeasonHandler implements TemplateViewRoute {
+  
+  public class SearchBarResultsHandler implements Route {
 
     @Override
-    public ModelAndView handle(Request request, Response response) {
+    public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      String error = "";
-      List<GameStats> rows = null;
+      String searchString = qm.value("searchString");
+      Boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+      List<Integer> ids = dbManager.searchBarResults(searchString, isPlayer);
 
-      try {
-        int year = Integer.parseInt(qm.value("year"));
-        int playerID = Integer.parseInt(qm.value("playerID"));
-        rows = dbManager.getSeparateGameStatsForYear(year, "player_stats", playerID);
-      } catch (NumberFormatException e) {
-        error = "That's either an invalid year or playerID!";
+      if (ids.isEmpty()) {
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+            .put("errorMessage", "Sorry, no players or teams matched your search.")
+            .put("work", true).build());
+      } else if (ids.size() == 1) {
+        if (isPlayer) {
+          response.redirect("/player/view/" + ids.get(0));  
+        } else {
+          response.redirect("/team/view/" + ids.get(0));
+        }
+
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+            .put("work", false).build());
+      } else {
+        if (isPlayer) {
+          List<Player> players = new ArrayList<>();
+          for (int id : ids) {
+            players.add(dbManager.getPlayer(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("work", true)
+              .put("list", players)
+              .build());
+        } else {
+          List<Team> teams = new ArrayList<>();
+          for (int id : ids) {
+            teams.add(dbManager.getTeam(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("work", true)
+              .put("list", teams)
+              .build());
+        }
       }
-
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-          .put("db", dbManager)
-          .put("rows", rows)
-          .put("errorMessage", error).build();
-      return new ModelAndView(variables, "season.ftl");
     }
   }
 }

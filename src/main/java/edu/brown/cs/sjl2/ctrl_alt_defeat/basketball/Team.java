@@ -16,7 +16,6 @@ public class Team {
   private Map<Integer, Player> playerIds;
 
 
-
   public Team(
       int id,
       String name,
@@ -37,19 +36,6 @@ public class Team {
       addPlayer(p);
     }
   }
-//
-//  private Team(int id, String name) {
-//    this.id = id;
-//    this.name = name;
-//    this.coach = null;
-//    this.primary = null;
-//    this.secondary = null;
-//    this.playerIds = null;
-//  }
-//
-//  public static Team newTeamLink(int id, String name) {
-//    return new Team(id, name);
-//  }
 
   public int getID() {
     return id;
@@ -95,6 +81,4 @@ public class Team {
   public Link getLink() {
     return new Link(id, "/team/view/", name);
   }
-
-
 }

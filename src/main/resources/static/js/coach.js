@@ -3,7 +3,6 @@ $('#multipleresults').modal({ show: false})
 
 console.log(document.getElementById("playerTeamSearch"));
 
-
 function suggestions() {
 	var spot1 = $("#playerTeamSearch")[0].value;
 		$.post("/dashboard/autocomplete", {spot : spot1}, function(responseJSON){

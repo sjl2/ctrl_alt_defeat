@@ -13,7 +13,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.PlaymakerDB;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -26,13 +26,9 @@ import spark.TemplateViewRoute;
  * PlaymakerGUI class, houses all gui handlers related to the playmaker
  * @author awainger
  */
-/**
- * @author awainger
- *
- */
 public class PlaymakerGUI {
 
-  private DBManager dbManager;
+  private PlaymakerDB playmakerDB;
   private Dashboard dash;
   private static final Gson GSON = new Gson();
 
@@ -41,8 +37,8 @@ public class PlaymakerGUI {
    * @param dbManager - DBManager, allows handlers to get data
    * @author awainger
    */
-  public PlaymakerGUI(Dashboard dash, DBManager dbManager) {
-    this.dbManager = dbManager;
+  public PlaymakerGUI(Dashboard dash, PlaymakerDB playmakerDB) {
+    this.playmakerDB = playmakerDB;
     this.dash = dash;
   }
 
@@ -59,6 +55,10 @@ public class PlaymakerGUI {
     }
   }
 
+  /**
+   * Loads whiteboard feature of playmaker.
+   * @author awainger
+   */
   public class WhiteboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
@@ -96,15 +96,9 @@ public class PlaymakerGUI {
         parsedPlayerPaths[position] = path;
       }
 
-      double[][] ballPath = GSON.fromJson(jsonBallString, double[][].class);
-      Location[] parsedBallPath = new Location[numFrames];
-      for (int frame = 0; frame < numFrames; frame++) {
-        double x = ballPath[frame][0];
-        double y = ballPath[frame][1];
-        parsedBallPath[frame] = new Location(x, y);
-      }
+      int[] ballPath = GSON.fromJson(jsonBallString, int[].class);
 
-      dbManager.savePlay(new Play(name, numFrames, parsedPlayerPaths, parsedBallPath));
+      playmakerDB.savePlay(new Play(name, numFrames, parsedPlayerPaths, ballPath));
       return getPlayNamesFromDB();
     }
   }
@@ -119,7 +113,7 @@ public class PlaymakerGUI {
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
       String name = qm.value("name");
-      Play play = dbManager.loadPlay(name);
+      Play play = playmakerDB.loadPlay(name);
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("play", play).put("errorMessage", "").build();
 
@@ -127,13 +121,18 @@ public class PlaymakerGUI {
     }
   }
 
+  
+  /**
+   * Handles deletion of a play.
+   * @author awainger
+   */
   public class DeleteHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
       String name = qm.value("name");
-      dbManager.deletePlay(name);
+      playmakerDB.deletePlay(name);
 
       return getPlayNamesFromDB();
     }
@@ -152,14 +151,16 @@ public class PlaymakerGUI {
     }
   }
 
+  /**
+   * Get numbers for players on court for playmaker.
+   * @author awainger
+   */
   public class PlayerNumberHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
       Game game = dash.getGame();
-
       Map<String, Object> variables;
-      
       if(game == null) {
         variables = new ImmutableMap.Builder<String, Object>()
           .put("errorMessage", "").build();
@@ -169,13 +170,13 @@ public class PlaymakerGUI {
         for(BasketballPosition bp : BasketballPosition.values()) {
           numbers.add(players.get(bp).getNumber());
         }
-
-        variables = new ImmutableMap.Builder<String, Object>().put("playerNumbers", numbers).put("errorMessage", "").build();
+        variables = new ImmutableMap.Builder<String, Object>()
+            .put("playerNumbers", numbers)
+            .put("errorMessage", "")
+            .build();
       }
-
       return GSON.toJson(variables);
     }
-    
   }
 
 
@@ -185,7 +186,7 @@ public class PlaymakerGUI {
    * @return - String, GSON'ed map from "plays" to the list of play names
    */
   private String getPlayNamesFromDB() {
-    List<String> plays = dbManager.loadPlayNames();
+    List<String> plays = playmakerDB.loadPlayNames();
     Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
         .put("plays", plays).put("errorMessage", "").build();
 

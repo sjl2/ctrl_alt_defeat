@@ -8,15 +8,16 @@ $(document).ready(function(){
 	paper.image("/images/Basketball-Court-half.png",0,0,450,420).attr({"fill" : "white"});
 	paper.rect(0,0,450,420).attr({fill : "rgba(150,150,150,.3)"});
 
-	$("#season").change(function () {
+	$("#years").change(function () {
 
 		postParameters = {
-			year: $("#season").val(), 
-			playerID: id
+			year: $("#years").val(), 
+			id: id,
+			isPlayer: isPlayer
 		}
 
-		$.post("/player/get/year", postParameters, function (responseHTML) {
-				$("#season-player").html(responseHTML); 
+		$.post("/season/get", postParameters, function (responseHTML) {
+				$("#season").html(responseHTML); 
 		});
 	});
 
@@ -24,11 +25,25 @@ $(document).ready(function(){
 
 
 function clickPlayerGame(playerID, gameID) {
+	$("#chart-title").html("<b>Shot Chart</b>");
 	paper.shots.remove();
-	drawShotChart(playerID, gameID, paper);
+	drawShotChart(playerID, true, gameID, paper);
 }
 
-function clickPlayerSeason(playerID, year, b) {
+function clickPlayerSeason(playerID, year) {
+	$("#chart-title").html("<b>Heat Map for " + (year - 1) + " - " + year + "</b>");
 	paper.shots.remove();
 	drawHeatMap(playerID, true, year, paper);
+}
+
+function clickTeamGame(teamID, gameID, gameName) {
+	$("#chart-title").html("<b>Shot Chart</b>");
+	paper.shots.remove();
+	drawShotChart(teamID, false, gameID, paper);
+}
+
+function clickTeamSeason(teamID, year) {
+	$("#chart-title").html("<b>Heat Map for " + (year - 1) + " - " + year + "</b>");
+	paper.shots.remove();
+	drawHeatMap(teamID, false, year, paper);
 }
