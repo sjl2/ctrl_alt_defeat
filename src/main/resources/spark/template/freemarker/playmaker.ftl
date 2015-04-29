@@ -30,7 +30,7 @@
 
       <div class="col-md-8" id="page-content-wrapper">
 	<div class="row" id="above_court">
-	  <div class="col-md-2 well well-sm" id="editing_name">Untitled</div>
+	  <div class="col-md-2 well well-sm" id="editing_name">untitled</div>
 	  <div class="col-md-10"></div>
 	</div>
 	<div class="row" id="canvas_container" tabindex="0"></div>
@@ -58,6 +58,8 @@
 	    <button class="btn btn-primary" id="edit_pos">
 	      Edit Start Locations
 	    </button>
+	    <button class="btn btn-danger" id="newPlay">New Play</button>
+	    <br>
 	    <br>
 	    <p>Playback Speed</p>
 	    <input type="range" min="0.5" max="3" step="0.05" value="1" id="playSpeed">

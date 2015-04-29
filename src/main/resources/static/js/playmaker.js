@@ -94,12 +94,12 @@ function PlayToken(playName) {
 	
 }
 
-function Ball(playerToken, angle) {
+function Ball(playerToken) {
     var newBall =  {
 	location: Location(0, 0),
 	circle: undefined,
 	possession: [],
-	angle: 0,
+	angle: ballAngle,
 	
 	checkCollision: function(playerToken) {
 	    var dx = this.location.x - playerToken.location.x;
@@ -125,9 +125,10 @@ function Ball(playerToken, angle) {
 	    this.location.translate(dx / width, dy / height);
 	},
 
-	getRelativeLocation: function(playerToken, angle) {
-	    var x = playerToken.location.x + playerRadius * Math.cos(angle);
-	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(angle);
+	getRelativeLocation: function(playerToken) {
+	    var tempAngle = Math.atan2(0.5 - playerToken.location.y, 0.08125 - playerToken.location.x);
+	    var x = playerToken.location.x + playerRadius * Math.cos(tempAngle);
+	    var y = playerToken.location.y + (width / height) * playerRadius * Math.sin(tempAngle);
 	    return Location(x, y);
 	},
 
@@ -139,7 +140,7 @@ function Ball(playerToken, angle) {
 	    return Location(x, y);
 	}
     }
-    var location = newBall.getRelativeLocation(playerToken, angle);
+    var location = newBall.getRelativeLocation(playerToken);
     newBall.circle = paper.circle(location.x * width, location.y * height, ballRadius * width).attr("fill", "#FA8320");
     newBall.circle.drag(onmove, onballstart, onballend, newBall, newBall, newBall);
     newBall.setLocationWithXY(location.x, location.y);
@@ -228,7 +229,7 @@ window.onload = function() {
     });
     
     ballAngle = Math.PI
-    ball = Ball(possessionToken, ballAngle);
+    ball = Ball(possessionToken);
 
     $("#frame_number").on("input", function() {
 	if(playing) {
@@ -275,7 +276,8 @@ window.onload = function() {
 		}
 	    },
 	    callback: function(result) {
-		if(result == "" || result === null) {
+		if(result === null) {
+		} else if(result == "") {
 		    bootbox.alert("Please Enter a Play Name");
 		    return false;
 		} else if (existingPlays[result] != undefined) {
@@ -347,6 +349,18 @@ window.onload = function() {
 	}
     });
 
+    $("#newPlay").on("click", function(e) {
+	if(maxFrame != 0) {
+	    bootbox.confirm("Creating a new play will erase all current data.\nAre You sure you want to make a new play?",
+			    function(r) {
+				if(r) {
+				    $(".playNameHolder").removeClass("selected-row");
+				    newPlay();
+				}
+			    });
+	}
+    });
+
     $.get("/playmaker/playNames",
 	  {},
 	  updateLoadBar,
@@ -378,6 +392,8 @@ function newPlay() {
     possessionToken = tokens[0];
     ball.setRelativeLocation(possessionToken);
     ball.possession = [0];
+    
+    setEditingName("untitled")
 }
 
 function updateRadii(newPlayerRadius) {
@@ -584,6 +600,7 @@ function setMaxFrame(frameNumber) {
 }
 
 function save(playName) {
+    console.log("Save");
     var paths = [];
     for(i = 0; i < tokens.length; i++) {
 	var tokenPath = tokens[i].path;
