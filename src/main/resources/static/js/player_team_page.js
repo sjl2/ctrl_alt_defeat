@@ -3,10 +3,13 @@ var paper;
 $(document).ready(function(){
 	console.log("a");
 	console.log(document.getElementById("forCharts"));
-	paper = Raphael(document.getElementById("forCharts"), 450, 420);
+	var width = window.innerWidth / 2.3; 
+	var height = 14 * width / 15; 
+	$("#forCharts").css('width', width);
+	paper = Raphael(document.getElementById("forCharts"), width, height);
 	paper.shots = paper.set();
-	paper.image("/images/Basketball-Court-half.png",0,0,450,420).attr({"fill" : "white"});
-	paper.rect(0,0,450,420).attr({fill : "rgba(150,150,150,.3)"});
+	paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
+	paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
 
 	$("#years").change(function () {
 

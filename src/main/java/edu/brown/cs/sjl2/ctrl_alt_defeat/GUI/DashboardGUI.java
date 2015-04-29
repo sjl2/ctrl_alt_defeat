@@ -14,6 +14,7 @@ import spark.Route;
 import spark.TemplateViewRoute;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
@@ -34,12 +35,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 public class DashboardGUI {
 
   private final static Gson GSON = new Gson();
-  private DBManager dbManager;
+  private DBManager db;
   private Dashboard dash;
   private Trie trie;
 
   public DashboardGUI(Dashboard dash, DBManager dbManager, Trie trie) {
-    this.dbManager = dbManager;
+    this.db = dbManager;
     this.dash = dash;
     this.trie = trie;
   }
@@ -54,11 +55,17 @@ public class DashboardGUI {
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
+      Team opponent = db.getTeam(db.getOpposingTeams().get(0).getID());
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Dashboard",
-                          "teams", dbManager.getOpposingTeams(),
-                          "myTeam", dash.getMyTeam(),
-                          "errorMessage", "");
+          new ImmutableMap.Builder<String, Object>()
+          .put("tabTitle", "Dashboard")
+          .put("myTeam", dash.getMyTeam())
+          .put("players", dash.getMyTeam().getPlayers())
+          .put("teams", db.getOpposingTeams())
+          .put("opposingPlayers", opponent.getPlayers())
+          .put("isGame", dash.getGame() != null)
+          .put("errorMessage", "").build();
+
       return new ModelAndView(variables, "dashboard.ftl");
     }
   }
@@ -127,7 +134,7 @@ public class DashboardGUI {
     public ModelAndView handle(Request request, Response response) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "New Player",
-                          "teams", dbManager.getAllTeams(),
+                          "teams", db.getAllTeams(),
                           "errorMessage", "");
       return new ModelAndView(variables, "newPlayer.ftl");
     }
@@ -192,10 +199,10 @@ public class DashboardGUI {
         if (team == null) {
           error = "Could not find team by that ID!";
         } else {
-          years = dbManager.getYearsActive("team_stats", teamID);
-          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
-          seasonAverages = dbManager.getAggregateGameStatsForCareerOfType("AVG", "team_stats", teamID);
-          seasonTotals = dbManager.getAggregateGameStatsForCareerOfType("SUM", "team_stats", teamID);
+          years = db.getYearsActive("team_stats", teamID);
+          rows = db.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
+          seasonAverages = db.getAggregateGameStatsForCareerOfType("AVG", "team_stats", teamID);
+          seasonTotals = db.getAggregateGameStatsForCareerOfType("SUM", "team_stats", teamID);
         }
       } catch (NumberFormatException e) {
         error = "That's not a valid team id!";
@@ -204,7 +211,7 @@ public class DashboardGUI {
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", team.toString())
-          .put("db", dbManager)
+          .put("db", db)
           .put("team", team)
           .put("years", years)
           .put("rows", rows)
@@ -232,11 +239,11 @@ public class DashboardGUI {
         if (player == null) {
           error = "Could not find player by that ID!";
         } else {
-          years = dbManager.getYearsActive("player_stats", playerID);
-          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          years = db.getYearsActive("player_stats", playerID);
+          rows = db.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
           System.out.println("Rows: " + rows.size());
-          seasonAverages = dbManager.getAggregateGameStatsForCareerOfType("AVG", "player_stats", playerID);
-          seasonTotals = dbManager.getAggregateGameStatsForCareerOfType("SUM", "player_stats", playerID);
+          seasonAverages = db.getAggregateGameStatsForCareerOfType("AVG", "player_stats", playerID);
+          seasonTotals = db.getAggregateGameStatsForCareerOfType("SUM", "player_stats", playerID);
         }
       } catch (NumberFormatException e) {
         error = "That's not a valid player id!";
@@ -245,7 +252,7 @@ public class DashboardGUI {
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", player.toString())
-          .put("db", dbManager)
+          .put("db", db)
           .put("player", player)
           .put("years", years)
           .put("rows", rows)
@@ -275,14 +282,14 @@ public class DashboardGUI {
         } else {
           table = "team_stats";
         }
-        rows = dbManager.getSeparateGameStatsForYear(year, table, id);
+        rows = db.getSeparateGameStatsForYear(year, table, id);
       } catch (NumberFormatException e) {
         error = "That's either an invalid year or ID!";
       }
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("db", dbManager)
+          .put("db", db)
           .put("rows", rows)
           .put("errorMessage", error).build();
       return new ModelAndView(variables, "season.ftl");
@@ -305,26 +312,26 @@ public class DashboardGUI {
         if (currentGame) {
         if (player) {
           int playerID = Integer.parseInt(qm.value("id"));
-          makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
-          misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
+          makes = db.getMakesForEntityInGame(dash.getGame().getID(), playerID, "player");
+          misses = db.getMissesForEntityInGame(dash.getGame().getID(), playerID, "player");
         } else {
           boolean us = Boolean.parseBoolean(qm.value("us"));
           int teamID;
           if ((us && dash.getGame().getHomeGame()) || (!us && !dash.getGame().getHomeGame())) {
             teamID = dash.getGame().getHome().getID();
-            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
           } else {
             teamID = dash.getGame().getAway().getID();
-            makes = dbManager.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
-            misses = dbManager.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            makes = db.getMakesForEntityInGame(dash.getGame().getID(), teamID, "team");
+            misses = db.getMissesForEntityInGame(dash.getGame().getID(), teamID, "team");
           }
         }
         } else {
           int playerID = Integer.parseInt(qm.value("id"));
           int gameID = Integer.parseInt(qm.value("gameID"));
-          makes = dbManager.getMakesForEntityInGame(gameID, playerID, "player");
-          misses = dbManager.getMissesForEntityInGame(gameID, playerID, "player");
+          makes = db.getMakesForEntityInGame(gameID, playerID, "player");
+          misses = db.getMissesForEntityInGame(gameID, playerID, "player");
         }
       } catch (NumberFormatException e) {
         errorMessage = "Invalid player id!";
@@ -362,8 +369,8 @@ public class DashboardGUI {
           type = "team";
         }
 
-        makes = dbManager.getMakesForYear(championshipYear, entityID, type);
-        misses = dbManager.getMissesForYear(championshipYear, entityID, type);
+        makes = db.getMakesForYear(championshipYear, entityID, type);
+        misses = db.getMissesForYear(championshipYear, entityID, type);
       } catch (NumberFormatException e) {
         error = "Invalid id format!";
       }

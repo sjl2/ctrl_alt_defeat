@@ -8,3 +8,15 @@
 #PG, #SG, #SF, #PF, #C p {
 	font-size : large;
 }
+
+#createGame {
+	margin: 0px auto;
+}
+
+#opponent {
+	width: 269px;
+	height: 38px;
+	font-size: 24px;
+	margin-top: 18px;
+	margin-bottom: 10px;
+}
