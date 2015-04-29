@@ -1,6 +1,8 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
@@ -32,8 +34,12 @@ public class StatsEntryGUI {
 
     @Override
     public ModelAndView handle(Request request, Response response) {
+      List<Stat> s = dash.getGame().getAllStats();
+      Collections.reverse(s);
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Stats Entry", "errorMessage", "");
+          ImmutableMap.of("tabTitle", "Stats Entry", 
+              "stats", s, 
+              "errorMessage", "");
 
       //      if (dash.getGame() != null) {
       return new ModelAndView(variables, "stats_entry.ftl");
@@ -45,10 +51,10 @@ public class StatsEntryGUI {
 
   }
 
-  public class AddStatHandler implements Route {
+  public class AddStatHandler implements TemplateViewRoute {
 
     @Override
-    public Object handle(Request request, Response response) {
+    public ModelAndView handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
       String statID = qm.value("statID");
       int playerID = GSON.fromJson(qm.value("playerID"), Integer.class);
@@ -61,14 +67,14 @@ public class StatsEntryGUI {
       try {
         s = dash.getGame().addStat(statID, playerID, new Location(x, y));
       } catch (GameException ex) {
-        return ex.getMessage();
+        return null;// TODO ex.getMessage();
       } catch (Exception e) {
         e.printStackTrace();
       }
       HashMap<String, Object> st = new HashMap<String, Object>();
       st.put("stat", s);
       st.put("statType", s.getStatType());
-      return GSON.toJson(st);
+      return new ModelAndView(st, "stat.ftl");
     }
   }
 

@@ -113,7 +113,7 @@ public class GUIManager {
     Spark.get("/playmaker/getPlayerNumbers", playmakerGUI.new PlayerNumberHandler());
 
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
-		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler());
+		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler(), freeMarker);
     Spark.post("/stats/update", statsEntryGUI.new UpdateStatHandler());
     Spark.post("/stats/delete", statsEntryGUI.new DeleteStatHandler());
 		Spark.post("/stats/changepossession",

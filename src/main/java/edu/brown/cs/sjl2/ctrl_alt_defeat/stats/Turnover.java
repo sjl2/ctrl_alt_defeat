@@ -25,7 +25,7 @@ public class Turnover implements Stat {
 
   @Override
   public void undo(GameStats ps) {
-    ps.addTurnovers(1);
+    ps.addTurnovers(-1);
   }
 
   @Override
