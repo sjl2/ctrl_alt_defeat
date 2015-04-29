@@ -620,7 +620,7 @@ public class DBManager {
     return p;
   }
 
-  public void updatePlayer(Player player) {
+  private void updatePlayer(Player player) {
     String query = "UPDATE player "
         + "SET name = ?, team = ?, number = ?, current = ? "
         + "WHERE id = ?";
@@ -1006,7 +1006,7 @@ public class DBManager {
     }
   }
 
-  public List<GameStats> getAggregateGameStatsForCareerOfType(String type, String table, int id) {
+  public List<GameStats> getAggregateGameStats(String type, String table, int id) {
     List<GameStats> careerStats = new ArrayList<>();
     List<Integer> yearsActive = getYearsActive(table, id);
     for (int year : yearsActive) {
@@ -1106,7 +1106,7 @@ public class DBManager {
     return getShotsForEntityInGames(gameIDs, entityID, false, chartType);
   }
 
-  
+
   /****** AUTOCORRECT METHODS ******/
   private Trie fillTrie() {
     ArrayList<Character> c = new ArrayList<Character>();
@@ -1142,7 +1142,7 @@ public class DBManager {
   public Trie getTrie() {
     return trie;
   }
-  
+
   /**
    * Lookup requested name in database, return first matching id.
    * @param name - Name of player or team

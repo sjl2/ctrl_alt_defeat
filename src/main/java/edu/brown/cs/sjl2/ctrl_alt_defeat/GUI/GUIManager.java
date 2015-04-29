@@ -35,20 +35,22 @@ public class GUIManager {
   private GameGUI gameGUI;
   private StatsEntryGUI statsEntryGUI;
   private PlaymakerGUI playmakerGUI;
+  private WikiGUI wikiGUI;
   private Trie trie;
 
   private static final Gson GSON = new Gson();
 
   public GUIManager(DBManager db) {
     this.dbManager = db;
+    this.dash = new Dashboard(dbManager);
     this.trie = dbManager.getTrie();
     trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
 
-    this.dash = new Dashboard(dbManager);
     this.dashboardGUI = new DashboardGUI(dash, dbManager, trie);
     this.gameGUI = new GameGUI(dash);
     this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
+    this.wikiGUI = new WikiGUI(dbManager, dash);
     runServer();
   }
 
@@ -72,56 +74,52 @@ public class GUIManager {
 
     //Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
+
+    /*** DashboardGUI routes ***/
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
-    Spark.post("/dashboard/new",
-        dashboardGUI.new DashSetupHandler(), freeMarker);
-    Spark.get("/dashboard/new/team",
-        dashboardGUI.new NewTeamHandler(), freeMarker);
-    Spark.post("/dashboard/new/team/results",
-        dashboardGUI.new NewTeamResultsHandler(), freeMarker);
-    Spark.get("/dashboard/new/player",
-        dashboardGUI.new NewPlayerHandler(), freeMarker);
-    Spark.post("/dashboard/new/player/results",
-        dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
-    Spark.get("/dashboard/new/game",
-        dashboardGUI.new NewGameHandler(), freeMarker);
+    Spark.post("/dashboard/new", dashboardGUI.new DashSetupHandler(), freeMarker);
+    Spark.get("/dashboard/new/team", dashboardGUI.new NewTeamHandler(), freeMarker);
+    Spark.post("/dashboard/new/team/results", dashboardGUI.new NewTeamResultsHandler(), freeMarker);
+    Spark.get("/dashboard/new/player", dashboardGUI.new NewPlayerHandler(), freeMarker);
+    Spark.post("/dashboard/new/player/results", dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
+    Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
-    Spark.get("/dashboard/opponent/get",
-        dashboardGUI.new GetPlayersHandler(), freeMarker);
-    Spark.post("/dashboard/shotchart", dashboardGUI.new GetShotChartData());
-    Spark.post("/dashboard/heatmap", dashboardGUI.new GetHeatMapData());
+    Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(), freeMarker);
     Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
     Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
 
-    Spark.get("/game/view/:id", dashboardGUI.new GameViewHandler(), freeMarker);
+    /*** WikiGUI routes ***/
+    Spark.get("/game/view/:id", wikiGUI.new GameViewHandler(), freeMarker);
+    Spark.get("/team/view/:id", wikiGUI.new TeamViewHandler(), freeMarker);
+    Spark.get("/player/view/:id", wikiGUI.new PlayerViewHandler(), freeMarker);
+    Spark.post("/season/get", wikiGUI.new GetGameStats(), freeMarker);
+    Spark.post("/dashboard/shotchart", wikiGUI.new GetShotChartData());
+    Spark.post("/dashboard/heatmap", wikiGUI.new GetHeatMapData());
+    
+    Spark.post("/player/edit", wikiGUI.new EditPlayer());
 
-    Spark.get("/team/view/:id", dashboardGUI.new TeamViewHandler(), freeMarker);
-    Spark.get("/player/view/:id",
-        dashboardGUI.new PlayerViewHandler(), freeMarker);
-    Spark.post("/season/get",
-        dashboardGUI.new GetGameStats(), freeMarker);
-
+    /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());
     Spark.get("/game/roster", gameGUI.new StPgHandler());
 
+    /*** PlaymakerGUI routes ***/
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
     Spark.post("/playmaker/delete", playmakerGUI.new DeleteHandler());
     Spark.get("/playmaker/playNames", playmakerGUI.new PlayNamesHandler());
     Spark.get("/playmaker/getPlayerNumbers", playmakerGUI.new PlayerNumberHandler());
+    Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
 
+    /*** Stats routes ***/
 		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler(), freeMarker);
     Spark.post("/stats/update", statsEntryGUI.new UpdateStatHandler());
     Spark.post("/stats/delete", statsEntryGUI.new DeleteStatHandler());
-		Spark.post("/stats/changepossession",
-		    statsEntryGUI.new FlipPossessionHandler());
+		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
-
-		Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -161,6 +159,7 @@ public class GUIManager {
       return new ModelAndView(variables, "login.ftl");
     }
   }
+
   private class LoginHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {
@@ -181,7 +180,6 @@ public class GUIManager {
    * be displayed on the command line.
    *
    * @author sjl2
-   *
    */
   private static class ExceptionPrinter implements ExceptionHandler {
     @Override

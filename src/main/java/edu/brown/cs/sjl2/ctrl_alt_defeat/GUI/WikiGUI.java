@@ -1,0 +1,330 @@
+package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
+
+import java.util.List;
+import java.util.Map;
+
+import spark.ModelAndView;
+import spark.QueryParamsMap;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.TemplateViewRoute;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.GameView;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
+
+public class WikiGUI {
+
+  private final static Gson GSON = new Gson();
+  private DBManager dbManager;
+  private Dashboard dashboard;
+
+  /**
+   * Constructor for class.
+   * 
+   * @param dbManager
+   *          - DBManager, used to query database
+   * @author awainger
+   */
+  public WikiGUI(DBManager dbManager, Dashboard dashboard) {
+    this.dbManager = dbManager;
+    this.dashboard = dashboard;
+  }
+
+  /**
+   * Loads all data needed to view a game page.
+   * 
+   * @author awainger
+   */
+  public class GameViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int gameID = Integer.parseInt(request.params("id"));
+      String error = "";
+
+      GameView game = null;
+      try {
+        game = dashboard.getOldGame(gameID);
+      } catch (DashboardException e) {
+        error = "No game exists with that id.";
+        System.out.println(error);
+      }
+
+      Map<String, Object> variables = ImmutableMap.of("tabTitle",
+          game.toString(), "game", game, "errorMessage", error);
+      return new ModelAndView(variables, "game.ftl");
+    }
+  }
+
+  /**
+   * Loads all data needed to view a team page.
+   * 
+   * @author awainger
+   */
+  public class TeamViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int teamID = -1;
+      Team team = null;
+      List<Integer> years = null;
+      List<GameStats> rows = null;
+      List<GameStats> seasonAverages = null;
+      List<GameStats> seasonTotals = null;
+      String error = "";
+
+      try {
+        teamID = Integer.parseInt(request.params("id"));
+        team = dashboard.getTeam(teamID);
+        if (team == null) {
+          error = "Could not find team by that ID!";
+        } else {
+          years = dbManager.getYearsActive("team_stats", teamID);
+          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
+          seasonAverages = dbManager.getAggregateGameStats("AVG", "team_stats", teamID);
+          seasonTotals = dbManager.getAggregateGameStats("SUM", "team_stats", teamID);
+        }
+      } catch (NumberFormatException e) {
+        error = "That's not a valid team id!";
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("tabTitle", team.toString()).put("db", dbManager)
+          .put("team", team).put("years", years).put("rows", rows)
+          .put("seasonTotals", seasonTotals)
+          .put("seasonAverages", seasonAverages).put("errorMessage", error)
+          .build();
+      return new ModelAndView(variables, "team.ftl");
+    }
+  }
+  
+  public class EditPlayer implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      try {
+        QueryParamsMap qm = request.queryMap();
+        int id = Integer.parseInt(qm.value("id"));
+        String name = qm.value("name");
+        int number = Integer.parseInt(qm.value("number"));
+        
+        // change teams, current player status?
+        //dbManager.updatePlayer(id, name, number);
+        
+        return ImmutableMap.of("errorMessage", "");
+      } catch (NumberFormatException e) {
+        return ImmutableMap.of("errorMessage", "Error parsing changes to player.");
+      }      
+    }
+  }
+  
+  public class EditTeam implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      try {
+        QueryParamsMap qm = request.queryMap();
+        int id = Integer.parseInt(qm.value("id"));
+        String name = qm.value("name");
+        String coach = qm.value("coach");
+        String primary = qm.value("primary");
+        String secondary = qm.value("secondary");
+        
+        // change to myteam? 
+        //dbManager.updateTeam(id, name, coach, primary, secondary);
+        
+        return ImmutableMap.of("errorMessage", "");
+      } catch (NumberFormatException e) {
+        return ImmutableMap.of("errorMessage", "Error parsing changes to team.");
+      }
+    }
+    
+  }
+
+  /**
+   * Loads all data needed to view a player page.
+   * 
+   * @author awainger
+   */
+  public class PlayerViewHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      int playerID = -1;
+      String error = "";
+      Player player = null;
+      List<Integer> years = null;
+      List<GameStats> rows = null;
+      List<GameStats> seasonAverages = null;
+      List<GameStats> seasonTotals = null;
+
+      try {
+        playerID = Integer.parseInt(request.params("id"));
+        player = dashboard.getPlayer(playerID);
+        if (player == null) {
+          error = "Could not find player by that ID!";
+        } else {
+          years = dbManager.getYearsActive("player_stats", playerID);
+          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          seasonAverages = dbManager.getAggregateGameStats("AVG", "player_stats", playerID);
+          seasonTotals = dbManager.getAggregateGameStats("SUM", "player_stats", playerID);
+        }
+      } catch (NumberFormatException e) {
+        error = "That's not a valid player id!";
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("tabTitle", player.toString()).put("db", dbManager)
+          .put("player", player).put("years", years).put("rows", rows)
+          .put("seasonTotals", seasonTotals)
+          .put("seasonAverages", seasonAverages).put("errorMessage", error)
+          .build();
+      return new ModelAndView(variables, "player.ftl");
+    }
+  }
+
+  /**
+   * Handler for updating the season table on either player or team pages.
+   * 
+   * @author awainger
+   */
+  public class GetGameStats implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String error = "";
+      List<GameStats> rows = null;
+
+      boolean isPlayer = false;
+      try {
+        int year = Integer.parseInt(qm.value("year"));
+        int id = Integer.parseInt(qm.value("id"));
+        isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+        String table;
+        if (isPlayer) {
+          table = "player_stats";
+        } else {
+          table = "team_stats";
+        }
+        rows = dbManager.getSeparateGameStatsForYear(year, table, id);
+      } catch (NumberFormatException e) {
+        error = "That's either an invalid year or ID!";
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("db", dbManager).put("rows", rows).put("errorMessage", error)
+          .put("isPlayer", isPlayer).build();
+
+      return new ModelAndView(variables, "season.ftl");
+    }
+  }
+
+  /**
+   * Handler for retrieving shot chart data.
+   * 
+   * @author awainger
+   */
+  public class GetShotChartData implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      boolean player;
+      boolean currentGame;
+      List<Location> makes = null;
+      List<Location> misses = null;
+      String errorMessage = "";
+      try {
+        player = Boolean.parseBoolean(qm.value("player"));
+        currentGame = Boolean.parseBoolean(qm.value("currentGame"));
+        if (currentGame) {
+          if (player) {
+            int playerID = Integer.parseInt(qm.value("id"));
+            makes = dbManager.getMakesForEntityInGame(dashboard.getGame().getID(), playerID, "player");
+            misses = dbManager.getMissesForEntityInGame(dashboard.getGame().getID(), playerID, "player");
+          } else {
+            boolean us = Boolean.parseBoolean(qm.value("us"));
+            int teamID;
+            if ((us && dashboard.getGame().getHomeGame()) || (!us && !dashboard.getGame().getHomeGame())) {
+              teamID = dashboard.getGame().getHome().getID();
+              makes = dbManager.getMakesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
+              misses = dbManager.getMissesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
+            } else {
+              teamID = dashboard.getGame().getAway().getID();
+              makes = dbManager.getMakesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
+              misses = dbManager.getMissesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
+            }
+          }
+        } else {
+          if (player) {
+            int playerID = Integer.parseInt(qm.value("id"));
+            int gameID = Integer.parseInt(qm.value("gameID"));
+            makes = dbManager.getMakesForEntityInGame(gameID, playerID, "player");
+            misses = dbManager.getMissesForEntityInGame(gameID, playerID, "player");
+          } else {
+            int teamID = Integer.parseInt(qm.value("id"));
+            int gameID = Integer.parseInt(qm.value("gameID"));
+            makes = dbManager.getMakesForEntityInGame(gameID, teamID, "team");
+            misses = dbManager.getMissesForEntityInGame(gameID, teamID, "team");
+          }
+        }
+      } catch (NumberFormatException e) {
+        errorMessage = "Invalid id!";
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses)
+          .put("errorMessage", errorMessage).build();
+      return GSON.toJson(variables);
+    }
+  }
+
+  /**
+   * Handler for retrieving heat map data.
+   * 
+   * @author awainger
+   */
+  public class GetHeatMapData implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      boolean player;
+      int entityID;
+      String type;
+      int championshipYear;
+      List<Location> makes = null;
+      List<Location> misses = null;
+      String error = "";
+      try {
+        player = Boolean.parseBoolean(qm.value("player"));
+        entityID = Integer.parseInt(qm.value("id"));
+        championshipYear = Integer.parseInt(qm.value("championshipYear"));
+
+        if (player) {
+          type = "player";
+        } else {
+          type = "team";
+        }
+
+        makes = dbManager.getMakesForYear(championshipYear, entityID, type);
+        misses = dbManager.getMissesForYear(championshipYear, entityID, type);
+      } catch (NumberFormatException e) {
+        error = "Invalid id format!";
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses).put("error", error)
+          .build();
+      return GSON.toJson(variables);
+
+    }
+  }
+}
