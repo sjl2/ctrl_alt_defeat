@@ -9,6 +9,10 @@
 	<div id="load-sidebar-wrapper">
 	  <div id="load_column" class="pull-left">
 	    <div id="load_header">
+	      <button class="btn btn-primary" id="save_play">
+		<span class="glyphicon glyphicon-floppy-save"></span> Save Play
+	      </button><br>
+
 	      <button id="delete_plays" class="btn btn-primary">Delete Plays</button>
 	    </div>
 	    <div id="load_content">
@@ -26,19 +30,8 @@
 
       <div class="col-md-8" id="page-content-wrapper">
 	<div class="row" id="above_court">
-	  <div class="col-md-3">
-	    <button class="btn btn-primary" id="edit_pos">
-	      Edit Start Locations
-	    </button>
-	  </div>
-	  <div class="col-md-2 well well-sm" id="editing_name">1</div>
-	  <div class="col-md-3"></div>
-	  <div class="col-md-4" id="save">
-	    <button class="pull-right btn btn-primary" id="save_play">
-	      <span class="glyphicon glyphicon-floppy-save"></span>
-	    </button>
-	    <input type="text" class="pull-right" id="play_name">
-	  </div>
+	  <div class="col-md-2 well well-sm" id="editing_name">untitled</div>
+	  <div class="col-md-10"></div>
 	</div>
 	<div class="row" id="canvas_container" tabindex="0"></div>
 	<div class="row" id="control">
@@ -62,6 +55,12 @@
 	    </button>
 	  </div>
 	  <div id="settings_column" class="pull-right">
+	    <button class="btn btn-primary" id="edit_pos">
+	      Edit Start Locations
+	    </button>
+	    <button class="btn btn-danger" id="newPlay">New Play</button>
+	    <br>
+	    <br>
 	    <p>Playback Speed</p>
 	    <input type="range" min="0.5" max="3" step="0.05" value="1" id="playSpeed">
 	    <p>Token Size</p>

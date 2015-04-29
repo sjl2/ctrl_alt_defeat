@@ -323,10 +323,11 @@ public class DashboardGUI {
       String error = "";
       List<GameStats> rows = null;
 
+      boolean isPlayer = false;
       try {
         int year = Integer.parseInt(qm.value("year"));
         int id = Integer.parseInt(qm.value("id"));
-        boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+        isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
         String table;
         if (isPlayer) {
           table = "player_stats";
@@ -342,7 +343,9 @@ public class DashboardGUI {
           new ImmutableMap.Builder<String, Object>()
           .put("db", db)
           .put("rows", rows)
-          .put("errorMessage", error).build();
+          .put("errorMessage", error)
+          .put("isPlayer", isPlayer).build();
+      
       return new ModelAndView(variables, "season.ftl");
     }
   }
@@ -383,13 +386,20 @@ public class DashboardGUI {
             }
           }
         } else {
-          int playerID = Integer.parseInt(qm.value("id"));
-          int gameID = Integer.parseInt(qm.value("gameID"));
-          makes = db.getMakesForEntityInGame(gameID, playerID, "player");
-          misses = db.getMissesForEntityInGame(gameID, playerID, "player");
+          if (player) {
+            int playerID = Integer.parseInt(qm.value("id"));
+            int gameID = Integer.parseInt(qm.value("gameID"));
+            makes = db.getMakesForEntityInGame(gameID, playerID, "player");
+            misses = db.getMissesForEntityInGame(gameID, playerID, "player");
+          } else {
+            int teamID = Integer.parseInt(qm.value("id"));
+            int gameID = Integer.parseInt(qm.value("gameID"));
+            makes = db.getMakesForEntityInGame(gameID, teamID, "team");
+            misses = db.getMissesForEntityInGame(gameID, teamID, "team");
+          }
         }
       } catch (NumberFormatException e) {
-        errorMessage = "Invalid player id!";
+        errorMessage = "Invalid id!";
       }
 
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()

@@ -15,9 +15,14 @@
     <th>TO</th>
     <th>PF</th>
   </tr>
-  <#list rows as row>
-    <#assign player = row.getPlayer()>
-    <tr data-toggle="modal" data-target=".modal-chart" onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})"> 
+  <#list rows as row>	
+    <#if isPlayer>
+      <#assign player = row.getPlayer()>
+	<tr data-toggle="modal" data-target=".modal-chart" onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})"> 
+    <#else>
+      <#assign team = row.getTeam()>
+	<tr data-toggle="modal" data-target=".modal-chart" onclick="clickTeamGame(${team.getID()}, ${row.getGameID()})"> 
+    </#if>
       <#assign link = db.getGameLink(row.getGameID())>
       <td>
         <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
