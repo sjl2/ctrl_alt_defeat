@@ -50,7 +50,6 @@ public class GameGUI {
         Map<String, Object> toReturn =
             ImmutableMap.of(
                 "roster", rosterInfo,
-                "stats", st,
                 "types", lab,
                 "errorMessage", "");
 

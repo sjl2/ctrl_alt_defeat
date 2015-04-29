@@ -7,9 +7,9 @@ public class Play {
   private String name;
   private int numFrames;
   private Location[][] playerPaths;
-  private Location[] ballPath;
+  private int[] ballPath;
 
-  public Play(String name, int numFrames, Location[][] playerPaths, Location[] ballPath) {
+  public Play(String name, int numFrames, Location[][] playerPaths, int[] ballPath) {
     this.name = name;
     this.numFrames = numFrames;
     this.playerPaths = playerPaths;
@@ -33,10 +33,10 @@ public class Play {
   public void setPlayerPaths(Location[][] playerPaths) {
     this.playerPaths = playerPaths;
   }
-  public Location[] getBallPath() {
+  public int[] getBallPath() {
     return this.ballPath;
   }
-  public void setBallPath(Location[] ballPath) {
+  public void setBallPath(int[] ballPath) {
     this.ballPath = ballPath;
   }
 }

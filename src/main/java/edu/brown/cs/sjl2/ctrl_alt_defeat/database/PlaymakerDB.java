@@ -46,7 +46,7 @@ public class PlaymakerDB {
     String name = play.getName();
     int numFrames = play.getNumFrames();
     Location[][] playerPaths = play.getPlayerPaths();
-    Location[] ballPath = play.getBallPath();
+    int[] ballPath = play.getBallPath();
 
     if (!doesPlayExist(name)) {
       saveToPlaysTable(name, play.getNumFrames());
@@ -55,13 +55,19 @@ public class PlaymakerDB {
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
-    try (PreparedStatement prep1 = conn
-        .prepareStatement("DELETE FROM play_detail WHERE play = ?");
-        PreparedStatement prep2 = conn
-            .prepareStatement("INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);")) {
+    try (PreparedStatement prep1 = conn.prepareStatement(
+            "DELETE FROM play_detail WHERE play = ?;");
+        PreparedStatement prep2 = conn.prepareStatement(
+            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
+        PreparedStatement prep3 = conn.prepareStatement(
+            "DELETE FROM play_detail_ball WHERE play = ?;");
+        PreparedStatement prep4 = conn.prepareStatement(
+            "INSERT into play_detail_ball VALUES(?, ?, ?);")) {
 
       prep1.setString(1, name);
       prep1.executeUpdate();
+      prep3.setString(1, name);
+      prep3.executeUpdate();
 
       conn.setAutoCommit(false);
 
@@ -77,20 +83,18 @@ public class PlaymakerDB {
           prep2.setDouble(DBManager.FIVE, l.getY());
           prep2.addBatch();
         }
-      }
+      }      
+      prep2.executeBatch();
 
       // Adding ball
       for (int frame = 0; frame < numFrames; frame++) {
-        Location l = ballPath[frame];
-        prep2.setString(1, name);
-        prep2.setString(2, "Ball");
-        prep2.setInt(DBManager.THREE, frame);
-        prep2.setDouble(DBManager.FOUR, l.getX());
-        prep2.setDouble(DBManager.FIVE, l.getY());
-        prep2.addBatch();
+        prep4.setString(1, name);
+        prep4.setInt(2, frame);
+        prep4.setInt(3, ballPath[frame]);
+        prep4.addBatch();
       }
 
-      prep2.executeBatch();
+      prep4.executeBatch();
       conn.commit();
       conn.setAutoCommit(true);
     } catch (SQLException e) {
@@ -140,8 +144,8 @@ public class PlaymakerDB {
     Location[][] paths = new Location[length][];
 
     for (int i = 0; i < length; i++) {
-      try (PreparedStatement prep = conn.prepareStatement("SELECT frame, x, y "
-          + "FROM play_detail " + "WHERE play = ? AND position = ?;")) {
+      try (PreparedStatement prep = conn.prepareStatement("SELECT frame, x, y"
+          + " FROM play_detail WHERE play = ? AND position = ?;")) {
 
         prep.setString(1, name);
         prep.setString(2, bballPositions[i].getName());
@@ -160,27 +164,25 @@ public class PlaymakerDB {
       }
     }
 
-    Location[] ballPath = loadBallPath(name, numFrames);
+    int[] ballPath = loadBallPath(name, numFrames);
     play.setPlayerPaths(paths);
     play.setBallPath(ballPath);
     return play;
   }
 
-  private Location[] loadBallPath(String name, int numFrames) {
-    try (PreparedStatement prep = conn.prepareStatement("SELECT frame, x, y "
-        + "FROM play_detail " + "WHERE play = ? AND position = ?;")) {
+  private int[] loadBallPath(String name, int numFrames) {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT frame, player_index FROM play_detail_ball WHERE play = ?;")) {
 
       prep.setString(1, name);
-      prep.setString(2, "Ball");
       ResultSet rs = prep.executeQuery();
 
-      Location[] path = new Location[numFrames];
+      int[] ballPath = new int[numFrames];
       while (rs.next()) {
-        Location loc = new Location(rs.getDouble("x"), rs.getDouble("y"));
-        path[rs.getInt("frame")] = loc;
+        ballPath[rs.getInt("frame")] = rs.getInt("player_index");
       }
 
-      return path;
+      return ballPath;
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -189,7 +191,7 @@ public class PlaymakerDB {
 
   private Play loadPlayMetaData(String name) {
     try (PreparedStatement prep = conn
-        .prepareStatement("SELECT numFrames FROM play WHERE name = ?")) {
+        .prepareStatement("SELECT numFrames FROM play WHERE name = ?;")) {
       prep.setString(1, name);
       ResultSet rs = prep.executeQuery();
 
@@ -235,12 +237,16 @@ public class PlaymakerDB {
    * @author awainger
    */
   public void deletePlay(String name) {
-    try (PreparedStatement prep1 = conn
-        .prepareStatement("DELETE FROM play WHERE name = ?");
-        PreparedStatement prep2 = conn
-            .prepareStatement("DELETE FROM play_detail WHERE play = ?")) {
+    try (PreparedStatement prep1 = conn.prepareStatement(
+            "DELETE FROM play WHERE name = ?;");
+        PreparedStatement prep2 = conn.prepareStatement(
+            "DELETE FROM play_detail WHERE play = ?;");
+        PreparedStatement prep3 = conn.prepareStatement(
+            "DELETE FROM play_detail_ball WHERE play = ?;")) {
       prep1.setString(1, name);
       prep2.setString(1, name);
+      prep3.setString(1, name);
+      prep3.executeUpdate();
       prep2.executeUpdate();
       prep1.executeUpdate();
     } catch (SQLException e) {

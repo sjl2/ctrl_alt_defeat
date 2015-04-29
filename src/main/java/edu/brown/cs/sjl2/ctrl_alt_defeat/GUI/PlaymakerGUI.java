@@ -13,7 +13,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.PlaymakerDB;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import spark.ModelAndView;
@@ -97,15 +96,9 @@ public class PlaymakerGUI {
         parsedPlayerPaths[position] = path;
       }
 
-      double[][] ballPath = GSON.fromJson(jsonBallString, double[][].class);
-      Location[] parsedBallPath = new Location[numFrames];
-      for (int frame = 0; frame < numFrames; frame++) {
-        double x = ballPath[frame][0];
-        double y = ballPath[frame][1];
-        parsedBallPath[frame] = new Location(x, y);
-      }
+      int[] ballPath = GSON.fromJson(jsonBallString, int[].class);
 
-      playmakerDB.savePlay(new Play(name, numFrames, parsedPlayerPaths, parsedBallPath));
+      playmakerDB.savePlay(new Play(name, numFrames, parsedPlayerPaths, ballPath));
       return getPlayNamesFromDB();
     }
   }

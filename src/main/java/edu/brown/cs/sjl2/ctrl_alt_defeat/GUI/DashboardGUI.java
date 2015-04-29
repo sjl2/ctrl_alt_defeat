@@ -530,4 +530,41 @@ public class DashboardGUI {
       return GSON.toJson(variables);
     }
   }
+  
+  public class SearchBarResultsHandler implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String searchString = qm.value("searchString");
+      Boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+      List<Integer> ids = dbManager.searchBarResults(searchString, isPlayer);
+
+      if (ids.isEmpty()) {
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+            .put("errorMessage", "Sorry, no players or teams matched your search.")
+            .build());
+      } else {
+        if (isPlayer) {
+          List<Player> players = new ArrayList<>();
+          for (int id : ids) {
+            players.add(dbManager.getPlayer(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("list", players)
+              .build());
+        } else {
+          List<Team> teams = new ArrayList<>();
+          for (int id : ids) {
+            teams.add(dbManager.getTeam(id));
+          }
+          return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+              .put("errorMessage", "")
+              .put("list", teams)
+              .build());
+        }
+      }
+    }
+  }
 }

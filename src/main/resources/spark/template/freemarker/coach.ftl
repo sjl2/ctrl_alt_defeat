@@ -1,5 +1,21 @@
 <#assign content>
   <div class = "container-fluid">
+
+    <div class="modal fade" id="multipleresults">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Multiple matches.  Were you looking for...</h4>
+              </div>
+              <div class="modal-body" id="linkList">
+                
+              </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
       <nav class="navbar navbar-default">
          <div class="container-fluid">
 
@@ -33,8 +49,8 @@
                     <span class="caret"></span>
                   </a>
                 <ul class="dropdown-menu dropdown-menu-right">
-                  <li><a href="#"><i class="icon-pencil"></i> Search as Player</a></li>
-                  <li><a href="#"><i class="icon-trash"></i> Search as Team</a></li>
+                  <li><a onclick = "textSearch(true)"><i class="icon-pencil"></i> Search as Player</a></li>
+                  <li><a onclick = "textSearch(false)"><i class="icon-trash"></i> Search as Team</a></li>
                   
                 </ul>
               </div>
