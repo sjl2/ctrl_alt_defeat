@@ -31,7 +31,7 @@ var edittingPlayName = "";
 var edittingLocations = false;
 var deletingPlays = false;
 
-var existingPlays = [];
+var existingPlays = {};
 
 function Location(x, y) {
     return {
@@ -57,7 +57,7 @@ function PlayToken(playName) {
 		   {name:playName},
 		   updateLoadBar,
 		   "json");
-	    existingPlays[playName] = undefined;
+	    delete existingPlays[playName];
 	},
 
 	getID: function() {

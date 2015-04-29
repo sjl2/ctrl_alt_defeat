@@ -56,6 +56,5 @@ Tyler:
 Playmaker bugs:
  - Load a play, drag the slider, ton of errors pop up on console
  - Starting a fresh play?
- - Click delete, delete a play, click delete again, console error
  - Move player, edit his starting position, play, console errors
  - Load a play, both sf's and the red pf are unmovable
