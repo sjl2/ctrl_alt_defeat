@@ -383,13 +383,20 @@ public class DashboardGUI {
             }
           }
         } else {
-          int playerID = Integer.parseInt(qm.value("id"));
-          int gameID = Integer.parseInt(qm.value("gameID"));
-          makes = db.getMakesForEntityInGame(gameID, playerID, "player");
-          misses = db.getMissesForEntityInGame(gameID, playerID, "player");
+          if (player) {
+            int playerID = Integer.parseInt(qm.value("id"));
+            int gameID = Integer.parseInt(qm.value("gameID"));
+            makes = db.getMakesForEntityInGame(gameID, playerID, "player");
+            misses = db.getMissesForEntityInGame(gameID, playerID, "player");
+          } else {
+            int teamID = Integer.parseInt(qm.value("id"));
+            int gameID = Integer.parseInt(qm.value("gameID"));
+            makes = db.getMakesForEntityInGame(gameID, teamID, "team");
+            misses = db.getMissesForEntityInGame(gameID, teamID, "team");
+          }
         }
       } catch (NumberFormatException e) {
-        errorMessage = "Invalid player id!";
+        errorMessage = "Invalid id!";
       }
 
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
