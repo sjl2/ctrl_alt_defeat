@@ -1,5 +1,5 @@
 var prevEntry1 = "";
-$('#multipleresults').modal({ show: false})
+$('#multipleresults').modal({ show: false});
 
 console.log(document.getElementById("playerTeamSearch"));
 
@@ -34,9 +34,9 @@ function textSearch(isPlayer) {
 				var a;
 				if (isPlayer) a = "player";
 				else a = "team";
-				if (res.list.length = 1) {
-
-					window.location.href("/" + a + "/view/" + res.list[0].id);
+				console.log(res.list);
+				if (res.list.length == 1) {
+					window.location.href ="/" + a + "/view/" + res.list[0].id;
 				} else {
 					for (var i=0; i<res.list.length; i++) {
 						$("#linkList").append("<a href=\"/" + a + "/view/" + res.list[i].id + "\">" + res.list[i].name + " (#" + res.list[i].number + " " + res.list[i].teamName + ")</a><br>");
