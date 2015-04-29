@@ -3,6 +3,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.trie;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
 /**This is my Trie class, holding words stored such that common prefixes
@@ -21,6 +22,7 @@ import java.util.PriorityQueue;
  */
 public class Trie {
   private Node<Character> root;
+  private Map<String, String> capKey;
   private Dictionary dictionary;
   private Boolean usePrefix;
   private Boolean useED;
@@ -56,6 +58,7 @@ public class Trie {
    */
   public Trie(List<Character> init) {
     root = new Node<Character>(init, null);
+    this.capKey = new HashMap<String, String>();
     this.dictionary = new Dictionary();
     this.useED = false;
     this.usePrefix = false;
@@ -156,7 +159,8 @@ public class Trie {
    *
    * @param word the word to be added.
    */
-  public void addFirstWord(List<Character> word) {
+  public void addFirstWord(String w, List<Character> word) {
+    capKey.put(StringFormatter.unlist(word), w);
     root.addSequence(word);
     dictionary.addFirstWord(word);
   }
@@ -383,7 +387,7 @@ public class Trie {
  * @param prev The previous word, also provided for bigram scoring
  * @return A list of Pairs of characters and scoring criteria
  */
-  public ArrayList<Pair<List<Character>, Pair<Integer, Integer>>>
+  public ArrayList<String>
   evaluateWord(List<Character> word, List<Character> prev) {
     PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>> heap =
         new PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>>(
@@ -478,13 +482,12 @@ public class Trie {
       }
 
     }
-
-    ArrayList<Pair<List<Character>, Pair<Integer, Integer>>>
-    toReturn = new ArrayList<Pair<List<Character>, Pair<Integer, Integer>>>();
+    ArrayList<String>
+    toReturn = new ArrayList<String>();
 
     while (heap.size() != 0) {
       Pair<List<Character>, Pair<Integer, Integer>> l = heap.poll();
-      toReturn.add(0, l);
+      toReturn.add(0, capKey.get(StringFormatter.unlist(l.getFirst())));
     }
 
     return toReturn;

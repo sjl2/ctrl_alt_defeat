@@ -1119,7 +1119,7 @@ public class DBManager {
           "select name from player;");
       ResultSet r = prep.executeQuery();
       while (r.next()) {
-        t.addFirstWord(StringFormatter.treat(r.getString(1)));
+        t.addFirstWord(r.getString(1), StringFormatter.treat(r.getString(1).toLowerCase()));
       }
       prep.close();
       r.close();
@@ -1127,7 +1127,7 @@ public class DBManager {
           "select name from team;");
       r = prep.executeQuery();
       while (r.next()) {
-        t.addFirstWord(StringFormatter.treat(r.getString(1)));
+        t.addFirstWord(r.getString(1), StringFormatter.treat(r.getString(1).toLowerCase()));
       }
       prep.close();
       r.close();
@@ -1135,7 +1135,7 @@ public class DBManager {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
+    System.out.println(t);
     return t;
   }
 

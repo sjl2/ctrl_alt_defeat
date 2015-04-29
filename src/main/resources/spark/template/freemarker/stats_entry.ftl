@@ -63,8 +63,8 @@
  						<button type="button" class = "btn btn-default" id="showAwaySubs" onclick="toggleBenchCourt(false)">Show Bench</button>
  						<br>
  						<br>
-
- 						<div id="control"></div>
+ 						<button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
+ 						<button type="button" class="btn btn-info" onclick="advancePeriod()">Advance Period</button>
  					</div>
  				</div>
 

@@ -5,7 +5,7 @@ function suggestions() {
     var spot1 = $("#playerTeamSearch")[0].value;
     $.post("/dashboard/autocomplete", {spot : spot1}, function(responseJSON){
 	var res = JSON.parse(responseJSON);
-
+	console.log("res", res);
 	var sug1 = document.getElementById("suggestions1");
 	var sug1Html = "";				
 	if (prevEntry1 != spot1) {
