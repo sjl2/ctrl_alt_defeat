@@ -65,26 +65,30 @@ public class GameGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      int teamID = Integer.parseInt(qm.value("opponent"));
-      boolean isHome = GSON.fromJson(qm.value("isHome"), Boolean.class);
-
-      Map<BasketballPosition, Integer> starterIDs = new EnumMap<>(BasketballPosition.class);
-
-      starterIDs.put(BasketballPosition.HomePG, Integer.parseInt(qm.value("hpg")));
-      starterIDs.put(BasketballPosition.HomeSG, Integer.parseInt(qm.value("hsg")));
-      starterIDs.put(BasketballPosition.HomeSF, Integer.parseInt(qm.value("hsf")));
-      starterIDs.put(BasketballPosition.HomePF, Integer.parseInt(qm.value("hpf")));
-      starterIDs.put(BasketballPosition.HomeC, Integer.parseInt(qm.value("hc")));
-      starterIDs.put(BasketballPosition.AwayPG, Integer.parseInt(qm.value("apg")));
-      starterIDs.put(BasketballPosition.AwaySG, Integer.parseInt(qm.value("asg")));
-      starterIDs.put(BasketballPosition.AwaySF, Integer.parseInt(qm.value("asf")));
-      starterIDs.put(BasketballPosition.AwayPF, Integer.parseInt(qm.value("apf")));
-      starterIDs.put(BasketballPosition.AwayC, Integer.parseInt(qm.value("ac")));
 
       try {
+
+        boolean isHome = Boolean.parseBoolean(qm.value("isHome"));
+        int teamID = Integer.parseInt(qm.value("opponent"));
+
+        Map<BasketballPosition, Integer> starterIDs = new EnumMap<>(BasketballPosition.class);
+
+        starterIDs.put(BasketballPosition.HomePG, Integer.parseInt(qm.value("hpg")));
+        starterIDs.put(BasketballPosition.HomeSG, Integer.parseInt(qm.value("hsg")));
+        starterIDs.put(BasketballPosition.HomeSF, Integer.parseInt(qm.value("hsf")));
+        starterIDs.put(BasketballPosition.HomePF, Integer.parseInt(qm.value("hpf")));
+        starterIDs.put(BasketballPosition.HomeC, Integer.parseInt(qm.value("hc")));
+        starterIDs.put(BasketballPosition.AwayPG, Integer.parseInt(qm.value("apg")));
+        starterIDs.put(BasketballPosition.AwaySG, Integer.parseInt(qm.value("asg")));
+        starterIDs.put(BasketballPosition.AwaySF, Integer.parseInt(qm.value("asf")));
+        starterIDs.put(BasketballPosition.AwayPF, Integer.parseInt(qm.value("apf")));
+        starterIDs.put(BasketballPosition.AwayC, Integer.parseInt(qm.value("ac")));
+
         dash.startGame(isHome, teamID, starterIDs);
       } catch (DashboardException e) {
         return e.getMessage();
+      } catch (Exception e) {
+        return "ERROR: " + e.getMessage() + e.getStackTrace();
       }
 
       return "";

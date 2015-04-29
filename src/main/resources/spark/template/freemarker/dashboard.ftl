@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" href="/css/dashboard.css">
   <div class="modal fade new-game" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           Create New 
@@ -26,16 +26,17 @@
         </div>
         <div class="modal-body row">
           <#assign pos=["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"]>
-          <div class="col-sm-6 form-group" class=id="myStarters">
+          <div class="col-sm-1"></div>
+          <div class="col-sm-5 form-group" class=id="myStarters">
             <h3>The ${myTeam.getName()}</h3>
             <table class="table starters" id="home">
               <#list 0..4 as i>
               <tr>
                 <td>${pos[i]}:</td>
                 <td>               
-                  <select class="playerSelector" id="myStarter${i}">
+                  <select class="playerSelector pull-right" id="myStarter${i}">
                     <#list players as player>
-                      <option id="${player.getID()}">${player.getName()}</option>
+                      <option id="player${player.getID()}" <#if player_index == i>selected</#if>>${player.getName()}</option>
                     </#list>
                   </select>
                 </td>
@@ -43,20 +44,20 @@
               </#list>
             </table>         
           </div>
-          <div class="col-sm-6 form-group" class=id="opponentStarters">
+          <div class="col-sm-5 form-group" class=id="opponentStarters">
             <select id="opponent">
               <#list teams as team>
-               <option id="team${team.getID()}">${team.getText()}</option>
+               <option value="${team.getID()}">${team.getText()}</option>
               </#list>
             </select>
-            <table class="table starters" id="away-lineup">
+            <table class="table starters" id="opponent-lineup">
               <#list 0..4 as i>
               <tr>
                 <td>${pos[i]}:</td>
                 <td>               
-                  <select class="playerSelector" id="myStarter${i}">
+                  <select class="pull-right playerSelector" id="oppStarter${i}">
                     <#list opposingPlayers as player>
-                      <option id="player${player.getID()}">${player.getName()}</option>
+                      <option id="player${player.getID()}" <#if player_index == i>selected</#if>>${player.getName()}</option>
                     </#list>
                   </select>
                 </td>
@@ -64,6 +65,7 @@
               </#list>
             </table>         
           </div>
+          <div class="col-sm-1"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

@@ -567,18 +567,18 @@ public class DashboardGUI {
    * Returns players for the given teamID.
    * @author awainger
    */
-  public class GetPlayersHandler implements Route {
+  public class GetPlayersHandler implements TemplateViewRoute {
 
     @Override
-    public Object handle(Request req, Response res) {
+    public ModelAndView handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
       int teamID = Integer.parseInt(qm.value("teamID"));
       Team team = dash.getTeam(teamID);
       Collection<Player> players = team.getPlayers();
       Map<String, Object> variables =
-        ImmutableMap.of("playerList", players);
+        ImmutableMap.of("players", players);
 
-      return GSON.toJson(variables);
+      return new ModelAndView(variables, "opponent_lineup.ftl");
     }
 
   }
