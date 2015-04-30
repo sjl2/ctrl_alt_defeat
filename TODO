@@ -49,11 +49,12 @@ Nick:
 	Autocomplete doesn't always work
 
 Tyler:
+	Line charts on team pages!!!
 	Start positions for tokens
 	Ball following player
 	http://getbootstrap.com/components/
 	Ball doesn't change it's first frame. 
-	If player with possesion is being edited, the ball's future path should 	also be cleared. 
+	If player with possesion is being edited, the ball's future path should also be cleared. 
 	Ball sometimes get's lost
 
 Nick/Tyler:
@@ -64,3 +65,18 @@ Playmaker bugs:
  - Load a play, both sf's and the red pf are unmovable
  - Show user that they are editting default pos's even when sidebar is closed
  - New play button doesn't clear max frame, tons of console errors when you press play
+
+Lineup Analytics Notes
+ - Get all 5 player id's from dropdown lists
+ - Select all offensive stats from db for those players in the current championship years
+ - Bin all the stats into a map
+ - Discount bins where number of stats doesn't exceed the threshold
+ - Calculate the value of each bin (shots are worth their value, misses are worth a value
+   so that an average shooter ends up with a score of 0. Look up offensive value of ast,
+   orb, tov, off-foul
+ - Determine which bins the team won vs lost, calculate a value (maybe value of bin * constant, plus
+   constant for any bins team did not meet threshold for)
+ - Return constant. Bitchez.
+
+ Other analytics - Heatmaps for season, shot chart for last five games, (hover over player in select list
+   for individual heatmap / shot chart?)
