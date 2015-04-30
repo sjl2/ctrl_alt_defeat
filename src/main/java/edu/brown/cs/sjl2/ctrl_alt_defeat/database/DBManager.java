@@ -550,12 +550,11 @@ public class DBManager {
     return t;
   }
 
-  public Team updateTeam(int id, String name, String coach, String primary,
+  public void updateTeam(int id, String name, String coach, String primary,
       String secondary, boolean myTeam) {
 
     Team t = tf.getTeam(id, name, coach, primary, secondary);
     updateTeam(t, myTeam);
-    return t;
   }
 
   public void updateTeam(Team team, boolean myTeam) {
@@ -612,12 +611,15 @@ public class DBManager {
     return p;
   }
 
-  public Player updatePlayer(int id, String name, int teamID, int number, boolean curr) {
+  public void updatePlayer(int id, String name, int teamID, int number, boolean curr) {
+    Player oldPlayer = getPlayer(id);
+    if (oldPlayer.getTeamID() != teamID) {
+      getTeam(oldPlayer.getTeamID()).removePlayer(oldPlayer);
+    }
     Team t = getTeam(teamID);
     Player p = pf.getPlayer(id, name, teamID, t.getName(), number, curr);
     t.addPlayer(p);
     updatePlayer(p);
-    return p;
   }
 
   private void updatePlayer(Player player) {

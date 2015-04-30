@@ -91,13 +91,15 @@ public class GUIManager {
 
     /*** WikiGUI routes ***/
     Spark.get("/game/view/:id", wikiGUI.new GameViewHandler(), freeMarker);
-    Spark.get("/team/view/:id", wikiGUI.new TeamViewHandler(), freeMarker);
     Spark.get("/player/view/:id", wikiGUI.new PlayerViewHandler(), freeMarker);
+    Spark.get("/team/view/:id", wikiGUI.new TeamViewHandler(), freeMarker);
+    Spark.post("/player/edit", wikiGUI.new EditPlayer());
+    Spark.post("/team/edit", wikiGUI.new EditTeam());
     Spark.post("/season/get", wikiGUI.new GetGameStats(), freeMarker);
+    
+    
     Spark.post("/dashboard/shotchart", wikiGUI.new GetShotChartData());
     Spark.post("/dashboard/heatmap", wikiGUI.new GetHeatMapData());
-    
-    Spark.post("/player/edit", wikiGUI.new EditPlayer());
 
     /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());

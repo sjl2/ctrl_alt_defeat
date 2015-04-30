@@ -106,6 +106,10 @@ public class WikiGUI {
     }
   }
   
+  /**
+   * Handler for editing information about a player.
+   * @author awainger
+   */
   public class EditPlayer implements Route {
 
     @Override
@@ -115,10 +119,11 @@ public class WikiGUI {
         int id = Integer.parseInt(qm.value("id"));
         String name = qm.value("name");
         int number = Integer.parseInt(qm.value("number"));
+        int teamID = Integer.parseInt(qm.value("teamID"));
+        boolean current = Boolean.parseBoolean("current");
         
-        // change teams, current player status?
-        //dbManager.updatePlayer(id, name, number);
-        
+        dbManager.updatePlayer(id, name, teamID, number, current);
+
         return ImmutableMap.of("errorMessage", "");
       } catch (NumberFormatException e) {
         return ImmutableMap.of("errorMessage", "Error parsing changes to player.");
@@ -126,6 +131,10 @@ public class WikiGUI {
     }
   }
   
+  /**
+   * Handler for editing information about a team.
+   * @author awainger
+   */
   public class EditTeam implements Route {
 
     @Override
@@ -137,16 +146,14 @@ public class WikiGUI {
         String coach = qm.value("coach");
         String primary = qm.value("primary");
         String secondary = qm.value("secondary");
-        
-        // change to myteam? 
-        //dbManager.updateTeam(id, name, coach, primary, secondary);
-        
+        boolean myTeam = Boolean.parseBoolean(qm.value("myTeam"));
+
+        dbManager.updateTeam(id, name, coach, primary, secondary, myTeam);
         return ImmutableMap.of("errorMessage", "");
       } catch (NumberFormatException e) {
         return ImmutableMap.of("errorMessage", "Error parsing changes to team.");
       }
     }
-    
   }
 
   /**
