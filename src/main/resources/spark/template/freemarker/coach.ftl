@@ -63,7 +63,7 @@
 
             <form class="navbar-form navbar-left" role="search">
               <div class="input-append btn-group">
-                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#337ab7" autocomplete = "off" onkeyup = "suggestions()" list="suggestions1" id="playerTeamSearch">
+                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeyup = "suggestions()" list="suggestions1" id="playerTeamSearch">
                 <datalist id="suggestions1"></datalist>
                   <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="float:right;">
                     <span class="caret"></span>
