@@ -25,7 +25,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">
+          <a class="navbar-brand" href="/dashboard">
               <img id = "thumb" alt="Brand" src="/images/Basketball-small.png">
           </a>
          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -44,7 +44,7 @@
 
             <form class="navbar-form navbar-right" role="search">
               <div class="input-append btn-group">
-                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeyup = "suggestions()" list="suggestions1" id="playerTeamSearch">
+                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeypress = "suggestions(event)" list="suggestions1" id="playerTeamSearch">
                 <datalist id="suggestions1"></datalist>
                   <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="float:right;">
                     <span class="caret"></span>

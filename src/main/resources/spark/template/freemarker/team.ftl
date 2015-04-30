@@ -49,8 +49,20 @@
       </div>
     </div>
 
-    <div id="forCharts" style="height:500px"></div>
-
+    <div class="modal fade modal-chart" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span id="chart-title"></span>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="forCharts"></div>
+        </div>
+      </div>
+    </div>
+    
     <div class="row">
       <div class="col-md-3">
         <h3>Roster:</h3>
@@ -95,7 +107,7 @@
           <th>PF</th>
         </tr>
         <#list rows as row>
-          <tr onclick="clickTeamGame(${team.getID()}, ${row.getGameID()})"> 
+          <tr data-toggle="modal" data-target=".modal-chart" onclick="clickTeamGame(${team.getID()}, ${row.getGameID()})"> 
             <#assign link = db.getGameLink(row.getGameID())>
             <td>
               <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
@@ -139,7 +151,7 @@
         </tr>
         <#list years as year>
           <#assign row = seasonTotals[year_index]>
-          <tr onclick="clickTeamSeason(${team.getID()}, ${year})"> 
+          <tr data-toggle="modal" data-target=".modal-chart" onclick="clickTeamSeason(${team.getID()}, ${year})"> 
             <td>${year - 1} - ${year}</td>
             <td>${row.getPoints()}</td>
             <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
