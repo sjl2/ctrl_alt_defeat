@@ -41,16 +41,37 @@
               </li>
               <li><a href="/whiteboard">Whiteboard</a></li>
             </ul>
+<!--
+            <div class="input-group">
+              <input type="text" class="form-control" aria-label="..." style="width:200px;">
+              <div class="input-group-btn" style="float:left;">
+                <div class="btn-group" role="group" aria-label="..." >
+                <button type="button" class="btn btn-default">Search for Player</button>
+
+                  <button type="button" class="btn btn-default dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false">
+                  Dropdown
+                  <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Dropdown link</a></li>
+                    <li><a href="#">Dropdown link</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div> -->
+
+
             <form class="navbar-form navbar-left" role="search">
               <div class="input-append btn-group">
-                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px" autocomplete = "off" onkeyup = "suggestions()" list="suggestions1" id="playerTeamSearch">
+                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#337ab7" autocomplete = "off" onkeyup = "suggestions()" list="suggestions1" id="playerTeamSearch">
                 <datalist id="suggestions1"></datalist>
-                  <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" >
+                  <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="float:right;">
                     <span class="caret"></span>
                   </a>
+                  <button type="button" id="searchButton" class="btn btn-primary" style="float:right" data-player="true" onclick="textSearch()">Player Search</button>
                 <ul class="dropdown-menu dropdown-menu-right">
-                  <li><a onclick = "textSearch(true)"><i class="icon-pencil"></i> Search as Player</a></li>
-                  <li><a onclick = "textSearch(false)"><i class="icon-trash"></i> Search as Team</a></li>
+                  <li><a onclick = "setTextSearch(true)"><i class="icon-pencil"></i> Search as Player</a></li>
+                  <li><a onclick = "setTextSearch(false)"><i class="icon-trash"></i> Search as Team</a></li>
                   
                 </ul>
               </div>
