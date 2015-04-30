@@ -67,26 +67,26 @@
     </div>
 
     <div class="row" id="season">
-      <table class="table table-hover boxscore">
+      <table class="table table-hover boxscore" id="player-game-stats">
         <tr>
           <th>Game</th>
-          <th>PTS</th>
-          <th>FGM-A</th>
-          <th>2PM-A</th>
-          <th>3PM-A</th>
-          <th>FTM-A</th>
-          <th>OREB</th>
-          <th>DREB</th>
-          <th>REB</th>
-          <th>AST</th>
-          <th>STL</th>
-          <th>BLK</th>
-          <th>TO</th>
-          <th>PF</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(1)" class="stat-type">PTS</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(2)" class="stat-type">FGM-A</th>
+          <th data-toggle="modal" data-target=".modal-chart"  onclick="clickStatType(3)" class="stat-type">2PM-A</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(4)" class="stat-type">3PM-A</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(5)" class="stat-type">FTM-A</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(6)" class="stat-type">OREB</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(7)" class="stat-type">DREB</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(8)" class="stat-type">REB</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(9)" class="stat-type">AST</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(10)" class="stat-type">STL</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(11)" class="stat-type">BLK</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(12)" class="stat-type">TO</th>
+          <th data-toggle="modal" data-target=".modal-chart" onclick="clickStatType(13)" class="stat-type">PF</th>
         </tr>
         <#list rows as row>
           <#assign link = db.getGameLink(row.getGameID())>
-          <tr data-toggle="modal" data-target=".modal-chart" onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})">         
+          <tr data-toggle="modal" data-target=".modal-chart" onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})" class="stat-row">         
             <td>
               <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
             </td>

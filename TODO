@@ -56,6 +56,9 @@ Tyler:
 	If player with possesion is being edited, the ball's future path should 	also be cleared. 
 	Ball sometimes get's lost
 
+Nick/Tyler:
+   Change dy from 0 to 7.5 (Should fix wierd offset issue)
+
 Playmaker bugs:
  - Move player, edit his starting position, play, console errors
  - Load a play, both sf's and the red pf are unmovable

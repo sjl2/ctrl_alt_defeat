@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="/css/main.css">
     <script src="/js/jquery-2.1.1.js"></script>
     <script src="/js/raphael.js"></script>
+    <script src="/js/g.raphael-min.js"></script>
+    <script src="/js/g.line-min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/bootbox.min.js"></script>
     <script src="/js/main.js"></script>
