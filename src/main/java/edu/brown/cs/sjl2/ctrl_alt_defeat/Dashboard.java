@@ -121,7 +121,7 @@ public class Dashboard {
 
   public void setMyTeam(Team team) {
     this.myTeam = team;
-    db.updateTeam(team, true);
+    db.updateTeam(team);
   }
 
   public Team createTeam(String name, String coach, String primary,
