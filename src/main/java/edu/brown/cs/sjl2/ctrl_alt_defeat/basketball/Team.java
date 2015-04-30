@@ -64,7 +64,7 @@ public class Team {
   public void addPlayer(Player p) {
     playerIds.put(p.getID(), p);
   }
-  
+
   public void removePlayer(Player p) {
     playerIds.remove(p.getID());
   }

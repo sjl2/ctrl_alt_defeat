@@ -370,7 +370,7 @@ public class DBManager {
         for (int i = 1; i <= len; i++) {
           values.add(rs.getInt(i));
         }
-        allGameStats.put(values.get(2), new PlayerStats(values, gameID, team));
+        allGameStats.put(values.get(2), new PlayerStats(values, gameID, team, getPlayer(values.get(2))));
         values.clear();
       }
 
@@ -906,9 +906,10 @@ public class DBManager {
         }
         int gameID = values.get(0);
         int teamID = values.get(1);
+        int playerID = values.get(2);
         GameStats toAdd = null;
         if (table.equals("player_stats")) {
-          toAdd = new PlayerStats(values, gameID, getTeam(teamID));
+          toAdd = new PlayerStats(values, gameID, getTeam(teamID), getPlayer(playerID));
         } else if (table.equals("team_stats")) {
           toAdd = new TeamStats(values, gameID, getTeam(teamID));
         }
@@ -991,9 +992,10 @@ public class DBManager {
         }
         int gameID = values.get(0);
         int teamID = values.get(1);
+        int playerID = values.get(2);
         GameStats toReturn = null;
         if (table.equals("player_stats")) {
-          toReturn = new PlayerStats(values, gameID, getTeam(teamID));
+          toReturn = new PlayerStats(values, gameID, getTeam(teamID), getPlayer(playerID));
         } else if (table.equals("team_stats")) {
           toReturn = new TeamStats(values, gameID, getTeam(teamID));
         }
@@ -1170,6 +1172,24 @@ public class DBManager {
       }
 
       return ids;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
+  }
+  
+  
+  /**
+   * Used to rank lineups based on offensive and defensive balance.
+   * @param playerIDs - Id's of players in lineup
+   * @return - int, ranking of combination of players in lineup
+   */
+  public int lineupRanking(List<Integer> playerIDs) {
+    Map<Integer, Integer> sectorToScore = new HashMap<>();
+    int championshipYear = getChampionshipYear(LocalDate.now());
+    String query = "SELECT type, x, y FROM stat as s, game as g WHERE g.id = s.game AND g.championship_year = ? AND s.player IN ";
+    try (PreparedStatement prep = conn.prepareStatement(query)) {
+      return 0;
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);

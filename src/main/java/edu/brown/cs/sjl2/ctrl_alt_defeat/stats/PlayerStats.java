@@ -42,12 +42,11 @@ public class PlayerStats implements GameStats {
 
   }
 
-  public PlayerStats(List<Integer> values, int gameID, Team team) {
+  public PlayerStats(List<Integer> values, int gameID, Team team, Player player) {
     this.game = gameID;
     this.team = team;
 
-    int playerID = values.get(2);
-    this.player = team.getPlayerById(playerID);
+    this.player = player;
 
     this.stats = HashMultiset.create();
     List<String> cols = getCols();

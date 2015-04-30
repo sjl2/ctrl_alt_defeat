@@ -121,7 +121,7 @@ public class WikiGUI {
         int number = Integer.parseInt(qm.value("number"));
         int teamID = Integer.parseInt(qm.value("teamID"));
         boolean current = Boolean.parseBoolean("current");
-        
+
         dbManager.updatePlayer(id, name, teamID, number, current);
 
         return ImmutableMap.of("errorMessage", "");

@@ -235,16 +235,13 @@ public class Game {
       throws ScoreboardException {
     Lineup l = lineup;
     Bench b;
-    Team t;
     if (home) {
       b = homeBench;
-      t = homeTeam;
     } else {
       b = awayBench;
-      t = awayTeam;
     }
-    l.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
-    b.sub(t.getPlayerById(idIn), t.getPlayerById(idOut));
+    l.sub(db.getPlayer(idIn), db.getPlayer(idOut));
+    b.sub(db.getPlayer(idIn), db.getPlayer(idOut));
   }
 
   public void takeTimeout(Boolean home) throws GameException {
