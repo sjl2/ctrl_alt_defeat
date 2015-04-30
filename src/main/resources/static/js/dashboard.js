@@ -67,7 +67,6 @@ scoreboard.noGameInProgress.box = scoreboard.rect(25, 25, 350, 150).attr({fill :
 scoreboard.noGameInProgress.text = scoreboard.text(200, 100, "Click To Start\na New Game!").attr({"font-size" : 45})
 	.click(function (e) {
 		$(".new-game").modal('show');
-		//window.location.href = "/dashboard/new/game";
 	});
 
 $.get("/dashboard/getgame", {}, function(responseJSON) {
@@ -224,13 +223,26 @@ function updateGame() {
 	});
 }
 
+function getLastName(str) {
+	var spl = str.split(" ");
+	if (spl.length == 1) {
+		return str;
+	} else {
+		var ret = "";
+		for (var i = 1; i < spl.length; i++) ret += spl[i];
+		return ret;
+	}
+
+}
+
 function updateStats(str, pStats) {
-	var nameNumber = pStats.player.name + " #" + pStats.player.number;
+	var nameNumber = getLastName(pStats.player.name) + " #" + pStats.player.number;
 	var points = 0;
 	var rebounds = 0;
 	var assists = 0;
 	var fouls = 0;
 	var turnovers = 0;
+	console.log(pStats.stats);
 	for (var i=0; i<pStats.stats.length; i++) {
 		if (pStats.stats[i] == "ThreePM") points += 3;
 		else if (pStats.stats[i] == "TwoPM") points += 2;
@@ -239,19 +251,19 @@ function updateStats(str, pStats) {
 		else if (pStats.stats[i] == "DRB") rebounds += 1;
 		else if (pStats.stats[i] == "AST") assists += 1;
 		else if (pStats.stats[i] == "DF") fouls += 1;
-		else if (pStats.stats[i] == "OF") fouls += 1;
+		else if (pStats.stats[i] == "OffensiveFouls") fouls += 1;
 		else if (pStats.stats[i] == "TOV") turnovers += 1;
 
 	}
 	var div = document.getElementById(str);
-	var htmlString = "<p>" + nameNumber + "</p>" + 
-			 "<p> Pts: " + points + "</p>" +
-			 "<p> Reb: " + rebounds + "</p>" +
-			 "<p> Ast: " + assists + "</p>" + 
-			 "<p";
-	if (fouls > 4) htmlString += " style = color:red"
-	htmlString += "> PF: " + fouls + "</p>" +
-			"<p> TO: " + turnovers + "</p>"
+	var htmlString = "<ul class=\"list-group\"> <li class=\"list-group-item\" >" + nameNumber + "</li>" + 
+			 "<li class=\"list-group-item\">Pts: " + points + "</li>" +
+			 "<li class=\"list-group-item\">Reb: " + rebounds + "</li>" +
+			 "<li class=\"list-group-item\">Ast: " + assists + "</li>";
+	if (fouls > 4) htmlString += "<li class=\"list-group-item list-group-item-danger\">PF: " + fouls + "</li>";
+	else if (fouls > 3) htmlString += "<li class=\"list-group-item list-group-item-warning\">PF: " + fouls + "</li>";
+	else htmlString += "<li class=\"list-group-item\">PF: " + fouls + "</li>";
+	htmlString += "<li class=\"list-group-item\">TO: " + turnovers + "</li></ul>";
 	$("#" + str).html(htmlString);
 }
 
@@ -397,37 +409,37 @@ function shotchart(arg) {
 	if (arg == 'us') {
 		postParams.us = true;
 		postParams.player = false;
-		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for Team");
+		document.getElementById("shotChartButton").innerHTML = ("Shot Chart for Team ") + "<span class=\"caret\"></span>";
 
 	} else if (arg == 'them') {
 		postParams.us = false;
 		postParams.player = false;
-		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for Opponent");
+		document.getElementById("shotChartButton").innerHTML = ("Shot Chart for Opponent ") + "<span class=\"caret\"></span>";
 
 	} else if (arg == 'pg') {
 		postParams.player = true;
 		postParams.id = currentPlayers["PG"].id;
-		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["PG"].name);
+		document.getElementById("shotChartButton").innerHTML = ("Shot Chart for " + currentPlayers["PG"].name + " ") + "<span class=\"caret\"></span>";
 
 	} else if (arg == 'sg') {
 		postParams.player = true;
 		postParams.id = currentPlayers["SG"].id;
-		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["SG"].name);
+		document.getElementById("shotChartButton").innerHTML = ("Shot Chart for " + currentPlayers["SG"].name+ " ") + "<span class=\"caret\"></span>";
 
 	} else if (arg == 'sf') {
 		postParams.player = true;
 		postParams.id = currentPlayers["SF"].id;
-		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["SF"].name);
+		document.getElementById("shotChartButton").innerHTML = ("Shot Chart for " + currentPlayers["SF"].name+ " ") + "<span class=\"caret\"></span>";
 
 	} else if (arg == 'pf') {
 		postParams.player = true;
 		postParams.id = currentPlayers["PF"].id;
-		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["PF"].name);
+		document.getElementById("shotChartButton").innerHTML = ("Shot Chart for " + currentPlayers["PF"].name+ " ") + "<span class=\"caret\"></span>";
 
 	} else if (arg == 'c') {
 		postParams.player = true;
 		postParams.id = currentPlayers["C"].id;
-		document.getElementById("shotChartTitle").innerHTML = ("Shot Chart for " + currentPlayers["C"].name);
+		document.getElementById("shotChartButton").innerHTML = ("Shot Chart for " + currentPlayers["C"].name+ " ") + "<span class=\"caret\"></span>";
 
 	}
 
