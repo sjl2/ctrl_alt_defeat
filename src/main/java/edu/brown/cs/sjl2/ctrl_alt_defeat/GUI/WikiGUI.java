@@ -120,8 +120,7 @@ public class WikiGUI {
         String name = qm.value("name");
         int number = Integer.parseInt(qm.value("number"));
         int teamID = Integer.parseInt(qm.value("teamID"));
-        boolean current = Boolean.parseBoolean("current");
-
+        boolean current = Boolean.parseBoolean(qm.value("current"));
         dbManager.updatePlayer(id, name, teamID, number, current);
 
         return ImmutableMap.of("errorMessage", "");
@@ -146,12 +145,16 @@ public class WikiGUI {
         String coach = qm.value("coach");
         String primary = qm.value("primary");
         String secondary = qm.value("secondary");
-        boolean myTeam = Boolean.parseBoolean(qm.value("myTeam"));
 
-        dbManager.updateTeam(id, name, coach, primary, secondary, myTeam);
+        dbManager.updateTeam(id, name, coach, primary, secondary);
+        if (id == dashboard.getMyTeam().getID()) {
+          dashboard.setMyTeam(dbManager.getMyTeam());
+        }
         return ImmutableMap.of("errorMessage", "");
       } catch (NumberFormatException e) {
         return ImmutableMap.of("errorMessage", "Error parsing changes to team.");
+      } catch (DashboardException e) {
+        return ImmutableMap.of("errorMessage", "Stop messing with your team");
       }
     }
   }
@@ -192,6 +195,7 @@ public class WikiGUI {
           .put("player", player).put("years", years).put("rows", rows)
           .put("seasonTotals", seasonTotals)
           .put("seasonAverages", seasonAverages).put("errorMessage", error)
+          .put("teams", dbManager.getAllTeams())
           .build();
       return new ModelAndView(variables, "player.ftl");
     }

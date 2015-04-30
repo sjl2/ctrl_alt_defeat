@@ -20,8 +20,21 @@ function suggestions() {
 
 }
 
-function textSearch(isPlayer) {
-    console.log("here");
+function setTextSearch(b) {
+	if (!b) {
+		$("#searchButton")[0].setAttribute("data-player", false);
+		$("#searchButton")[0].innerHTML = "Team Search";
+	} else {
+		$("#searchButton")[0].setAttribute("data-player", true);
+		$("#searchButton")[0].innerHTML = "Player Search";
+	}
+}
+
+function textSearch() {
+    
+	isPlayer = $("#searchButton")[0].getAttribute("data-player");
+	console.log(isPlayer);
+
     $.post("/dashboard/search", {searchString : $("#playerTeamSearch")[0].value, isPlayer : isPlayer}, function(responseJSON) {
 	console.log(responseJSON);
 	console.log("there");
@@ -30,9 +43,9 @@ function textSearch(isPlayer) {
 	    //error
 	} else {
 	    var a;
-	    if (isPlayer) a = "player";
+	    if (isPlayer === 'true') a = "player";
 	    else a = "team";
-	    console.log(res.list);
+	    console.log("the big one: ", a);
 	    if (res.list.length == 1) {
 		window.location.href ="/" + a + "/view/" + res.list[0].id;
 	    } else {

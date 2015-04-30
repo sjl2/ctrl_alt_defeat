@@ -370,6 +370,7 @@ public class DashboardGUI {
       QueryParamsMap qm = request.queryMap();
       String searchString = qm.value("searchString");
       Boolean isPlayer = Boolean.parseBoolean(qm.value("isPlayer"));
+      System.out.println(isPlayer);
       List<Integer> ids = db.searchBarResults(searchString, isPlayer);
 
       if (ids.isEmpty()) {

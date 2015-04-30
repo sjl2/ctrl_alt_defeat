@@ -38,7 +38,9 @@
               <br>
               Secondary Color:<br>
               <input type="color" name="color2" value = ${team.getSecondary()} id="teamFormSecondary">
-              <button class = "btn btn-lg btn-success pull-top" onclick = "updateTeam()" data-dismiss="modal" aria-label="Close">
+              <br>
+             
+              <button class = "btn btn-lg btn-success" onclick = "updateTeam()" data-dismiss="modal" aria-label="Close">
                 <span class="glyphicon glyphicon-ok"></span>
                 Update Team
               </button>

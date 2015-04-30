@@ -551,24 +551,24 @@ public class DBManager {
   }
 
   public void updateTeam(int id, String name, String coach, String primary,
-      String secondary, boolean myTeam) {
+      String secondary) {
 
     Team t = tf.getTeam(id, name, coach, primary, secondary);
-    updateTeam(t, myTeam);
+    System.out.println(t.getCoach());
+    updateTeam(t);
   }
 
-  public void updateTeam(Team team, boolean myTeam) {
+  public void updateTeam(Team team) {
     String query = "UPDATE team "
-        + "SET name = ?, coach = ?, color1 = ?, color2 = ?, my_Team = ? "
+        + "SET name = ?, coach = ?, color1 = ?, color2 = ? "
         + "WHERE id = ?";
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setString(1, team.getName());
       prep.setString(2, team.getCoach());
       prep.setString(THREE,  team.getPrimary());
       prep.setString(FOUR,  team.getSecondary());
-      prep.setBoolean(FIVE, myTeam);
 
-      prep.setInt(SIX, team.getID());
+      prep.setInt(FIVE, team.getID());
 
       prep.execute();
     } catch (SQLException e) {
@@ -1139,7 +1139,6 @@ public class DBManager {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    System.out.println(t);
     return t;
   }
 
@@ -1161,6 +1160,7 @@ public class DBManager {
       table = "team";
     }
 
+    
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT id FROM " + table + " WHERE name = ?;")) {
       prep.setString(1, name);

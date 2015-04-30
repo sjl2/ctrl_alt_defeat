@@ -3,7 +3,6 @@ var epsilon_x = .05;
 var epsilon_y = .05;
 
 function drawHeatMap(id, playerBoolean, year, paper) {
-
 	var grid = [];
 	var max_bin_count = 0;
 
@@ -26,6 +25,11 @@ function drawHeatMap(id, playerBoolean, year, paper) {
 
 	$.post("/dashboard/heatmap", postParams, function(responseJSON) {
 		var res = JSON.parse(responseJSON);
+
+	    paper.clear();
+	    paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
+	    paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
+
 		for (var i=0; i<res.makes.length; i++) {
 			var xSpot = Math.floor(res.makes[i].x / epsilon_x);
 			var ySpot = Math.floor(res.makes[i].y / epsilon_y);
@@ -58,34 +62,38 @@ function drawHeatMap(id, playerBoolean, year, paper) {
 }
 
 function drawShotChart(id, forPlayer, gameID, paper) {
-	postParams = {};
-	postParams.player = forPlayer;
-	postParams.id = id;
-	postParams.gameID = gameID;
-	postParams.currentGame = false;
+    postParams = {};
+    postParams.player = forPlayer;
+    postParams.id = id;
+    postParams.gameID = gameID;
+    postParams.currentGame = false;
 
-	$.post("/dashboard/shotchart", postParams, function(responseJSON) {
-		var res = JSON.parse(responseJSON);
-		console.log(res);
+    $.post("/dashboard/shotchart", postParams, function(responseJSON) {
+	var res = JSON.parse(responseJSON);
+	console.log(res);
 
-		if (res.errorMessage.length == 0) {
-			for (var i=0; i<res.makes.length; i++) {
-				var centerX = res.makes[i].x * paper.width;
-				var centerY = res.makes[i].y * paper.height;
-				paper.shots.push(paper.circle(centerX, centerY, 4).attr({stroke : "green", "stroke-width" : 2}));
-			}
-			for (var i=0; i<res.misses.length; i++) {
-				var centerX = res.misses[i].x * paper.width;
-				var centerY = res.misses[i].y * paper.height;
-				paper.shots.push(paper.path("M" + (centerX - 3) + "," + (centerY - 3) + "L" + (centerX + 3) + "," + (centerY + 3) +
-					"M" + (centerX + 3) + "," + (centerY - 3) + "L" + (centerX - 3) + "," + (centerY + 3)).attr({"stroke" : "red", "stroke-width" : 2}));
-			}
-		} else {
-			$("#error").html(res.errorMessage);
-		}
+	if (res.errorMessage.length == 0) {
+	    paper.clear();
+	    paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
+	    paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
+
+	    for (var i=0; i<res.makes.length; i++) {
+		var centerX = res.makes[i].x * paper.width;
+		var centerY = res.makes[i].y * paper.height;
+		paper.shots.push(paper.circle(centerX, centerY, 4).attr({stroke : "green", "stroke-width" : 2}));
+	    }
+	    for (var i=0; i<res.misses.length; i++) {
+		var centerX = res.misses[i].x * paper.width;
+		var centerY = res.misses[i].y * paper.height;
+		paper.shots.push(paper.path("M" + (centerX - 3) + "," + (centerY - 3) + "L" + (centerX + 3) + "," + (centerY + 3) +
+					    "M" + (centerX + 3) + "," + (centerY - 3) + "L" + (centerX - 3) + "," + (centerY + 3)).attr({"stroke" : "red", "stroke-width" : 2}));
+	    }
+	} else {
+	    $("#error").html(res.errorMessage);
+	}
 
 
-	});
+    });
 }
 
 function heat(a, b) {
