@@ -12,10 +12,13 @@
       <button class="btn btn-xs btn-warning pull-right" data-toggle="modal" data-target="#edit_player_modal">
         <span class="glyphicon glyphicon-pencil"></span>
       </button>
-      <h2 id="playerName">${player.getName()}</h2>
+      <h2 id="playerName">${player.getName()} #${player.getNumber()}</h2>
       <h3>
         <a href="/team/view/${player.getTeamID()}">${player.getTeamName()}</a>
       </h3>
+      <#if !(player.getCurrent())>
+        <h4 style="color:red"> RETIRED </h4>
+      </#if>
     </div>
 
     <div class="modal fade modal-chart" tabindex="-1" aria-hidden="true">
@@ -43,11 +46,25 @@
           </div>
           <div id="forCharts" class="form-group">
               Player name:<br>
-              <input type="text" name="name" value = ${player.getName()} id = "playerFormName">
+              <input type="text" name="name" value = "${player.getName()}" id = "playerFormName">
               <br>
               Jersey Number:<br>
               <input type="number" name="number" min="0" max="99" value = ${player.getNumber()} id = "playerFormNumber">
-              <button class = "btn btn-lg btn-success pull-right" onclick = "updatePlayer()" data-dismiss="modal" aria-label="Close">
+              <br>
+              Select Team:<br>
+              <select name="team" id="playerFormTeam">
+                <#list teams as team>
+                  <option value="${team.getID()}" <#if (team.getID() == player.getTeamID())>selected</#if>>${team.getText()}</option>
+                </#list>
+              </select>
+                      <br>
+
+              <input type="radio" id = "playerIsCurrent" name="current" value="true" <#if (player.getCurrent())>checked</#if>>Current Player
+              <input type="radio" id = "playerIsRetired" name="current" value="false" <#if !(player.getCurrent())>checked</#if>>Former Player
+                      <br><br>
+
+
+              <button class = "btn btn-lg btn-success" onclick = "updatePlayer()" data-dismiss="modal" aria-label="Close">
                 <span class="glyphicon glyphicon-ok"></span>
                 Update Player
               </button>

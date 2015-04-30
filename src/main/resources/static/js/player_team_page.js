@@ -50,11 +50,31 @@ function clickTeamSeason(teamID, year) {
 }
 
 function updatePlayer() {
-    console.log($("#playerFormName")[0].value, $("#playerFormNumber")[0].value);
-    alert("Wish we could!");
+    console.log($("#playerFormName")[0].value, $("#playerFormNumber")[0].value, $("#playerFormTeam").find(":selected").val(),
+        $('#playerIsCurrent').is(':checked'));
+    console.log($('#playerIsCurrent').is(':checked'), $('#playerIsRetired').is(':checked'));
+    var name = $("#playerFormName")[0].value;
+    var number = $("#playerFormNumber")[0].value;
+    var teamID = $("#playerFormTeam").find(":selected").val();
+    var current = $('#playerIsCurrent').is(':checked');
+
+    console.log("current", current);
+
+    $.post("/player/edit", {id : id, name : name, number: number, teamID : teamID, current: current}, function(responseJSON){
+        window.location.href ="/player/view/" + id;
+    });
 }
 
 function updateTeam() {
-    console.log($("#teamFormName")[0].value, $("#teamFormCoach")[0].value, $("#teamFormPrimary")[0].value, $("#teamFormSecondary")[0].value)
-    alert("Wish we could!");
+    console.log($("#teamFormName")[0].value, $("#teamFormCoach")[0].value, $("#teamFormPrimary")[0].value, $("#teamFormSecondary")[0].value);
+    var name = $("#teamFormName")[0].value;
+    var coach = $("#teamFormCoach")[0].value;
+    var primary = $("#teamFormPrimary")[0].value;
+    var secondary = $("#teamFormSecondary")[0].value;
+
+    //return bacon;
+
+    $.post("/team/edit", {id : id, name : name, coach : coach, primary : primary, secondary : secondary}, function(responseJSON) {
+        window.location.href ="/team/view/" + id;
+    });
 }
