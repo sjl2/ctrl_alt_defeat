@@ -37,34 +37,24 @@ public class StatsEntryGUI {
     @Override
     public ModelAndView handle(Request request, Response response) {
       Game g = dash.getGame();
-      if(g != null) {
-        List<Stat> s = dash.getGame().getAllStats();
-        Collections.reverse(s);
-        Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Stats Entry", 
-                          "stats", s, 
-                          "errorMessage", "");
-        
-          /*      List<Stat> s;
-      if (dash.getGame() != null) {
-        s = dash.getGame().getAllStats();
+
+      List<Stat> s;
+      Boolean isGame = true;
+      if (g != null) {
+        s = g.getAllStats();
       } else {
         s = new ArrayList<Stat>();
+        isGame = false;
       }
+
       Collections.reverse(s);
       Map<String, Object> variables =
-                ImmutableMap.of("tabTitle", "Stats Entry", 
-                          "stats", s, 
-                          "errorMessage", "");*/
-
-        return new ModelAndView(variables, "stats_entry.ftl");
-      } else {
-        Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "No Game", 
+                ImmutableMap.of("tabTitle", "Stats Entry",
+                          "stats", s,
+                          "isGame", isGame,
                           "errorMessage", "");
 
-        return new ModelAndView(variables, "no_game.ftl");
-      }
+        return new ModelAndView(variables, "stats_entry.ftl");
 
     }
 
@@ -190,16 +180,16 @@ public class StatsEntryGUI {
     }
 
   }
-  
+
   public class EndGameHandler implements Route {
     @Override
     public Object handle(Request arg0, Response arg1) {
       dash.endGame();
       return true;
     }
-    
+
   }
-  
+
   public class AdvancePeriodHandler implements Route {
 
     @Override
@@ -212,7 +202,7 @@ public class StatsEntryGUI {
       }
       return dash.getGame().getPeriod();
     }
-    
+
   }
 
 
