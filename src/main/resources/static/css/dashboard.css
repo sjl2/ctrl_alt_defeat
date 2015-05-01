@@ -21,3 +21,9 @@
 	padding-right: 1px;
 	padding-top : 10px;
 }
+
+svg text {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}

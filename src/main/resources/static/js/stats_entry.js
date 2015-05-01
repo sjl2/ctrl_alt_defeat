@@ -4,7 +4,7 @@ var clickedStat;
 var clickedPlayer; 
 var mousedowninsomething = false;	
 var subState = false;
-var STAT_EDIT = false;
+var editingStat;
 
 var subtexts;
 
@@ -21,7 +21,7 @@ court.style.height = Math.round(court_height);
 
 var positions = ["PG", "SG", "SF", "PF", "C"];
 var stats = [["Block", "DefensiveFoul", "DefensiveRebound", "FreeThrow","MissedFreeThrow", "MissedThreePointer", "MissedTwoPointer", "OffensiveFoul"],
-["OffensiveRebound", "Steal", "TechnicalFoul", "Turnover","ThreePointer", "TwoPointer", "Assist", "STEWART\nRANGE!!!!"]];
+	     ["OffensiveRebound", "Steal", "TechnicalFoul", "Turnover","ThreePointer", "TwoPointer", "Assist", "STEWART\nRANGE!!!!"]];
 
 
 var court_paper = Raphael(court, court.width, court.height);
@@ -42,8 +42,9 @@ away_team_paper.mainTexts = away_team_paper.set();
 away_team_paper.mainBoxes = away_team_paper.set();
 
 $("#court").click(function(e) {
-	if (!(clickedPoint === undefined)) clickedPoint.remove();
-	clickedPoint = court_paper.circle(e.offsetX, e.offsetY, 2)
+    if (!(clickedPoint === undefined)) clickedPoint.remove();
+    clickedPoint = court_paper.circle(e.offsetX, e.offsetY, 4)
+	.attr("fill", "#f00")
 	.data("ratioX", e.offsetX / court_width)
 	.data("ratioY", e.offsetY / court_height);
 
@@ -53,61 +54,61 @@ var home = {};
 var away = {};
 $.get("/game/roster", function(responseJSON) {
 
-	var r = JSON.parse(responseJSON);
-	console.log(r);
+    var r = JSON.parse(responseJSON);
+    console.log(r);
 
 
-	var res = r.roster;
-	console.log(res);
-	home.primary = res[0];
-	home.secondary = res[1];
-	home.teamID = res[4].players.HomePG.teamID;
+    var res = r.roster;
+    console.log(res);
+    home.primary = res[0];
+    home.secondary = res[1];
+    home.teamID = res[4].players.HomePG.teamID;
 
-	home.onCourt = [];
-	console.log(res[4].players);
-	home.onCourt.push(res[4].players.HomePG);
-	home.onCourt.push(res[4].players.HomeSG);
-	home.onCourt.push(res[4].players.HomeSF);
-	home.onCourt.push(res[4].players.HomePF);
-	home.onCourt.push(res[4].players.HomeC);
-	home.bench = [];
-	for (var i = 0; i < res[5].players.length; i++) {
-		home.bench.push(res[5].players[i]);
-	}
+    home.onCourt = [];
+    console.log(res[4].players);
+    home.onCourt.push(res[4].players.HomePG);
+    home.onCourt.push(res[4].players.HomeSG);
+    home.onCourt.push(res[4].players.HomeSF);
+    home.onCourt.push(res[4].players.HomePF);
+    home.onCourt.push(res[4].players.HomeC);
+    home.bench = [];
+    for (var i = 0; i < res[5].players.length; i++) {
+	home.bench.push(res[5].players[i]);
+    }
 
-	away.primary = res[2];
-	away.secondary = res[3];
-	away.teamID = res[4].players.AwayPG.teamID;
+    away.primary = res[2];
+    away.secondary = res[3];
+    away.teamID = res[4].players.AwayPG.teamID;
 
-	away.onCourt = [];
-	away.onCourt.push(res[4].players.AwayPG);
-	away.onCourt.push(res[4].players.AwaySG);
-	away.onCourt.push(res[4].players.AwaySF);
-	away.onCourt.push(res[4].players.AwayPF);
-	away.onCourt.push(res[4].players.AwayC);
-	away.bench = [];
-	for (var i = 0; i < res[6].players.length; i++) {
-		away.bench.push(res[6].players[i]);
-	}
+    away.onCourt = [];
+    away.onCourt.push(res[4].players.AwayPG);
+    away.onCourt.push(res[4].players.AwaySG);
+    away.onCourt.push(res[4].players.AwaySF);
+    away.onCourt.push(res[4].players.AwayPF);
+    away.onCourt.push(res[4].players.AwayC);
+    away.bench = [];
+    for (var i = 0; i < res[6].players.length; i++) {
+	away.bench.push(res[6].players[i]);
+    }
 
-	var homeColor = home.primary;
-	var homeTextColor = whiteOrBlack(Raphael.color(home.primary));
+    var homeColor = home.primary;
+    var homeTextColor = whiteOrBlack(Raphael.color(home.primary));
 
-	var homeClick = makeDarker(Raphael.color(home.primary).hex);
-	var homeAccent = home.secondary;
+    var homeClick = makeDarker(Raphael.color(home.primary).hex);
+    var homeAccent = home.secondary;
 
-	var awayColor = away.primary;
-	var awayTextColor = whiteOrBlack(Raphael.color(away.primary));
+    var awayColor = away.primary;
+    var awayTextColor = whiteOrBlack(Raphael.color(away.primary));
 
-	var awayClick = makeDarker(Raphael.color(away.primary).hex);
-	var awayAccent = away.secondary;
+    var awayClick = makeDarker(Raphael.color(away.primary).hex);
+    var awayAccent = away.secondary;
 
     //R*0.299 + G*0.587 + B*0.114.
     
 
     for (var i = 0; i < 5; i++) {
     	var tempBox = home_team_paper.rect(10, 10 + 55 * i, 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
-    	.data("thing", "player").data("bench", false).data("home", true);
+    	    .data("thing", "player").data("bench", false).data("home", true);
     	var tempText = home_team_paper.text(35, 10 + 55 * i + 25, home.onCourt[i].number).attr({"font-family": "Arial", "font-size":16, stroke:homeTextColor});
     	tempText.box = tempBox;
     	tempBox.glowColor = homeAccent;
@@ -124,7 +125,7 @@ $.get("/game/roster", function(responseJSON) {
 
     for (var i = 0; i < home.bench.length; i++) {
     	var tempBox = home_team_paper.rect(10, 10 + 30 * (i), 50, 25, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
-    	.data("thing", "player").data("bench", true).data("home", true);
+    	    .data("thing", "player").data("bench", true).data("home", true);
     	var tempText = home_team_paper.text(35, 10 + 30 * (i) + 12.5, home.bench[i].number).attr({"font-family": "Arial", "font-size":16, stroke:homeTextColor});
     	tempText.box = tempBox;
     	tempBox.glowColor = homeAccent;
@@ -145,7 +146,7 @@ $.get("/game/roster", function(responseJSON) {
 
     for (var i = 0; i < 5; i++) {
     	var tempBox = away_team_paper.rect(10, 10 + 55 * i, 50, 50, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
-    	.data("thing", "player").data("bench", false).data("home", false);
+    	    .data("thing", "player").data("bench", false).data("home", false);
     	var tempText = away_team_paper.text(35, 10 + 55 * i + 25, away.onCourt[i].number).attr({"font-family": "Arial", "font-size":16, stroke:awayTextColor});
     	tempText.box = tempBox;
     	tempBox.glowColor = awayAccent;
@@ -163,7 +164,7 @@ $.get("/game/roster", function(responseJSON) {
     for (var i = 0; i < away.bench.length; i++) {
     	console.log("but they have a bench...");
     	var tempBox = away_team_paper.rect(10, 10 + 30 * (i), 50, 25, 10).attr({fill: awayColor, stroke: 'black', 'stroke-width': 2})
-    	.data("thing", "player").data("bench", true).data("home", false);
+    	    .data("thing", "player").data("bench", true).data("home", false);
     	var tempText = away_team_paper.text(35, 10 + 30 * (i) + 12.5, away.bench[i].number).attr({"font-family": "Arial", "font-size":16, stroke:awayTextColor});
     	tempText.box = tempBox;
     	tempBox.glowColor = awayAccent;
@@ -192,8 +193,8 @@ $.get("/game/roster", function(responseJSON) {
     });
     home_team_paper.mainBoxes.mouseout(function(e) {
     	if (mousedowninsomething) {
-    		clickThing(this);
-    		mousedowninsomething = false;
+    	    clickThing(this);
+    	    mousedowninsomething = false;
     	}
     });
 
@@ -208,8 +209,8 @@ $.get("/game/roster", function(responseJSON) {
     });
     away_team_paper.mainBoxes.mouseout(function(e) {
     	if (mousedowninsomething) {
-    		clickThing(this);
-    		mousedowninsomething = false;
+    	    clickThing(this);
+    	    mousedowninsomething = false;
     	}
     });
 
@@ -237,9 +238,9 @@ $.get("/game/roster", function(responseJSON) {
 
     home_team_paper.mainTexts.mouseover(function(e) {
     	this.box.g = this.box.glow({
-    		opacity: 0.85,
-    		color: this.box.glowColor,
-    		width: 15
+    	    opacity: 0.85,
+    	    color: this.box.glowColor,
+    	    width: 15
     	});
     }).mouseout(function (e) {
     	this.box.g.remove();
@@ -247,9 +248,9 @@ $.get("/game/roster", function(responseJSON) {
 
     away_team_paper.mainTexts.mouseover(function(e) {
     	this.box.g = this.box.glow({
-    		opacity: 0.85,
-    		color: this.box.glowColor,
-    		width: 15
+    	    opacity: 0.85,
+    	    color: this.box.glowColor,
+    	    width: 15
     	});
     }).mouseout(function (e) {
     	this.box.g.remove();
@@ -261,9 +262,9 @@ $.get("/game/roster", function(responseJSON) {
 
     home_team_paper.mainBoxes.mouseover(function (event) {
     	this.g = this.glow({
-    		opacity: 0.85,
-    		color: this.glowColor,
-    		width: 15
+    	    opacity: 0.85,
+    	    color: this.glowColor,
+    	    width: 15
     	});
     }).mouseout(function (event) {
     	this.g.remove();
@@ -271,9 +272,9 @@ $.get("/game/roster", function(responseJSON) {
 
     away_team_paper.mainBoxes.mouseover(function (event) {
     	this.g = this.glow({
-    		opacity: 0.85,
-    		color: this.glowColor,
-    		width: 15
+    	    opacity: 0.85,
+    	    color: this.glowColor,
+    	    width: 15
     	});
     }).mouseout(function (event) {
     	this.g.remove();
@@ -286,8 +287,8 @@ $.get("/game/roster", function(responseJSON) {
 
     sub_paper.subWindow = sub_paper.rect(0, 0, 445, 300).attr({fill : "white", "stroke-width" : 1}).mousemove(function(e) {
     	if (!(this.currentMove === undefined)) {
-    		this.currentMove.attr({cx : e.offsetX});
-    		this.currentMove.attr({cy : e.offsetY});
+    	    this.currentMove.attr({cx : e.offsetX});
+    	    this.currentMove.attr({cy : e.offsetY});
     	}
     });
     sub_paper.subWindow.currentMove = undefined;
@@ -304,94 +305,94 @@ $.get("/game/roster", function(responseJSON) {
 
     home_team_paper.mainBoxes.forEach(function (obj) {
     	if (obj.data("bench")) {
-    		var benchTemp = sub_paper.circle(80 - (40 * Math.floor(counts.homeBench/5)),40 + 40 * (counts.homeBench % 5),10).attr({fill : "lightblue"});
-    		benchTemp.defaultX = 80 - (40 * Math.floor(counts.homeBench/5));
-    		benchTemp.defaultY = 40 + 40 * (counts.homeBench % 5);
-    		counts.homeBench += 1;
+    	    var benchTemp = sub_paper.circle(80 - (40 * Math.floor(counts.homeBench/5)),40 + 40 * (counts.homeBench % 5),10).attr({fill : "lightblue"});
+    	    benchTemp.defaultX = 80 - (40 * Math.floor(counts.homeBench/5));
+    	    benchTemp.defaultY = 40 + 40 * (counts.homeBench % 5);
+    	    counts.homeBench += 1;
 
-    		benchTemp.player = obj.player;
-    		var tempTexts = sub_paper.text(benchTemp.defaultX, benchTemp.defaultY, benchTemp.player.number);
-    		$('tspan', tempTexts.node).attr('dy', 3.5);
-    		console.log('words: ', tempTexts);
-    		console.log('circle: ', benchTemp);
-    		tempTexts.circ = benchTemp;
-    		benchTemp.number = tempTexts;
-    		subtexts.push(tempTexts);
-    		benchDots.push(benchTemp);
+    	    benchTemp.player = obj.player;
+    	    var tempTexts = sub_paper.text(benchTemp.defaultX, benchTemp.defaultY, benchTemp.player.number);
+    	    $('tspan', tempTexts.node).attr('dy', 3.5);
+    	    console.log('words: ', tempTexts);
+    	    console.log('circle: ', benchTemp);
+    	    tempTexts.circ = benchTemp;
+    	    benchTemp.number = tempTexts;
+    	    subtexts.push(tempTexts);
+    	    benchDots.push(benchTemp);
     	} else {
-    		var temp = sub_paper.rect(160, 7.5 + 60 * counts.homeOn, 45, 45);
-    		temp.defaultX = 160 + 22.5;
-    		temp.defaultY = 7.5 + 60 * counts.homeOn + 22.5;
-    		counts.homeOn += 1;
+    	    var temp = sub_paper.rect(160, 7.5 + 60 * counts.homeOn, 45, 45);
+    	    temp.defaultX = 160 + 22.5;
+    	    temp.defaultY = 7.5 + 60 * counts.homeOn + 22.5;
+    	    counts.homeOn += 1;
 
-    		temp.player = obj.player;
-    		var tempTexts = sub_paper.text(temp.defaultX, temp.defaultY, temp.player.number);
-    		$('tspan', tempTexts.node).attr('dy', 3.5);
-    		temp.number = tempTexts;
-    		tempTexts.circ = temp;
-    		subtexts.push(tempTexts);
-    		starterBoxes.push(temp);
+    	    temp.player = obj.player;
+    	    var tempTexts = sub_paper.text(temp.defaultX, temp.defaultY, temp.player.number);
+    	    $('tspan', tempTexts.node).attr('dy', 3.5);
+    	    temp.number = tempTexts;
+    	    tempTexts.circ = temp;
+    	    subtexts.push(tempTexts);
+    	    starterBoxes.push(temp);
     	}
     });
 
-away_team_paper.mainBoxes.forEach(function(obj) {
+    away_team_paper.mainBoxes.forEach(function(obj) {
 	if (obj.data("bench")) {
-		var temp = sub_paper.circle(365 + (40 * Math.floor(counts.awayBench/5)) ,40 + 40 * (counts.awayBench % 5),10).attr({fill : "lightblue"});
-		temp.defaultX = 365 + (40 * Math.floor(counts.awayBench/5));
-		temp.defaultY = 40 + 40 * (counts.awayBench % 5);
-		counts.awayBench += 1;
+	    var temp = sub_paper.circle(365 + (40 * Math.floor(counts.awayBench/5)) ,40 + 40 * (counts.awayBench % 5),10).attr({fill : "lightblue"});
+	    temp.defaultX = 365 + (40 * Math.floor(counts.awayBench/5));
+	    temp.defaultY = 40 + 40 * (counts.awayBench % 5);
+	    counts.awayBench += 1;
 
-		temp.player = obj.player;
-		var tempTexts = sub_paper.text(temp.defaultX, temp.defaultY, temp.player.number);
-		$('tspan', tempTexts.node).attr('dy', 3.5);
-		tempTexts.circ = temp;
-		temp.number = tempTexts;
-		subtexts.push(tempTexts);
-		benchDots.push(temp);
+	    temp.player = obj.player;
+	    var tempTexts = sub_paper.text(temp.defaultX, temp.defaultY, temp.player.number);
+	    $('tspan', tempTexts.node).attr('dy', 3.5);
+	    tempTexts.circ = temp;
+	    temp.number = tempTexts;
+	    subtexts.push(tempTexts);
+	    benchDots.push(temp);
 	} else {
-		var temp = sub_paper.rect(240, 7.5 + 60 * counts.awayOn, 45, 45);
-		temp.defaultX = 240 + 22.5;
-		temp.defaultY = 7.5 + 60 * counts.awayOn + 22.5;
-		counts.awayOn += 1;
+	    var temp = sub_paper.rect(240, 7.5 + 60 * counts.awayOn, 45, 45);
+	    temp.defaultX = 240 + 22.5;
+	    temp.defaultY = 7.5 + 60 * counts.awayOn + 22.5;
+	    counts.awayOn += 1;
 
-		temp.player = obj.player;
-		var tempTexts = sub_paper.text(temp.defaultX, temp.defaultY, temp.player.number);
-		$('tspan', tempTexts.node).attr('dy', 3.5);
-		temp.number = tempTexts;
-		tempTexts.circ = temp;
-		subtexts.push(tempTexts);
-		starterBoxes.push(temp);
+	    temp.player = obj.player;
+	    var tempTexts = sub_paper.text(temp.defaultX, temp.defaultY, temp.player.number);
+	    $('tspan', tempTexts.node).attr('dy', 3.5);
+	    temp.number = tempTexts;
+	    tempTexts.circ = temp;
+	    subtexts.push(tempTexts);
+	    starterBoxes.push(temp);
 	}
-});
+    });
 
-benchDots.forEach(function(o) {
+    benchDots.forEach(function(o) {
 	makeDraggable(o, sub_paper.subWindow);
-});	
+    });	
 
-subtexts.forEach(function(obj) {
+    subtexts.forEach(function(obj) {
 	obj.toFront();
 	console.log(obj.circ);
-    //obj.attr({cx : obj.circ.defaultX, cy : obj.circ.defaultY});
-    obj.mousedown(function (e) {
-    	sub_paper.subWindow.currentMove = obj.circ;
-    });
-    obj.mousemove(function (e) {
-    	if (!(sub_paper.subWindow.currentMove === undefined)) {
+	//obj.attr({cx : obj.circ.defaultX, cy : obj.circ.defaultY});
+	obj.mousedown(function (e) {
+    	    sub_paper.subWindow.currentMove = obj.circ;
+	});
+	obj.mousemove(function (e) {
+    	    if (!(sub_paper.subWindow.currentMove === undefined)) {
     		sub_paper.subWindow.currentMove.attr({cx : e.layerX, cy : e.layerY});
-    	}
+    	    }
 
-    });
-    obj.mouseup(function (e) {
-    	sub_paper.subWindow.currentMove.attr({cx : sub_paper.subWindow.currentMove.defaultX, cy : sub_paper.subWindow.currentMove.defaultY});
+	});
+	obj.mouseup(function (e) {
+    	    sub_paper.subWindow.currentMove.attr({cx : sub_paper.subWindow.currentMove.defaultX, cy : sub_paper.subWindow.currentMove.defaultY});
 
-    	starterBoxes.forEach(function (o) {
+    	    starterBoxes.forEach(function (o) {
 
     		if (Raphael.isPointInsideBBox(o.getBBox(), e.layerX, e.layerY)) {
 
-    			if (o.player.teamID == sub_paper.subWindow.currentMove.player.teamID) {
-    				console.log(o.player, obj.circ.player);
+    		    if (o.player.teamID == sub_paper.subWindow.currentMove.player.teamID) {
+    			console.log(o.player, obj.circ.player);
 
-    				sub(o.player.teamID == home.teamID, sub_paper.subWindow.currentMove.player.number, o.player.number);
+    			sub(o.player.teamID == home.teamID, sub_paper.subWindow.currentMove.player.number, o.player.number);
 			//sub_paper.subWindow.currentMove.hide();
 
 			var temp = o.player;
@@ -402,35 +403,35 @@ subtexts.forEach(function(obj) {
 			var a = o.number.attr("text");
 			o.number.attr({text : sub_paper.subWindow.currentMove.number.attr("text")});
 			sub_paper.subWindow.currentMove.number.attr({text : a});
+		    }
 		}
-	}
-});
-    	sub_paper.subWindow.currentMove = undefined;
+	    });
+    	    sub_paper.subWindow.currentMove = undefined;
 
+	});
     });
-});
 
-function makeDraggable(obj, sw) {
+    function makeDraggable(obj, sw) {
 	obj.mousedown(function (e) {
-		sw.currentMove = this;
+	    sw.currentMove = this;
 	});
 	obj.mousemove(function (e) {
-		if (sw.currentMove !== undefined) {
-			sw.currentMove.attr({cx : e.offsetX});
-			sw.currentMove.attr({cy : e.offsetY});
+	    if (sw.currentMove !== undefined) {
+		sw.currentMove.attr({cx : e.offsetX});
+		sw.currentMove.attr({cy : e.offsetY});
 
-		}
+	    }
 	});
 	obj.mouseup(function (e) {
-		sw.currentMove.attr({cx : sw.currentMove.defaultX});
-		sw.currentMove.attr({cy : sw.currentMove.defaultY});
-		sw.currentMove = undefined;
+	    sw.currentMove.attr({cx : sw.currentMove.defaultX});
+	    sw.currentMove.attr({cy : sw.currentMove.defaultY});
+	    sw.currentMove = undefined;
 
 
-		starterBoxes.forEach(function (o) {
-			if (Raphael.isPointInsideBBox(o.getBBox(), e.offsetX, e.offsetY)) {
-				if (o.player.teamID == obj.player.teamID) {
-					sub(o.player.teamID == home.teamID, obj.player.number, o.player.number);
+	    starterBoxes.forEach(function (o) {
+		if (Raphael.isPointInsideBBox(o.getBBox(), e.offsetX, e.offsetY)) {
+		    if (o.player.teamID == obj.player.teamID) {
+			sub(o.player.teamID == home.teamID, obj.player.number, o.player.number);
 			//obj.hide();
 
 			var temp = o.player;
@@ -440,105 +441,105 @@ function makeDraggable(obj, sw) {
 			var a = o.number.attr("text");
 			o.number.attr({text : obj.number.attr("text")});
 			obj.number.attr({text : a});
+		    }
 		}
-	}
-});
+	    });
 
 	});
-}
+    }
 
 
 });	
 
 
 function fp() {
-	if (court_paper.homePossession) {
-		court_paper.homePossession = false;
+    if (court_paper.homePossession) {
+	court_paper.homePossession = false;
 
-		$("#flipPossession")[0].innerHTML = "<span class=\"glyphicon glyphicon-triangle-right\" aria-hidden=\"true\"></span>";
+	$("#flipPossession")[0].innerHTML = "<span class=\"glyphicon glyphicon-triangle-right\" aria-hidden=\"true\"></span>";
 
-	} else {
-		court_paper.homePossession = true;
+    } else {
+	court_paper.homePossession = true;
 
-		$("#flipPossession")[0].innerHTML = "<span class=\"glyphicon glyphicon-triangle-left\" aria-hidden=\"true\"></span>";
+	$("#flipPossession")[0].innerHTML = "<span class=\"glyphicon glyphicon-triangle-left\" aria-hidden=\"true\"></span>";
 
-	}
-	$.post("/stats/changepossession", {}, function(responseJSON) {});
+    }
+    $.post("/stats/changepossession", {}, function(responseJSON) {});
 
 }
 
 function toggleBenchCourt(b) {
-	if (b) paper = home_team_paper;
-	else paper = away_team_paper;
-	paper.mainBoxes.forEach(function (obj) {
-		if ((obj.data("bench") && paper.showingBench) || (!(obj.data("bench")) && !(paper.showingBench))) {
-			obj.hide();
-			obj.t.hide();
-		} else {
-			obj.show();
-			obj.t.show();
-		}
-	});
-	var button;
-	if (b) button = $("#showHomeSubs");
-	else button = $("#showAwaySubs");
-	if (paper.showingBench) button.html("Show Bench");
-	else button.html("Show Court");
-	paper.showingBench = !(paper.showingBench);   
+    if (b) paper = home_team_paper;
+    else paper = away_team_paper;
+    paper.mainBoxes.forEach(function (obj) {
+	if ((obj.data("bench") && paper.showingBench) || (!(obj.data("bench")) && !(paper.showingBench))) {
+	    obj.hide();
+	    obj.t.hide();
+	} else {
+	    obj.show();
+	    obj.t.show();
+	}
+    });
+    var button;
+    if (b) button = $("#showHomeSubs");
+    else button = $("#showAwaySubs");
+    if (paper.showingBench) button.html("Show Bench");
+    else button.html("Show Court");
+    paper.showingBench = !(paper.showingBench);   
 }
 
 
 
 function sub(h, inPlayer, outPlayer) {
 
-	var inBox;
-	var outBox;
+    var inBox;
+    var outBox;
 
-	if (h) {
-		home_team_paper.mainBoxes.forEach(function (t) {
-			if (t.data("bench")) {
-				if (t.player.number == parseInt(inPlayer)) inBox = t;
-			} else {
-				if (t.player.number == parseInt(outPlayer)) outBox = t;
-			}
-		});
-	} else {
-		away_team_paper.mainBoxes.forEach(function (t) {
-			if (t.data("bench")) {
-				if (t.player.number == parseInt(inPlayer)) inBox = t;
-			} else {
-				if (t.player.number == parseInt(outPlayer)) outBox = t;
-			}
-		});
+    if (h) {
+	home_team_paper.mainBoxes.forEach(function (t) {
+	    if (t.data("bench")) {
+		if (t.player.number == parseInt(inPlayer)) inBox = t;
+	    } else {
+		if (t.player.number == parseInt(outPlayer)) outBox = t;
+	    }
+	});
+    } else {
+	away_team_paper.mainBoxes.forEach(function (t) {
+	    if (t.data("bench")) {
+		if (t.player.number == parseInt(inPlayer)) inBox = t;
+	    } else {
+		if (t.player.number == parseInt(outPlayer)) outBox = t;
+	    }
+	});
+    }
+
+    if (!(inBox === undefined || outBox === undefined) && inBox.data("home") == outBox.data("home")) {
+	var t;
+	if (h) t = home;
+	else t = away;
+
+	var courtSpot;
+	var benchSpot;
+	for (var i = 0; i < t.onCourt.length; i++) {
+	    if (t.onCourt[i] == outBox.player) courtSpot = i;
 	}
+	for (var j = 0; j < t.bench.length; j++) {
+	    if (t.onCourt[j] == outBox.player) courtSpot = j;
+	}
+	var temp = t.onCourt[courtSpot];
+	t.onCourt[courtSpot] = t.bench[benchSpot];
+	t.bench[benchSpot] = temp;
 
-	if (!(inBox === undefined || outBox === undefined) && inBox.data("home") == outBox.data("home")) {
-		var t;
-		if (h) t = home;
-		else t = away;
-
-		var courtSpot;
-		var benchSpot;
-		for (var i = 0; i < t.onCourt.length; i++) {
-			if (t.onCourt[i] == outBox.player) courtSpot = i;
-		}
-		for (var j = 0; j < t.bench.length; j++) {
-			if (t.onCourt[j] == outBox.player) courtSpot = j;
-		}
-		var temp = t.onCourt[courtSpot];
-		t.onCourt[courtSpot] = t.bench[benchSpot];
-		t.bench[benchSpot] = temp;
-
-		var temp = inBox.player;
-		inBox.player = outBox.player;
-		outBox.player = temp;
-		inBox.t.attr({"text" : inBox.player.number});
-		outBox.t.attr({"text" : outBox.player.number});
+	var temp = inBox.player;
+	inBox.player = outBox.player;
+	outBox.player = temp;
+	inBox.t.attr({"text" : inBox.player.number});
+	outBox.t.attr({"text" : outBox.player.number});
 
 
 
-		$.post("/stats/sub", {"out" : inBox.player.id, "in" : outBox.player.id, "home" : h}, function(){});
-	} else alert("Sub was invalid! Sorry");
+	$.post("/stats/sub", {"out" : inBox.player.id, "in" : outBox.player.id, "home" : h}, function(){});
+    } else alert("Sub was invalid! Sorry");
 
 
 }
@@ -547,80 +548,124 @@ function sub(h, inPlayer, outPlayer) {
 
 
 function clickThing(b) {
-	if (b.data("thing") == "player") {
-		if (!(clickedPlayer === undefined)) clickedPlayer.attr({fill: clickedPlayer.normalColor});
-		clickedPlayer = b;
-		clickedPlayer.attr({fill: clickedPlayer.clickAccent});
-	}
+    if (b.data("thing") == "player") {
+	if (!(clickedPlayer === undefined)) clickedPlayer.attr({fill: clickedPlayer.normalColor});
+	clickedPlayer = b;
+	clickedPlayer.attr({fill: clickedPlayer.clickAccent});
+    }
 } 
 
 
 function addStat() {
-	if ((clickedStat.statID != "TwoPointer") && (clickedStat.statID != "MissedTwoPointer") && (clickedStat.statID != "ThreePointer") && (clickedStat.statID != "MissedThreePointer")) {
-		if (clickedPoint === undefined) {
-			clickedPoint = court_paper.circle(0,0,0).data("ratioX", -1).data("ratioY", -1);
-		}
-	} else {
-		if (clickedPoint === undefined) alert("You must give a location for all field goal attempts");
+    if ((clickedStat.statID != "TwoPointer") && (clickedStat.statID != "MissedTwoPointer") && (clickedStat.statID != "ThreePointer") && (clickedStat.statID != "MissedThreePointer")) {
+	if (clickedPoint === undefined) {
+	    clickedPoint = court_paper.circle(0,0,0).data("ratioX", -1).data("ratioY", -1);
 	}
-	if (!(clickedPoint === undefined || clickedStat === undefined || clickedPlayer === undefined)) {
-		postParameters = {
-			x: clickedPoint.data("ratioX"),
-			y: clickedPoint.data("ratioY"),
-			statID: clickedStat.statID,
-			playerID: clickedPlayer.player.id
-		};
-		clickedPoint.remove();
-		clickedPoint = undefined;
-		clickedPlayer.attr({fill: clickedPlayer.normalColor});
-		clickedPlayer = undefined;
-		clickedStat.button.style.backgroundColor = "white";
-		clickedStat.statID = undefined;
+    } else {
+	if (clickedPoint === undefined) alert("You must give a location for all field goal attempts");
+    }
+    if (!(clickedPoint === undefined || clickedStat === undefined || clickedPlayer === undefined)) {
+	postParameters = {
+	    x: clickedPoint.data("ratioX"),
+	    y: clickedPoint.data("ratioY"),
+	    statID: clickedStat.statID,
+	    playerID: clickedPlayer.player.id
+	};
+	clickedPoint.remove();
+	clickedPoint = undefined;
+	clickedPlayer.attr({fill: clickedPlayer.normalColor});
+	clickedPlayer = undefined;
+	clickedStat.button.style.backgroundColor = "white";
+	//clickedStat.statID = undefined;//TODO what should be undefined
+	clickedStat = undefined;
 
 
-		console.log(postParameters);
+	console.log(postParameters);
 
-		$.post("/stats/add", postParameters, function(response) {
-			logStat(response);
-		});
+	$.post("/stats/add", postParameters, function(response) {
+	    logStat(response);
+	});
 
-	}
+    }
 
 }
 
 function logStat(res, type) {
-	$("#ticker").prepend(res);
+    console.log(res);
+    $("#ticker").prepend(res);
 }
 
 
 function makeDarker(h) {
-	console.log(h);
-	var r = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(0,2),16);
-	var g = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(2,4),16);
-	var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
+    console.log(h);
+    var r = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(0,2),16);
+    var g = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(2,4),16);
+    var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
 
-	return "rgb(" + r * .75 + "," + g * .75 + "," +  b * .75 + ")";
+    return "rgb(" + r * .75 + "," + g * .75 + "," +  b * .75 + ")";
 }
 
 function whiteOrBlack(color) {
-	if (color.r*0.299 + color.g*0.587 + color.b*0.114 > 186) return "black";
-	else return "white";
+    if (color.r*0.299 + color.g*0.587 + color.b*0.114 > 186) return "black";
+    else return "white";
 }
 
 function setSelectedStat(str) {
-	if (clickedStat !== undefined) clickedStat.button.style.backgroundColor = "white";
-	clickedStat = {};
-	clickedStat.statID = str;
-	clickedStat.button = document.getElementById(str + "Button");
-	document.getElementById(str + "Button").style.backgroundColor = "rgb(150,150,150)";
+    if (clickedStat !== undefined) clickedStat.button.style.backgroundColor = "white";
+    clickedStat = {};
+    clickedStat.statID = str;
+    clickedStat.button = document.getElementById(str + "Button");
+    document.getElementById(str + "Button").style.backgroundColor = "rgb(150,150,150)";
 }
 
 function timeout(b) {
-	if (b) $.post("/stats/timeout", {h : true}, function(responseJSON){});
-	else $.post("/stats/timeout", {h : false}, function(responseJSON){});
+    if (b) $.post("/stats/timeout", {h : true}, function(responseJSON){});
+    else $.post("/stats/timeout", {h : false}, function(responseJSON){});
 }
 
 function statEdit(a) {
+    if(editingStat == undefined) {
+	editingStat = a;
+	a.className = "btn btn-xs btn-primary pull-right editButton";
+	a.childNodes[1].className = "glyphicon glyphicon-floppy-save";
+	$("#sendStat").prop("disabled", true);
+	if(clickedPoint != undefined){
+	    clickedPoint.remove();
+	    clickedPoint = undefined;
+	}
+	if(clickedPlayer != undefined){
+	    clickedPlayer.attr({fill: clickedPlayer.normalColor});
+	    clickedPlayer = undefined;
+	}
+	if(clickedStat != undefined) {
+	    clickedStat.button.style.backgroundColor = "white";
+	    clickedStat = undefined;
+	}
+    } else if(editingStat != a) {
+	$(".editButton").removeClass("btn-primary").addClass("btn-warning");
+	$(".editButton").children().removeClass("glyphicon-floppy-save").addClass("glyphicon-pencil");
+	a.className = "btn btn-xs btn-primary pull-right editButton";
+	a.childNodes[1].className = "glyphicon glyphicon-floppy-save";
+	editingStat = a;
+	if(clickedPoint != undefined){
+	    clickedPoint.remove();
+	    clickedPoint = undefined;
+	}
+	if(clickedPlayer != undefined){
+	    clickedPlayer.attr({fill: clickedPlayer.normalColor});
+	    clickedPlayer = undefined;
+	}
+	if(clickedStat != undefined) {
+	    clickedStat.button.style.backgroundColor = "white";
+	    clickedStat = undefined;
+	}
+    } else {
+	$(".editButton").removeClass("btn-primary").addClass("btn-warning");
+	a.className = "btn btn-xs btn-warning pull-right editButton";
+	a.childNodes[1].className = "glyphicon glyphicon-pencil";
+	editingStat = undefined;
+	$("#sendStat").prop("disabled", false);
+
 	var parent = a.parentNode;
 	var changedPoint = false;
 	var changedStat = false;
@@ -629,71 +674,71 @@ function statEdit(a) {
 
 	console.log(parent.children);
 	postParameters = {
-		x : parent.getAttribute("data-statX"),
-		y : parent.getAttribute("data-statY"),
-		statID : parent.getAttribute("data-statType"),
-		playerID : parent.getAttribute("data-playerID"),
-		databaseID : parent.getAttribute("data-statID")
+	    x : parent.getAttribute("data-statX"),
+	    y : parent.getAttribute("data-statY"),
+	    statID : parent.getAttribute("data-statType"),
+	    playerID : parent.getAttribute("data-playerID"),
+	    databaseID : parent.getAttribute("data-statID")
 	};
 
 	if (clickedPoint !== undefined) {
-		changedPoint = true;
-		postParameters.x = clickedPoint.data("ratioX");
-		postParameters.y = clickedPoint.data("ratioY");
-		clickedPoint.remove();
-		clickedPoint = undefined;
-
+	    changedPoint = true;
+	    postParameters.x = clickedPoint.data("ratioX");
+	    postParameters.y = clickedPoint.data("ratioY");
+	    clickedPoint.remove();
+	    clickedPoint = undefined;
 	}
 	if (clickedStat !== undefined) {
-		changedStat = true;
-		postParameters.statID = clickedStat.statID;
-		clickedStat.button.style.backgroundColor = "white";
-		clickedStat = undefined;
+	    changedStat = true;
+	    postParameters.statID = clickedStat.statID;
+	    clickedStat.button.style.backgroundColor = "white";
+	    clickedStat = undefined;
 	}
 	if (clickedPlayer !== undefined) {
-		changedPlayer = true;
-		player = clickedPlayer.player;
-		postParameters.playerID = clickedPlayer.player.id;
-		clickedPlayer.attr({fill: clickedPlayer.normalColor});
-		player = clickedPlayer.player;
-		clickedPlayer = undefined;
+	    changedPlayer = true;
+	    player = clickedPlayer.player;
+	    postParameters.playerID = clickedPlayer.player.id;
+	    clickedPlayer.attr({fill: clickedPlayer.normalColor});
+	    player = clickedPlayer.player;
+	    clickedPlayer = undefined;
 	}
 
 	console.log(parent.children);
 	console.log(parent.children.length);
 
 	for (var i = 0; i<parent.children.length; i++) {
-		if(changedPlayer && parent.children[i].getAttribute("data-name") == "player") {
-			parent.children[i].innerHTML = (player.name + " #" + player.number);
-			parent.setAttribute("data-playerID", player.id);
-		}
-		if(changedStat && parent.children[i].getAttribute("data-name") == "stat") {
-			parent.children[i].innerHTML = (postParameters.statID);
-			parent.setAttribute("data-statType", postParameters.statID);
-		}
-		if(changedPoint && parent.children[i].getAttribute("data-name") == "location") {
-			parent.children[i].innerHTML = (Math.round(postParameters.x * 10000) / 10000 + " " + Math.round(postParameters.y * 10000) / 10000);
-			parent.setAttribute("data-statX", postParameters.x);
-			parent.setAttribute("data-statY", postParameters.y);
-		}
+	    if(changedPlayer && parent.children[i].getAttribute("data-name") == "player") {
+		parent.children[i].innerHTML = (player.name + " #" + player.number);
+		parent.setAttribute("data-playerID", player.id);
+	    }
+	    if(changedStat && parent.children[i].getAttribute("data-name") == "stat") {
+		parent.children[i].innerHTML = (postParameters.statID);
+		parent.setAttribute("data-statType", postParameters.statID);
+	    }
+	    if(changedPoint && parent.children[i].getAttribute("data-name") == "location") {
+		parent.children[i].innerHTML = (Math.round(postParameters.x * 10000) / 10000 + " " + Math.round(postParameters.y * 10000) / 10000);
+		parent.setAttribute("data-statX", postParameters.x);
+		parent.setAttribute("data-statY", postParameters.y);
+	    }
 	}
 
 
 
 	$.post("/stats/update", postParameters, function(responseJSON) {});
+    }
 }
 
 function deleteEdit(a) {
-	var i = a.parentNode.getAttribute("data-statID");
-	console.log(a.parentNode.attributes);
-	console.log(i);
-	a.parentNode.parentNode.removeChild(a.parentNode);
-	$.post("/stats/delete", {databaseID : i}, function() {});
+    var i = a.parentNode.getAttribute("data-statID");
+    console.log(a.parentNode.attributes);
+    console.log(i);
+    a.parentNode.parentNode.removeChild(a.parentNode);
+    $.post("/stats/delete", {databaseID : i}, function() {});
 }
 
 disable_user_select();
 
 function disable_user_select() {
-	$("*").css("-webkit-user-select", "none");
-	$("*").css("-moz-user-select", "none");
+    $("*").css("-webkit-user-select", "none");
+    $("*").css("-moz-user-select", "none");
 };

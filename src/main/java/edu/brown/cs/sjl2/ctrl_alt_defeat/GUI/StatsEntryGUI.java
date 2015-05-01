@@ -34,18 +34,23 @@ public class StatsEntryGUI {
 
     @Override
     public ModelAndView handle(Request request, Response response) {
-      List<Stat> s = dash.getGame().getAllStats();
-      Collections.reverse(s);
-      Map<String, Object> variables =
+      Game g = dash.getGame();
+      if(g != null) {
+        List<Stat> s = dash.getGame().getAllStats();
+        Collections.reverse(s);
+        Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Stats Entry", 
-              "stats", s, 
-              "errorMessage", "");
+                          "stats", s, 
+                          "errorMessage", "");
 
-      //      if (dash.getGame() != null) {
-      return new ModelAndView(variables, "stats_entry.ftl");
-      //      } else {
-      //        return new ModelAndView(variables, "no_game.ftl");
-      //      }
+        return new ModelAndView(variables, "stats_entry.ftl");
+      } else {
+        Map<String, Object> variables =
+          ImmutableMap.of("tabTitle", "No Game", 
+                          "errorMessage", "");
+
+        return new ModelAndView(variables, "no_game.ftl");
+      }
 
     }
 

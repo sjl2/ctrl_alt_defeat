@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import spark.ExceptionHandler;
+import spark.Filter;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -69,10 +70,19 @@ public class GUIManager {
 
     FreeMarkerEngine freeMarker = createEngine();
 
-    // Setup Spark Routes
-    Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
+    /*** Setup Filters ***/
+    Spark.before("/dashboard", new CoachFilter());
+    Spark.before("/dashboard/*", new CoachFilter());
+    Spark.before("/whiteboard", new CoachFilter());
+    Spark.before("/whiteboard/*", new CoachFilter());
+    Spark.before("/playmaker", new CoachFilter());
+    Spark.before("/playmaker/*", new CoachFilter());
 
-    //Spark.get("/login", new LoginViewHandler(), freeMarker);
+    Spark.before("/stats", new StatsFilter());
+    Spark.before("/stats/*", new StatsFilter());
+
+    // Setup Spark Routes
+    Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
 
     /*** DashboardGUI routes ***/
@@ -92,6 +102,7 @@ public class GUIManager {
     /*** WikiGUI routes ***/
     Spark.get("/game/view/:id", wikiGUI.new GameViewHandler(), freeMarker);
     Spark.get("/player/view/:id", wikiGUI.new PlayerViewHandler(), freeMarker);
+    Spark.post("/player/delete", wikiGUI.new DeletePlayer());
     Spark.get("/team/view/:id", wikiGUI.new TeamViewHandler(), freeMarker);
     Spark.post("/player/edit", wikiGUI.new EditPlayer());
     Spark.post("/team/edit", wikiGUI.new EditTeam());
@@ -122,6 +133,8 @@ public class GUIManager {
 		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
+
+    //Spark.get("*", new PageNotFoundHandler(), freeMarker);
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -138,17 +151,55 @@ public class GUIManager {
     return new FreeMarkerEngine(config);
   }
 
-  /**
-   * Default Handler for ctrl-alt-defeat
-   *
-   * @author sjl2
-   */
-  private class FrontHandler implements TemplateViewRoute {
+  private class CoachFilter implements Filter {
+
+    @Override
+    public void handle(Request req, Response res) {
+      String clearanceString = req.session().attribute("clearance");
+
+      if(clearanceString == null) {
+        res.redirect("/login");
+        return;
+      }
+
+      int clearance = Integer.parseInt(clearanceString);
+      
+      if(clearance == 1) {
+        res.redirect("/stats");
+      } else if(clearance < 1) {
+        res.redirect("/login");
+      }
+    }
+    
+  }
+
+  private class StatsFilter implements Filter {
+
+    @Override
+    public void handle(Request req, Response res) {
+      String clearanceString = req.session().attribute("clearance");
+
+      if(clearanceString == null) {
+        res.redirect("/login");
+        return;
+      }
+
+      int clearance = Integer.parseInt(clearanceString);
+      
+      if(clearance < 1) {
+        res.redirect("/login");
+      }
+    }
+    
+  }
+
+  private class PageNotFoundHandler implements TemplateViewRoute {
+
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat", "errorMessage", "");
-      return new ModelAndView(variables, "ctrl_alt_defeat.ftl");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle", "ERROR", "errorMessage", "Page Not Found");
+
+      return new ModelAndView(variables, "404.ftl");
     }
   }
 
@@ -169,6 +220,7 @@ public class GUIManager {
       String username = qm.value("username");
       String password = qm.value("password");
       int clearance = dbManager.checkPassword(username, password);
+      req.session().attribute("clearance", Integer.valueOf(clearance).toString());
       Map<String, Object> variables =
         ImmutableMap.of("clearance", clearance, "errorMessage", "");
 

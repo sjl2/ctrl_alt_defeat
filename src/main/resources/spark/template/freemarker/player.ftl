@@ -68,6 +68,9 @@
                 <span class="glyphicon glyphicon-ok"></span>
                 Update Player
               </button>
+	      <button class="btn btn-lg btn-danger pull-right" onclick="deletePlayer(${player.getID()})">
+		<span class="glyphicon glyphicon-trash"></span>
+	      </button>
           </div>
         </div>
       </div>

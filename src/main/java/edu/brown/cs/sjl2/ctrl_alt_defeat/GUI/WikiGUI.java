@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -123,10 +124,21 @@ public class WikiGUI {
         boolean current = Boolean.parseBoolean(qm.value("current"));
         dbManager.updatePlayer(id, name, teamID, number, current);
 
-        return ImmutableMap.of("errorMessage", "");
+        return GSON.toJson(ImmutableMap.of("errorMessage", ""));
       } catch (NumberFormatException e) {
-        return ImmutableMap.of("errorMessage", "Error parsing changes to player.");
+        return GSON.toJson(ImmutableMap.of("errorMessage", "Error parsing changes to player."));
       }      
+    }
+  }
+
+  public class DeletePlayer implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      int id = Integer.parseInt(qm.value("id"));
+
+      return GSON.toJson(ImmutableMap.of("success", dbManager.deletePlayer(id)));
     }
   }
   
@@ -182,7 +194,11 @@ public class WikiGUI {
           error = "Could not find player by that ID!";
         } else {
           years = dbManager.getYearsActive("player_stats", playerID);
-          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          if(!years.isEmpty()) {
+            rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          } else {
+            rows = new ArrayList<>();
+          }
           seasonAverages = dbManager.getAggregateGameStats("AVG", "player_stats", playerID);
           seasonTotals = dbManager.getAggregateGameStats("SUM", "player_stats", playerID);
         }

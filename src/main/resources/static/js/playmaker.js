@@ -284,7 +284,6 @@ window.onload = function() {
 		    bootbox.confirm("Are you sure you want to overwrite: " + result, function(r) {
 			if(r) {
 			    save(result);
-			    console.log(result + " saved");
 			}
 		    });
 		} else {
@@ -392,6 +391,7 @@ function newPlay() {
     possessionToken = tokens[0];
     ball.setRelativeLocation(possessionToken);
     ball.possession = [0];
+    setMaxFrame(0);
     
     setEditingName("untitled")
 }
@@ -440,7 +440,7 @@ function onstart(x, y, event) {
     this.dy = 0;
     grabbedToken = this;
     if(!edittingLocations) {
-	intervalVar = window.setInterval(updatePath, 1000.0 / (FRAME_RATE * playSpeed));
+	intervalVar = window.setInterval(updatePath, 1000.0 / FRAME_RATE);
     }
 }
 
@@ -480,17 +480,24 @@ function onmove(dx, dy, x, y, event) {
 
 function onend(event) {
     window.clearInterval(intervalVar);
-    var prevPath = grabbedToken.path;
-    grabbedToken.path = [];
     if(!edittingLocations) {
-	for (i = 0; i <= currentFrame; i++) {
-	    grabbedToken.path[i] = prevPath[i].copy();
+	for (i = currentFrame + 1; i <= maxFrame; i++) {
+	    grabbedToken.path[i] = grabbedToken.location.copy();
+	}
+	if(this.index == possessionToken.index) {
+	    for(i = 0; i <= maxFrame; i++) {
+		ball.possession[i] = this.index;
+	    }
 	}
     } else {
-	grabbedToken.path[0] = grabbedToken.location.copy();
+	for (i = 0; i <= maxFrame; i++) {
+	    grabbedToken.path[i] = grabbedToken.location.copy();
+	}
+
 	if(this.index == possessionToken.index) {
-	    ball.possession = [];
-	    ball.possession[0] = possessionToken.index;
+	    for (i = 0; i <= maxFrame; i++) {
+		ball.possession[i] = grabbedToken.index;
+	    }
 	}
     }
     grabbedToken = undefined;
@@ -509,15 +516,19 @@ function onballend(event) {
 	var t = tokens[i];
 	if(this.checkCollision(t)) {
 	    possessionToken = t;
-	    ball.possession[currentFrame] = possessionToken.index;
+	    for(i = currentFrame; i <= maxFrame; i++) {
+		ball.possession[i] = possessionToken.index;
+	    }
+	    break;
 	}
     }
+    ball.setRelativeLocation(possessionToken);
 }
 
 function updatePath() {
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
-	if(t.path[currentFrame + 1] == undefined) {
+	if((t.path[currentFrame + 1] == undefined) || (t.index == grabbedToken.index)) {
 	    t.path[currentFrame + 1] = t.location.copy();
 	}
     }
@@ -596,11 +607,14 @@ function setEditingName(playName) {
 
 function setMaxFrame(frameNumber) {
     maxFrame = frameNumber;
-    $("#frame_number").prop("max", maxFrame);
+    var slider = $("#frame_number");
+    slider.prop("max", maxFrame);
+    if(parseInt(slider.prop("value")) > frameNumber) {
+	setFrame(frameNumber);
+    }
 }
 
 function save(playName) {
-    console.log("Save");
     var paths = [];
     for(i = 0; i < tokens.length; i++) {
 	var tokenPath = tokens[i].path;

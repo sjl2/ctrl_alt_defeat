@@ -121,9 +121,11 @@ public class DBManager {
       prep.setString(1, username);
       ResultSet rs = prep.executeQuery();
       if(rs.next()) {
-        String dbPassword = rs.getString(1);
+        int dbPassword = Integer.parseInt(rs.getString(1));
         int clearance = rs.getInt(2);
-        if(dbPassword.equals(password)) {
+        System.out.println(dbPassword);
+        System.out.println(password.hashCode());
+        if(dbPassword == password.hashCode()) {
           return clearance;
         } else {
           return -1;
@@ -825,6 +827,39 @@ public class DBManager {
       throw new RuntimeException(message);
     }
 
+  }
+
+  public boolean deletePlayer(int id) {
+    String query = "SELECT count(*) FROM stat WHERE player = ?;";
+    String query2 = "DELETE FROM player WHERE id = ?;";
+    try (PreparedStatement prep = conn.prepareStatement(query);
+         PreparedStatement prep2 = conn.prepareStatement(query2)) {
+      prep.setInt(1, id);
+
+      ResultSet rs = prep.executeQuery();
+
+      if (rs.next()) {
+        int count = rs.getInt(1);
+        if (count != 0) {
+          return false;
+        }
+      }
+      
+      rs.close();
+
+      Player p = getPlayer(id);
+      Team t = getTeam(p.getTeamID());
+      t.removePlayer(p);
+      pf.removePlayer(id);
+      prep2.setInt(1, id);
+      prep2.executeUpdate();
+    } catch(SQLException e) {
+      String message = "Failed to delete player from player table."
+          + e.getMessage();
+      throw new RuntimeException(message);
+    }
+
+    return true;
   }
 
   public int getTeamWins(int gameID, int teamID, LocalDate date, boolean inclusive) {

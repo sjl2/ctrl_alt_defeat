@@ -29,6 +29,8 @@ $(document).ready(function(){
     });
 });
 
+var chart;
+
 function clickStatType(columnIndex) {
     $("#chart-title").html("<b>" + statNames[columnIndex - 1] + "</b>");
     paper.clear();
@@ -38,28 +40,36 @@ function clickStatType(columnIndex) {
 	var xs = [];
 	var ys1 = [];
 	var ys2 = [];
+	var minMax = [];
+	var maxIndex = table.rows.length - 1;
 	for(i = 1; i < table.rows.length; i++) {
-	    xs[i - 1] = i;
+	    xs[i - 1] = i - 1;
 	    var split = table.rows[i].cells[columnIndex].innerHTML.split(" - ");
-	    ys1[i - 1] = parseInt(split[0]);
-	    ys2[i - 1] = parseInt(split[1]);
+	    var y1 = parseInt(split[0]);
+	    var y2 = parseInt(split[1]);
+	    ys1[i - 1] = y1;
+	    ys2[i - 1] = y2;
+	    minMax[i - 1] = 0;
+	    if(minMax[maxIndex] == undefined) {
+		minMax[maxIndex] = Math.max(y1, y2);
+	    } else {
+		minMax[maxIndex] = Math.max(y1, y2, minMax[maxIndex]);
+	    }
 	}
+	
+	var yStep = Math.floor(minMax[maxIndex] / (Math.floor(minMax[maxIndex] / 40) + 1));
 
-	var chart;
-	chart = paper.linechart(15, 0, width - 15, height, [xs, xs], [ys1,ys2], {colors: ["#090", "#00f"], axis: "0 0 1 1"});
+	chart = paper.linechart(15, 0, width - 15, height - 15,
+				xs, [ys1, ys2, minMax],
+				{colors: ["#090", "#00f", "transparent"],
+				 axisxstep: xs.length - 1, axisystep: yStep,
+				 axis: "0 0 1 1"});
 	for(i = 0; i < chart.axis.length; i++) {
 	    var axis = chart.axis[i];
 	    for(j = 0; j < axis.text.length; j++) {
-		axis.text[j][0].childNodes[0].setAttribute("dy", 7.5);
+		axis.text[j][0].childNodes[0].setAttribute("dy", 3.5);
 	    }
 	}
-	/*chart = paper.linechart(15, 0, width - 15, height, xs, ys2, {colors: ["#00f"]});
-	for(i = 0; i < chart.axis.length; i++) {
-	    var axis = chart.axis[i];
-	    for(j = 0; j < axis.text.length; j++) {
-		axis.text[j][0].childNodes[0].setAttribute("dy", 7.5);
-	    }
-	}*/
 	var legendX = 35;
 	var legendY = 25;
 	var legendWidth = 90;
@@ -69,18 +79,33 @@ function clickStatType(columnIndex) {
 	paper.rect(legendX + 10, legendY + 35, 15, 15).attr("fill", "#00f");
 	var madeLegend = paper.text(legendX + 30, legendY + 20, "Made").attr("text-anchor", "start");
 	var attLegend = paper.text(legendX + 30, legendY + 45, "Attempted").attr("text-anchor", "start");
-	$("tspan", madeLegend.node).attr("dy", 7.5);
-	$("tspan", attLegend.node).attr("dy", 7.5);
+	$("tspan", madeLegend.node).attr("dy", 3.5);
+	$("tspan", attLegend.node).attr("dy", 3.5);
 	
     } else {
 	var xs = [];
 	var ys = [];
+	var minMax = [];
+	var maxIndex = table.rows.length - 1;
 	for(i = 1; i < table.rows.length; i++) {
-	    xs[i - 1] = i;
-	    ys[i - 1] = parseInt(table.rows[i].cells[columnIndex].innerHTML);
+	    xs[i - 1] = i - 1;
+	    var y1 = parseInt(table.rows[i].cells[columnIndex].innerHTML);
+	    ys[i - 1] = y1;
+	    minMax[i - 1] = 0;
+	    if(minMax[maxIndex] == undefined) {
+		minMax[maxIndex] = y1;
+	    } else {
+		minMax[maxIndex] = Math.max(y1, minMax[maxIndex]);
+	    }
 	}
-	
-	var chart = paper.linechart(15, 0, width - 15, height, xs, ys, {colors: ["#090"], axisxstep: 2, axisystep: 2, axis: "0 0 1 1"});
+
+	var yStep = Math.floor(minMax[maxIndex] / (Math.floor(minMax[maxIndex] / 40) + 1));
+
+	chart = paper.linechart(15, 0, width - 15, height - 15,
+				xs, [ys, minMax],
+				    {colors: ["#090", "transparent"],
+				     axisxstep: xs.length - 1, axisystep: yStep,
+				     axis: "0 0 1 1"});
 	for(i = 0; i < chart.axis.length; i++) {
 	    var axis = chart.axis[i];
 	    for(j = 0; j < axis.text.length; j++) {
@@ -112,6 +137,22 @@ function clickTeamSeason(teamID, year) {
     $("#chart-title").html("<b>Heat Map for " + (year - 1) + " - " + year + "</b>");
     paper.shots.remove();
     drawHeatMap(teamID, false, year, paper);
+}
+
+function deletePlayer(playerID) {
+    bootbox.confirm("Are you sure you want to delete this player?", function(result) {
+	if(result) {
+	    $.post("/player/delete", {id: playerID}, 
+		   function(response) {
+		       console.log(response);
+		       if(response.success) {
+			   window.location.href = "/dashboard";
+		       } else {
+			   bootbox.alert("Cannot delete player that has stats");
+		       }
+		   }, "json");
+	}
+    });
 }
 
 function updatePlayer() {

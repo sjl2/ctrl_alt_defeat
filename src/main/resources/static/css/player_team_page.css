@@ -19,3 +19,9 @@ tr, th, .active {
     background-color: #bbb;
     cursor: pointer;
 }
+
+svg text {
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+}
