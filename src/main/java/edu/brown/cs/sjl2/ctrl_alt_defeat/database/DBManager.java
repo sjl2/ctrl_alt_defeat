@@ -1046,10 +1046,16 @@ public class DBManager {
     StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
     query.append(chartType);
     query.append(" in (");
-    for (int i = 0; i < numEntities - 1; i++) {
-      query.append("?, ");
+    
+    if (numEntities == 0) {
+      query.append(")");
+    } else {
+      for (int i = 0; i < numEntities - 1; i++) {
+        query.append("?, ");
+      }
+      query.append("?)");
     }
-    query.append("?)");
+
     query.append(" AND ");
     query.append(statType);
     query.append(" AND game in (");
