@@ -5,6 +5,29 @@
 	* For functionally done (needs JS, CSS UI)
 /****************************************************/
 
+POST-GABE:
+- Combine Search bar to one bar
+- No idea how to do stats -> put a little note 
+- Home/Away Positions 
+- Restrict stat location for three pointers
+- Dashboard looks too interactive with no game going
+	- Hide as much as you can, or at least interactive stuff
+- Tried to edit the name of the play in the well -> change from well so that it doesn't look like a textfield
+	- Change color from white?
+- Players shouldn't be retirable from the start
+- Log-In Page stylin'
+- Create user page
+- Hover to display player name as well as number in stats
+- Substitutions didn't come off as intuitive
+- Enter's for ALL submissions please 
+- Remove confirmation page -> change to modals then redirect to dashboard
+- Fonts
+- Shooting in playmaker
+	- Allow for lock-on to center of basket
+
+	
+
+
 - Display Change error message from alerts to fancy balloons.
 - Fun Feature: Player distinguishing feature. 
 	- Sharp-Shooter Left/Right/Center (High Percentage on left court)
