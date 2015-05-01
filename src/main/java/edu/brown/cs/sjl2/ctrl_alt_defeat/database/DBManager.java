@@ -1244,11 +1244,12 @@ public class DBManager {
         String stat = rs.getString("type");
         double x = rs.getDouble("x");
         double y = rs.getDouble("y");
-        Location adjustedLoc = Location.adjustForHorizontalHalfCourt(x, y);
-        int xBin = (int) Math.floor(adjustedLoc.getX() * 10.0);
-        int yBin = (int) Math.floor(adjustedLoc.getY() * 5.0);
-
-        statBins[xBin][yBin].add(stat);
+        if (x >= 0 && y >= 0) {
+          Location adjustedLoc = Location.adjustForHorizontalHalfCourt(x, y);
+          int xBin = (int) Math.floor(adjustedLoc.getX() * 10.0);
+          int yBin = (int) Math.floor(adjustedLoc.getY() * 5.0);
+          statBins[xBin][yBin].add(stat);
+        }
       }
 
       int qualifiedBins = 0;
