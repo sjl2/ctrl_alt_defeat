@@ -11,6 +11,8 @@ $(document).ready(function(){
 
 function seasonHeatMap() {
     var ids = [];
+    $("#chartToggleButton")[0].innerHTML = "Season Heat Map <span class=\"caret\"></span>";
+    $("#chartToggleButton")[0].setAttribute("data-which", "heat");
     $("select option:selected").each(function() {
         if (this.id.split("player")[1] != "-1") ids.push(this.id.split("player")[1]);
     });
@@ -30,7 +32,6 @@ function seasonHeatMap() {
             grid[i][j].count = temp;
         }
     }
-
     $.post("/analytics/heatmap", {ids : JSON.stringify(ids)}, function(responseJSON) {
         console.log(responseJSON);
         var res = (responseJSON);
@@ -38,6 +39,8 @@ function seasonHeatMap() {
         paper.clear();
         paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
         paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
+        if (ids.length == 0) return;
+
 
         for (var i=0; i<res.makes.length; i++) {
             var xSpot = Math.floor(res.makes[i].x / epsilon_x);
@@ -70,6 +73,9 @@ function seasonHeatMap() {
 
 function recentShotChart() {
     var ids = [];
+    $("#chartToggleButton")[0].innerHTML = "5 Game Shot Chart <span class=\"caret\"></span>";
+    $("#chartToggleButton")[0].setAttribute("data-which", "shot");
+
     $("select option:selected").each(function() {
         if (this.id.split("player")[1] != "-1") ids.push(this.id.split("player")[1]);
     });
@@ -103,6 +109,12 @@ function recentShotChart() {
 }
 
 function updateLineUpScore() {
+
+    var a = $("#chartToggleButton")[0].getAttribute("data-which");
+    console.log(a);
+    if (a == "heat") seasonHeatMap();
+    else if (a == "shot") recentShotChart();
+
     var ids = [];
     $("select option:selected").each(function() {
         if (this.id.split("player")[1] != "-1") ids.push(this.id.split("player")[1]);

@@ -40,7 +40,7 @@
                 </ul>
               </li>
               <li><a href="/whiteboard">Whiteboard</a></li>
-              <li><a href="/analytics">Analytics</a></li>
+              <li><a href="/dashboard/analytics">Analytics</a></li>
             </ul>
 
             <form class="navbar-form navbar-right" role="search">
