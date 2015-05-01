@@ -6,27 +6,14 @@
 /****************************************************/
 
 - Be able to load, save, use Boxscore
-- Game Information Displayed at the top of Dashboard
-	- See ESPN
 - Display Change error message from alerts to fancy balloons.
-- player table should have starter and position column. 
-- Editor for a team. (Add Players, Change Starting Lineup, Remove players, make them no longer current). 
+- Editor for a team. (Remove players). 
 - Fun Feature: Player distinguishing feature. 
 	- Sharp-Shooter Left/Right/Center (High Percentage on left court)
-- Player Accolades
-	- Top Performer
-	- 1,000 Points
-	- Monster in the Paint (Good Stats )etc. 
-- Display page for team
-- Team Editor
-- Player Editor 
 - My Dashboard editor
 	- Customize My Team
 - Data Visualization:
 	- Graphs of some kind
-	- Productive Plays (Keeping track of current play and the point efficiency during them.
-- Load GameStats from DB
-- PlayMaker/Whiteboard rotate option f they prefer court to be vertical on the screen. 
 - Log-In Screen
 	- User population/creation in dashboard
 		- Coach should create a stats user 
@@ -35,15 +22,13 @@
 	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
 - Add Option to Build this table from scratch (translate the .schema to java). 
 
-- Make new game page select first five players by default, instead of all the same player
-
 Testing:
 - Handler JUnits (Maybe? Prolly not a bad idea)
 - Dashboard JUnit
 - Game JUnit
 - Boxscore JUnit
 - GameStats JUnit
-- PlayMaker JUnit (for threadinging and saving and shit)
+- PlayMaker JUnit 
 
 Tyler:
  - Ball doesn't change it's first frame. 
