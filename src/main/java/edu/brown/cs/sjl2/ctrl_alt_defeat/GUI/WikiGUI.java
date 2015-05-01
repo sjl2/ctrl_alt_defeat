@@ -1,5 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -258,32 +260,32 @@ public class WikiGUI {
         if (currentGame) {
           if (player) {
             int playerID = Integer.parseInt(qm.value("id"));
-            makes = dbManager.getMakesForEntityInGame(dashboard.getGame().getID(), playerID, "player");
-            misses = dbManager.getMissesForEntityInGame(dashboard.getGame().getID(), playerID, "player");
+            makes = dbManager.getMakesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(playerID), "player");
+            misses = dbManager.getMissesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(playerID), "player");
           } else {
             boolean us = Boolean.parseBoolean(qm.value("us"));
             int teamID;
             if ((us && dashboard.getGame().getHomeGame()) || (!us && !dashboard.getGame().getHomeGame())) {
               teamID = dashboard.getGame().getHome().getID();
-              makes = dbManager.getMakesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
-              misses = dbManager.getMissesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
+              makes = dbManager.getMakesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
+              misses = dbManager.getMissesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
             } else {
               teamID = dashboard.getGame().getAway().getID();
-              makes = dbManager.getMakesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
-              misses = dbManager.getMissesForEntityInGame(dashboard.getGame().getID(), teamID, "team");
+              makes = dbManager.getMakesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
+              misses = dbManager.getMissesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
             }
           }
         } else {
           if (player) {
             int playerID = Integer.parseInt(qm.value("id"));
             int gameID = Integer.parseInt(qm.value("gameID"));
-            makes = dbManager.getMakesForEntityInGame(gameID, playerID, "player");
-            misses = dbManager.getMissesForEntityInGame(gameID, playerID, "player");
+            makes = dbManager.getMakesForEntityInGames(Arrays.asList(gameID), Arrays.asList(playerID), "player");
+            misses = dbManager.getMissesForEntityInGames(Arrays.asList(gameID), Arrays.asList(playerID), "player");
           } else {
             int teamID = Integer.parseInt(qm.value("id"));
             int gameID = Integer.parseInt(qm.value("gameID"));
-            makes = dbManager.getMakesForEntityInGame(gameID, teamID, "team");
-            misses = dbManager.getMissesForEntityInGame(gameID, teamID, "team");
+            makes = dbManager.getMakesForEntityInGames(Arrays.asList(gameID), Arrays.asList(teamID), "team");
+            misses = dbManager.getMissesForEntityInGames(Arrays.asList(gameID), Arrays.asList(teamID), "team");
           }
         }
       } catch (NumberFormatException e) {
@@ -313,7 +315,7 @@ public class WikiGUI {
       int championshipYear;
       List<Location> makes = null;
       List<Location> misses = null;
-      String error = "";
+      String errorMessage = "";
       try {
         player = Boolean.parseBoolean(qm.value("player"));
         entityID = Integer.parseInt(qm.value("id"));
@@ -325,17 +327,69 @@ public class WikiGUI {
           type = "team";
         }
 
-        makes = dbManager.getMakesForYear(championshipYear, entityID, type);
-        misses = dbManager.getMissesForYear(championshipYear, entityID, type);
+        makes = dbManager.getMakesForYear(championshipYear, Arrays.asList(entityID), type);
+        misses = dbManager.getMissesForYear(championshipYear, Arrays.asList(entityID), type);
       } catch (NumberFormatException e) {
-        error = "Invalid id format!";
+        errorMessage = "Invalid id format!";
       }
 
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes).put("misses", misses).put("error", error)
+          .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
           .build();
       return GSON.toJson(variables);
 
     }
+  }
+
+  public class GetAnalyticsHeatMap implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      List<Location> makes = null;
+      List<Location> misses = null;
+      String errorMessage = "";
+      try {
+        String playerIDsString = qm.value("ids");
+        Integer[] playerIDArray = GSON.fromJson(playerIDsString, Integer[].class);
+        List<Integer> ids = Arrays.asList(playerIDArray);
+        makes = dbManager.getMakesForYear(dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
+        misses = dbManager.getMissesForYear(dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
+      } catch (NumberFormatException e) {
+        errorMessage = "Invalid id format!";
+      }
+      
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
+          .build();
+      return GSON.toJson(variables);
+    }
+  }
+  
+  public class GetAnalyticsShotChart implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      List<Location> makes = null;
+      List<Location> misses = null;
+      String errorMessage = "";
+      try {
+        String playerIDsString = qm.value("ids");
+        Integer[] playerIDArray = GSON.fromJson(playerIDsString, Integer[].class);
+        List<Integer> ids = Arrays.asList(playerIDArray);
+        List<Integer> last5Games = dbManager.getLast5GameIDs();
+        makes = dbManager.getMakesForEntityInGames(last5Games, ids, "player");
+        makes = dbManager.getMissesForEntityInGames(last5Games, ids, "player");
+      } catch (NumberFormatException e) {
+        errorMessage = "Invalid id format!";
+      }
+      
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
+          .build();
+      return GSON.toJson(variables);
+    }
+    
   }
 }

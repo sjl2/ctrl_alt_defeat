@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -758,7 +757,7 @@ public class DBManager {
     }
   }
 
-  private int getChampionshipYear(LocalDate date) {
+  public int getChampionshipYear(LocalDate date) {
     if (date.getMonthValue() < SEVEN) {
       return date.getYear();
     } else {
@@ -1034,8 +1033,9 @@ public class DBManager {
    * @param chartType - "team" or "player"
    * @return
    */
-  private List<Location> getShotsForEntityInGames(List<Integer> gameIDs, int entityID, boolean makes, String chartType) {
+  private List<Location> getShotsForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, boolean makes, String chartType) {
     int numGames = gameIDs.size();
+    int numEntities = entityIDs.size();
     String statType = "";
     if (makes) {
       statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\")";
@@ -1045,7 +1045,12 @@ public class DBManager {
 
     StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
     query.append(chartType);
-    query.append(" = ? AND ");
+    query.append(" in (");
+    for (int i = 0; i < numEntities - 1; i++) {
+      query.append("?, ");
+    }
+    query.append("?)");
+    query.append(" AND ");
     query.append(statType);
     query.append(" AND game in (");
     for (int i = 0; i < numGames -1; i++) {
@@ -1053,14 +1058,17 @@ public class DBManager {
     }
     query.append("?);");
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
-      prep.setInt(1, entityID);
-      int i = 2;
+      int i = 1;
+      for (int entity : entityIDs) {
+        prep.setInt(i, entity);
+        i++;
+      }
       for (int gameID : gameIDs) {
         prep.setInt(i, gameID);
         i++;
       }
-      ResultSet rs = prep.executeQuery();
 
+      ResultSet rs = prep.executeQuery();
       List<Location> shots = new ArrayList<>();
       while(rs.next()) {
         double x = rs.getDouble(1);
@@ -1092,23 +1100,27 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-
-  public List<Location> getMakesForEntityInGame(int gameID, int entityID, String chartType) {
-    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, true, chartType);
+  
+  public List<Integer> getLast5GameIDs() {
+    return null;
   }
 
-  public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
-    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, false, chartType);
+  public List<Location> getMakesForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+    return getShotsForEntityInGames(gameIDs, entityIDs, true, chartType);
   }
 
-  public List<Location> getMakesForYear(int championshipYear, int entityID, String chartType) {
+  public List<Location> getMissesForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+    return getShotsForEntityInGames(gameIDs, entityIDs, false, chartType);
+  }
+
+  public List<Location> getMakesForYear(int championshipYear, List<Integer> entityIDs, String chartType) {
     List<Integer> gameIDs = getGameIDsInYear(championshipYear);
-    return getShotsForEntityInGames(gameIDs, entityID, true, chartType);
+    return getShotsForEntityInGames(gameIDs, entityIDs, true, chartType);
   }
 
-  public List<Location> getMissesForYear(int championshipYear, int entityID, String chartType) {
+  public List<Location> getMissesForYear(int championshipYear, List<Integer> entityIDs, String chartType) {
     List<Integer> gameIDs = getGameIDsInYear(championshipYear);
-    return getShotsForEntityInGames(gameIDs, entityID, false, chartType);
+    return getShotsForEntityInGames(gameIDs, entityIDs, false, chartType);
   }
 
 
@@ -1161,7 +1173,6 @@ public class DBManager {
       table = "team";
     }
 
-    
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT id FROM " + table + " WHERE name = ?;")) {
       prep.setString(1, name);
@@ -1178,7 +1189,6 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-
 
   /**
    * Used to rank lineups based on offensive and defensive balance.
@@ -1212,7 +1222,7 @@ public class DBManager {
       for (int i = 0; i < FIVE; i++) {
         StatBin[] bin = new StatBin[FIVE];
         for (int j = 0; j < FIVE; j++) {
-          bin[j] = new StatBin();
+          bin[j] = new StatBin(numPlayerIDs);
         }
         statBins[i] = bin;
       }
@@ -1254,7 +1264,6 @@ public class DBManager {
    */
   private static class StatBin {
     // 10 ~= (10 stats/player/game * 5 players * 5 games) / (25 bins)
-    private static final int THRESHOLD = 10;
     private static final double FT_PERCENTAGE = .7;
     private static final double TWO_PT_PERCENTAGE = .4;
     private static final double THREE_PT_PERCENTAGE = .3;
@@ -1266,18 +1275,20 @@ public class DBManager {
 
     private List<String> stats;
     private double value;
+    private int threshold;
 
     /**
      * Constructor for new StatBin.
      * @author awainger
      */
-    public StatBin() {
+    public StatBin(int numPlayers) {
       stats = new ArrayList<>();
       value = 0;
+      threshold = 2 * numPlayers;
     }
-    
+
     public boolean exceedsThreshold() {
-      return stats.size() > THRESHOLD;
+      return stats.size() > threshold;
     }
 
     /**

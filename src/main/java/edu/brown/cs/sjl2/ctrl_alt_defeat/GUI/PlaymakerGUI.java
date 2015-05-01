@@ -80,7 +80,7 @@ public class PlaymakerGUI {
       String name = qm.value("name");
       int numFrames = Integer.parseInt(qm.value("numFrames"));
       String jsonPlayerString = qm.value("paths");
-      String jsonBallString= qm.value("ballPath");
+      String jsonBallString = qm.value("ballPath");
 
       double[][][] playerPaths = GSON.fromJson(jsonPlayerString, double[][][].class);
       BasketballPosition[] bballPositions = BasketballPosition.values();
