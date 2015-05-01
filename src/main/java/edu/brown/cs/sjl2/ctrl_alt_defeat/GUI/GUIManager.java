@@ -99,6 +99,7 @@ public class GUIManager {
     
     Spark.post("/analytics/shotchart", wikiGUI.new GetAnalyticsShotChart());
     Spark.post("/analytics/heatmap", wikiGUI.new GetAnalyticsHeatMap());
+    Spark.post("/analytics/ranking", wikiGUI.new GetLineupRanking());
 
     /* Rename these at some point */
     Spark.post("/dashboard/shotchart", wikiGUI.new GetShotChartData());
