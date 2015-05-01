@@ -46,6 +46,7 @@ public class DBManager {
   public static final int SIX = 6;
   public static final int SEVEN = 7;
   public static final int EIGHT = 8;
+  public static final int TOTAL_BINS = 25;
 
   private Connection conn;
   private PlayerFactory pf;
@@ -1064,7 +1065,7 @@ public class DBManager {
       while(rs.next()) {
         double x = rs.getDouble(1);
         double y = rs.getDouble(2);
-        Location adjustedLoc = Location.adjustForShotChart(x, y);
+        Location adjustedLoc = Location.adjustForVerticalHalfCourt(x, y);
         shots.add(adjustedLoc);
       }
 
@@ -1177,22 +1178,155 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-  
-  
+
+
   /**
    * Used to rank lineups based on offensive and defensive balance.
    * @param playerIDs - Id's of players in lineup
    * @return - int, ranking of combination of players in lineup
    */
-  public int lineupRanking(List<Integer> playerIDs) {
-    Map<Integer, Integer> sectorToScore = new HashMap<>();
+  public double lineupRanking(List<Integer> playerIDs) {
+    int numPlayerIDs = playerIDs.size();
     int championshipYear = getChampionshipYear(LocalDate.now());
-    String query = "SELECT type, x, y FROM stat as s, game as g WHERE g.id = s.game AND g.championship_year = ? AND s.player IN ";
-    try (PreparedStatement prep = conn.prepareStatement(query)) {
-      return 0;
+    String statsToExclude = " AND NOT type IN (\"Block\", \"DefensiveRebound\""
+        + ", \"Steal\", \"TechnicalFoul\", \"DefensiveFoul\") ";
+    StringBuilder query = new StringBuilder(
+        "SELECT type, x, y FROM stat as s, game as g "
+        + "WHERE g.id = s.game AND g.championship_year = ?"
+            + statsToExclude + "AND s.player IN (");
+    for (int i = 0; i < numPlayerIDs - 1; i++) {
+      query.append("?, ");
+    }
+    query.append("?);");
+
+    try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
+      prep.setInt(1, championshipYear);
+      int count = 2;
+      for (int playerID : playerIDs) {
+        prep.setInt(count, playerID);
+        count++;
+      }
+
+      ResultSet rs = prep.executeQuery();
+      StatBin[][] statBins = new StatBin[FIVE][FIVE];
+      for (int i = 0; i < FIVE; i++) {
+        StatBin[] bin = new StatBin[FIVE];
+        for (int j = 0; j < FIVE; j++) {
+          bin[j] = new StatBin();
+        }
+        statBins[i] = bin;
+      }
+
+      while (rs.next()) {
+        String stat = rs.getString("type");
+        double x = rs.getDouble("x");
+        double y = rs.getDouble("y");
+        Location adjustedLoc = Location.adjustForHorizontalHalfCourt(x, y);
+        int xBin = (int) Math.floor(adjustedLoc.getX() * 10.0);
+        int yBin = (int) Math.floor(adjustedLoc.getY() * 5.0);
+
+        statBins[xBin][yBin].add(stat);
+      }
+
+      int qualifiedBins = 0;
+      double totalValue = 0;
+      for (StatBin[] col : statBins) {
+        for (StatBin bin : col) {
+          if (bin.exceedsThreshold()) {
+            totalValue += bin.getValue();
+            qualifiedBins++;
+          }
+        }
+      }
+
+      double scaledValue = totalValue * (qualifiedBins / TOTAL_BINS);
+      return scaledValue;
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * StatBin class, used to track stats in all 
+   * areas of court and sum their values.
+   * @author awainger
+   */
+  private static class StatBin {
+    // 10 ~= (10 stats/player/game * 5 players * 5 games) / (25 bins)
+    private static final int THRESHOLD = 10;
+    private static final double FT_PERCENTAGE = .7;
+    private static final double TWO_PT_PERCENTAGE = .4;
+    private static final double THREE_PT_PERCENTAGE = .3;
+
+    // Hollinger estimate
+    private static final double ASSIST_VALUE = .67;
+    // Value of possession based on offensive efficiency
+    private static final double POSSESSION_VALUE = 1.0;
+
+    private List<String> stats;
+    private double value;
+
+    /**
+     * Constructor for new StatBin.
+     * @author awainger
+     */
+    public StatBin() {
+      stats = new ArrayList<>();
+      value = 0;
+    }
+    
+    public boolean exceedsThreshold() {
+      return stats.size() > THRESHOLD;
+    }
+
+    /**
+     * Adds a stat to the list, adds stat's value to bin.
+     * @param stat - String, stat to add
+     */
+    public void add(String stat) {
+      stats.add(stat);
+      value += getStatValue(stat);
+    }
+
+    /**
+     * Returns the value of the bin.
+     * @return Double, estimate of the value of the stats in this bin
+     */
+    public double getValue() {
+        return value;
+    }
+
+    /**
+     * Determines value of various types of stats.
+     * @param stat -String, indicating type of stat 
+     * @return double, value of that stat
+     */
+    private double getStatValue(String stat) {
+      switch (stat) {
+      case "FreeThrow":
+        return 1.0;
+      case "MissedFreeThrow":
+        return -FT_PERCENTAGE / (1.0 - FT_PERCENTAGE);
+      case "TwoPointer":
+        return 2.0;
+      case "MissedTwoPointer":
+        return -2.0 * (TWO_PT_PERCENTAGE / (1.0 - TWO_PT_PERCENTAGE));
+      case "ThreePointer":
+        return 3.0;
+      case "MissedThreePointer":
+        return -3.0 * (THREE_PT_PERCENTAGE / (1.0 - THREE_PT_PERCENTAGE));
+      case "OffensiveFoul":
+        return -POSSESSION_VALUE;
+      case "OffensiveRebound":
+        return POSSESSION_VALUE;
+      case "Turnover":
+        return -POSSESSION_VALUE;
+      case "Assist":
+        return ASSIST_VALUE;
+      default:
+        return 0;
+      }
     }
   }
 }
