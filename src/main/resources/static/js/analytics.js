@@ -5,6 +5,8 @@ $(document).ready(function(){
     height = 14 * width / 15; 
     $("#forCharts").css('width', width);
     paper = Raphael(document.getElementById("forCharts"), width, height);
+            paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
+        paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
     paper.shots = paper.set();
     
 });
@@ -39,7 +41,7 @@ function seasonHeatMap() {
         paper.clear();
         paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
         paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
-        if (ids.length == 0) return;
+        //if (ids.length == 0) return;
 
 
         for (var i=0; i<res.makes.length; i++) {
