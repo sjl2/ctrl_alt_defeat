@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
@@ -42,6 +44,18 @@ public class StatsEntryGUI {
           ImmutableMap.of("tabTitle", "Stats Entry", 
                           "stats", s, 
                           "errorMessage", "");
+        
+          /*      List<Stat> s;
+      if (dash.getGame() != null) {
+        s = dash.getGame().getAllStats();
+      } else {
+        s = new ArrayList<Stat>();
+      }
+      Collections.reverse(s);
+      Map<String, Object> variables =
+                ImmutableMap.of("tabTitle", "Stats Entry", 
+                          "stats", s, 
+                          "errorMessage", "");*/
 
         return new ModelAndView(variables, "stats_entry.ftl");
       } else {
@@ -175,6 +189,30 @@ public class StatsEntryGUI {
       return 25;
     }
 
+  }
+  
+  public class EndGameHandler implements Route {
+    @Override
+    public Object handle(Request arg0, Response arg1) {
+      dash.endGame();
+      return true;
+    }
+    
+  }
+  
+  public class AdvancePeriodHandler implements Route {
+
+    @Override
+    public Object handle(Request arg0, Response arg1) {
+      try {
+        dash.getGame().incrementPeriod();
+      } catch (GameException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      return dash.getGame().getPeriod();
+    }
+    
   }
 
 

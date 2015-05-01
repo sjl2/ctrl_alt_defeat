@@ -142,4 +142,8 @@ public class Dashboard {
     }
 
   }
+  
+  public void endGame() {
+    this.currentGame = null;
+  }
 }

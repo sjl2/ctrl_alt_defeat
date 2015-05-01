@@ -108,9 +108,14 @@ public class GUIManager {
     Spark.post("/team/edit", wikiGUI.new EditTeam());
     Spark.post("/season/get", wikiGUI.new GetGameStats(), freeMarker);
     
+    Spark.post("/analytics/shotchart", wikiGUI.new GetAnalyticsShotChart());
+    Spark.post("/analytics/heatmap", wikiGUI.new GetAnalyticsHeatMap());
+    Spark.post("/analytics/ranking", wikiGUI.new GetLineupRanking());
+
     /* Rename these at some point */
     Spark.post("/dashboard/shotchart", wikiGUI.new GetShotChartData());
     Spark.post("/dashboard/heatmap", wikiGUI.new GetHeatMapData());
+    Spark.get("/dashboard/analytics", dashboardGUI.new AnalyticsHandler(), freeMarker);
 
     /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());
@@ -133,6 +138,9 @@ public class GUIManager {
 		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
+
+		Spark.post("/stats/endgame", statsEntryGUI.new EndGameHandler());
+		Spark.post("/stats/advanceperiod", statsEntryGUI.new AdvancePeriodHandler());
 
     //Spark.get("*", new PageNotFoundHandler(), freeMarker);
   }

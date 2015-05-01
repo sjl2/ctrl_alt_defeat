@@ -451,6 +451,18 @@ $.get("/game/roster", function(responseJSON) {
 
 });	
 
+function endGame() {
+    $.post("/stats/endgame", {}, function(responseJSON) {
+        window.location.href = "/stats";
+    });
+}
+
+function advancePeriod() {
+    $.post("/stats/advanceperiod", {}, function(responseJSON) {
+        console.log(responseJSON);
+    });
+}
+
 
 function fp() {
     if (court_paper.homePossession) {

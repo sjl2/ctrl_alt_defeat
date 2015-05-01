@@ -261,12 +261,19 @@ public class Game {
   }
 
   public void incrementPeriod() throws GameException {
-    if (this.period == rules.getPeriods()) {
-      String message = "Cannot increment, game is already in period "
-          + this.period + "!";
-      throw new GameException(message);
+    this.period++;
+    this.awayBonus = false;
+    this.awayDoubleBonus = false;
+    this.homeBonus = false;
+    this.homeDoubleBonus = false;
+    this.homeFouls = 0;
+    this.awayFouls = 0;
+    if (period > rules.getPeriods()) {
+      this.homeTO = rules.getOTTimeOuts();
+      this.awayTO = rules.getOTTimeOuts();
     } else {
-      this.period++;
+      this.awayTO = rules.getTimeOuts();
+      this.homeTO = rules.getTimeOuts();
     }
   }
 

@@ -57,6 +57,6 @@ public class Player {
   }
 
   public Link getLink() {
-    return new Link(id, "/player/view/", name);
+    return new Link(id, "/player/view/", name + " #" + number);
   }
 }

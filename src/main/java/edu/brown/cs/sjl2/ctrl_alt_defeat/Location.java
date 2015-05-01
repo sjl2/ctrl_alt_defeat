@@ -16,9 +16,8 @@ public class Location {
   public double getY() {
     return y;
   }
-
-  public static Location adjustForShotChart(double x, double y) {
-    // Reflection
+  
+  private static Location reflect(double x, double y) {
     if (x > .5) {
       x -= (2 * (x - .5));
       if (y > .5) {
@@ -27,11 +26,22 @@ public class Location {
         y += (2 * (.5 - y));
       }
     }
-
-    // Rotation
-    double _x = y;
-    double _y = 1 - (2 * x);
-
+    
+    return new Location(x, y);
+  }
+  
+  private static Location rotate(Location loc) {
+    double _x = loc.getY();
+    double _y = 1 - (2 * loc.getX());
+    
     return new Location(_x, _y);
+  }
+
+  public static Location adjustForVerticalHalfCourt(double x, double y) {
+    return rotate(reflect(x, y));
+  }
+
+  public static Location adjustForHorizontalHalfCourt(double x, double y) {
+    return reflect(x, y);
   }
 }

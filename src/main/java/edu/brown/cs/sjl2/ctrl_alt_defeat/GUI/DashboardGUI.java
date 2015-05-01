@@ -219,6 +219,9 @@ public class DashboardGUI {
 
     @Override
     public Object handle(Request arg0, Response arg1) {
+      if (dash.getGame() == null) {
+        return GSON.toJson(ImmutableMap.of("isGame", false));
+      }
       Game g = dash.getGame();
       ImmutableMap.Builder<String, Object> builder =
           new ImmutableMap.Builder<String, Object>()
@@ -268,6 +271,7 @@ public class DashboardGUI {
           builder.put("theirRebounds", g.getAwayBoxScore().getTeamStats().getRebounds());
           builder.put("theirAssists", g.getAwayBoxScore().getTeamStats().getAssists());
           builder.put("theirTurnovers", g.getAwayBoxScore().getTeamStats().getTurnovers());
+          builder.put("isGame", true);
         } else {
           builder.put("pgStats", g.getAwayBoxScore().getPlayerStats(
               g.getLineup().getPlayers().get(BasketballPosition.AwayPG)));
@@ -301,7 +305,7 @@ public class DashboardGUI {
           builder.put("theirRebounds", g.getHomeBoxScore().getTeamStats().getRebounds());
           builder.put("theirAssists", g.getHomeBoxScore().getTeamStats().getAssists());
           builder.put("theirTurnovers", g.getHomeBoxScore().getTeamStats().getTurnovers());
-
+          builder.put("isGame", true);
         }
         Map<String, Object> variables = builder.build();
       return GSON.toJson(variables);
@@ -326,6 +330,19 @@ public class DashboardGUI {
       return new ModelAndView(variables, "opponent_lineup.ftl");
     }
 
+  }
+  
+  public class AnalyticsHandler implements TemplateViewRoute {
+
+    @Override
+    public ModelAndView handle(Request arg0, Response arg1) {
+      Map<String, Object> variables =
+          ImmutableMap.of("tabTitle", "Analytics",
+                          "players", dash.getMyTeam().getPlayers(),
+                          "errorMessage", "");
+      return new ModelAndView(variables, "analytics.ftl");
+    }
+    
   }
 
   /**

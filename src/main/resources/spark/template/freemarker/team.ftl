@@ -14,6 +14,19 @@
       <h2>
         <a href="/team/view/${team.getID()}">${team.getName()}</a>
       </h2>
+        <div class="btn-group pull-right">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            Show Roster <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <#list team.getPlayers() as player>
+            <#assign link = player.getLink()>
+            <li>
+              <a href="${link.getURL()}">${link.getText()}</a>
+            </li>
+          </#list>
+          </ul>
+        </div>
       <h3>Coach: ${team.getCoach()}</h3>
     </div>
 
@@ -61,21 +74,6 @@
         </div>
       </div>
     </div>
-    
-    <div class="row">
-      <div class="col-md-3">
-        <h3>Roster:</h3>
-        <ul class="list-group">
-          <#list team.getPlayers() as player>
-            <#assign link = player.getLink()>
-            <li class="list-group-item">
-              <a href="${link.getURL()}">${link.getText()}</a>
-            </li>
-          </#list>
-        <ul>
-      </div>
-    </div>
-
 
     <div class="row">
       <div class="col-md-2 col-md-offset-10">

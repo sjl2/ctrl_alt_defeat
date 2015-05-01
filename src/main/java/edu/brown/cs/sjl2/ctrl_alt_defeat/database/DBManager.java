@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +45,7 @@ public class DBManager {
   public static final int SIX = 6;
   public static final int SEVEN = 7;
   public static final int EIGHT = 8;
+  public static final int TOTAL_BINS = 25;
 
   private Connection conn;
   private PlayerFactory pf;
@@ -759,7 +759,7 @@ public class DBManager {
     }
   }
 
-  private int getChampionshipYear(LocalDate date) {
+  public int getChampionshipYear(LocalDate date) {
     if (date.getMonthValue() < SEVEN) {
       return date.getYear();
     } else {
@@ -1068,8 +1068,9 @@ public class DBManager {
    * @param chartType - "team" or "player"
    * @return
    */
-  private List<Location> getShotsForEntityInGames(List<Integer> gameIDs, int entityID, boolean makes, String chartType) {
+  private List<Location> getShotsForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, boolean makes, String chartType) {
     int numGames = gameIDs.size();
+    int numEntities = entityIDs.size();
     String statType = "";
     if (makes) {
       statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\")";
@@ -1079,27 +1080,45 @@ public class DBManager {
 
     StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
     query.append(chartType);
-    query.append(" = ? AND ");
+    query.append(" in (");
+    
+    if (numEntities == 0) {
+      query.append(")");
+    } else {
+      for (int i = 0; i < numEntities - 1; i++) {
+        query.append("?, ");
+      }
+      query.append("?)");
+    }
+
+    query.append(" AND ");
     query.append(statType);
     query.append(" AND game in (");
     for (int i = 0; i < numGames -1; i++) {
       query.append("?, ");
     }
     query.append("?);");
+    
+    System.out.println(query.toString());
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
-      prep.setInt(1, entityID);
-      int i = 2;
+      int i = 1;
+      for (int entity : entityIDs) {
+        System.out.println(i + " " + entity);
+        prep.setInt(i, entity);
+        i++;
+      }
       for (int gameID : gameIDs) {
+        System.out.println(i + " " + gameID);
         prep.setInt(i, gameID);
         i++;
       }
-      ResultSet rs = prep.executeQuery();
 
+      ResultSet rs = prep.executeQuery();
       List<Location> shots = new ArrayList<>();
       while(rs.next()) {
         double x = rs.getDouble(1);
         double y = rs.getDouble(2);
-        Location adjustedLoc = Location.adjustForShotChart(x, y);
+        Location adjustedLoc = Location.adjustForVerticalHalfCourt(x, y);
         shots.add(adjustedLoc);
       }
 
@@ -1126,23 +1145,40 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-
-  public List<Location> getMakesForEntityInGame(int gameID, int entityID, String chartType) {
-    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, true, chartType);
+  
+  public List<Integer> getLast5GameIDs() {
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT g.id FROM game as g, team as t "
+        + "WHERE (g.home = t.id OR g.away = t.id) "
+        + "AND t.my_team = \"1\" ORDER BY g.date DESC LIMIT 5;")) {
+      ResultSet rs = prep.executeQuery();
+      List<Integer> gameIDs = new ArrayList<>();
+      while (rs.next()) {
+        gameIDs.add(rs.getInt(1));
+      }
+      return gameIDs;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 
-  public List<Location> getMissesForEntityInGame(int gameID, int entityID, String chartType) {
-    return getShotsForEntityInGames(Arrays.asList(gameID), entityID, false, chartType);
+  public List<Location> getMakesForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+    return getShotsForEntityInGames(gameIDs, entityIDs, true, chartType);
   }
 
-  public List<Location> getMakesForYear(int championshipYear, int entityID, String chartType) {
+  public List<Location> getMissesForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+    return getShotsForEntityInGames(gameIDs, entityIDs, false, chartType);
+  }
+
+  public List<Location> getMakesForYear(int championshipYear, List<Integer> entityIDs, String chartType) {
     List<Integer> gameIDs = getGameIDsInYear(championshipYear);
-    return getShotsForEntityInGames(gameIDs, entityID, true, chartType);
+    return getShotsForEntityInGames(gameIDs, entityIDs, true, chartType);
   }
 
-  public List<Location> getMissesForYear(int championshipYear, int entityID, String chartType) {
+  public List<Location> getMissesForYear(int championshipYear, List<Integer> entityIDs, String chartType) {
     List<Integer> gameIDs = getGameIDsInYear(championshipYear);
-    return getShotsForEntityInGames(gameIDs, entityID, false, chartType);
+    return getShotsForEntityInGames(gameIDs, entityIDs, false, chartType);
   }
 
 
@@ -1195,7 +1231,6 @@ public class DBManager {
       table = "team";
     }
 
-    
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT id FROM " + table + " WHERE name = ?;")) {
       prep.setString(1, name);
@@ -1212,22 +1247,160 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-  
-  
+
   /**
    * Used to rank lineups based on offensive and defensive balance.
    * @param playerIDs - Id's of players in lineup
    * @return - int, ranking of combination of players in lineup
    */
-  public int lineupRanking(List<Integer> playerIDs) {
-    Map<Integer, Integer> sectorToScore = new HashMap<>();
+  public double lineupRanking(List<Integer> playerIDs) {
+    int numPlayerIDs = playerIDs.size();
     int championshipYear = getChampionshipYear(LocalDate.now());
-    String query = "SELECT type, x, y FROM stat as s, game as g WHERE g.id = s.game AND g.championship_year = ? AND s.player IN ";
-    try (PreparedStatement prep = conn.prepareStatement(query)) {
-      return 0;
+    String statsToExclude = " AND NOT type IN (\"Block\", \"DefensiveRebound\""
+        + ", \"Steal\", \"TechnicalFoul\", \"DefensiveFoul\") ";
+    StringBuilder query = new StringBuilder(
+        "SELECT type, x, y FROM stat as s, game as g "
+        + "WHERE g.id = s.game AND g.championship_year = ?"
+            + statsToExclude + "AND s.player IN (");
+    for (int i = 0; i < numPlayerIDs - 1; i++) {
+      query.append("?, ");
+    }
+    query.append("?);");
+
+    try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
+      prep.setInt(1, championshipYear);
+      int count = 2;
+      for (int playerID : playerIDs) {
+        prep.setInt(count, playerID);
+        count++;
+      }
+
+      ResultSet rs = prep.executeQuery();
+      StatBin[][] statBins = new StatBin[FIVE][FIVE];
+      for (int i = 0; i < FIVE; i++) {
+        StatBin[] bin = new StatBin[FIVE];
+        for (int j = 0; j < FIVE; j++) {
+          bin[j] = new StatBin(numPlayerIDs);
+        }
+        statBins[i] = bin;
+      }
+
+      while (rs.next()) {
+        String stat = rs.getString("type");
+        double x = rs.getDouble("x");
+        double y = rs.getDouble("y");
+        if (x >= 0 && y >= 0) {
+          Location adjustedLoc = Location.adjustForHorizontalHalfCourt(x, y);
+          int xBin = (int) Math.floor(adjustedLoc.getX() * 10.0);
+          int yBin = (int) Math.floor(adjustedLoc.getY() * 5.0);
+          statBins[xBin][yBin].add(stat);
+        }
+      }
+
+      int qualifiedBins = 0;
+      double totalValue = 0;
+      for (StatBin[] col : statBins) {
+        for (StatBin bin : col) {
+          if (bin.exceedsThreshold()) {
+            System.out.println("adding! Value is now: " + totalValue);
+            totalValue += bin.getValue();
+            qualifiedBins++;
+          }
+        }
+      }
+
+      double scaledValue = totalValue * ((double) qualifiedBins / (double) TOTAL_BINS);
+      return scaledValue;
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * StatBin class, used to track stats in all 
+   * areas of court and sum their values.
+   * @author awainger
+   */
+  private static class StatBin {
+    // 10 ~= (10 stats/player/game * 5 players * 5 games) / (25 bins)
+    private static final double FT_PERCENTAGE = .7;
+    private static final double TWO_PT_PERCENTAGE = .4;
+    private static final double THREE_PT_PERCENTAGE = .3;
+
+    // Hollinger estimate
+    private static final double ASSIST_VALUE = .67;
+    // Value of possession based on offensive efficiency
+    private static final double POSSESSION_VALUE = 1.0;
+
+    private List<String> stats;
+    private double value;
+    private int threshold;
+
+    /**
+     * Constructor for new StatBin.
+     * @author awainger
+     */
+    public StatBin(int numPlayers) {
+      stats = new ArrayList<>();
+      value = 0;
+      threshold = 0;//2 * numPlayers;
+    }
+
+    public boolean exceedsThreshold() {
+      return stats.size() > threshold;
+    }
+
+    /**
+     * Adds a stat to the list, adds stat's value to bin.
+     * @param stat - String, stat to add
+     */
+    public void add(String stat) {
+      stats.add(stat);
+      System.out.println(stat);
+      System.out.println("value before: " + value);
+      value += getStatValue(stat);
+      System.out.println("value after: " + value);
+    }
+
+    /**
+     * Returns the value of the bin.
+     * @return Double, estimate of the value of the stats in this bin
+     */
+    public double getValue() {
+        return value;
+    }
+
+    /**
+     * Determines value of various types of stats.
+     * @param stat -String, indicating type of stat 
+     * @return double, value of that stat
+     */
+    private double getStatValue(String stat) {
+      switch (stat) {
+      case "FreeThrow":
+        return 1.0;
+      case "MissedFreeThrow":
+        return -FT_PERCENTAGE / (1.0 - FT_PERCENTAGE);
+      case "TwoPointer":
+        return 2.0;
+      case "MissedTwoPointer":
+        return -2.0 * (TWO_PT_PERCENTAGE / (1.0 - TWO_PT_PERCENTAGE));
+      case "ThreePointer":
+        return 3.0;
+      case "MissedThreePointer":
+        return -3.0 * (THREE_PT_PERCENTAGE / (1.0 - THREE_PT_PERCENTAGE));
+      case "OffensiveFoul":
+        return -POSSESSION_VALUE;
+      case "OffensiveRebound":
+        return POSSESSION_VALUE;
+      case "Turnover":
+        return -POSSESSION_VALUE;
+      case "Assist":
+        return ASSIST_VALUE;
+      default:
+        return 0;
+      }
     }
   }
 }

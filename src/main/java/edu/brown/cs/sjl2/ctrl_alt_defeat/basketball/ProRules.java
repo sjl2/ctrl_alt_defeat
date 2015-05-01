@@ -27,4 +27,9 @@ public class ProRules implements RuleSet {
     return Integer.MAX_VALUE;
   }
 
+  @Override
+  public int getOTTimeOuts() {
+    return 3;
+  }
+
 }
