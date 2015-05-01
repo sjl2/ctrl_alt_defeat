@@ -1298,7 +1298,7 @@ public class DBManager {
     public StatBin(int numPlayers) {
       stats = new ArrayList<>();
       value = 0;
-      threshold = 2 * numPlayers;
+      threshold = 1;//2 * numPlayers;
     }
 
     public boolean exceedsThreshold() {
