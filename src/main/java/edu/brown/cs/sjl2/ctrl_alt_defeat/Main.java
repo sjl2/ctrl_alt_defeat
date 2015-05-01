@@ -32,11 +32,12 @@ public final class Main {
   private void run() {
     OptionParser parser = new OptionParser();
 
-    OptionSpec<Integer> roundRobins =
+    OptionSpec<Integer> randomRoundRobins =
         parser.accepts("random").withRequiredArg().ofType(Integer.class);
+    OptionSpec<Integer> intelligentRoundRobins =
+        parser.accepts("intelligent").withRequiredArg().ofType(Integer.class);
     OptionSpec<Integer>  portSpec =
       parser.accepts("port").withRequiredArg().ofType(Integer.class);
-
     OptionSpec<String> fileSpec = parser.nonOptions().ofType(String.class);
 
 
@@ -55,7 +56,10 @@ public final class Main {
 
     if (options.has("random")) {
      BasketballDatabaseGenerator.populateDB(dbManager,
-         options.valueOf(roundRobins));
+         options.valueOf(randomRoundRobins), false);
+    } else if (options.has("intelligent")) {
+      BasketballDatabaseGenerator.populateDB(dbManager,
+          options.valueOf(intelligentRoundRobins), true);
     }
 
     if (options.has("port")) {
