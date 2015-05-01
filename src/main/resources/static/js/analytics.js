@@ -32,7 +32,8 @@ function seasonHeatMap() {
     }
 
     $.post("/analytics/heatmap", {ids : JSON.stringify(ids)}, function(responseJSON) {
-        var res = JSON.parse(responseJSON);
+        console.log(responseJSON);
+        var res = (responseJSON);
 
         paper.clear();
         paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
@@ -73,8 +74,8 @@ function recentShotChart() {
         if (this.id.split("player")[1] != "-1") ids.push(this.id.split("player")[1]);
     });
 
-    $.post("/dashboard/shotchart", {ids : JSON.stringify(ids)}, function(responseJSON) {
-    var res = JSON.parse(responseJSON);
+    $.post("/analytics/shotchart", {ids : JSON.stringify(ids)}, function(responseJSON) {
+    var res = (responseJSON);
     console.log(res);
 
     if (res.errorMessage.length == 0) {

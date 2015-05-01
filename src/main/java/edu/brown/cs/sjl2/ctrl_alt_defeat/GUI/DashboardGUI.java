@@ -337,7 +337,7 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request arg0, Response arg1) {
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Game",
+          ImmutableMap.of("tabTitle", "Analytics",
                           "players", dash.getMyTeam().getPlayers(),
                           "errorMessage", "");
       return new ModelAndView(variables, "analytics.ftl");
