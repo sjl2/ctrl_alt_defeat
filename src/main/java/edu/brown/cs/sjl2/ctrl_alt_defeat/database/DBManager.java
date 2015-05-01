@@ -1102,7 +1102,20 @@ public class DBManager {
   }
   
   public List<Integer> getLast5GameIDs() {
-    return null;
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT g.id FROM game as g, team as t "
+        + "WHERE (g.home = t.id OR g.away = t.id) "
+        + "AND t.my_team = \"1\" ORDER BY g.date DESC LIMIT 5;")) {
+      ResultSet rs = prep.executeQuery();
+      List<Integer> gameIDs = new ArrayList<>();
+      while (rs.next()) {
+        gameIDs.add(rs.getInt(1));
+      }
+      return gameIDs;
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e);
+    }
   }
 
   public List<Location> getMakesForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
