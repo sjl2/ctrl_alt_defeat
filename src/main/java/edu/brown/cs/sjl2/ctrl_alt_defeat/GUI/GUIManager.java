@@ -71,15 +71,15 @@ public class GUIManager {
     FreeMarkerEngine freeMarker = createEngine();
 
     /*** Setup Filters ***/
-    Spark.before("/dashboard", new CoachFilter());
-    Spark.before("/dashboard/*", new CoachFilter());
-    Spark.before("/whiteboard", new CoachFilter());
-    Spark.before("/whiteboard/*", new CoachFilter());
-    Spark.before("/playmaker", new CoachFilter());
-    Spark.before("/playmaker/*", new CoachFilter());
-
-    Spark.before("/stats", new StatsFilter());
-    Spark.before("/stats/*", new StatsFilter());
+//    Spark.before("/dashboard", new CoachFilter());
+//    Spark.before("/dashboard/*", new CoachFilter());
+//    Spark.before("/whiteboard", new CoachFilter());
+//    Spark.before("/whiteboard/*", new CoachFilter());
+//    Spark.before("/playmaker", new CoachFilter());
+//    Spark.before("/playmaker/*", new CoachFilter());
+//
+//    Spark.before("/stats", new StatsFilter());
+//    Spark.before("/stats/*", new StatsFilter());
 
     // Setup Spark Routes
     Spark.get("/login", new LoginViewHandler(), freeMarker);
@@ -107,7 +107,7 @@ public class GUIManager {
     Spark.post("/player/edit", wikiGUI.new EditPlayer());
     Spark.post("/team/edit", wikiGUI.new EditTeam());
     Spark.post("/season/get", wikiGUI.new GetGameStats(), freeMarker);
-    
+
     Spark.post("/analytics/shotchart", wikiGUI.new GetAnalyticsShotChart());
     Spark.post("/analytics/heatmap", wikiGUI.new GetAnalyticsHeatMap());
     Spark.post("/analytics/ranking", wikiGUI.new GetLineupRanking());
@@ -171,14 +171,14 @@ public class GUIManager {
       }
 
       int clearance = Integer.parseInt(clearanceString);
-      
+
       if(clearance == 1) {
         res.redirect("/stats");
       } else if(clearance < 1) {
         res.redirect("/login");
       }
     }
-    
+
   }
 
   private class StatsFilter implements Filter {
@@ -193,12 +193,12 @@ public class GUIManager {
       }
 
       int clearance = Integer.parseInt(clearanceString);
-      
+
       if(clearance < 1) {
         res.redirect("/login");
       }
     }
-    
+
   }
 
   private class PageNotFoundHandler implements TemplateViewRoute {
