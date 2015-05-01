@@ -20,6 +20,24 @@
 	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
 - Add Option to Build this table from scratch (translate the .schema to java). 
 
+New TODO's
+- Logout
+- Autocorrect
+- Don't let bench get anything but technicals
+- Responses for stat keepers for advance period, timeouts, etc.
+- Style everything
+- Create accounts
+- Dashboard without game playing
+- Default courts on analytics page
+- Load stat fields on edit
+- Width of modals everywhere (linecharts, analytics)
+- Great job on the whiteboard!
+- Name checking for invalid characters on saving
+- Make stuff forms -> modals (so that we don't need to have bad results pages)
+- Login page rework
+- Fix stat button colors
+- Allow stats guy to navigate team/player/game pages
+
 Testing:
 - Handler JUnits (Maybe? Prolly not a bad idea)
 - Dashboard JUnit
