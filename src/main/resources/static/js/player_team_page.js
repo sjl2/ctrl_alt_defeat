@@ -46,20 +46,20 @@ function clickStatType(columnIndex) {
 	}
 
 	var chart;
-	chart = paper.linechart(15, 0, width - 15, height, xs, ys1, {colors: ["#090"], axis: "0 0 1 1"});
+	chart = paper.linechart(15, 0, width - 15, height, [xs, xs], [ys1,ys2], {colors: ["#090", "#00f"], axis: "0 0 1 1"});
 	for(i = 0; i < chart.axis.length; i++) {
 	    var axis = chart.axis[i];
 	    for(j = 0; j < axis.text.length; j++) {
 		axis.text[j][0].childNodes[0].setAttribute("dy", 7.5);
 	    }
 	}
-	chart = paper.linechart(15, 0, width - 15, height, xs, ys2, {colors: ["#00f"]});
+	/*chart = paper.linechart(15, 0, width - 15, height, xs, ys2, {colors: ["#00f"]});
 	for(i = 0; i < chart.axis.length; i++) {
 	    var axis = chart.axis[i];
 	    for(j = 0; j < axis.text.length; j++) {
 		axis.text[j][0].childNodes[0].setAttribute("dy", 7.5);
 	    }
-	}
+	}*/
 	var legendX = 35;
 	var legendY = 25;
 	var legendWidth = 90;

@@ -151,13 +151,13 @@ function updateGame() {
 			scoreboard.possession.home.hide();
 			scoreboard.possession.away.show();
 		}
-		if (res.homeBonus) scoreboard.homeBonus.singleBonus.attr({fill : "yellow"});
+		if (res.awayBonus) scoreboard.homeBonus.singleBonus.attr({fill : "red"});
 		else scoreboard.homeBonus.singleBonus.attr({fill : "white"});
-		if (res.homeDoubleBonus) scoreboard.homeBonus.doubleBonus.attr({fill : "yellow"});
+		if (res.awayDoubleBonus) scoreboard.homeBonus.doubleBonus.attr({fill : "red"});
 		else scoreboard.homeBonus.doubleBonus.attr({fill : "white"});
-		if (res.awayBonus) scoreboard.awayBonus.singleBonus.attr({fill : "yellow"});
+		if (res.homeBonus) scoreboard.awayBonus.singleBonus.attr({fill : "red"});
 		else scoreboard.awayBonus.singleBonus.attr({fill : "white"});
-		if (res.awayDoubleBonus) scoreboard.awayBonus.doubleBonus.attr({fill : "yellow"});
+		if (res.homeDoubleBonus) scoreboard.awayBonus.doubleBonus.attr({fill : "red"});
 		else scoreboard.awayBonus.doubleBonus.attr({fill : "white"});
 		scoreboard.homeFouls.attr({text : res.homeFouls});
 		scoreboard.awayFouls.attr({text : res.awayFouls});
@@ -268,6 +268,16 @@ function updateStats(str, pStats) {
 }
 
 function initStatTable() {
+	statTable.key = {};
+	statTable.key["fieldGoalPercentage"] = "Field Goal Percentage";
+	statTable.key["threePointPercentage"] = "Three Point Percentage";
+	statTable.key["freeThrowPercentage"] = "Free Throw Percentage";
+	statTable.key["steals"] = "Steals";
+	statTable.key["blocks"] = "Blocks";
+	statTable.key["rebounds"] = "Rebounds";
+	statTable.key["assists"] = "Assists";
+	statTable.key["turnovers"] = "Turnovers";
+
 	statTable.items = ["fieldGoalPercentage", "threePointPercentage", "freeThrowPercentage", "steals", "blocks", 
 		"rebounds", "assists", "turnovers"];
 	statTable["fieldGoalPercentage"] = {};
@@ -329,7 +339,7 @@ function initStatTable() {
 
 function displayTicker() {
 	var next = statTable.items[statTicker.curr];
-	statTicker.words.attr({text : next});
+	statTicker.words.attr({text : statTable.key[next]});
 	console.log(next);
 	console.log(Math.max(statTable[next].us, statTable[next].them));
 	if (next == "fieldGoalPercentage" || next == "threePointPercentage" || next == "freeThrowPercentage") {

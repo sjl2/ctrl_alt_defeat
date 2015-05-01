@@ -17,3 +17,7 @@ div, button {
 #home_team, #away_team {
 	margin : auto;
 }
+
+svg text {
+	cursor: default;
+}

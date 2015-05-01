@@ -1,7 +1,14 @@
 var prevEntry1 = "";
 $('#multipleresults').modal({ show: false});
 
-function suggestions() {
+function suggestions(e) {
+	console.log(e);
+	if(e.which == 13) {
+		console.log("here");
+		e.preventDefault();
+    	textSearch();
+    	return false;
+  	}
     var spot1 = $("#playerTeamSearch")[0].value;
     $.post("/dashboard/autocomplete", {spot : spot1}, function(responseJSON){
 	var res = JSON.parse(responseJSON);
