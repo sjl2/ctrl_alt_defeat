@@ -23,7 +23,7 @@ function drawHeatMap(id, playerBoolean, year, paper) {
 	postParams.championshipYear = year;
 	console.log(postParams);
 
-	$.post("/dashboard/heatmap", postParams, function(responseJSON) {
+	$.post("/heatmap", postParams, function(responseJSON) {
 		var res = JSON.parse(responseJSON);
 
 	    paper.clear();
@@ -68,7 +68,8 @@ function drawShotChart(id, forPlayer, gameID, paper) {
     postParams.gameID = gameID;
     postParams.currentGame = false;
 
-    $.post("/dashboard/shotchart", postParams, function(responseJSON) {
+    $.post("/shotchart", postParams, function(responseJSON) {
+	console.log(responseJSON);
 	var res = JSON.parse(responseJSON);
 	console.log(res);
 

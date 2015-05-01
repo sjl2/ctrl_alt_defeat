@@ -99,11 +99,18 @@ public class WikiGUI {
         error = "That's not a valid team id!";
       }
 
+      int clearance = 0;
+      String clearanceString = request.session().attribute("clearance");
+      if(clearanceString != null) {
+        clearance = Integer.parseInt(clearanceString);
+      }
+      
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", team.toString()).put("db", dbManager)
           .put("team", team).put("years", years).put("rows", rows)
           .put("seasonTotals", seasonTotals)
           .put("seasonAverages", seasonAverages).put("errorMessage", error)
+          .put("clearance", clearance)
           .build();
       return new ModelAndView(variables, "team.ftl");
     }
@@ -208,12 +215,20 @@ public class WikiGUI {
         error = "That's not a valid player id!";
       }
 
+      int clearance = 0;
+      String clearanceString = request.session().attribute("clearance");
+      if(clearanceString != null) {
+        clearance = Integer.parseInt(clearanceString);
+      }
+
+
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", player.toString()).put("db", dbManager)
           .put("player", player).put("years", years).put("rows", rows)
           .put("seasonTotals", seasonTotals)
           .put("seasonAverages", seasonAverages).put("errorMessage", error)
           .put("teams", dbManager.getAllTeams())
+          .put("clearance", clearance)
           .build();
       return new ModelAndView(variables, "player.ftl");
     }

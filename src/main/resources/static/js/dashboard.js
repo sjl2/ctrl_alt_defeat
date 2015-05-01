@@ -464,7 +464,7 @@ function shotchart(arg) {
 
 	console.log("params", postParams);
 
-	$.post("/dashboard/shotchart", postParams, function(responseJSON) {
+	$.post("/shotchart", postParams, function(responseJSON) {
 		var res = JSON.parse(responseJSON);
 		shotChart.makes.remove();
 		shotChart.misses.remove();

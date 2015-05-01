@@ -9,9 +9,11 @@
 
   <div class="container">
     <div class = "jumbotron">
-      <button class="btn btn-xs btn-warning pull-right" data-toggle="modal" data-target="#edit_player_modal">
-        <span class="glyphicon glyphicon-pencil"></span>
-      </button>
+      <#if clearance gte 2>
+	<button class="btn btn-xs btn-warning pull-right" data-toggle="modal" data-target="#edit_player_modal">
+          <span class="glyphicon glyphicon-pencil"></span>
+	</button>
+      </#if>
       <h2 id="playerName">${player.getName()} #${player.getNumber()}</h2>
       <h3>
         <a href="/team/view/${player.getTeamID()}">${player.getTeamName()}</a>
@@ -35,16 +37,17 @@
       </div>
     </div>
 
-    <div class="modal fade" tabindex="-1" aria-hidden="true" id = "edit_player_modal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <span id="chart-title"></span>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="forCharts" class="form-group">
+    <#if clearance gte 2>
+      <div class="modal fade" tabindex="-1" aria-hidden="true" id = "edit_player_modal">
+	<div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <span id="chart-title"></span>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		<span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="forCharts" class="form-group">
               Player name:<br>
               <input type="text" name="name" value = "${player.getName()}" id = "playerFormName">
               <br>
@@ -57,11 +60,11 @@
                   <option value="${team.getID()}" <#if (team.getID() == player.getTeamID())>selected</#if>>${team.getText()}</option>
                 </#list>
               </select>
-                      <br>
+              <br>
 
               <input type="radio" id = "playerIsCurrent" name="current" value="true" <#if (player.getCurrent())>checked</#if>>Current Player
               <input type="radio" id = "playerIsRetired" name="current" value="false" <#if !(player.getCurrent())>checked</#if>>Former Player
-                      <br><br>
+              <br><br>
 
 
               <button class = "btn btn-lg btn-success" onclick = "updatePlayer()" data-dismiss="modal" aria-label="Close">
@@ -71,10 +74,11 @@
 	      <button class="btn btn-lg btn-danger pull-right" onclick="deletePlayer(${player.getID()})">
 		<span class="glyphicon glyphicon-trash"></span>
 	      </button>
+            </div>
           </div>
-        </div>
+	</div>
       </div>
-    </div>
+    </#if>
 
     <div class="row">
       <div class="col-md-2 col-md-offset-10">

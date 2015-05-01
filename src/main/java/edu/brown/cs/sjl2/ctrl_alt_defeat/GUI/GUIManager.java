@@ -113,8 +113,8 @@ public class GUIManager {
     Spark.post("/analytics/ranking", wikiGUI.new GetLineupRanking());
 
     /* Rename these at some point */
-    Spark.post("/dashboard/shotchart", wikiGUI.new GetShotChartData());
-    Spark.post("/dashboard/heatmap", wikiGUI.new GetHeatMapData());
+    Spark.post("/shotchart", wikiGUI.new GetShotChartData());
+    Spark.post("/heatmap", wikiGUI.new GetHeatMapData());
     Spark.get("/dashboard/analytics", dashboardGUI.new AnalyticsHandler(), freeMarker);
 
     /*** GameGUI routes ***/

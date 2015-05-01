@@ -8,37 +8,40 @@
 
   <div class="container">
     <div class = "jumbotron">
-    <button class="btn btn-xs btn-warning pull-right" data-toggle="modal" data-target="#edit_team_modal">
-        <span class="glyphicon glyphicon-pencil"></span>
-      </button>
+      <#if clearance gte 2>
+	<button class="btn btn-xs btn-warning pull-right" data-toggle="modal" data-target="#edit_team_modal">
+          <span class="glyphicon glyphicon-pencil"></span>
+	</button>
+      </#if>
       <h2>
         <a href="/team/view/${team.getID()}">${team.getName()}</a>
       </h2>
-        <div class="btn-group pull-right">
-          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            Show Roster <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <#list team.getPlayers() as player>
+      <div class="btn-group pull-right">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          Show Roster <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <#list team.getPlayers() as player>
             <#assign link = player.getLink()>
-            <li>
-              <a href="${link.getURL()}">${link.getText()}</a>
-            </li>
-          </#list>
-          </ul>
-        </div>
+	      <li>
+		<a href="${link.getURL()}">${link.getText()}</a>
+	      </li>
+            </#list>
+        </ul>
+      </div>
       <h3>Coach: ${team.getCoach()}</h3>
     </div>
 
-    <div class="modal fade" tabindex="-1" aria-hidden="true" id = "edit_team_modal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="form-group">
+    <#if clearance gte 2>
+      <div class="modal fade" tabindex="-1" aria-hidden="true" id = "edit_team_modal">
+	<div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		<span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="form-group">
               Team name:<br>
               <input type="text" name="name" value = "${team.getName()}" id="teamFormName">
               <br>
@@ -51,15 +54,16 @@
               Secondary Color:<br>
               <input type="color" name="color2" value = ${team.getSecondary()} id="teamFormSecondary">
               <br>
-             
+              
               <button class = "btn btn-lg btn-success" onclick = "updateTeam()" data-dismiss="modal" aria-label="Close">
                 <span class="glyphicon glyphicon-ok"></span>
                 Update Team
               </button>
+            </div>
           </div>
-        </div>
+	</div>
       </div>
-    </div>
+    </#if>
 
     <div class="modal fade modal-chart" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
