@@ -110,6 +110,6 @@ function updateLineUpScore() {
 
 
     $.post("/analytics/ranking", {ids : JSON.stringify(ids)}, function(responseJSON) {
-        $("#lineupScore")[0].innerHTML = "Lineup Score: " + responseJSON;
+        $("#lineupScore")[0].innerHTML = "Lineup Score: " + responseJSON.ranking;
     }, "json");
 }

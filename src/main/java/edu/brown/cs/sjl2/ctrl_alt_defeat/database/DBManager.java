@@ -1057,13 +1057,17 @@ public class DBManager {
       query.append("?, ");
     }
     query.append("?);");
+    
+    System.out.println(query.toString());
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       int i = 1;
       for (int entity : entityIDs) {
+        System.out.println(i + " " + entity);
         prep.setInt(i, entity);
         i++;
       }
       for (int gameID : gameIDs) {
+        System.out.println(i + " " + gameID);
         prep.setInt(i, gameID);
         i++;
       }
@@ -1257,13 +1261,14 @@ public class DBManager {
       for (StatBin[] col : statBins) {
         for (StatBin bin : col) {
           if (bin.exceedsThreshold()) {
+            System.out.println("adding! Value is now: " + totalValue);
             totalValue += bin.getValue();
             qualifiedBins++;
           }
         }
       }
 
-      double scaledValue = totalValue * (qualifiedBins / TOTAL_BINS);
+      double scaledValue = totalValue * ((double) qualifiedBins / (double) TOTAL_BINS);
       return scaledValue;
     } catch (SQLException e) {
       close();
@@ -1298,7 +1303,7 @@ public class DBManager {
     public StatBin(int numPlayers) {
       stats = new ArrayList<>();
       value = 0;
-      threshold = 2 * numPlayers;
+      threshold = 0;//2 * numPlayers;
     }
 
     public boolean exceedsThreshold() {
@@ -1311,7 +1316,10 @@ public class DBManager {
      */
     public void add(String stat) {
       stats.add(stat);
+      System.out.println(stat);
+      System.out.println("value before: " + value);
       value += getStatValue(stat);
+      System.out.println("value after: " + value);
     }
 
     /**
