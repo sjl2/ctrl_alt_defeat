@@ -9,7 +9,7 @@
     </div>
     <div class="row">
       <div class="col-md-2"> 
-        <select class="playerSelector pull-right" id="p1">
+        <select class="playerSelector pull-right" id="p1" onchange="updateLineUpScore()">
           <option id = "player-1" selected> --- </option>
           <#list players as player>
             <option id="player${player.getID()}">${player.getName()}</option>
@@ -17,7 +17,7 @@
        </select>
       </div>
       <div class="col-md-2">
-       <select class="playerSelector pull-right" id="p2">
+       <select class="playerSelector pull-right" id="p2" onchange="updateLineUpScore()">
        <option id = "player-1" selected> --- </option>
           <#list players as player>
             <option id="player${player.getID()}">${player.getName()}</option>
@@ -25,7 +25,7 @@
        </select>
       </div>
       <div class="col-md-2">
-       <select class="playerSelector pull-right"  id="p3">
+       <select class="playerSelector pull-right"  id="p3" onchange="updateLineUpScore()">
        <option id = "player-1" selected> --- </option>
           <#list players as player>
             <option id="player${player.getID()}">${player.getName()}</option>
@@ -33,7 +33,7 @@
        </select>
       </div>
       <div class="col-md-2">
-       <select class="playerSelector pull-right"  id="p4">
+       <select class="playerSelector pull-right"  id="p4" onchange="updateLineUpScore()">
        <option id = "player-1" selected> --- </option>
           <#list players as player>
             <option id="player${player.getID()}">${player.getName()}</option>
@@ -41,7 +41,7 @@
        </select>
       </div>
       <div class="col-md-2">
-         <select class="playerSelector pull-right"  id="p5">
+         <select class="playerSelector pull-right"  id="p5" onchange="updateLineUpScore()">
          <option id = "player-1" selected> --- </option>
           <#list players as player>
             <option id="player${player.getID()}">${player.getName()}</option>
@@ -64,6 +64,13 @@
     <div class="panel panel-default">
       <div class="panel-body">
         <div id="forCharts"></div>
+      </div>
+    </div>
+    </div>
+    <div class="col-md-3">
+      <div class="panel panel-default">
+      <div class="panel-body">
+        <p id="lineupScore"> Lineup Score: </p>
       </div>
     </div>
     </div>

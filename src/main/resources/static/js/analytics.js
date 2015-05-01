@@ -101,3 +101,15 @@ function recentShotChart() {
 
     }, "json");
 }
+
+function updateLineUpScore() {
+    var ids = [];
+    $("select option:selected").each(function() {
+        if (this.id.split("player")[1] != "-1") ids.push(this.id.split("player")[1]);
+    });
+
+
+    $.post("/analytics/ranking", {ids : JSON.stringify(ids)}, function(responseJSON) {
+        $("lineupScore")[0].innerHTML = "Lineup Score: " + responseJSON;
+    }, "json");
+}

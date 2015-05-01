@@ -380,7 +380,7 @@ public class WikiGUI {
         List<Integer> ids = Arrays.asList(playerIDArray);
         List<Integer> last5Games = dbManager.getLast5GameIDs();
         makes = dbManager.getMakesForEntityInGames(last5Games, ids, "player");
-        makes = dbManager.getMissesForEntityInGames(last5Games, ids, "player");
+        misses = dbManager.getMissesForEntityInGames(last5Games, ids, "player");
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id format!";
       }
