@@ -15,6 +15,11 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+	<div class="alert alert-danger alert-dismissible" role="alert" id="error" <#if isGame>hidden</#if>>
+		<h2>
+			No Game here.
+		</h2>
+	</div>
 
     <div class="row">
       <div class="col-md-9">

@@ -133,9 +133,9 @@ $("#createGame").on("click", function() {
     	console.log(responseJSON);
 			alert(responseJSON); 
     } else {
-    	console.log(responseJSON);
- 			alert("Game Started!");
-			window.location.href = "/dashboard";
+ 			bootbox.alert("Game Started!", function () {
+ 				window.location.href = "/dashboard";
+ 			});
     }
 	});
 });
