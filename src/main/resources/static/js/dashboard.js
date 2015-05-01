@@ -1,3 +1,5 @@
+
+
 var currentPlayers = {};
 currentPlayers["PG"] = undefined;
 currentPlayers["SG"] = undefined;
@@ -80,7 +82,7 @@ $.get("/dashboard/getgame", {}, function(responseJSON) {
 		initStatTable();
 		window.setInterval(displayTicker, 2000);
 		window.setInterval(updateGame, 2000);
-		
+		updateGame();
 	}
 });
 
@@ -139,8 +141,15 @@ $("#createGame").on("click", function() {
 });
 
 function updateGame() {
+
 	$.get("/dashboard/updategame", {}, function(responseJSON) {
 		var res = JSON.parse(responseJSON);
+		console.log(responseJSON);
+		if (!res.isGame) {
+			scoreboard.isGame = false;
+			console.log("thinks no game");
+			window.location.href = "/dashboard";
+		}
 		scoreboard.homeScore.attr({text : res.homeScore});
 		scoreboard.awayScore.attr({text : res.awayScore});
 		scoreboard.period.attr({text : res.period});

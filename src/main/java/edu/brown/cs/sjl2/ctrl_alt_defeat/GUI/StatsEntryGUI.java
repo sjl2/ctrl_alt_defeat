@@ -1,5 +1,6 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,12 @@ public class StatsEntryGUI {
 
     @Override
     public ModelAndView handle(Request request, Response response) {
-      List<Stat> s = dash.getGame().getAllStats();
+      List<Stat> s;
+      if (dash.getGame() != null) {
+        s = dash.getGame().getAllStats();
+      } else {
+        s = new ArrayList<Stat>();
+      }
       Collections.reverse(s);
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Stats Entry", 
@@ -170,6 +176,30 @@ public class StatsEntryGUI {
       return 25;
     }
 
+  }
+  
+  public class EndGameHandler implements Route {
+    @Override
+    public Object handle(Request arg0, Response arg1) {
+      dash.endGame();
+      return true;
+    }
+    
+  }
+  
+  public class AdvancePeriodHandler implements Route {
+
+    @Override
+    public Object handle(Request arg0, Response arg1) {
+      try {
+        dash.getGame().incrementPeriod();
+      } catch (GameException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      return dash.getGame().getPeriod();
+    }
+    
   }
 
 

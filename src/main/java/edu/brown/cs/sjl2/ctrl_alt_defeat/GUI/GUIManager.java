@@ -100,6 +100,7 @@ public class GUIManager {
     /* Rename these at some point */
     Spark.post("/dashboard/shotchart", wikiGUI.new GetShotChartData());
     Spark.post("/dashboard/heatmap", wikiGUI.new GetHeatMapData());
+    Spark.get("/dashboard/analytics", dashboardGUI.new AnalyticsHandler(), freeMarker);
 
     /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());
@@ -122,6 +123,8 @@ public class GUIManager {
 		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
+		Spark.post("/stats/endgame", statsEntryGUI.new EndGameHandler());
+		Spark.post("/stats/advanceperiod", statsEntryGUI.new AdvancePeriodHandler());
   }
 
   private static FreeMarkerEngine createEngine() {
