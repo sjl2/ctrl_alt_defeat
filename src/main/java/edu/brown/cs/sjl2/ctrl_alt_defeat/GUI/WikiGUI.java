@@ -380,13 +380,36 @@ public class WikiGUI {
         List<Integer> ids = Arrays.asList(playerIDArray);
         List<Integer> last5Games = dbManager.getLast5GameIDs();
         makes = dbManager.getMakesForEntityInGames(last5Games, ids, "player");
-        makes = dbManager.getMissesForEntityInGames(last5Games, ids, "player");
+        misses = dbManager.getMissesForEntityInGames(last5Games, ids, "player");
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id format!";
       }
       
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
+          .build();
+      return GSON.toJson(variables);
+    } 
+  }
+  
+  public class GetLineupRanking implements Route {
+
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      double ranking = 0;
+      String errorMessage = "";
+      try {
+        String playerIDsString = qm.value("ids");
+        Integer[] playerIDArray = GSON.fromJson(playerIDsString, Integer[].class);
+        List<Integer> ids = Arrays.asList(playerIDArray);
+        ranking = dbManager.lineupRanking(ids);
+      } catch (NumberFormatException e) {
+        errorMessage = "Error calculating lineup ranking.";
+      }
+      
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("ranking", ranking).put("errorMessage", errorMessage)
           .build();
       return GSON.toJson(variables);
     }
