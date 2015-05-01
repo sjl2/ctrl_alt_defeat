@@ -365,7 +365,7 @@ public class WikiGUI {
       return GSON.toJson(variables);
     }
   }
-  
+
   public class GetAnalyticsShotChart implements Route {
 
     @Override
@@ -397,13 +397,13 @@ public class WikiGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      double ranking = 0;
+      float ranking = 0;
       String errorMessage = "";
       try {
         String playerIDsString = qm.value("ids");
         Integer[] playerIDArray = GSON.fromJson(playerIDsString, Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
-        ranking = dbManager.lineupRanking(ids);
+        ranking = (float) dbManager.lineupRanking(ids);
       } catch (NumberFormatException e) {
         errorMessage = "Error calculating lineup ranking.";
       }
