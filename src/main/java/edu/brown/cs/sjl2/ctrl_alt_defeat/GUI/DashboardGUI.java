@@ -75,7 +75,11 @@ public class DashboardGUI {
           .put("isGame", dash.getGame() != null)
           .put("errorMessage", "").build();
 
-      return new ModelAndView(variables, "dashboard.ftl");
+      if (dash.getGame() == null) {
+        return new ModelAndView(variables, "dashboard_no_game.ftl");
+      }
+
+      return new ModelAndView(variables, "dashboard_game.ftl");
     }
   }
 
@@ -188,7 +192,7 @@ public class DashboardGUI {
     }
 
   }
-  
+
   /**
    * Handler for populating the scoreboard on the dashboard.
    * @author awainger
@@ -331,7 +335,7 @@ public class DashboardGUI {
     }
 
   }
-  
+
   public class AnalyticsHandler implements TemplateViewRoute {
 
     @Override
@@ -342,7 +346,7 @@ public class DashboardGUI {
                           "errorMessage", "");
       return new ModelAndView(variables, "analytics.ftl");
     }
-    
+
   }
 
   /**

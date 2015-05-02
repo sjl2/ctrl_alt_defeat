@@ -71,15 +71,15 @@ public class GUIManager {
     FreeMarkerEngine freeMarker = createEngine();
 
     /*** Setup Filters ***/
-    Spark.before("/dashboard", new CoachFilter());
-    Spark.before("/dashboard/*", new CoachFilter());
-    Spark.before("/whiteboard", new CoachFilter());
-    Spark.before("/whiteboard/*", new CoachFilter());
-    Spark.before("/playmaker", new CoachFilter());
-    Spark.before("/playmaker/*", new CoachFilter());
-
-    Spark.before("/stats", new StatsFilter());
-    Spark.before("/stats/*", new StatsFilter());
+//    Spark.before("/dashboard", new CoachFilter());
+//    Spark.before("/dashboard/*", new CoachFilter());
+//    Spark.before("/whiteboard", new CoachFilter());
+//    Spark.before("/whiteboard/*", new CoachFilter());
+//    Spark.before("/playmaker", new CoachFilter());
+//    Spark.before("/playmaker/*", new CoachFilter());
+//
+//    Spark.before("/stats", new StatsFilter());
+//    Spark.before("/stats/*", new StatsFilter());
 
     // Setup Spark Routes
     Spark.get("/login", new LoginViewHandler(), freeMarker);

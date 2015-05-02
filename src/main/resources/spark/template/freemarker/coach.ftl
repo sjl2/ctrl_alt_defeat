@@ -16,7 +16,7 @@
     </div><!-- /.modal -->
 
 
-      <nav class="navbar navbar-default">
+      <nav class="navbar navbar-default navigation">
          <div class="container-fluid">
 
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
