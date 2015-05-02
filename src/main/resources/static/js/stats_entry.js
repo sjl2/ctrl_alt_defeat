@@ -557,7 +557,15 @@ function sub(h, inPlayer, outPlayer) {
 }
 
 
-
+function clickPlayer(paper, id) {
+	paper.mainBoxes.forEach(function (obj) {
+		if (obj.player.id == id) {
+			if (!(clickedPlayer === undefined)) clickedPlayer.attr({fill: clickedPlayer.normalColor});
+			clickedPlayer = obj;
+			clickedPlayer.attr({fill: clickedPlayer.clickAccent});
+		}
+	});
+}
 
 function clickThing(b) {
     if (b.data("thing") == "player") {
@@ -637,41 +645,46 @@ function timeout(b) {
 
 function statEdit(a) {
     if(editingStat == undefined) {
+    	console.log("first case");
 	editingStat = a;
 	a.className = "btn btn-xs btn-primary pull-right editButton";
 	a.childNodes[1].className = "glyphicon glyphicon-floppy-save";
+	console.log(a.parentNode);
+	var x = court_paper.width * a.parentNode.getAttribute("data-statX");
+	var y = court_paper.height * a.parentNode.getAttribute("data-statY");
+	if (!(clickedPoint === undefined)) clickedPoint.remove();
+    clickedPoint = court_paper.circle(x, y, 4).attr("fill", "#f00")
+	.data("ratioX", a.parentNode.getAttribute("data-statX"))
+	.data("ratioY", a.parentNode.getAttribute("data-statY"));
+	
+	clickPlayer(home_team_paper, a.parentNode.getAttribute("data-playerID"));
+	clickPlayer(away_team_paper, a.parentNode.getAttribute("data-playerID"));
+	setSelectedStat(a.parentNode.getAttribute("data-statType"));
+
 	$("#sendStat").prop("disabled", true);
-	if(clickedPoint != undefined){
-	    clickedPoint.remove();
-	    clickedPoint = undefined;
-	}
-	if(clickedPlayer != undefined){
-	    clickedPlayer.attr({fill: clickedPlayer.normalColor});
-	    clickedPlayer = undefined;
-	}
-	if(clickedStat != undefined) {
-	    clickedStat.button.style.backgroundColor = "white";
-	    clickedStat = undefined;
-	}
+
     } else if(editingStat != a) {
+    	    	console.log("second case");
 	$(".editButton").removeClass("btn-primary").addClass("btn-warning");
 	$(".editButton").children().removeClass("glyphicon-floppy-save").addClass("glyphicon-pencil");
 	a.className = "btn btn-xs btn-primary pull-right editButton";
 	a.childNodes[1].className = "glyphicon glyphicon-floppy-save";
 	editingStat = a;
-	if(clickedPoint != undefined){
-	    clickedPoint.remove();
-	    clickedPoint = undefined;
-	}
-	if(clickedPlayer != undefined){
-	    clickedPlayer.attr({fill: clickedPlayer.normalColor});
-	    clickedPlayer = undefined;
-	}
-	if(clickedStat != undefined) {
-	    clickedStat.button.style.backgroundColor = "white";
-	    clickedStat = undefined;
-	}
+	
+	var x = court_paper.width * a.parentNode.getAttribute("data-statX");
+	var y = court_paper.height * a.parentNode.getAttribute("data-statY");
+	if (!(clickedPoint === undefined)) clickedPoint.remove();
+    clickedPoint = court_paper.circle(x, y, 4).attr("fill", "#f00")
+	.data("ratioX", a.parentNode.getAttribute("data-statX"))
+	.data("ratioY", a.parentNode.getAttribute("data-statY"));
+	
+	clickPlayer(home_team_paper, a.parentNode.getAttribute("data-playerID"));
+	clickPlayer(away_team_paper, a.parentNode.getAttribute("data-playerID"));
+	setSelectedStat(a.parentNode.getAttribute("data-statType"));
+
     } else {
+    	   console.log("third case");
+
 	$(".editButton").removeClass("btn-primary").addClass("btn-warning");
 	a.className = "btn btn-xs btn-warning pull-right editButton";
 	a.childNodes[1].className = "glyphicon glyphicon-pencil";
@@ -692,6 +705,7 @@ function statEdit(a) {
 	    playerID : parent.getAttribute("data-playerID"),
 	    databaseID : parent.getAttribute("data-statID")
 	};
+
 
 	if (clickedPoint !== undefined) {
 	    changedPoint = true;
