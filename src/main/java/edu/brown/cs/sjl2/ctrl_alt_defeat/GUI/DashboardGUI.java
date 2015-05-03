@@ -156,10 +156,42 @@ public class DashboardGUI {
           Integer.parseInt(qm.value("team")),
           Integer.parseInt(qm.value("number")),
           true);
+
       return "";
     }
   }
 
+  public class EditUserHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      String oldUsername = qm.value("oldUsername");
+      String newUsername = qm.value("newUsername");
+      String newPassword = qm.value("newPassword");
+
+      boolean success = false;
+      String errorMessage = "";
+      if(oldUsername.equals(newUsername) ||
+         !db.doesUsernameExist(newUsername)) {
+        db.updateUser(oldUsername, newUsername, newPassword);
+        success = true;
+      } else {
+        success = false;
+        errorMessage = "ERROR: Couldn't update username.\nUsername \"" + newUsername + "\" is already used";
+      }
+      Map<String, Object> variables = ImmutableMap.of("success", success, "errorMessage", errorMessage);
+
+      return GSON.toJson(variables);
+    }
+  }
+
+  public class GetUsersHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      Map<String, Object> variables = ImmutableMap.of("users", db.getUsernames());
+      return GSON.toJson(variables);
+    }
+  }
   /**
    * Handler for populating the scoreboard on the dashboard.
    * @author awainger

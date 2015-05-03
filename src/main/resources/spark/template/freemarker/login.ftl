@@ -3,12 +3,15 @@
 
   <link rel="stylesheet" href="css/login.css">
 
-  <h1>Welcome to Ctrl-Alt-Defeat</h1>
-  <h3>Please enter your username and password</h3>
+  <form method="POST" action="/login/login" class="form-signin" id="loginForm">
+  <h1 class="form-signin-heading">Welcome to<br>Ctrl-Alt-Defeat</h1>
   
-  <input type="text" id="username" placeholder="Username"></input>
-  <input type="password" id="password" placeholder="Password"></input>
-  <button id="submit">Login</button>
+    <label for="username" class="sr-only">Username</label>
+    <input type="text" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
+    <label for="password" class="sr-only">Password</label>
+    <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+    <button class="btn btn-lg btn-primary btn-block" type="submit" id="submit">Sign in</button>
+  </form>
   <div id="message"></div>
 
 </#assign>
