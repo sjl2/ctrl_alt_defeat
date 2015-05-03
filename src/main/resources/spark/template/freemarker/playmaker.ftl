@@ -30,8 +30,9 @@
 
       <div class="col-md-8" id="page-content-wrapper">
 	<div class="row" id="above_court">
-	  <div class="col-md-2 well well-sm" id="editing_name">untitled</div>
-	  <div class="col-md-10"></div>
+	  <div class="col-md-12">
+	    <h1 id="editing_name">untitled</h1>
+	  </div>
 	</div>
 	<div class="row" id="canvas_container" tabindex="0"></div>
 	<div class="row" id="control">

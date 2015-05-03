@@ -13,6 +13,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.PlaymakerDB;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 import spark.ModelAndView;
@@ -28,6 +29,7 @@ import spark.TemplateViewRoute;
  */
 public class PlaymakerGUI {
 
+  private DBManager db;
   private PlaymakerDB playmakerDB;
   private Dashboard dash;
   private static final Gson GSON = new Gson();
@@ -35,35 +37,43 @@ public class PlaymakerGUI {
   /**
    * Constructor for playmaker gui class.
    * @param dbManager - DBManager, allows handlers to get data
-   * @author awainger
+   * @author sjl2
    */
-  public PlaymakerGUI(Dashboard dash, PlaymakerDB playmakerDB) {
+  public PlaymakerGUI(Dashboard dashboard, DBManager db,
+      PlaymakerDB playmakerDB) {
+
+    this.db = db;
     this.playmakerDB = playmakerDB;
-    this.dash = dash;
+    this.dash = dashboard;
   }
 
   /**
    * Playmaker handler, loads main playmaker class.
-   * @author awainger
+   * @author sjl2
    */
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Playmaker", "errorMessage", "");
+        ImmutableMap.of("tabTitle", "Playmaker",
+          "allTeams", db.getAllTeams(),
+          "errorMessage", "");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
 
   /**
    * Loads whiteboard feature of playmaker.
-   * @author awainger
+   * @author sjl2
    */
   public class WhiteboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Whiteboard", "errorMessage", "");
+        ImmutableMap.of(
+          "tabTitle", "Whiteboard",
+          "allTeams", db.getAllTeams(),
+          "errorMessage", "");
       return new ModelAndView(variables, "whiteboard.ftl");
     }
   }
@@ -71,7 +81,7 @@ public class PlaymakerGUI {
   /**
    * Save handler, parses play, saves to database, returns list of play ids and
    * names to front end.
-   * @author awainger
+   * @author sjl2
    */
   public class SaveHandler implements Route {
     @Override
@@ -105,7 +115,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads a play for the front end.
-   * @author awainger
+   * @author sjl2
    */
   public class LoadHandler implements Route {
 
@@ -121,10 +131,10 @@ public class PlaymakerGUI {
     }
   }
 
-  
+
   /**
    * Handles deletion of a play.
-   * @author awainger
+   * @author sjl2
    */
   public class DeleteHandler implements Route {
 
@@ -141,7 +151,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads list of play names for playmaker sidebar.
-   * @author awainger
+   * @author sjl2
    */
   public class PlayNamesHandler implements Route {
 
@@ -153,7 +163,7 @@ public class PlaymakerGUI {
 
   /**
    * Get numbers for players on court for playmaker.
-   * @author awainger
+   * @author sjl2
    */
   public class PlayerNumberHandler implements Route {
 

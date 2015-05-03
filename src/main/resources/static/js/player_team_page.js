@@ -9,23 +9,25 @@ var statNames = ["Points", "Field Goals Made and Attempted", "2 Pointers Made an
 $(document).ready(function(){
     console.log("a");
     console.log(document.getElementById("forCharts"));
-    width = window.innerWidth / 2.3; 
-    height = 14 * width / 15; 
-    $("#forCharts").css('width', width);
+    width = 450;
+    height = 420;
     paper = Raphael(document.getElementById("forCharts"), width, height);
-    paper.shots = paper.set();
-    
+    paper.shots = paper.set();    
 
     $("#years").change(function () {
-	postParameters = {
-	    year: $("#years").val(), 
-	    id: id,
-	    isPlayer: isPlayer
-	}
+			postParameters = {
+			    year: $("#years").val(), 
+			    id: id,
+			    isPlayer: isPlayer
+			}
 
-	$.post("/season/get", postParameters, function (responseHTML) {
-	    $("#season").html(responseHTML); 
-	});
+			$.post("/season/get", postParameters, function (responseHTML) {
+			    $("#season").html(responseHTML); 
+			});
+    });
+
+    $("tr a").click(function(e) {
+    	e.stopPropagation();
     });
 });
 
