@@ -1,5 +1,6 @@
 var prevEntry1 = "";
 $('#multipleresults').modal({ show: false});
+$('#editUser').modal({ show: false});
 
 function suggestions(e) {
 	console.log(e);
@@ -66,4 +67,42 @@ function textSearch() {
 
     });
 }
-//window.location.href
+
+function updateEditUsers() {
+    $.get("/dashboard/get/users",
+	  {},
+	  function(response) {
+	      var users = response.users;
+	      var select = $("#usernames")[0];
+	      select.innerHTML = "";
+	      for(i = 0; i < users.length; i++) {
+		  var option = document.createElement("option");
+		  option.text = users[i];
+		  select.add(option);
+	      }
+	      $("#newUsername").val(users[0]);
+	      $("#newPassword").val("");
+	  }, "json");
+}
+
+$(function() {
+    $("#editForm").on("submit", function(e) {
+	$.post($(this).attr("action"), $(this).serialize(),
+	       function(response) {
+		   if(response.errorMessage.length == 0) {
+		       $("#editUser").modal("hide");
+		       bootbox.alert("User updated successfully");
+		       updateEditUsers();
+		   } else {
+		       bootbox.alert(response.errorMessage);
+		       return false;
+		   }
+	       }, "json");
+	return false;
+    });
+    $("#usernames").on("change", function(e) {
+	$("#newUsername").val($("#usernames").val());
+	$("#newPassword").val("");
+    });
+    updateEditUsers();
+});
