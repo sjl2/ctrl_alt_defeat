@@ -27,7 +27,7 @@ public class GameGUI {
     this.dash = dash;
   }
 
-  public class StPgHandler implements Route {
+  public class StatPageHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
@@ -55,7 +55,7 @@ public class GameGUI {
 
         return GSON.toJson(toReturn);
       } else {
-        return null;
+        Map<String, Object> variables = ImmutableMap.of("errorMessage", "No Game");
       }
     }
   }

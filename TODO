@@ -10,12 +10,9 @@ POST-GABE:
 - No idea how to do stats -> put a little note 
 - Home/Away Positions 
 - Restrict stat location for three pointers
-- Log-In Page stylin'
-- Create user page
 - Hover to display player name as well as number in stats
 - Substitutions didn't come off as intuitive
 - Enter's for ALL submissions please 
-- Remove confirmation page -> change to modals then redirect to dashboard
 - Fonts
 - Shooting in playmaker
 	- Allow for lock-on to center of basket
@@ -28,31 +25,19 @@ POST-GABE:
 	- Sharp-Shooter Left/Right/Center (High Percentage on left court)
 - My Dashboard editor
 	- Customize My Team
-- Data Visualization:
-	- Graphs of some kind
-- Log-In Screen
-	- User population/creation in dashboard
-		- Coach should create a stats user 
 - Error Checking
 	- 404 Pages for Teams, Games, Players, that do not exist
 	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
 - Add Option to Build this table from scratch (translate the .schema to java). 
 
 New TODO's
-- Logout
+- Logout - just need button somewhere
 - Autocorrect
 - Don't let bench get anything but technicals
 - Responses for stat keepers for advance period, timeouts, etc.
 - Style everything
-- Create accounts
-- Dashboard without game playing
-- Default courts on analytics page
 - Load stat fields on edit
-- Width of modals everywhere (linecharts, analytics)
-- Great job on the whiteboard!
 - Name checking for invalid characters on saving
-- Make stuff forms -> modals (so that we don't need to have bad results pages)
-- Login page rework
 - Fix stat button colors
 - Allow stats guy to navigate team/player/game pages
 
