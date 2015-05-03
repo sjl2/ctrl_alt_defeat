@@ -22,9 +22,6 @@
             <div class="form-group">
               <label for="select-team"> Select Team:</label>
               <select id ="select-team" class="form-control" name="team">
-                <#list allTeams as team>
-                  <option value="${team.getID()}">${team.getText()}</option>
-                </#list>
               </select>
             </div>
           </div>
@@ -115,49 +112,49 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-      <nav class="navbar navbar-default navigation">
-         <div class="container-fluid">
+    <nav class="navbar navbar-default navigation">
+      <div class="container-fluid">
 
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/dashboard">
-              <img id = "thumb" alt="Brand" src="/images/Basketball-small.png">
-          </a>
-         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-              <li><a href="/dashboard"> Dashboard <span class="sr-only">(current)</span></a></li>
-              <li><a href="/playmaker">PlayMaker</a></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Make Stuff <span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a id="make-new-team">New Team</a></li>
-                  <li><a id="make-new-player">New Player</a></li>
-                </ul>
-              </li>
-              <li><a href="/whiteboard">Whiteboard</a></li>
-              <li><a href="/dashboard/analytics">Analytics</a></li>
-            </ul>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/dashboard">
+          <img id = "thumb" alt="Brand" src="/images/Basketball-small.png">
+        </a>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="/dashboard"> Dashboard <span class="sr-only">(current)</span></a></li>
+            <li><a href="/playmaker">PlayMaker</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Make Stuff <span class="caret"></span></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a id="make-new-team">New Team</a></li>
+                <li><a id="make-new-player">New Player</a></li>
+              </ul>
+            </li>
+            <li><a href="/whiteboard">Whiteboard</a></li>
+            <li><a href="/dashboard/analytics">Analytics</a></li>
+          </ul>
 
-            <form class="navbar-form navbar-right" role="search">
-              <div class="input-append btn-group">
-                <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeypress = "suggestions(event)" list="suggestions1" id="playerTeamSearch">
-                <datalist id="suggestions1"></datalist>
-                <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="float:right;">
-                  <span class="caret"></span>
-                </a>
-                <button type="button" id="searchButton" class="btn btn-primary" style="float:right" data-player="true" onclick="textSearch()">Player Search</button>
-                <ul class="dropdown-menu dropdown-menu-right">
-                  <li><a onclick = "setTextSearch(true)"><i class="icon-pencil"></i> Search as Player</a></li>
-                  <li><a onclick = "setTextSearch(false)"><i class="icon-trash"></i> Search as Team</a></li>
-                  
-                </ul>
-              </div>
-            </form>
-          </div>
+          <form class="navbar-form navbar-right" role="search">
+            <div class="input-append btn-group">
+              <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeypress = "suggestions(event)" list="suggestions1" id="playerTeamSearch">
+              <datalist id="suggestions1"></datalist>
+              <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="float:right;">
+                <span class="caret"></span>
+              </a>
+              <button type="button" id="searchButton" class="btn btn-primary" style="float:right" data-player="true" onclick="textSearch()">Player Search</button>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li><a onclick = "setTextSearch(true)"><i class="icon-pencil"></i> Search as Player</a></li>
+                <li><a onclick = "setTextSearch(false)"><i class="icon-trash"></i> Search as Team</a></li>
+                
+              </ul>
+            </div>
+          </form>
+        </div>
       </div>
     </nav>
 

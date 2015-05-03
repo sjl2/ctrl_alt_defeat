@@ -6,39 +6,49 @@ $('.new-team').modal({ show: false});
 
 
 $("#make-new-player").on("click", function (e) {
-	$(".new-player").modal('show');
+    $.get("/dashboard/get/teams", {}, function(res) {
+	var teams = res.teams;
+	$("#select-team").html("");
+	$.each(teams, function(index, value) {
+	    $("#select-team").
+		append($("<option></option>")
+		       .val(value.id)
+		       .text(value.text));
+	});
+    }, "json");
+    $(".new-player").modal('show');
 });
 
 $("#make-new-team").on("click", function (e) {
-	$(".new-team").modal('show');
+    $(".new-team").modal('show');
 });
 
 $('#player-form').submit(function() {
-	$.post('/dashboard/new/player', $('#player-form').serialize(), function () {
-		bootbox.alert("Player created!", function () {
-			$(".new-player").modal('hide');
-		});
-	}); 
-	return false;
+    $.post('/dashboard/new/player', $('#player-form').serialize(), function () {
+	bootbox.alert("Player created!", function () {
+	    $(".new-player").modal('hide');
+	});
+    }); 
+    return false;
 });
 
 $('#team-form').submit(function() {
-	$.post('/dashboard/new/team', $('#team-form').serialize(), function () {
-		bootbox.alert("Team created!", function () {
-			$(".new-team").modal('hide');
-		});
-	}); 
-	return false;
+    $.post('/dashboard/new/team', $('#team-form').serialize(), function () {
+	bootbox.alert("Team created!", function () {
+	    $(".new-team").modal('hide');
+	});
+    }); 
+    return false;
 });
 
 function suggestions(e) {
-	console.log(e);
-	if(e.which == 13) {
-		console.log("here");
-		e.preventDefault();
+    console.log(e);
+    if(e.which == 13) {
+	console.log("here");
+	e.preventDefault();
     	textSearch();
     	return false;
-  	}
+    }
     var spot1 = $("#playerTeamSearch")[0].value;
     $.post("/dashboard/autocomplete", {spot : spot1}, function(responseJSON){
 	var res = JSON.parse(responseJSON);
@@ -58,19 +68,19 @@ function suggestions(e) {
 }
 
 function setTextSearch(b) {
-	if (!b) {
-		$("#searchButton")[0].setAttribute("data-player", false);
-		$("#searchButton")[0].innerHTML = "Team Search";
-	} else {
-		$("#searchButton")[0].setAttribute("data-player", true);
-		$("#searchButton")[0].innerHTML = "Player Search";
-	}
+    if (!b) {
+	$("#searchButton")[0].setAttribute("data-player", false);
+	$("#searchButton")[0].innerHTML = "Team Search";
+    } else {
+	$("#searchButton")[0].setAttribute("data-player", true);
+	$("#searchButton")[0].innerHTML = "Player Search";
+    }
 }
 
 function textSearch() {
     
-	isPlayer = $("#searchButton")[0].getAttribute("data-player");
-	console.log(isPlayer);
+    isPlayer = $("#searchButton")[0].getAttribute("data-player");
+    console.log(isPlayer);
 
     $.post("/dashboard/search", {searchString : $("#playerTeamSearch")[0].value, isPlayer : isPlayer}, function(responseJSON) {
 	console.log(responseJSON);
