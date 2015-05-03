@@ -30,6 +30,7 @@
 	      New Username: <input type="text" name="newUsername" class="form-control" id="newUsername" required>
 	      <br>
 	      New Password: <input type="password" name="newPassword" class="form-control" id="newPassword" required>
+	      Confirm Password: <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" required>
             </div>
 	    <div class="modal-footer">
 	      <button type="submit" class="btn btn-primary" id="editUserSubmit">Submit</button>

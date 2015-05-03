@@ -87,17 +87,21 @@ function updateEditUsers() {
 
 $(function() {
     $("#editForm").on("submit", function(e) {
-	$.post($(this).attr("action"), $(this).serialize(),
-	       function(response) {
-		   if(response.errorMessage.length == 0) {
-		       $("#editUser").modal("hide");
-		       bootbox.alert("User updated successfully");
-		       updateEditUsers();
-		   } else {
-		       bootbox.alert(response.errorMessage);
-		       return false;
-		   }
-	       }, "json");
+	if($("#newPassword").val() == $("#confirmPassword").val()){
+	    $.post($(this).attr("action"), $(this).serialize(),
+		   function(response) {
+		       if(response.errorMessage.length == 0) {
+			   $("#editUser").modal("hide");
+			   bootbox.alert("User updated successfully");
+			   updateEditUsers();
+		       } else {
+			   bootbox.alert(response.errorMessage);
+			   return false;
+		       }
+		   }, "json");
+	} else {
+	    bootbox.alert("Passwords don't match");
+	}
 	return false;
     });
     $("#usernames").on("change", function(e) {
