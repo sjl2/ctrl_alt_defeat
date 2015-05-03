@@ -53,11 +53,11 @@ $("#court").click(function(e) {
 var home = {};
 var away = {};
 $.get("/game/roster", function(responseJSON) {
-
     var r = JSON.parse(responseJSON);
-    console.log(r);
-
-
+    
+    if(r.errorMessage.length > 0) {
+	return;
+    }
     var res = r.roster;
     console.log(res);
     home.primary = res[0];

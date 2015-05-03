@@ -587,7 +587,6 @@ public class DBManager {
       String secondary) {
 
     Team t = tf.getTeam(id, name, coach, primary, secondary);
-    System.out.println(t.getCoach());
     updateTeam(t);
   }
 
@@ -1130,16 +1129,13 @@ public class DBManager {
     }
     query.append("?);");
     
-    System.out.println(query.toString());
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       int i = 1;
       for (int entity : entityIDs) {
-        System.out.println(i + " " + entity);
         prep.setInt(i, entity);
         i++;
       }
       for (int gameID : gameIDs) {
-        System.out.println(i + " " + gameID);
         prep.setInt(i, gameID);
         i++;
       }
@@ -1333,7 +1329,6 @@ public class DBManager {
       for (StatBin[] col : statBins) {
         for (StatBin bin : col) {
           if (bin.exceedsThreshold()) {
-            System.out.println("adding! Value is now: " + totalValue);
             totalValue += bin.getValue();
             qualifiedBins++;
           }
@@ -1388,10 +1383,7 @@ public class DBManager {
      */
     public void add(String stat) {
       stats.add(stat);
-      System.out.println(stat);
-      System.out.println("value before: " + value);
       value += getStatValue(stat);
-      System.out.println("value after: " + value);
     }
 
     /**

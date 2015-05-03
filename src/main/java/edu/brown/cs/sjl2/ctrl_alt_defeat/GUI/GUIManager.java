@@ -81,9 +81,11 @@ public class GUIManager {
 //    Spark.before("/stats", new StatsFilter());
 //    Spark.before("/stats/*", new StatsFilter());
 
+    
     // Setup Spark Routes
     Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
+    Spark.post("/login/logout", new LogoutHandler());
 
     /*** DashboardGUI routes ***/
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
@@ -119,7 +121,7 @@ public class GUIManager {
 
     /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());
-    Spark.get("/game/roster", gameGUI.new StPgHandler());
+    Spark.get("/game/roster", gameGUI.new StatPageHandler());
 
     /*** PlaymakerGUI routes ***/
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
@@ -201,20 +203,17 @@ public class GUIManager {
 
   }
 
-  private class PageNotFoundHandler implements TemplateViewRoute {
+  /*private class PageNotFoundFilter implements Filter {
 
     @Override
-    public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("tabTitle", "ERROR", "errorMessage", "Page Not Found");
-
-      return new ModelAndView(variables, "404.ftl");
+    public void handle(Request req, Response res) {
+      System.out.println(req.raw().getRequestURL());
     }
-  }
+  }*/
 
   public class LoginViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      System.out.println("a");
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
       return new ModelAndView(variables, "login.ftl");
@@ -233,6 +232,15 @@ public class GUIManager {
         ImmutableMap.of("clearance", clearance, "errorMessage", "");
 
       return GSON.toJson(variables);
+    }
+  }
+
+  private class LogoutHandler implements Route {
+    @Override
+    public Object handle(Request req, Response res) {
+      req.session().attribute("clearance", 0);
+      res.redirect("/login");
+      return GSON.toJson(ImmutableMap.of("errorMessage", ""));
     }
   }
 
