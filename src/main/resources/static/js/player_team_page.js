@@ -15,15 +15,15 @@ $(document).ready(function(){
     paper.shots = paper.set();    
 
     $("#years").change(function () {
-	postParameters = {
-	    year: $("#years").val(), 
-	    id: id,
-	    isPlayer: isPlayer
-	}
+			postParameters = {
+			    year: $("#years").val(), 
+			    id: id,
+			    isPlayer: isPlayer
+			}
 
-	$.post("/season/get", postParameters, function (responseHTML) {
-	    $("#season").html(responseHTML); 
-	});
+			$.post("/season/get", postParameters, function (responseHTML) {
+			    $("#season").html(responseHTML); 
+			});
     });
 });
 

@@ -33,7 +33,7 @@ public class WikiGUI {
 
   /**
    * Constructor for class.
-   * 
+   *
    * @param dbManager
    *          - DBManager, used to query database
    * @author awainger
@@ -45,7 +45,7 @@ public class WikiGUI {
 
   /**
    * Loads all data needed to view a game page.
-   * 
+   *
    * @author awainger
    */
   public class GameViewHandler implements TemplateViewRoute {
@@ -62,15 +62,19 @@ public class WikiGUI {
         System.out.println(error);
       }
 
-      Map<String, Object> variables = ImmutableMap.of("tabTitle",
-          game.toString(), "game", game, "errorMessage", error);
+      Map<String, Object> variables =
+          ImmutableMap.of("tabTitle", game.toString(),
+              "allTeams", dbManager.getAllTeams(),
+              "game", game,
+              "errorMessage", error);
+
       return new ModelAndView(variables, "game.ftl");
     }
   }
 
   /**
    * Loads all data needed to view a team page.
-   * 
+   *
    * @author awainger
    */
   public class TeamViewHandler implements TemplateViewRoute {
@@ -78,10 +82,10 @@ public class WikiGUI {
     public ModelAndView handle(Request request, Response response) {
       int teamID = -1;
       Team team = null;
-      List<Integer> years = null;
-      List<GameStats> rows = null;
-      List<GameStats> seasonAverages = null;
-      List<GameStats> seasonTotals = null;
+      List<Integer> years = new ArrayList<>();
+      List<GameStats> rows = new ArrayList<>();
+      List<GameStats> seasonAverages = new ArrayList<>();
+      List<GameStats> seasonTotals = new ArrayList<>();
       String error = "";
 
       try {
@@ -91,9 +95,11 @@ public class WikiGUI {
           error = "Could not find team by that ID!";
         } else {
           years = dbManager.getYearsActive("team_stats", teamID);
-          rows = dbManager.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
-          seasonAverages = dbManager.getAggregateGameStats("AVG", "team_stats", teamID);
-          seasonTotals = dbManager.getAggregateGameStats("SUM", "team_stats", teamID);
+          if (!years.isEmpty()) {
+            rows = dbManager.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
+            seasonAverages = dbManager.getAggregateGameStats("AVG", "team_stats", teamID);
+            seasonTotals = dbManager.getAggregateGameStats("SUM", "team_stats", teamID);
+          }
         }
       } catch (NumberFormatException e) {
         error = "That's not a valid team id!";
@@ -104,10 +110,11 @@ public class WikiGUI {
       if(clearanceString != null) {
         clearance = Integer.parseInt(clearanceString);
       }
-      
+
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", team.toString()).put("db", dbManager)
           .put("team", team).put("years", years).put("rows", rows)
+          .put("allTeams", dbManager.getAllTeams())
           .put("seasonTotals", seasonTotals)
           .put("seasonAverages", seasonAverages).put("errorMessage", error)
           .put("clearance", clearance)
@@ -115,7 +122,7 @@ public class WikiGUI {
       return new ModelAndView(variables, "team.ftl");
     }
   }
-  
+
   /**
    * Handler for editing information about a player.
    * @author awainger
@@ -136,7 +143,7 @@ public class WikiGUI {
         return GSON.toJson(ImmutableMap.of("errorMessage", ""));
       } catch (NumberFormatException e) {
         return GSON.toJson(ImmutableMap.of("errorMessage", "Error parsing changes to player."));
-      }      
+      }
     }
   }
 
@@ -150,7 +157,7 @@ public class WikiGUI {
       return GSON.toJson(ImmutableMap.of("success", dbManager.deletePlayer(id)));
     }
   }
-  
+
   /**
    * Handler for editing information about a team.
    * @author awainger
@@ -182,7 +189,7 @@ public class WikiGUI {
 
   /**
    * Loads all data needed to view a player page.
-   * 
+   *
    * @author awainger
    */
   public class PlayerViewHandler implements TemplateViewRoute {
@@ -226,8 +233,8 @@ public class WikiGUI {
           .put("tabTitle", player.toString()).put("db", dbManager)
           .put("player", player).put("years", years).put("rows", rows)
           .put("seasonTotals", seasonTotals)
+          .put("allTeams", dbManager.getAllTeams())
           .put("seasonAverages", seasonAverages).put("errorMessage", error)
-          .put("teams", dbManager.getAllTeams())
           .put("clearance", clearance)
           .build();
       return new ModelAndView(variables, "player.ftl");
@@ -236,7 +243,7 @@ public class WikiGUI {
 
   /**
    * Handler for updating the season table on either player or team pages.
-   * 
+   *
    * @author awainger
    */
   public class GetGameStats implements TemplateViewRoute {
@@ -272,7 +279,7 @@ public class WikiGUI {
 
   /**
    * Handler for retrieving shot chart data.
-   * 
+   *
    * @author awainger
    */
   public class GetShotChartData implements Route {
@@ -332,7 +339,7 @@ public class WikiGUI {
 
   /**
    * Handler for retrieving heat map data.
-   * 
+   *
    * @author awainger
    */
   public class GetHeatMapData implements Route {
@@ -389,7 +396,7 @@ public class WikiGUI {
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id format!";
       }
-      
+
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
           .build();
@@ -415,14 +422,14 @@ public class WikiGUI {
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id format!";
       }
-      
+
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
           .build();
       return GSON.toJson(variables);
-    } 
+    }
   }
-  
+
   public class GetLineupRanking implements Route {
 
     @Override
@@ -438,12 +445,12 @@ public class WikiGUI {
       } catch (NumberFormatException e) {
         errorMessage = "Error calculating lineup ranking.";
       }
-      
+
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("ranking", ranking).put("errorMessage", errorMessage)
           .build();
       return GSON.toJson(variables);
     }
-    
+
   }
 }
