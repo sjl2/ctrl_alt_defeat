@@ -114,7 +114,7 @@
             <#assign link = db.getGameLink(row.getGameID())>
             <tr data-toggle="modal" data-target=".modal-chart" onclick="clickPlayerGame(${player.getID()}, ${row.getGameID()})" class="stat-row">         
               <td>
-                <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
+                <a class="btn-link" href="${link.getURL()}">${link.getText()}</a>
               </td>
               <td>${row.getPoints()}</td>
               <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>

@@ -27,6 +27,10 @@ $(document).ready(function(){
 			    $("#season").html(responseHTML); 
 			});
     });
+
+    $("tr a").click(function(e) {
+    	e.stopPropagation();
+    });
 });
 
 var chart;

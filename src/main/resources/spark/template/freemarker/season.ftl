@@ -24,7 +24,7 @@
   </#if>
     <#assign link = db.getGameLink(row.getGameID())>
     <td>
-      <a class="btn btn-link" href="${link.getURL()}">${link.getText()}</a>
+      <a class="btn-link" href="${link.getURL()}">${link.getText()}</a>
     </td>     
     <td>${row.getPoints()}</td>
     <td>${row.getFieldGoals()} - ${row.getFieldGoalsA()}</td>
