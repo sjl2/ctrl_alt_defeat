@@ -56,6 +56,8 @@ public class GameGUI {
         return GSON.toJson(toReturn);
       } else {
         Map<String, Object> variables = ImmutableMap.of("errorMessage", "No Game");
+
+        return GSON.toJson(variables);
       }
     }
   }
