@@ -1,7 +1,9 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
@@ -57,8 +59,14 @@ public class Team {
     return playerIds.get(id);
   }
 
-  public Collection<Player> getPlayers() {
-    return playerIds.values();
+  public List<Player> getPlayers() {
+    List<Player> toReturn = new ArrayList<>();
+    Collection<Player> players = playerIds.values();
+    for (Player p : players) {
+      toReturn.add(p);
+    }
+
+    return toReturn;
   }
 
   public void addPlayer(Player p) {
