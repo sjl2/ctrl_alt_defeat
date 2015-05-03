@@ -1,4 +1,79 @@
 <#assign content>
+  <div class="modal fade new-player" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Create New Player</h4>
+        </div>
+        <form role="form" id="player-form">
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label for="name-input">Name:</label>
+              <input class="form-control" type="text" name="name" id="name-input" required>
+            </div>
+            <div class="form-group">
+              <label for="jersey">Jersey Number:</label>
+              <input id="jersey" class="form-control" type="number" name="number" min="0" max="99" required>
+            </div>
+            <div class="form-group">
+              <label for="select-team"> Select Team:</label>
+              <select id ="select-team" class="form-control" name="team">
+                <#list allTeams as team>
+                  <option value="${team.getID()}">${team.getText()}</option>
+                </#list>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button submit" class="btn btn-primary" id="createPlayer">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade new-team" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Create New Team</h4>
+        </div>
+        <form role="form" id="team-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="team-name-input">Name:</label>
+              <input class="form-control" type="text" name="name" id="team-name-input" required>
+            </div>
+            <div class="form-group">
+              <label for="coach-input">Coach:</label>
+              <input class="form-control" type="text" name="coach" id="coach-input" required>
+            </div>
+            <div class="form-group">
+              <label for="color1-input">Primary Color:</label>
+              <input id="color1-input" class="form-control" type="color" name="color1">
+            </div>
+            <div class="form-group">
+              <label for="color2-input">Secondary Color:</label>
+              <input id="color2-input" class="form-control" type="color" name="color2">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button submit" class="btn btn-primary" id="createPlayer">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <div class = "container-fluid">
 
     <div class="modal fade" id="multipleresults">
@@ -35,8 +110,8 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Make Stuff <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
-                  <li><a href="/dashboard/new/team">New Team</a></li>
-                  <li><a href="/dashboard/new/player">New Player</a></li>
+                  <li><a id="make-new-team">New Team</a></li>
+                  <li><a id="make-new-player">New Player</a></li>
                 </ul>
               </li>
               <li><a href="/whiteboard">Whiteboard</a></li>

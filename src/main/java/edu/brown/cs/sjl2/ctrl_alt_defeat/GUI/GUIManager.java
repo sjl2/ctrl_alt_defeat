@@ -26,7 +26,7 @@ import freemarker.template.Configuration;
 
 public class GUIManager {
 
-  private DBManager dbManager;
+  private DBManager db;
   private int port = 8585;
   private final static int STATUS = 500;
 
@@ -42,23 +42,23 @@ public class GUIManager {
   private static final Gson GSON = new Gson();
 
   public GUIManager(DBManager db) {
-    this.dbManager = db;
-    this.dash = new Dashboard(dbManager);
-    this.trie = dbManager.getTrie();
+    this.db = db;
+    this.dash = new Dashboard(db);
+    this.trie = db.getTrie();
     trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
 
-    this.dashboardGUI = new DashboardGUI(dash, dbManager, trie);
+    this.dashboardGUI = new DashboardGUI(dash, db, trie);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
+    this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
-    this.wikiGUI = new WikiGUI(dbManager, dash);
+    this.wikiGUI = new WikiGUI(db, dash);
     runServer();
   }
 
   public GUIManager(DBManager db, int port) {
-    this.dbManager = db;
+    this.db = db;
     this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
+    this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -88,10 +88,8 @@ public class GUIManager {
     /*** DashboardGUI routes ***/
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
     Spark.post("/dashboard/new", dashboardGUI.new DashSetupHandler(), freeMarker);
-    Spark.get("/dashboard/new/team", dashboardGUI.new NewTeamHandler(), freeMarker);
-    Spark.post("/dashboard/new/team/results", dashboardGUI.new NewTeamResultsHandler(), freeMarker);
-    Spark.get("/dashboard/new/player", dashboardGUI.new NewPlayerHandler(), freeMarker);
-    Spark.post("/dashboard/new/player/results", dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
+    Spark.post("/dashboard/new/team", dashboardGUI.new NewTeamHandler());
+    Spark.post("/dashboard/new/player", dashboardGUI.new NewPlayerHandler());
     Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
@@ -227,7 +225,7 @@ public class GUIManager {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
       String password = qm.value("password");
-      int clearance = dbManager.checkPassword(username, password);
+      int clearance = db.checkPassword(username, password);
       req.session().attribute("clearance", Integer.valueOf(clearance).toString());
       Map<String, Object> variables =
         ImmutableMap.of("clearance", clearance, "errorMessage", "");

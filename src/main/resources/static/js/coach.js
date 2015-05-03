@@ -1,5 +1,34 @@
 var prevEntry1 = "";
 $('#multipleresults').modal({ show: false});
+$('.new-player').modal({ show: false});
+$('.new-team').modal({ show: false});
+
+
+$("#make-new-player").on("click", function (e) {
+	$(".new-player").modal('show');
+});
+
+$("#make-new-team").on("click", function (e) {
+	$(".new-team").modal('show');
+});
+
+$('#player-form').submit(function() {
+	$.post('/dashboard/new/player', $('#player-form').serialize(), function () {
+		bootbox.alert("Player created!", function () {
+			$(".new-player").modal('hide');
+		});
+	}); 
+	return false;
+});
+
+$('#team-form').submit(function() {
+	$.post('/dashboard/new/team', $('#team-form').serialize(), function () {
+		bootbox.alert("Team created!", function () {
+			$(".new-team").modal('hide');
+		});
+	}); 
+	return false;
+});
 
 function suggestions(e) {
 	console.log(e);

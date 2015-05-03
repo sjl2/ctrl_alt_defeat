@@ -75,12 +75,12 @@
     </div>
   </div>
 
-    <div class="container">
-      <div class = "jumbotron">
-        <h2>Welcome ${myTeam.getName()}, to your <kbd>ctrl + alt + defeat</kbd> Dashboard!</h2>
-      </div>
-      ${dashboardContent}
+  <div class="container">
+    <div class = "jumbotron">
+      <h2>Welcome ${myTeam.getName()}, to your <kbd>ctrl + alt + defeat</kbd> Dashboard!</h2>
     </div>
+    ${dashboardContent}
+  </div>
 
 </#assign>
 <#include "coach.ftl">

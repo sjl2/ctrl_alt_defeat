@@ -2,15 +2,6 @@
     margin: 10px auto;
 }
 
-.table {
-    background: #f9f9f9;
-    border-radius: 5px;
-}
-
-tr, th, .active {
-    border-radius: 5px;
-}
-
 .stat-row {
     cursor: pointer;
 }
