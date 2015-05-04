@@ -29,7 +29,6 @@ POST-GABE:
 
 New TODO's
 - Logout - just need button somewhere
-- Autocorrect
 - Don't let bench get anything but technicals
 - Responses for stat keepers for advance period, timeouts, etc.
 - Style everything
@@ -49,12 +48,8 @@ Testing:
 Stats-entry:
  - Header for player columns
  - Center/more intuitive layout of bottom buttons
- - A faster way to send stats without clicking send stats
- - Make possesion button work on first click/not backwards
  - Notifications
- - Do something with big benches
- - Center court
- - 
+ - Do something with big benches 
 
 Tyler:
  - Ball doesn't change it's first frame. 

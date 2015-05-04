@@ -21,6 +21,7 @@ var court = document.getElementById("court");
 var home_team_div = document.getElementById("home_team");
 var away_team_div = document.getElementById("away_team");
 var sub_div = document.getElementById("sub_div");
+var arrow_div = document.getElementById("arrows");
 //size of court
 court_width = 940 / 2.15;
 court_height = 500 / 2.15;
@@ -39,6 +40,9 @@ court_paper.homePossession = false;
 var home_team_paper = Raphael(home_team_div, 70, 285);
 var away_team_paper = Raphael(away_team_div, 70, 285);
 var sub_paper = Raphael(sub_div, 445, 400);
+var arrow_paper = Raphael(arrow_div, court.width, 100);
+
+arrow_paper.right = arrow_paper.path("M150,26L100,26L100,35L80,20L100,5L100,14L150,14Z").attr({"stroke-width" : 2});
 
 
 
@@ -111,6 +115,14 @@ $.get("/game/roster", function(responseJSON) {
 
     var awayClick = makeDarker(Raphael.color(away.primary).hex);
     var awayAccent = away.secondary;    
+
+
+    var rightPoint = 80;
+    var leftPoint = arrow_paper.width - 80;
+    arrow_paper.right = arrow_paper.path("M150,26L100,26L100,35L80,20L100,5L100,14L150,14Z").attr({"stroke-width" : 2, fill : homeColor}).click(function(e){switchSides()});
+    arrow_paper.left = arrow_paper.path("M"+ (leftPoint - 70) + ",26L"+ (leftPoint - 20) + ",26L"+ (leftPoint - 20) + ",35L" + leftPoint + ",20L"+ (leftPoint - 20) + ",5L"+ (leftPoint - 20) + ",14L"+ (leftPoint - 70) + ",14Z")
+    .attr({"stroke-width" : 2, fill : awayColor}).click(function(e){switchSides()});
+
 
     for (var i = 0; i < 5; i++) {
     	var tempBox = home_team_paper.rect(10, 10 + 55 * i, 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
@@ -467,6 +479,13 @@ $.get("/game/roster", function(responseJSON) {
 
 });	
 
+function switchSides() {
+    var a = arrow_paper.right.attr("fill");
+    arrow_paper.right.attr({fill : arrow_paper.left.attr("fill")});
+    arrow_paper.left.attr({fill : a});
+}
+
+
 function endGame() {
     $.post("/stats/endgame", {}, function(responseJSON) {
         window.location.href = "/stats";
@@ -484,12 +503,12 @@ function fp() {
     if (court_paper.homePossession) {
 	court_paper.homePossession = false;
 
-	$("#flipPossession")[0].innerHTML = "<span class=\"glyphicon glyphicon-triangle-right\" aria-hidden=\"true\"></span>";
+	$("#flipPossession")[0].innerHTML = "Possession <span class=\"glyphicon glyphicon-triangle-right\" aria-hidden=\"true\"></span>";
 
     } else {
 	court_paper.homePossession = true;
 
-	$("#flipPossession")[0].innerHTML = "<span class=\"glyphicon glyphicon-triangle-left\" aria-hidden=\"true\"></span>";
+	$("#flipPossession")[0].innerHTML = "Possession <span class=\"glyphicon glyphicon-triangle-left\" aria-hidden=\"true\"></span>";
 
     }
     $.post("/stats/changepossession", {}, function(responseJSON) {});
