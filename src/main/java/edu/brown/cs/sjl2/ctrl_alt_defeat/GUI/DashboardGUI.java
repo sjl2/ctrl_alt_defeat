@@ -21,6 +21,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
@@ -64,15 +65,10 @@ public class DashboardGUI {
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
-      Team opponent = db.getTeam(db.getOpposingTeams().get(0).getID());
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", "Dashboard")
           .put("myTeam", dash.getMyTeam())
-          .put("players", dash.getMyTeam().getPlayers())
-          .put("allTeams", db.getAllTeams())
-          .put("teams", db.getOpposingTeams())
-          .put("opposingPlayers", opponent.getPlayers())
           .put("isGame", dash.getGame() != null)
           .put("errorMessage", "").build();
 
@@ -316,6 +312,24 @@ public class DashboardGUI {
     }
   }
 
+  public class GetOpponentsHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      List<Link> teams = db.getOpposingTeams();
+      Map<String, Object> variables = ImmutableMap.of("teams", teams);
+      return GSON.toJson(variables);
+    }
+  }
+
+  public class GetTeamsHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      List<Link> teams = db.getAllTeams();
+      Map<String, Object> variables = ImmutableMap.of("teams", teams);
+      return GSON.toJson(variables);
+    }
+  }
+  
   /**
    * Used to populate create game select list with player names.
    * @author awainger

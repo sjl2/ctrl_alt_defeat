@@ -69,7 +69,7 @@ function clickStatType(columnIndex) {
 	for(i = 0; i < chart.axis.length; i++) {
 	    var axis = chart.axis[i];
 	    for(j = 0; j < axis.text.length; j++) {
-		axis.text[j][0].childNodes[0].setAttribute("dy", 3.5);
+		axis.textp[j][0].childNodes[0].setAttribute("dy", 3.5);
 	    }
 	}
 	var legendX = 35;
