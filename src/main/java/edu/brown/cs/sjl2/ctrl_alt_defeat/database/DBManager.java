@@ -1324,18 +1324,18 @@ public class DBManager {
         }
       }
 
-      //int qualifiedBins = 0;
       double totalValue = 0.0;
       for (StatBin[] col : statBins) {
         for (StatBin bin : col) {
+          System.out.println("Potential Bin");
           if (bin.exceedsThreshold()) {
+            System.out.println("Bin entered");
             totalValue += bin.getValue();
-        //    qualifiedBins++;
           }
         }
       }
 
-      double scaledValue = totalValue / TOTAL_BINS;//* ((double) qualifiedBins / (double) TOTAL_BINS);
+      double scaledValue = totalValue / (TOTAL_BINS - 5);//* ((double) qualifiedBins / (double) TOTAL_BINS);
       System.out.println("TOTAL: " + totalValue);
       System.out.println("SCALED: " + scaledValue);
       return 100.0 * scaledValue;
@@ -1351,33 +1351,34 @@ public class DBManager {
    * @author awainger
    */
   private static class StatBin {
-    private static final double FT_PERCENTAGE = .7;
-    private static final double TWO_PT_PERCENTAGE = .45;
-    private static final double THREE_PT_PERCENTAGE = .33;
+    private static final double FT_PERCENTAGE = .65;
+    private static final double TWO_PT_PERCENTAGE = .4;
+    private static final double THREE_PT_PERCENTAGE = .3;
 
     // Hollinger estimate
     private static final double ASSIST_VALUE = .67;
     // Value of possession based on offensive efficiency
     private static final double POSSESSION_VALUE = 1.0;
 
-    private List<String> stats;
+    private int numStats;
     private double value;
-    private double totalPossibleVal;
     private int threshold;
+    
+    private Map<String, Integer> statToVals;
 
     /**
      * Constructor for new StatBin.
      * @author awainger
      */
     public StatBin(int numPlayers) {
-      stats = new ArrayList<>();
+      numStats = 0;
       value = 0;
-      totalPossibleVal = 0;
+      statToVals = new HashMap<>();
       threshold = 2 * numPlayers;
     }
 
     public boolean exceedsThreshold() {
-      return stats.size() > threshold;
+      return numStats > threshold;
     }
 
     /**
@@ -1385,9 +1386,11 @@ public class DBManager {
      * @param stat - String, stat to add
      */
     public void add(String stat) {
-      stats.add(stat);
-      value += getStatValue(stat);
-      totalPossibleVal += Math.abs(getStatValue(stat));
+//      Integer stat
+//      statToVals.put(key, value)
+//      numStats++;
+//      value += getStatValue(stat);
+////      totalPossibleVal += Math.abs(getStatValue(stat));
     }
 
     /**
@@ -1395,16 +1398,15 @@ public class DBManager {
      * @return Double, estimate of the value of the stats in this bin
      */
     public double getValue() {
-        return value / totalPossibleVal;
+      System.out.println("Value: " + value);
+      System.out.println("Num stats: " + numStats);
+      //System.out.println("Total Possible: " + totalPossibleVal);
+      System.out.println("Bin Value: " + value / numStats);
+      System.out.println();
+      //return value / totalPossibleVal;
+      return value / numStats;
     }
 
-    /**
-     * Returns the total possible value of the bin.
-     * @return Double, estimate of the total possible value of the bin.
-     */
-    public double getTotalPossibleValue() {
-      return totalPossibleVal;
-    }
 
     /**
      * Determines value of various types of stats.
@@ -1434,8 +1436,7 @@ public class DBManager {
       case "Assist":
         return ASSIST_VALUE;
       default:
-        System.out.println("UHOH, DEFAULT CASE!!!! GET STAT VALUE");
-        return 0;
+        throw new RuntimeException("Default case should never be reached");
       }
     }
   }
