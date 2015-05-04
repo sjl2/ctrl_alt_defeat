@@ -37,7 +37,7 @@ function clickStatType(columnIndex) {
     $("#chart-title").html("<b>" + statNames[columnIndex - 1] + "</b>");
     paper.clear();
     
-    var table = $("#player-game-stats")[0];
+    var table = $("#season")[0];
     if(columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 5) {
 	var xs = [];
 	var ys1 = [];
@@ -69,7 +69,7 @@ function clickStatType(columnIndex) {
 	for(i = 0; i < chart.axis.length; i++) {
 	    var axis = chart.axis[i];
 	    for(j = 0; j < axis.text.length; j++) {
-		axis.text[j][0].childNodes[0].setAttribute("dy", 3.5);
+		axis.textp[j][0].childNodes[0].setAttribute("dy", 3.5);
 	    }
 	}
 	var legendX = 35;
