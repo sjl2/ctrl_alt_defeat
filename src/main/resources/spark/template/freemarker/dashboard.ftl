@@ -27,7 +27,7 @@
         <div class="modal-body row">
           <div class="col-sm-1"></div>
           <div class="col-sm-5 form-group myStarters" id="myStarters">
-            <h3 class="myTeamName" id="myTeam${myTeam.getID()}">The ${myTeam.getName()}</h3>
+            <h3 class="myTeamName" id="myTeam${myTeam.getID()}">${myTeam.getName()}</h3>
             <table class="table starters" id="home">
             </table>         
           </div>
