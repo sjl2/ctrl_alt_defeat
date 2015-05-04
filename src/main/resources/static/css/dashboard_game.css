@@ -1,0 +1,12 @@
+#shotChartButtonGroup {
+    position: absolute;
+    top: 0px;
+    z-index: 5;
+}
+
+#scoreboard {
+}
+
+svg {
+    z-index: 4;
+}

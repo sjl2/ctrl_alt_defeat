@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.GameException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.ScoreboardException;
@@ -35,23 +36,25 @@ public class StatsEntryGUI {
 
     @Override
     public ModelAndView handle(Request request, Response response) {
+      Game g = dash.getGame();
+
       List<Stat> s;
-      if (dash.getGame() != null) {
-        s = dash.getGame().getAllStats();
+      Boolean isGame = true;
+      if (g != null) {
+        s = g.getAllStats();
       } else {
         s = new ArrayList<Stat>();
+        isGame = false;
       }
+
       Collections.reverse(s);
       Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Stats Entry", 
-              "stats", s, 
-              "errorMessage", "");
+                ImmutableMap.of("tabTitle", "Stats Entry",
+                          "stats", s,
+                          "isGame", isGame,
+                          "errorMessage", "");
 
-      //      if (dash.getGame() != null) {
-      return new ModelAndView(variables, "stats_entry.ftl");
-      //      } else {
-      //        return new ModelAndView(variables, "no_game.ftl");
-      //      }
+        return new ModelAndView(variables, "stats_entry.ftl");
 
     }
 
@@ -98,15 +101,16 @@ public class StatsEntryGUI {
       System.out.println(
           "Updating: " + statID + " " + playerID + " " + x + " " + y);
 
+      String errorMessage = "";
       try {
         dash.getGame().updateStat(id, statID, playerID, new Location(x, y));
       } catch (GameException ex) {
-        return ex.getMessage();
+        errorMessage = ex.getMessage();
       } catch (Exception e) {
-        e.printStackTrace();
+        errorMessage = e.getMessage();
       }
 
-      return 28;
+      return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage));
     }
   }
 
@@ -117,14 +121,15 @@ public class StatsEntryGUI {
       QueryParamsMap qm = request.queryMap();
       int id = GSON.fromJson(qm.value("databaseID"), Integer.class);
 
+      String errorMessage = "";
       try {
         dash.getGame().deleteStat(id);
       } catch (GameException ex) {
-        return ex.getMessage();
+        errorMessage = ex.getMessage();
       } catch (Exception e) {
-        e.printStackTrace();
+        errorMessage = e.getMessage();
       }
-      return 28;
+      return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage));
     }
   }
 
@@ -145,15 +150,15 @@ public class StatsEntryGUI {
     public Object handle(Request request, Response response) {
       System.out.println("timeout " + request.queryMap().value("h"));
 
+      String errorMessage = "";
       try {
         dash.getGame().takeTimeout(
             GSON.fromJson(request.queryMap().value("h"), Boolean.class));
       } catch (JsonSyntaxException | GameException e) {
-        e.printStackTrace();
-        System.out.println("mistake handling timeout");
+        errorMessage = e.getMessage();
       };
 
-      return 27;
+      return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage));
     }
   }
 
@@ -164,42 +169,50 @@ public class StatsEntryGUI {
       int inPlayerID = GSON.fromJson(qm.value("in"), Integer.class);
       int outPlayerID = GSON.fromJson(qm.value("out"), Integer.class);
       boolean home = Boolean.parseBoolean(qm.value("home"));
-
+      String errorMessage = "";
       try {
         dash.getGame().subPlayer(inPlayerID, outPlayerID, home);
       } catch (ScoreboardException e) {
-        e.printStackTrace();
-        System.out.println("there was an error subbing the players");
+        errorMessage = e.getMessage();
       } catch (Exception e) {
-        System.out.println("the error is not well classified");
+        errorMessage = e.getMessage();
       }
-      return 25;
+      return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage));
     }
 
   }
-  
+
   public class EndGameHandler implements Route {
     @Override
     public Object handle(Request arg0, Response arg1) {
       dash.endGame();
       return true;
     }
-    
+
   }
-  
+
   public class AdvancePeriodHandler implements Route {
 
     @Override
     public Object handle(Request arg0, Response arg1) {
+      String errorMessage = "";
       try {
-        dash.getGame().incrementPeriod();
+        if (dash.getGame() != null) {
+          dash.getGame().incrementPeriod();
+        } else {
+          errorMessage = "No current game.";
+          return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage));
+        }
       } catch (GameException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        return GSON.toJson(ImmutableMap.of("errorMessage", e.getMessage()));
       }
-      return dash.getGame().getPeriod();
+
+      return GSON.toJson(
+          ImmutableMap.of(
+              "errorMessage", errorMessage,
+              "period", dash.getGame().getPeriod()));
     }
-    
+
   }
 
 

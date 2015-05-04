@@ -3,8 +3,12 @@
 <tr>
   <td>${pos[i]}:</td>
   <td>               
-    <select class="pull-right playerSelector" id="oppStarter${i}">
-      <#list players as player>
+    <#if myTeam>
+      <select class="pull-right playerSelector" id="myStarter${i}">
+    <#else>
+      <select class="pull-right playerSelector" id="oppStarter${i}">
+    </#if>
+    <#list players as player>
         <option id="player${player.getID()}" <#if player_index == i>selected</#if> >
           ${player.getName()}
         </option>

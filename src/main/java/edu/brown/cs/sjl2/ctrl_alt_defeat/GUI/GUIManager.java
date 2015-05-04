@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import spark.ExceptionHandler;
+import spark.Filter;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -25,7 +26,7 @@ import freemarker.template.Configuration;
 
 public class GUIManager {
 
-  private DBManager dbManager;
+  private DBManager db;
   private int port = 8585;
   private final static int STATUS = 500;
 
@@ -41,23 +42,23 @@ public class GUIManager {
   private static final Gson GSON = new Gson();
 
   public GUIManager(DBManager db) {
-    this.dbManager = db;
-    this.dash = new Dashboard(dbManager);
-    this.trie = dbManager.getTrie();
+    this.db = db;
+    this.dash = new Dashboard(db);
+    this.trie = db.getTrie();
     trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
 
-    this.dashboardGUI = new DashboardGUI(dash, dbManager, trie);
+    this.dashboardGUI = new DashboardGUI(dash, db, trie);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
+    this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
-    this.wikiGUI = new WikiGUI(dbManager, dash);
+    this.wikiGUI = new WikiGUI(db, dash);
     runServer();
   }
 
   public GUIManager(DBManager db, int port) {
-    this.dbManager = db;
+    this.db = db;
     this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dash, dbManager.getPlaymakerDB());
+    this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
@@ -69,22 +70,35 @@ public class GUIManager {
 
     FreeMarkerEngine freeMarker = createEngine();
 
-    // Setup Spark Routes
-    Spark.get("/ctrlaltdefeat", new FrontHandler(), freeMarker);
+    /*** Setup Filters ***/
+//    Spark.before("/dashboard", new CoachFilter());
+//    Spark.before("/dashboard/*", new CoachFilter());
+//    Spark.before("/whiteboard", new CoachFilter());
+//    Spark.before("/whiteboard/*", new CoachFilter());
+//    Spark.before("/playmaker", new CoachFilter());
+//    Spark.before("/playmaker/*", new CoachFilter());
+//
+//    Spark.before("/stats", new StatsFilter());
+//    Spark.before("/stats/*", new StatsFilter());
 
-    //Spark.get("/login", new LoginViewHandler(), freeMarker);
+    
+    // Setup Spark Routes
+    Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
+    Spark.post("/login/logout", new LogoutHandler());
 
     /*** DashboardGUI routes ***/
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
     Spark.post("/dashboard/new", dashboardGUI.new DashSetupHandler(), freeMarker);
-    Spark.get("/dashboard/new/team", dashboardGUI.new NewTeamHandler(), freeMarker);
-    Spark.post("/dashboard/new/team/results", dashboardGUI.new NewTeamResultsHandler(), freeMarker);
-    Spark.get("/dashboard/new/player", dashboardGUI.new NewPlayerHandler(), freeMarker);
-    Spark.post("/dashboard/new/player/results", dashboardGUI.new NewPlayerResultsHandler(), freeMarker);
+    Spark.post("/dashboard/new/team", dashboardGUI.new NewTeamHandler());
+    Spark.post("/dashboard/new/player", dashboardGUI.new NewPlayerHandler());
+    Spark.post("/dashboard/edit/user", dashboardGUI.new EditUserHandler());
+    Spark.get("/dashboard/get/users", dashboardGUI.new GetUsersHandler());
     Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
+    Spark.get("/dashboard/get/opponents", dashboardGUI.new GetOpponentsHandler());
+    Spark.get("/dashboard/get/teams", dashboardGUI.new GetOpponentsHandler());
     Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(), freeMarker);
     Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
     Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
@@ -92,23 +106,24 @@ public class GUIManager {
     /*** WikiGUI routes ***/
     Spark.get("/game/view/:id", wikiGUI.new GameViewHandler(), freeMarker);
     Spark.get("/player/view/:id", wikiGUI.new PlayerViewHandler(), freeMarker);
+    Spark.post("/player/delete", wikiGUI.new DeletePlayer());
     Spark.get("/team/view/:id", wikiGUI.new TeamViewHandler(), freeMarker);
     Spark.post("/player/edit", wikiGUI.new EditPlayer());
     Spark.post("/team/edit", wikiGUI.new EditTeam());
     Spark.post("/season/get", wikiGUI.new GetGameStats(), freeMarker);
-    
+
     Spark.post("/analytics/shotchart", wikiGUI.new GetAnalyticsShotChart());
     Spark.post("/analytics/heatmap", wikiGUI.new GetAnalyticsHeatMap());
     Spark.post("/analytics/ranking", wikiGUI.new GetLineupRanking());
 
     /* Rename these at some point */
-    Spark.post("/dashboard/shotchart", wikiGUI.new GetShotChartData());
-    Spark.post("/dashboard/heatmap", wikiGUI.new GetHeatMapData());
+    Spark.post("/shotchart", wikiGUI.new GetShotChartData());
+    Spark.post("/heatmap", wikiGUI.new GetHeatMapData());
     Spark.get("/dashboard/analytics", dashboardGUI.new AnalyticsHandler(), freeMarker);
 
     /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());
-    Spark.get("/game/roster", gameGUI.new StPgHandler());
+    Spark.get("/game/roster", gameGUI.new StatPageHandler());
 
     /*** PlaymakerGUI routes ***/
 		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
@@ -127,8 +142,11 @@ public class GUIManager {
 		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
+
 		Spark.post("/stats/endgame", statsEntryGUI.new EndGameHandler());
 		Spark.post("/stats/advanceperiod", statsEntryGUI.new AdvancePeriodHandler());
+
+    //Spark.get("*", new PageNotFoundHandler(), freeMarker);
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -145,24 +163,59 @@ public class GUIManager {
     return new FreeMarkerEngine(config);
   }
 
-  /**
-   * Default Handler for ctrl-alt-defeat
-   *
-   * @author sjl2
-   */
-  private class FrontHandler implements TemplateViewRoute {
+  private class CoachFilter implements Filter {
+
     @Override
-    public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Ctrl-Alt-Defeat", "errorMessage", "");
-      return new ModelAndView(variables, "ctrl_alt_defeat.ftl");
+    public void handle(Request req, Response res) {
+      String clearanceString = req.session().attribute("clearance");
+
+      if(clearanceString == null) {
+        res.redirect("/login");
+        return;
+      }
+
+      int clearance = Integer.parseInt(clearanceString);
+
+      if(clearance == 1) {
+        res.redirect("/stats");
+      } else if(clearance < 1) {
+        res.redirect("/login");
+      }
     }
+
   }
+
+  private class StatsFilter implements Filter {
+
+    @Override
+    public void handle(Request req, Response res) {
+      String clearanceString = req.session().attribute("clearance");
+
+      if(clearanceString == null) {
+        res.redirect("/login");
+        return;
+      }
+
+      int clearance = Integer.parseInt(clearanceString);
+
+      if(clearance < 1) {
+        res.redirect("/login");
+      }
+    }
+
+  }
+
+  /*private class PageNotFoundFilter implements Filter {
+
+    @Override
+    public void handle(Request req, Response res) {
+      System.out.println(req.raw().getRequestURL());
+    }
+  }*/
 
   public class LoginViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      System.out.println("a");
       Map<String, Object> variables =
         ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
       return new ModelAndView(variables, "login.ftl");
@@ -175,11 +228,21 @@ public class GUIManager {
       QueryParamsMap qm = req.queryMap();
       String username = qm.value("username");
       String password = qm.value("password");
-      int clearance = dbManager.checkPassword(username, password);
+      int clearance = db.checkPassword(username, password);
+      req.session().attribute("clearance", Integer.valueOf(clearance).toString());
       Map<String, Object> variables =
         ImmutableMap.of("clearance", clearance, "errorMessage", "");
 
       return GSON.toJson(variables);
+    }
+  }
+
+  private class LogoutHandler implements Route {
+    @Override
+    public Object handle(Request req, Response res) {
+      req.session().attribute("clearance", 0);
+      res.redirect("/login");
+      return GSON.toJson(ImmutableMap.of("errorMessage", ""));
     }
   }
 

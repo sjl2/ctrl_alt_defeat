@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 import com.google.common.collect.HashMultiset;
@@ -108,10 +109,42 @@ public class DBManager {
       return rs.next();
     } catch (SQLException e) {
       close();
-      throw new RuntimeException(e);
+      throw new RuntimeException(e.getMessage());
     }
   }
 
+  public List<String> getUsernames() {
+    String query = "SELECT name FROM user";
+    List<String> users = new LinkedList<>();
+    try(PreparedStatement prep = conn.prepareStatement(query)) {
+      ResultSet rs = prep.executeQuery();
+      while(rs.next()) {
+        String name = rs.getString(1);
+        users.add(name);
+      }
+      rs.close();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e.getMessage());
+    }
+
+    return users;
+  }
+
+  public void updateUser(String oldUsername, String newUsername, String newPassword) {
+    String query = "UPDATE user SET name = ?, password = ? where name = ?;";
+    try(PreparedStatement prep = conn.prepareStatement(query)) {
+      prep.setString(1, newUsername);
+      prep.setString(2, Integer.valueOf(newPassword.hashCode()).toString());
+      prep.setString(3, oldUsername);
+
+      prep.execute();
+    } catch (SQLException e) {
+      close();
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+  
   public int checkPassword(String username, String password) {
     if(!doesUsernameExist(username)) {
       return -1;
@@ -121,9 +154,9 @@ public class DBManager {
       prep.setString(1, username);
       ResultSet rs = prep.executeQuery();
       if(rs.next()) {
-        String dbPassword = rs.getString(1);
+        int dbPassword = rs.getInt(1);
         int clearance = rs.getInt(2);
-        if(dbPassword.equals(password)) {
+        if(dbPassword == password.hashCode()) {
           return clearance;
         } else {
           return -1;
@@ -133,7 +166,7 @@ public class DBManager {
       }
     } catch (SQLException e) {
       close();
-      throw new RuntimeException(e);
+      throw new RuntimeException(e.getMessage());
     }
   }
 
@@ -554,7 +587,6 @@ public class DBManager {
       String secondary) {
 
     Team t = tf.getTeam(id, name, coach, primary, secondary);
-    System.out.println(t.getCoach());
     updateTeam(t);
   }
 
@@ -827,6 +859,39 @@ public class DBManager {
 
   }
 
+  public boolean deletePlayer(int id) {
+    String query = "SELECT count(*) FROM stat WHERE player = ?;";
+    String query2 = "DELETE FROM player WHERE id = ?;";
+    try (PreparedStatement prep = conn.prepareStatement(query);
+         PreparedStatement prep2 = conn.prepareStatement(query2)) {
+      prep.setInt(1, id);
+
+      ResultSet rs = prep.executeQuery();
+
+      if (rs.next()) {
+        int count = rs.getInt(1);
+        if (count != 0) {
+          return false;
+        }
+      }
+      
+      rs.close();
+
+      Player p = getPlayer(id);
+      Team t = getTeam(p.getTeamID());
+      t.removePlayer(p);
+      pf.removePlayer(id);
+      prep2.setInt(1, id);
+      prep2.executeUpdate();
+    } catch(SQLException e) {
+      String message = "Failed to delete player from player table."
+          + e.getMessage();
+      throw new RuntimeException(message);
+    }
+
+    return true;
+  }
+
   public int getTeamWins(int gameID, int teamID, LocalDate date, boolean inclusive) {
     // TODO Auto-generated method stub
     return 0;
@@ -1064,16 +1129,13 @@ public class DBManager {
     }
     query.append("?);");
     
-    System.out.println(query.toString());
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       int i = 1;
       for (int entity : entityIDs) {
-        System.out.println(i + " " + entity);
         prep.setInt(i, entity);
         i++;
       }
       for (int gameID : gameIDs) {
-        System.out.println(i + " " + gameID);
         prep.setInt(i, gameID);
         i++;
       }
@@ -1262,20 +1324,21 @@ public class DBManager {
         }
       }
 
-      int qualifiedBins = 0;
-      double totalValue = 0;
+      //int qualifiedBins = 0;
+      double totalValue = 0.0;
       for (StatBin[] col : statBins) {
         for (StatBin bin : col) {
           if (bin.exceedsThreshold()) {
-            System.out.println("adding! Value is now: " + totalValue);
             totalValue += bin.getValue();
-            qualifiedBins++;
+        //    qualifiedBins++;
           }
         }
       }
 
-      double scaledValue = totalValue * ((double) qualifiedBins / (double) TOTAL_BINS);
-      return scaledValue;
+      double scaledValue = totalValue / TOTAL_BINS;//* ((double) qualifiedBins / (double) TOTAL_BINS);
+      System.out.println("TOTAL: " + totalValue);
+      System.out.println("SCALED: " + scaledValue);
+      return 100.0 * scaledValue;
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -1288,10 +1351,9 @@ public class DBManager {
    * @author awainger
    */
   private static class StatBin {
-    // 10 ~= (10 stats/player/game * 5 players * 5 games) / (25 bins)
     private static final double FT_PERCENTAGE = .7;
-    private static final double TWO_PT_PERCENTAGE = .4;
-    private static final double THREE_PT_PERCENTAGE = .3;
+    private static final double TWO_PT_PERCENTAGE = .45;
+    private static final double THREE_PT_PERCENTAGE = .33;
 
     // Hollinger estimate
     private static final double ASSIST_VALUE = .67;
@@ -1300,6 +1362,7 @@ public class DBManager {
 
     private List<String> stats;
     private double value;
+    private double totalPossibleVal;
     private int threshold;
 
     /**
@@ -1309,7 +1372,8 @@ public class DBManager {
     public StatBin(int numPlayers) {
       stats = new ArrayList<>();
       value = 0;
-      threshold = 0;//2 * numPlayers;
+      totalPossibleVal = 0;
+      threshold = 2 * numPlayers;
     }
 
     public boolean exceedsThreshold() {
@@ -1322,18 +1386,24 @@ public class DBManager {
      */
     public void add(String stat) {
       stats.add(stat);
-      System.out.println(stat);
-      System.out.println("value before: " + value);
       value += getStatValue(stat);
-      System.out.println("value after: " + value);
+      totalPossibleVal += Math.abs(getStatValue(stat));
     }
 
     /**
-     * Returns the value of the bin.
+     * Returns the ratio of earned to possible points for bin.
      * @return Double, estimate of the value of the stats in this bin
      */
     public double getValue() {
-        return value;
+        return value / totalPossibleVal;
+    }
+
+    /**
+     * Returns the total possible value of the bin.
+     * @return Double, estimate of the total possible value of the bin.
+     */
+    public double getTotalPossibleValue() {
+      return totalPossibleVal;
     }
 
     /**
@@ -1364,6 +1434,7 @@ public class DBManager {
       case "Assist":
         return ASSIST_VALUE;
       default:
+        System.out.println("UHOH, DEFAULT CASE!!!! GET STAT VALUE");
         return 0;
       }
     }

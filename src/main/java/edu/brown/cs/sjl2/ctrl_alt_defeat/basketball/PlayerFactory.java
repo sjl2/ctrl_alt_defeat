@@ -40,6 +40,10 @@ public class PlayerFactory {
     return p;
   }
 
+  public void removePlayer(int id) {
+    players.remove(id);
+  }
+
   private void cachePlayer(Player p) {
     players.put(p.getID(), p);
   }

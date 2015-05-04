@@ -21,3 +21,9 @@ div, button {
 svg text {
 	cursor: default;
 }
+
+.stat-button {
+    height: 4em;
+    width: 19%;
+    display: inline-block;
+}
