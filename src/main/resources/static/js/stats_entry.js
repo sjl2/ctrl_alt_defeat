@@ -1,3 +1,12 @@
+$(document).keypress(function(e) {
+        if ( e.keyCode === 13 ) addStat(); //enter key
+        else if (e.keyCode === 83) {
+            $("#subs").modal('show');
+            console.log("subs should've happened");
+        }
+
+    });
+
 // STAT GLOBALS
 var clickedPoint; 
 var clickedStat; 
@@ -25,11 +34,11 @@ var stats = [["Block", "DefensiveFoul", "DefensiveRebound", "FreeThrow","MissedF
 
 
 var court_paper = Raphael(court, court.width, court.height);
-court_paper.homePossession = true;
+court_paper.homePossession = false;
 
 var home_team_paper = Raphael(home_team_div, 70, 285);
 var away_team_paper = Raphael(away_team_div, 70, 285);
-var sub_paper = Raphael(sub_div, 445, 300);
+var sub_paper = Raphael(sub_div, 445, 400);
 
 
 
@@ -101,10 +110,7 @@ $.get("/game/roster", function(responseJSON) {
     var awayTextColor = whiteOrBlack(Raphael.color(away.primary));
 
     var awayClick = makeDarker(Raphael.color(away.primary).hex);
-    var awayAccent = away.secondary;
-
-    //R*0.299 + G*0.587 + B*0.114.
-    
+    var awayAccent = away.secondary;    
 
     for (var i = 0; i < 5; i++) {
     	var tempBox = home_team_paper.rect(10, 10 + 55 * i, 50, 50, 10).attr({fill: homeColor, stroke: 'black', 'stroke-width': 2})
@@ -285,12 +291,22 @@ $.get("/game/roster", function(responseJSON) {
 
 
 
-    sub_paper.subWindow = sub_paper.rect(0, 0, 445, 300).attr({fill : "white", "stroke-width" : 1}).mousemove(function(e) {
+    sub_paper.subWindow = sub_paper.rect(0, 100, 445, 300).attr({fill : "white", "stroke-width" : 1}).mousemove(function(e) {
     	if (!(this.currentMove === undefined)) {
     	    this.currentMove.attr({cx : e.offsetX});
     	    this.currentMove.attr({cy : e.offsetY});
     	}
     });
+    var words_home = sub_paper.text(80,80, "Home Bench");
+    var words_away = sub_paper.text(365,80, "Away Bench");
+    var words_main = sub_paper.text(222.5,60, "On The Court").attr({"font-size" : 20});
+
+    $('tspan', words_home.node).attr('dy', 3.5);
+    $('tspan', words_away.node).attr('dy', 3.5);
+    $('tspan', words_main.node).attr('dy', 3.5);
+
+
+
     sub_paper.subWindow.currentMove = undefined;
 
     var benchDots = sub_paper.set();
@@ -305,9 +321,9 @@ $.get("/game/roster", function(responseJSON) {
 
     home_team_paper.mainBoxes.forEach(function (obj) {
     	if (obj.data("bench")) {
-    	    var benchTemp = sub_paper.circle(80 - (40 * Math.floor(counts.homeBench/5)),40 + 40 * (counts.homeBench % 5),10).attr({fill : "lightblue"});
+    	    var benchTemp = sub_paper.circle(80 - (40 * Math.floor(counts.homeBench/5)),140 + 40 * (counts.homeBench % 5),10).attr({fill : "lightblue"});
     	    benchTemp.defaultX = 80 - (40 * Math.floor(counts.homeBench/5));
-    	    benchTemp.defaultY = 40 + 40 * (counts.homeBench % 5);
+    	    benchTemp.defaultY = 140 + 40 * (counts.homeBench % 5);
     	    counts.homeBench += 1;
 
     	    benchTemp.player = obj.player;
@@ -320,9 +336,9 @@ $.get("/game/roster", function(responseJSON) {
     	    subtexts.push(tempTexts);
     	    benchDots.push(benchTemp);
     	} else {
-    	    var temp = sub_paper.rect(160, 7.5 + 60 * counts.homeOn, 45, 45);
+    	    var temp = sub_paper.rect(160, 107.5 + 60 * counts.homeOn, 45, 45);
     	    temp.defaultX = 160 + 22.5;
-    	    temp.defaultY = 7.5 + 60 * counts.homeOn + 22.5;
+    	    temp.defaultY = 107.5 + 60 * counts.homeOn + 22.5;
     	    counts.homeOn += 1;
 
     	    temp.player = obj.player;
@@ -337,9 +353,9 @@ $.get("/game/roster", function(responseJSON) {
 
     away_team_paper.mainBoxes.forEach(function(obj) {
 	if (obj.data("bench")) {
-	    var temp = sub_paper.circle(365 + (40 * Math.floor(counts.awayBench/5)) ,40 + 40 * (counts.awayBench % 5),10).attr({fill : "lightblue"});
+	    var temp = sub_paper.circle(365 + (40 * Math.floor(counts.awayBench/5)) ,140 + 40 * (counts.awayBench % 5),10).attr({fill : "lightblue"});
 	    temp.defaultX = 365 + (40 * Math.floor(counts.awayBench/5));
-	    temp.defaultY = 40 + 40 * (counts.awayBench % 5);
+	    temp.defaultY = 140 + 40 * (counts.awayBench % 5);
 	    counts.awayBench += 1;
 
 	    temp.player = obj.player;
@@ -350,9 +366,9 @@ $.get("/game/roster", function(responseJSON) {
 	    subtexts.push(tempTexts);
 	    benchDots.push(temp);
 	} else {
-	    var temp = sub_paper.rect(240, 7.5 + 60 * counts.awayOn, 45, 45);
+	    var temp = sub_paper.rect(240, 107.5 + 60 * counts.awayOn, 45, 45);
 	    temp.defaultX = 240 + 22.5;
-	    temp.defaultY = 7.5 + 60 * counts.awayOn + 22.5;
+	    temp.defaultY = 107.5 + 60 * counts.awayOn + 22.5;
 	    counts.awayOn += 1;
 
 	    temp.player = obj.player;
@@ -622,7 +638,8 @@ function makeDarker(h) {
     var g = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(2,4),16);
     var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
 
-    return "rgb(" + r * .75 + "," + g * .75 + "," +  b * .75 + ")";
+    if (r*0.299 + g*0.587 + b*0.114 > 186) return "rgb(" + r * .6 + "," + g * .6 + "," +  b * .6 + ")";
+    else return "rgb(" + r * 1.5 + "," + g * 1.5 + "," +  b * 1.5 + ")";
 }
 
 function whiteOrBlack(color) {

@@ -6,7 +6,7 @@
 	<div class="modal-content">
 	  <div class="modal-header">
 	    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	    <h4 class="modal-title">Subs</h4>
+	    <h4 class="modal-title">Subs - Drag and drop bench players onto the player they're replacing</h4>
 	  </div>
 	  <div class="modal-body" id="sub_div">
 	    
@@ -56,17 +56,19 @@
 	  </div>
 	</div>
 	<div class = "row">
-	  <div class = "col-md-11">
-	    <button type="button" class = "btn btn-default" id="showHomeSubs" onclick="toggleBenchCourt(true)">Show Bench</button>
-	    <button type="button" class = "btn btn-warning" id="HomeTimeout" onclick="timeout(true)">Timeout</button>
-	    <button type="button" class = "btn btn-info" id="sendStat" onclick="addStat()">Send Stat</button>
+	  <div class = "col-md-12">
+	    <button type="button" class = "btn btn-default pull-left" id="showHomeSubs" onclick="toggleBenchCourt(true)">Show Bench</button>
+	    <button type="button" class = "btn btn-warning pull-left" id="HomeTimeout" onclick="timeout(true)">Timeout</button>
 	    <button type="button" class = "btn btn-default" id="flipPossession" onclick="fp()">
 	      <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
 	    </button>
-	    <button type="button" class = "btn btn-danger" id="openSubPerspective" data-toggle="modal" data-target="#subs">Sub Players</button>
-	    <button type="button" class = "btn btn-warning" id="AwayTimeout" onclick="timeout(false)">Timeout</button>
-	    <button type="button" class = "btn btn-default" id="showAwaySubs" onclick="toggleBenchCourt(false)">Show Bench</button>
+	    <button type="button" class = "btn btn-warning pull-right" id="AwayTimeout" onclick="timeout(false)">Timeout</button>
+	    <button type="button" class = "btn btn-default pull-right" id="showAwaySubs" onclick="toggleBenchCourt(false)">Show Bench</button>
 	    <br>
+	    <button type="button" class = "btn btn-info" id="sendStat" onclick="addStat()">Send Stat</button>
+	    <button type="button" class = "btn btn-danger" id="openSubPerspective" data-toggle="modal" data-target="#subs">Sub Players</button>
+
+
 	    <br>
 	    <button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
 	    <button type="button" class="btn btn-info" onclick="advancePeriod()">Advance Period</button>

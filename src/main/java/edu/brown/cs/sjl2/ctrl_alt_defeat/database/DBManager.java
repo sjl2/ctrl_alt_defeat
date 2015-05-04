@@ -1250,25 +1250,32 @@ public class DBManager {
    * @param isPlayer - Boolean, representing if name is of player or team
    * @return - int, id of matching player / team
    */
-  public List<Integer> searchBarResults(String name, boolean isPlayer) {
+  public List<List<Integer>> searchBarResults(String name) {
     String table = "";
-    if (isPlayer) {
-      table = "player";
-    } else {
-      table = "team";
-    }
 
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT id FROM " + table + " WHERE name = ?;")) {
+    try {
+      PreparedStatement prep = conn.prepareStatement(
+          "SELECT id FROM player WHERE name = ?;");
       prep.setString(1, name);
       ResultSet rs = prep.executeQuery();
       
-      List<Integer> ids = new ArrayList<Integer>();
+      List<Integer> playerIds = new ArrayList<Integer>();
       while (rs.next()) {
-         ids.add(rs.getInt(1));
+        playerIds.add(rs.getInt(1));
       }
-
-      return ids;
+      
+      prep = conn.prepareStatement(
+          "SELECT id FROM team WHERE name = ?;");
+      prep.setString(1, name);
+      rs = prep.executeQuery();
+      List<Integer> teamIds = new ArrayList<Integer>();
+      while (rs.next()) {
+        teamIds.add(rs.getInt(1));
+      }
+      List<List<Integer>> bothIds = new ArrayList<List<Integer>>();
+      bothIds.add(playerIds);
+      bothIds.add(teamIds);
+      return bothIds;
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);

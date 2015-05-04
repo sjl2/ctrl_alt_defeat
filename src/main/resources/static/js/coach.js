@@ -67,43 +67,44 @@ function suggestions(e) {
 
 }
 
-function setTextSearch(b) {
-    if (!b) {
-	$("#searchButton")[0].setAttribute("data-player", false);
-	$("#searchButton")[0].innerHTML = "Team Search";
-    } else {
-	$("#searchButton")[0].setAttribute("data-player", true);
-	$("#searchButton")[0].innerHTML = "Player Search";
-    }
-}
-
 function textSearch() {
-    
-    isPlayer = $("#searchButton")[0].getAttribute("data-player");
-    console.log(isPlayer);
 
-    $.post("/dashboard/search", {searchString : $("#playerTeamSearch")[0].value, isPlayer : isPlayer}, function(responseJSON) {
+    $.post("/dashboard/search", {searchString : $("#playerTeamSearch")[0].value}, function(responseJSON) {
 	console.log(responseJSON);
-	console.log("there");
 	var res = JSON.parse(responseJSON);
+	console.log(res);
 	if (res.errorMessage.length > 0) {
 	    //error
 	} else {
-	    var a;
-	    if (isPlayer === 'true') a = "player";
-	    else a = "team";
-	    console.log("the big one: ", a);
-	    if (res.list.length == 1) {
-		window.location.href ="/" + a + "/view/" + res.list[0].id;
-	    } else {
-		for (var i=0; i<res.list.length; i++) {
-		    $("#linkList").append("<a href=\"/" + a + "/view/" + res.list[i].id + "\">" + res.list[i].name + " (#" + res.list[i].number + " " + res.list[i].teamName + ")</a><br>");
-		}	
-		$('#multipleresults').modal('show');
-	    }
-	}
-	
+		if (res.players.length == 0) {
+			if (res.teams.length == 1) {
+				window.location.href = "/team/view/" + res.teams[0].id;
+			} else {
+				for (var i=0; i<res.teams.length; i++) {
+		    		$("#linkList").append("<a href=\"/team/view/" + res.teams[i].id + "\">" + res.teams[i].name  + ")</a><br>");
+				}	
+				$('#multipleresults').modal('show');
+			}
+		} else if (res.teams.length == 0) {
+			if (res.players.length == 1) {
+				window.location.href = "/player/view/" + res.players[0].id;				
+			} else {
+				for (var i=0; i<res.players.length; i++) {
+		    		$("#linkList").append("<a href=\"/" + a + "/view/" + res.players[i].id + "\">" + res.players[i].name + " (#" + res.players[i].number + " " + res.players[i].teamName + ")</a><br>");
+				}
+				$('#multipleresults').modal('show');
+			}
+		} else {
+			for (var i=0; i<res.teams.length; i++) {
+		    		$("#linkList").append("<a href=\"/team/view/" + res.teams[i].id + "\">" + res.teams[i].name  + ")</a><br>");
+			}
+			for (var i=0; i<res.players.length; i++) {
+		    		$("#linkList").append("<a href=\"/" + a + "/view/" + res.players[i].id + "\">" + res.players[i].name + " (#" + res.players[i].number + " " + res.players[i].teamName + ")</a><br>");
+			}
+			$('#multipleresults').modal('show');
 
+		}
+	}
     });
 }
 

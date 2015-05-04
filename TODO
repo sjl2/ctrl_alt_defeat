@@ -46,6 +46,16 @@ Testing:
 - GameStats JUnit
 - PlayMaker JUnit 
 
+Stats-entry:
+ - Header for player columns
+ - Center/more intuitive layout of bottom buttons
+ - A faster way to send stats without clicking send stats
+ - Make possesion button work on first click/not backwards
+ - Notifications
+ - Do something with big benches
+ - Center court
+ - 
+
 Tyler:
  - Ball doesn't change it's first frame. 
  - If player with possesion is being edited, the ball's future path should also be cleared. 
