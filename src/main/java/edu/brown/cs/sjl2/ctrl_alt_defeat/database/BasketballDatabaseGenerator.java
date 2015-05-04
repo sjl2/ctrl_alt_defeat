@@ -33,7 +33,7 @@ public class BasketballDatabaseGenerator {
   private static Map<String, Map<String, String>> teamToPlayerToType;
 
 
-  public static void populateDB(DBManager db, int roundRobins, boolean intelligent) {
+  public static void populateDB(DBManager db, int roundRobins, boolean intelligent, boolean genTeams) {
     Connection conn = db.getConnection();
 
     List<String> teamNames = null;
@@ -210,27 +210,29 @@ public class BasketballDatabaseGenerator {
         }
       }
 
-      int numGames =
-          roundRobins * teams.size() * (teams.size() - 1);
-      int gamesCompleted = 0;
-
-      // Play multiple round robin tournaments in random years.
-      for (int i = 0; i < roundRobins; i++) {
-        for (Team home : teams) {
-          for (Team away :  teams) {
-            if (home.getID() != away.getID()) {
-              Game game = new Game(home, away, db);
-              if (intelligent) {
-                intelligentGameStats(game, home, away, db);
-              } else {
-                randomGameStats(game, home, away, db);
+      if (!genTeams) {  
+        int numGames =
+            roundRobins * teams.size() * (teams.size() - 1);
+        int gamesCompleted = 0;
+  
+        // Play multiple round robin tournaments in random years.
+        for (int i = 0; i < roundRobins; i++) {
+          for (Team home : teams) {
+            for (Team away :  teams) {
+              if (home.getID() != away.getID()) {
+                Game game = new Game(home, away, db);
+                if (intelligent) {
+                  intelligentGameStats(game, home, away, db);
+                } else {
+                  randomGameStats(game, home, away, db);
+                }
+                if (gamesCompleted % BATCH_SIZE == 0) {
+                  String status = "Progress: " + gamesCompleted + " of "
+                      + numGames + " completed.";
+                  System.out.println(status);
+                }
+                gamesCompleted++;
               }
-              if (gamesCompleted % BATCH_SIZE == 0) {
-                String status = "Progress: " + gamesCompleted + " of "
-                    + numGames + " completed.";
-                System.out.println(status);
-              }
-              gamesCompleted++;
             }
           }
         }
