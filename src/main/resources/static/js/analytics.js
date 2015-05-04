@@ -41,8 +41,6 @@ function seasonHeatMap() {
         paper.clear();
         paper.image("/images/Basketball-Court-half.png",0,0,width,height).attr({"fill" : "white"});
         paper.rect(0,0,width,height).attr({fill : "rgba(150,150,150,.3)"});
-        //if (ids.length == 0) return;
-
 
         for (var i=0; i<res.makes.length; i++) {
             var xSpot = Math.floor(res.makes[i].x / epsilon_x);
