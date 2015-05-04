@@ -1,7 +1,10 @@
 $('.new-game').modal({ show: false});
 
 $("#opponent").on("change", function() {
-    postParameters = { teamID: $("#opponent").val() };
+    postParameters = {
+	teamID: $("#opponent").val(),
+	myTeam: false
+    };
     $.get("/dashboard/opponent/get", postParameters, function(html) {
 	$("#opponent-lineup")[0].innerHTML = html;
     })
@@ -55,9 +58,12 @@ $("#createGame").on("click", function() {
 });
 
 $("#start-game").on("click", function (e) {
-    $.get("/dashboard/opponent/get", {teamID: $(".myTeamName").attr("id").substring(6)}, function(html) {
-	$("#home")[0].innerHTML = html;
-    })
+    $.get("/dashboard/opponent/get", {
+	teamID: $(".myTeamName").attr("id").substring(6),
+	myTeam: true
+    }, function(html) {
+	      $("#home")[0].innerHTML = html;
+	  });
     $.get("/dashboard/get/opponents", {}, function(res) {
 	var teams = res.teams;
 	$("#opponent").html("");

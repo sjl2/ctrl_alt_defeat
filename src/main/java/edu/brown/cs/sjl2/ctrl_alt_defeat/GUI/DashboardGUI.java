@@ -339,10 +339,11 @@ public class DashboardGUI {
     public ModelAndView handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
       int teamID = Integer.parseInt(qm.value("teamID"));
+      boolean myTeam = Boolean.parseBoolean(qm.value("myTeam"));
       Team team = dash.getTeam(teamID);
       Collection<Player> players = team.getPlayers();
       Map<String, Object> variables =
-        ImmutableMap.of("players", players);
+        ImmutableMap.of("players", players, "myTeam", myTeam);
 
       return new ModelAndView(variables, "opponent_lineup.ftl");
     }
