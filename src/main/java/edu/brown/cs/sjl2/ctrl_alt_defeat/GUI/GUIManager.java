@@ -97,6 +97,7 @@ public class GUIManager {
     Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
+    Spark.get("/dashboard/scoreboard", dashboardGUI.new ScoreboardHandler());
     Spark.get("/dashboard/get/opponents", dashboardGUI.new GetOpponentsHandler());
     Spark.get("/dashboard/get/teams", dashboardGUI.new GetOpponentsHandler());
     Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(), freeMarker);
