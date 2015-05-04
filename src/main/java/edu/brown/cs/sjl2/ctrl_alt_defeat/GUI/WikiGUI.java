@@ -59,16 +59,21 @@ public class WikiGUI {
         game = dashboard.getOldGame(gameID);
       } catch (DashboardException e) {
         error = "No game exists with that id.";
-        System.out.println(error);
       }
 
-      Map<String, Object> variables =
+      if(game != null) {
+        Map<String, Object> variables =
           ImmutableMap.of("tabTitle", game.toString(),
-              "allTeams", dbManager.getAllTeams(),
-              "game", game,
-              "errorMessage", error);
+                          "allTeams", dbManager.getAllTeams(),
+                          "game", game,
+                          "errorMessage", error);
 
-      return new ModelAndView(variables, "game.ftl");
+        return new ModelAndView(variables, "game.ftl");
+      } else {
+        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Game doesn't exist");
+
+        return new ModelAndView(variables, "404.ftl");
+      }
     }
   }
 
@@ -111,7 +116,8 @@ public class WikiGUI {
         clearance = Integer.parseInt(clearanceString);
       }
 
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+      if(team != null) {
+        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", team.toString()).put("db", dbManager)
           .put("team", team).put("years", years).put("rows", rows)
           .put("allTeams", dbManager.getAllTeams())
@@ -119,7 +125,12 @@ public class WikiGUI {
           .put("seasonAverages", seasonAverages).put("errorMessage", error)
           .put("clearance", clearance)
           .build();
-      return new ModelAndView(variables, "team.ftl");
+        return new ModelAndView(variables, "team.ftl");
+      } else {
+        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Game doesn't exist");
+
+        return new ModelAndView(variables, "404.ftl");
+      }
     }
   }
 
@@ -228,8 +239,8 @@ public class WikiGUI {
         clearance = Integer.parseInt(clearanceString);
       }
 
-
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+      if(player != null) {      
+        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", player.toString()).put("db", dbManager)
           .put("player", player).put("years", years).put("rows", rows)
           .put("seasonTotals", seasonTotals)
@@ -237,7 +248,12 @@ public class WikiGUI {
           .put("seasonAverages", seasonAverages).put("errorMessage", error)
           .put("clearance", clearance)
           .build();
-      return new ModelAndView(variables, "player.ftl");
+        return new ModelAndView(variables, "player.ftl");
+      } else {
+        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Player doesn't exist");
+
+        return new ModelAndView(variables, "404.ftl");
+      }
     }
   }
 
