@@ -35,6 +35,8 @@ var startingLocations = [Location(0.35, 0.50),
 var positionAbrevs = ["PG", "SG", "SF", "PF", "C",
 		      "PG", "SG", "SF", "PF", "C"];
 
+var basketLocations = [Location(0.085, 0.5), Location(0.915, 0.5)];
+
 var intervalVar;
 var grabbedToken;
 
@@ -106,6 +108,17 @@ function Ball(playerToken) {
 	    var dy = this.location.y - playerToken.location.y;
 	    var distanceSquared = dx * dx + dy * dy;
 	    return distanceSquared < (playerRadius + ballRadius) * (playerRadius + ballRadius);
+	},
+
+	pointCollision: function(loc) {
+	    var dx = this.location.x - loc.x;
+	    var dy = this.location.y - loc.y;
+	    var distanceSquared = dx * dx + dy * dy;
+	    return distanceSquared < ballRadius * ballRadius;
+	},
+
+	checkBasket: function(basketIndex) {
+	    return this.pointCollision(basketLocations[basketIndex]);
 	},
 	
 	setLocationWithXY: function(x, y) {
@@ -512,14 +525,29 @@ function onend(event) {
 
 function onballend(event) {
     this.grabbed = false;
+    var playerCol = false;
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
 	if(this.checkCollision(t)) {
+	    playerCol = true;
 	    possessionToken = t;
-	    for(i = currentFrame; i <= maxFrame; i++) {
-		ball.possession[i] = possessionToken.index;
-	    }
 	    break;
+	}
+    }
+    if(playerCol) {
+	ball.setRelativeLocation(possessionToken);
+	for(i = currentFrame; i <= maxFrame; i++) {
+	    ball.possession[i] = possessionToken.index;
+	}
+    } else {
+	for(i = 0; i < basketLocations.length; i++) {
+	    if(ball.checkBasket(i)) {
+		ball.setLocationWithLoc(basketLocations[i]);
+		for(i = currentFrame; i <= maxFrame; i++) {
+		    //ball.possession[i] = 10 + i;
+		}
+		return;
+	    }
 	}
     }
     ball.setRelativeLocation(possessionToken);

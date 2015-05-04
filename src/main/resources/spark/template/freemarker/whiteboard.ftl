@@ -20,9 +20,9 @@
       </div>
   </div>
  
- <script src="js/whiteboard.js"></script>
- <link rel="stylesheet" href="css/whiteboard.css">
- <link rel="stylesheet" href="css/coach.css">
+ <script src="/js/whiteboard.js"></script>
+ <link rel="stylesheet" href="/css/whiteboard.css">
+ <link rel="stylesheet" href="/css/coach.css">
 
 </#assign>
 <#include "coach.ftl">

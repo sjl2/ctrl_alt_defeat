@@ -21,6 +21,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.StringFormatter;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
@@ -64,52 +65,38 @@ public class DashboardGUI {
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
-      Team opponent = db.getTeam(db.getOpposingTeams().get(0).getID());
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
           .put("tabTitle", "Dashboard")
           .put("myTeam", dash.getMyTeam())
-          .put("players", dash.getMyTeam().getPlayers())
-          .put("teams", db.getOpposingTeams())
-          .put("opposingPlayers", opponent.getPlayers())
           .put("isGame", dash.getGame() != null)
           .put("errorMessage", "").build();
 
-      return new ModelAndView(variables, "dashboard.ftl");
+      if (dash.getGame() == null) {
+        return new ModelAndView(variables, "dashboard_no_game.ftl");
+      }
+
+      return new ModelAndView(variables, "dashboard_game.ftl");
     }
   }
+
 
   /**
    * Loads new team creation page.
    * @author awainger
    */
-  public class NewTeamHandler implements TemplateViewRoute {
+  public class NewTeamHandler implements Route {
 
     @Override
-    public ModelAndView handle(Request request, Response response) {
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Team", "errorMessage", "");
-      return new ModelAndView(variables, "newTeam.ftl");
-    }
-  }
-
-  /**
-   * Loads results page after creating a new team.
-   * @author awainger
-   */
-  public class NewTeamResultsHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(Request request, Response response) {
+    public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
       dash.createTeam(
-          qm.value("name"),
-          qm.value("coach"),
+          qm.value("name").trim(),
+          qm.value("coach").trim(),
           qm.value("color1"),
           qm.value("color2"));
 
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Team Results", "errorMessage", "");
-      return new ModelAndView(variables, "newTeamResults.ftl");
+      return "";
     }
   }
 
@@ -155,38 +142,52 @@ public class DashboardGUI {
 
   /**
    * Loads form for creating new player.
-   * @author awainger
+   * @author sjl2
    */
-  public class NewPlayerHandler implements TemplateViewRoute {
+  public class NewPlayerHandler implements Route {
     @Override
-    public ModelAndView handle(Request request, Response response) {
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Player",
-              "teams", db.getAllTeams(),
-              "errorMessage", "");
-      return new ModelAndView(variables, "newPlayer.ftl");
+    public Object handle(Request request, Response response) {
+      QueryParamsMap qm = request.queryMap();
+      dash.createPlayer(
+          qm.value("name").trim(),
+          Integer.parseInt(qm.value("team")),
+          Integer.parseInt(qm.value("number")),
+          true);
+
+      return "";
     }
   }
 
-  /**
-   * Loads results page for creating a new player.
-   * @author awainger
-   */
-  public class NewPlayerResultsHandler implements TemplateViewRoute {
+  public class EditUserHandler implements Route {
     @Override
-    public ModelAndView handle(Request request, Response response) {
+    public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      dash.createPlayer(
-          qm.value("name"),
-          Integer.parseInt(qm.value("team")),
-          Integer.parseInt(qm.value("number")),
-          Boolean.parseBoolean(qm.value("current")));
+      String oldUsername = qm.value("oldUsername");
+      String newUsername = qm.value("newUsername");
+      String newPassword = qm.value("newPassword");
 
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Player Results", "errorMessage", "");
-      return new ModelAndView(variables, "newPlayerResults.ftl");
+      boolean success = false;
+      String errorMessage = "";
+      if(oldUsername.equals(newUsername) ||
+         !db.doesUsernameExist(newUsername)) {
+        db.updateUser(oldUsername, newUsername, newPassword);
+        success = true;
+      } else {
+        success = false;
+        errorMessage = "ERROR: Couldn't update username.\nUsername \"" + newUsername + "\" is already used";
+      }
+      Map<String, Object> variables = ImmutableMap.of("success", success, "errorMessage", errorMessage);
+
+      return GSON.toJson(variables);
     }
+  }
 
+  public class GetUsersHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      Map<String, Object> variables = ImmutableMap.of("users", db.getUsernames());
+      return GSON.toJson(variables);
+    }
   }
 
   /**
@@ -312,6 +313,24 @@ public class DashboardGUI {
     }
   }
 
+  public class GetOpponentsHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      List<Link> teams = db.getOpposingTeams();
+      Map<String, Object> variables = ImmutableMap.of("teams", teams);
+      return GSON.toJson(variables);
+    }
+  }
+
+  public class GetTeamsHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      List<Link> teams = db.getAllTeams();
+      Map<String, Object> variables = ImmutableMap.of("teams", teams);
+      return GSON.toJson(variables);
+    }
+  }
+  
   /**
    * Used to populate create game select list with player names.
    * @author awainger
@@ -322,10 +341,11 @@ public class DashboardGUI {
     public ModelAndView handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
       int teamID = Integer.parseInt(qm.value("teamID"));
+      boolean myTeam = Boolean.parseBoolean(qm.value("myTeam"));
       Team team = dash.getTeam(teamID);
       Collection<Player> players = team.getPlayers();
       Map<String, Object> variables =
-          ImmutableMap.of("players", players);
+        ImmutableMap.of("players", players, "myTeam", myTeam);
 
       return new ModelAndView(variables, "opponent_lineup.ftl");
     }
@@ -338,8 +358,9 @@ public class DashboardGUI {
     public ModelAndView handle(Request arg0, Response arg1) {
       Map<String, Object> variables =
           ImmutableMap.of("tabTitle", "Analytics",
-              "players", dash.getMyTeam().getPlayers(),
-              "errorMessage", "");
+                          "allTeams", db.getAllTeams(),
+                          "players", dash.getMyTeam().getPlayers(),
+                          "errorMessage", "");
       return new ModelAndView(variables, "analytics.ftl");
     }
 
@@ -390,7 +411,8 @@ public class DashboardGUI {
 
       if (ids.isEmpty()) {
         return GSON.toJson(new ImmutableMap.Builder<String, Object>()
-            .put("errorMessage", "Sorry, no players or teams matched your search.")
+            .put("errorMessage",
+                "Sorry, no players or teams matched your search.")
             .build());
       } else {
         List<Player> players = new ArrayList<>();

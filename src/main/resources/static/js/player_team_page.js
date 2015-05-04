@@ -9,23 +9,25 @@ var statNames = ["Points", "Field Goals Made and Attempted", "2 Pointers Made an
 $(document).ready(function(){
     console.log("a");
     console.log(document.getElementById("forCharts"));
-    width = window.innerWidth / 2.3; 
-    height = 14 * width / 15; 
-    $("#forCharts").css('width', width);
+    width = 450;
+    height = 420;
     paper = Raphael(document.getElementById("forCharts"), width, height);
-    paper.shots = paper.set();
-    
+    paper.shots = paper.set();    
 
     $("#years").change(function () {
-	postParameters = {
-	    year: $("#years").val(), 
-	    id: id,
-	    isPlayer: isPlayer
-	}
+			postParameters = {
+			    year: $("#years").val(), 
+			    id: id,
+			    isPlayer: isPlayer
+			}
 
-	$.post("/season/get", postParameters, function (responseHTML) {
-	    $("#season").html(responseHTML); 
-	});
+			$.post("/season/get", postParameters, function (responseHTML) {
+			    $("#season").html(responseHTML); 
+			});
+    });
+
+    $("tr a").click(function(e) {
+    	e.stopPropagation();
     });
 });
 
@@ -35,7 +37,7 @@ function clickStatType(columnIndex) {
     $("#chart-title").html("<b>" + statNames[columnIndex - 1] + "</b>");
     paper.clear();
     
-    var table = $("#player-game-stats")[0];
+    var table = $("#season")[0];
     if(columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 5) {
 	var xs = [];
 	var ys1 = [];
