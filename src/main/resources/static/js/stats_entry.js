@@ -1,11 +1,14 @@
 $(document).keypress(function(e) {
-        if ( e.keyCode === 13 ) addStat(); //enter key
-        else if (e.keyCode === 83) {
-            $("#subs").modal('show');
-            console.log("subs should've happened");
-        }
+    if ( e.keyCode === 13 ) addStat(); //enter key
+    else if (e.keyCode === 83) {
+        $("#subs").modal('show');
+        console.log("subs should've happened");
+    }
+});
 
-    });
+$(function() {
+    startScoreboard(400, 300);
+})
 
 // STAT GLOBALS
 var clickedPoint; 

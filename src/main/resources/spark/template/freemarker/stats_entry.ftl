@@ -16,9 +16,7 @@
     </div><!-- /.modal -->
 
 	<div class="alert alert-danger alert-dismissible" role="alert" id="error" <#if isGame>hidden</#if>>
-		<h2>
-			No Game here.
-		</h2>
+		<h2>No Game here.</h2>
 	</div>
 
     <div class="row">
@@ -95,13 +93,14 @@
 	</div>
       </div>
     </div>
+    <div id="scoreboard" style="width:400px; height:300px"></div>
   </div>
   <link rel="stylesheet" href = "/css/main.css">
   <link rel="stylesheet" href="/css/stats_entry.css">
 
   
   
-  
+  <script src="/js/scoreboard.js"></script>
   <script src="/js/stats_entry.js"></script>
   </#assign>
 <#include "main.ftl">

@@ -6,7 +6,6 @@
 /****************************************************/
 
 POST-GABE:
-- Combine Search bar to one bar
 - No idea how to do stats -> put a little note 
 - Home/Away Positions 
 - Restrict stat location for three pointers
@@ -50,11 +49,9 @@ Stats-entry:
  - Header for player columns
  - Center/more intuitive layout of bottom buttons
  - A faster way to send stats without clicking send stats
- - Make possesion button work on first click/not backwards
  - Notifications
  - Do something with big benches
  - Center court
- - 
 
 Tyler:
  - Ball doesn't change it's first frame. 
@@ -72,18 +69,3 @@ stroke-dasharray
 stroke = stroke-color
 stroke-opacity
 maybe can do this in css for path?
-
-Lineup Analytics Notes
- - Get all 5 player id's from dropdown lists
- - Select all offensive stats from db for those players in the current championship years
- - Bin all the stats into a map
- - Discount bins where number of stats doesn't exceed the threshold
- - Calculate the value of each bin (shots are worth their value, misses are worth a value
-   so that an average shooter ends up with a score of 0. Look up offensive value of ast,
-   orb, tov, off-foul
- - Determine which bins the team won vs lost, calculate a value (maybe value of bin * constant, plus
-   constant for any bins team did not meet threshold for)
- - Return constant. Bitchez.
-
- Other analytics - Heatmaps for season, shot chart for last five games, (hover over player in select list
-   for individual heatmap / shot chart?)

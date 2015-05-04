@@ -20,7 +20,7 @@ $(function() {
     shotChart.makes = shotChart.set();
     shotChart.misses = shotChart.set();
     shotChart.curr = undefined;
-    shotChart.image("images/Basketball-Court-half.png", 0, 0, shotChartWidth, shotChartHeight)
+    shotChart.image("images/Basketball-Court-half.png", 0, 0, shotChartWidth, shotChartHeight);
 
     var statTickerDiv = $("#statTicker");
     var statTickerWidth = statTickerDiv.width();
@@ -28,7 +28,7 @@ $(function() {
     statTickerDiv.height(statTickerHeight);
     //var statTicker = Raphael(document.getElementById("statTicker"), 200, 90);
     var statTicker = Raphael(document.getElementById("statTicker"), statTickerWidth, statTickerHeight);
-    statTicker.rect(0,0,statTickerWidth,statTickerHeight).attr({fill : "white"});
+    statTicker.rect(0,0,statTickerWidth,statTickerHeight).attr({fill : "white", r:8});
     statTicker.words = statTicker.text(statTickerWidth / 2, 30, "N/A").attr("font-size", "20");
     statTicker.ourBar = statTicker.rect(statTickerWidth / 6, statTickerHeight, statTickerWidth / 4, 0).attr({fill : "blue"});
     statTicker.ourBar.words = statTicker.text(statTickerWidth * 7 / 24, statTickerHeight - 10, "N/A").attr({"font-size" : 15});
@@ -38,102 +38,29 @@ $(function() {
     statTicker.curr = 0;
     statTable = {};
     initStatTable();
-
-    var scoreboardDiv = $("#scoreboard");
-    var scoreboardWidth = scoreboardDiv.width();
-    var scoreboardHeight = shotChartHeight;
-    scoreboardDiv.height(scoreboardHeight);
-    //var scoreboard = Raphael(document.getElementById("scoreboard"), 400, 200);
-    var scoreboard = Raphael(document.getElementById("scoreboard"), scoreboardWidth, scoreboardHeight);
     
-    (function() {
-	var w = scoreboardWidth;
-	var h = scoreboardHeight;
-	scoreboard.text(w * 3 / 16, h / 8, "HOME").attr("font-size", 20);
-	scoreboard.text(w * 13 / 16, h / 8, "AWAY").attr("font-size", 20);
+    var scoreBoardWidth = $("#scoreboard").width();
+    startScoreboard(scoreBoardWidth, statTickerHeight);
 
-	scoreboard.homeScore = scoreboard.text(w * 3 / 16, h * 9 / 32, "00").attr("font-size", 40);
-	scoreboard.awayScore = scoreboard.text(w * 13 / 16, h * 9 / 32, "00").attr("font-size", 40);
-
-	scoreboard.text(w / 2, h * 5 / 32, "PERIOD").attr("font-size", 17);
-
-	scoreboard.period = scoreboard.text(w / 2, h * 9 / 32, "1").attr("font-size", 20);
-
-	scoreboard.text(w / 8, h * 3 / 4, "Team Fouls").attr("font-size", 15);
-	scoreboard.text(w * 7 / 8, h * 3 / 4, "Team Fouls").attr("font-size", 15);
-
-	scoreboard.homeFouls = scoreboard.text(w / 8, h * 18 / 20, "0").attr("font-size", 20);
-	scoreboard.awayFouls = scoreboard.text(w * 7 / 8, h * 18 / 20, "0").attr("font-size", 20);
-
-	scoreboard.text(w * 7 / 20, h * 3 / 4, "Timeouts").attr("font-size", 15);
-	scoreboard.text(w * 13 / 20, h * 3 / 4, "Timeouts").attr("font-size", 15);
-
-	scoreboard.homeTimeouts = scoreboard.text(w * 7 / 20, h * 18 / 20, "??").attr("font-size", 20);
-	scoreboard.awayTimeouts = scoreboard.text(w * 13 / 20, h * 18 / 20, "??").attr("font-size", 20);
-
-
-	scoreboard.possession = {};
-	scoreboard.possession.away = scoreboard.path("M" + w*17/40 + "," + h*2/5 +
-						     "L" + w*23/40 + "," + h/2 +
-						     "L" + w*17/40 + "," + h*3/5 + "z");
-	scoreboard.possession.home = scoreboard.path("M" + w*23/40 + "," + h*2/5 +
-						     "L" + w*17/40 + "," + h/2 +
-						     "L" + w*23/40 + "," + h*3/5 + "z");
-	scoreboard.possession.home.hide();
-	scoreboard.possession.away.hide();
-
-	scoreboard.homeBonus = {};
-	scoreboard.homeBonus.text = scoreboard.text(w * 3 / 20, h / 2, "BONUS").attr("font-size", 17);
-	scoreboard.homeBonus.singleBonus = scoreboard.circle(w / 4, h / 2, 4);
-	scoreboard.homeBonus.doubleBonus = scoreboard.circle(w * 9 / 32, h / 2, 4);
-	scoreboard.awayBonus = {};
-	scoreboard.awayBonus.text = scoreboard.text(w * 17 / 20, h / 2, "BONUS").attr("font-size", 17);
-	scoreboard.awayBonus.singleBonus = scoreboard.circle(w * 3 / 4, h / 2, 4);
-	scoreboard.awayBonus.doubleBonus = scoreboard.circle(w * 23 / 32, h / 2, 4);
-    } ());
-
-    scoreboard.isGame = true;
-    initStatTable();
     window.setInterval(updateGame, 2000);
     updateGame();
 
-    $.get("/dashboard/getgame", {}, function(responseJSON) {
-	var res = JSON.parse(responseJSON);
-	    scoreboard.homeTimeouts.attr({text : res.timeouts});
-	    scoreboard.awayTimeouts.attr({text : res.timeouts});
-    });
+    function getLastName(str) {
+	var spl = str.split(" ");
+	if (spl.length == 1) {
+	    return str;
+	} else {
+	    var ret = "";
+	    for (var i = 1; i < spl.length - 1; i++) ret += spl[i] + " ";
+	    ret += spl[spl.length - 1];
+	    return ret;
+	}
+
+    }
 
     function updateGame() {
-
 	$.get("/dashboard/updategame", {}, function(responseJSON) {
 	    var res = JSON.parse(responseJSON);
-	    if (!res.isGame) {
-		scoreboard.isGame = false;
-		window.location.href = "/dashboard";
-	    }
-	    scoreboard.homeScore.attr({text : res.homeScore});
-	    scoreboard.awayScore.attr({text : res.awayScore});
-	    scoreboard.period.attr({text : res.period});
-	    if (res.possession) {
-		scoreboard.possession.away.hide();
-		scoreboard.possession.home.show();
-	    } else {
-		scoreboard.possession.home.hide();
-		scoreboard.possession.away.show();
-	    }
-	    if (res.awayBonus) scoreboard.homeBonus.singleBonus.attr({fill : "red"});
-	    else scoreboard.homeBonus.singleBonus.attr({fill : "white"});
-	    if (res.awayDoubleBonus) scoreboard.homeBonus.doubleBonus.attr({fill : "red"});
-	    else scoreboard.homeBonus.doubleBonus.attr({fill : "white"});
-	    if (res.homeBonus) scoreboard.awayBonus.singleBonus.attr({fill : "red"});
-	    else scoreboard.awayBonus.singleBonus.attr({fill : "white"});
-	    if (res.homeDoubleBonus) scoreboard.awayBonus.doubleBonus.attr({fill : "red"});
-	    else scoreboard.awayBonus.doubleBonus.attr({fill : "white"});
-	    scoreboard.homeFouls.attr({text : res.homeFouls});
-	    scoreboard.awayFouls.attr({text : res.awayFouls});
-	    scoreboard.homeTimeouts.attr({text : res.homeTimeouts});
-	    scoreboard.awayTimeouts.attr({text : res.awayTimeouts});
-
 	    updateStats("PG", res.pgStats);
 	    updateStats("SG", res.sgStats);
 	    updateStats("SF", res.sfStats);
@@ -191,19 +118,6 @@ $(function() {
 
 	    displayTicker();
 	});
-    }
-
-    function getLastName(str) {
-	var spl = str.split(" ");
-	if (spl.length == 1) {
-	    return str;
-	} else {
-	    var ret = "";
-	    for (var i = 1; i < spl.length - 1; i++) ret += spl[i] + " ";
-	    ret += spl[spl.length - 1];
-	    return ret;
-	}
-
     }
 
     function updateStats(str, pStats) {
