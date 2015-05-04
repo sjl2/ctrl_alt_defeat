@@ -80,6 +80,7 @@ public class DashboardGUI {
     }
   }
 
+
   /**
    * Loads new team creation page.
    * @author awainger
