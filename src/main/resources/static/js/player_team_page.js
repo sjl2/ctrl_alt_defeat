@@ -37,7 +37,7 @@ function clickStatType(columnIndex) {
     $("#chart-title").html("<b>" + statNames[columnIndex - 1] + "</b>");
     paper.clear();
     
-    var table = $("#player-game-stats")[0];
+    var table = $("#season")[0];
     if(columnIndex == 2 || columnIndex == 3 || columnIndex == 4 || columnIndex == 5) {
 	var xs = [];
 	var ys1 = [];
