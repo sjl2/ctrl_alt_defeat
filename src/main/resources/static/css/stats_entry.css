@@ -26,6 +26,6 @@ svg text {
 
 .stat-button {
     height: 4em;
-    width: 19%;
-    display: inline-block;
+    width: 100%;
+    white-space: normal;
 }

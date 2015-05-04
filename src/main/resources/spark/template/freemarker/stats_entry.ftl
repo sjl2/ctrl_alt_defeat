@@ -23,22 +23,59 @@
       <div class="col-md-9">
 	<div class = "row">
 	  <div class = "col-md-12">
-	    <div>
-	      <button type="button" class="btn btn-default stat-button" id = "TwoPointerButton" onclick = "setSelectedStat('TwoPointer')">Made Two Pointer</button>
-	      <button type="button" class="btn btn-default stat-button" id = "ThreePointerButton" onclick = "setSelectedStat('ThreePointer')">Made Three Pointer</button>
-	      <button type="button" class="btn btn-default stat-button" id = "FreeThrowButton" onclick = "setSelectedStat('FreeThrow')">Made Free Throw</button>
-	      <button type="button" class="btn btn-default stat-button" id = "OffensiveReboundButton" onclick = "setSelectedStat('OffensiveRebound')">Offensive Rebound</button>
-	      <button type="button" class="btn btn-default stat-button" id = "OffensiveFoulButton" onclick = "setSelectedStat('OffensiveFoul')">Offensive Foul</button>
-	      <button type="button" class="btn btn-default stat-button" id = "MissedTwoPointerButton" onclick = "setSelectedStat('MissedTwoPointer')">Missed Two Pointer</button>
-	      <button type="button" class="btn btn-default stat-button" id = "MissedThreePointerButton" onclick = "setSelectedStat('MissedThreePointer')">Missed Three Pointer</button>
-	      <button type="button" class="btn btn-default stat-button" id = "MissedFreeThrowButton" onclick = "setSelectedStat('MissedFreeThrow')">Missed Free Throw</button>
-	      <button type="button" class="btn btn-default stat-button" id = "DefensiveReboundButton" onclick = "setSelectedStat('DefensiveRebound')">Defensive Rebound</button>
-	      <button type="button" class="btn btn-default stat-button" id = "DefensiveFoulButton" onclick = "setSelectedStat('DefensiveFoul')">Defensive Foul</button>
-	      <button type="button" class="btn btn-default stat-button" id = "AssistButton" onclick = "setSelectedStat('Assist')">Assist</button>
-	      <button type="button" class="btn btn-default stat-button" id = "TurnoverButton" onclick = "setSelectedStat('Turnover')">Turnover</button>
-	      <button type="button" class="btn btn-default stat-button" id = "StealButton" onclick = "setSelectedStat('Steal')">Steal</button>
-	      <button type="button" class="btn btn-default stat-button" id = "BlockButton" onclick = "setSelectedStat('Block')">Block</button>
-	      <button type="button" class="btn btn-default stat-button" id = "TechnicalFoulButton" onclick = "setSelectedStat('TechnicalFoul')">Technical Foul</button>
+	  	<div class="row">
+	  	<div class="col-md-1"></div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "TwoPointerButton" onclick = "setSelectedStat('TwoPointer')">Made Two Pointer</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "ThreePointerButton" onclick = "setSelectedStat('ThreePointer')">Made Three Pointer</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "FreeThrowButton" onclick = "setSelectedStat('FreeThrow')">Made Free Throw</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "OffensiveReboundButton" onclick = "setSelectedStat('OffensiveRebound')">Offensive Rebound</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "OffensiveFoulButton" onclick = "setSelectedStat('OffensiveFoul')">Offensive Foul</button>
+	    </div>
+	    </div>
+	    <div class="row">
+	  	<div class="col-md-1"></div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "MissedTwoPointerButton" onclick = "setSelectedStat('MissedTwoPointer')">Missed Two Pointer</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "MissedThreePointerButton" onclick = "setSelectedStat('MissedThreePointer')">Missed Three Pointer</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "MissedFreeThrowButton" onclick = "setSelectedStat('MissedFreeThrow')">Missed Free Throw</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "DefensiveReboundButton" onclick = "setSelectedStat('DefensiveRebound')">Defensive Rebound</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "DefensiveFoulButton" onclick = "setSelectedStat('DefensiveFoul')">Defensive Foul</button>
+	    </div>
+	    </div>
+	    <div class="row">
+	  	<div class="col-md-1"></div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "AssistButton" onclick = "setSelectedStat('Assist')">Assist</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "TurnoverButton" onclick = "setSelectedStat('Turnover')">Turnover</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "StealButton" onclick = "setSelectedStat('Steal')">Steal</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "BlockButton" onclick = "setSelectedStat('Block')">Block</button>
+	    </div>
+	    <div class="col-md-2">
+	    <button type="button" class="btn btn-default stat-button" id = "TechnicalFoulButton" onclick = "setSelectedStat('TechnicalFoul')">Technical Foul</button>
+	    </div>
 	    </div>
 	  </div>
 	</div>
@@ -48,6 +85,7 @@
 	  </div>
 	  <div class="col-md-8">
 	    <div id="court"></div>
+	    <div id="arrows" style="height:40px;"></div>
 	  </div>
 	  <div class = "col-md-2" >
 	    <div id="away_team" style="width:70"></div>
@@ -55,20 +93,31 @@
 	</div>
 	<div class = "row">
 	  <div class = "col-md-12">
-	    <button type="button" class = "btn btn-default pull-left" id="showHomeSubs" onclick="toggleBenchCourt(true)">Show Bench</button>
-	    <button type="button" class = "btn btn-warning pull-left" id="HomeTimeout" onclick="timeout(true)">Timeout</button>
-	    <button type="button" class = "btn btn-default" id="flipPossession" onclick="fp()">
-	      <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+	  <div class="row">
+	  	<div class="col-md-2">
+	  		<button type="button" class = "btn btn-default" id="showHomeSubs" onclick="toggleBenchCourt(true)">Show Bench</button>
+	  		<br>
+	  		<button type="button" class = "btn btn-warning" id="HomeTimeout" onclick="timeout(true)">Timeout</button>
+	  	</div>
+	  	<div class="col-md-3"></div>
+	  	<div class="col-md-2">
+	  	<button type="button" class = "btn btn-default" id="flipPossession" onclick="fp()">
+	      Possession <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
 	    </button>
-	    <button type="button" class = "btn btn-warning pull-right" id="AwayTimeout" onclick="timeout(false)">Timeout</button>
-	    <button type="button" class = "btn btn-default pull-right" id="showAwaySubs" onclick="toggleBenchCourt(false)">Show Bench</button>
-	    <br>
+	  	</div>
+	  	<div class="col-md-3"></div>
+	  	<div class="col-md-2">	
+	    <button type="button" class = "btn btn-default" id="showAwaySubs" onclick="toggleBenchCourt(false)">Show Bench</button>
+	  	<br>
+	  	<button type="button" class = "btn btn-warning" id="AwayTimeout" onclick="timeout(false)">Timeout</button>
+	  	</div>
+	  </div>
+	    
+	    
 	    <button type="button" class = "btn btn-info" id="sendStat" onclick="addStat()">Send Stat</button>
-	    <button type="button" class = "btn btn-danger" id="openSubPerspective" data-toggle="modal" data-target="#subs">Sub Players</button>
+	    <button type="button" class = "btn btn-info" id="openSubPerspective" data-toggle="modal" data-target="#subs">Sub Players</button>
 
-
-	    <br>
-	    <button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
+	    <button type="button" class="btn btn-info" onclick="endGame()">End Game</button>
 	    <button type="button" class="btn btn-info" onclick="advancePeriod()">Advance Period</button>
 	  </div>
 	</div>
