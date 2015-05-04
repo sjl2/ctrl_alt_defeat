@@ -67,24 +67,7 @@ function suggestions(e) {
 
 }
 
-<<<<<<< HEAD
 function textSearch() {
-=======
-function setTextSearch(b) {
-    if (!b) {
-	$("#searchButton")[0].setAttribute("data-player", false);
-	$("#searchButton")[0].innerHTML = "Team Search";
-    } else {
-	$("#searchButton")[0].setAttribute("data-player", true);
-	$("#searchButton")[0].innerHTML = "Player Search";
-    }
-}
-
-function textSearch() {
-    
-    isPlayer = $("#searchButton")[0].getAttribute("data-player");
-    console.log(isPlayer);
->>>>>>> 536ed7617861c6abd4238a4791d0a1aeb72ae3fe
 
     $.post("/dashboard/search", {searchString : $("#playerTeamSearch")[0].value}, function(responseJSON) {
 	console.log(responseJSON);

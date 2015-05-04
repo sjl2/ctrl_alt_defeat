@@ -380,11 +380,16 @@ public class DashboardGUI {
 
       ArrayList<String> resOne;
       String start = qm.value("spot");
+      
+      //System.out.println("spot, " + start);
+      
       if (start.length() != 0) {
         resOne = trie.evaluateWord(StringFormatter.treat(start.toLowerCase()), null);
       } else {
         resOne = new ArrayList<String>();
       }
+      
+      //System.out.println("res, " + resOne);
       for (int i = 0; i < resOne.size(); i++) {
         resOneString[i] = resOne.get(i);
       }

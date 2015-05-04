@@ -140,7 +140,6 @@
             <li><a href="/dashboard/analytics">Analytics</a></li>
           </ul>
 
-<<<<<<< HEAD
             <form class="navbar-form navbar-right" role="search">
               <div class="input-append btn-group">
                 <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeypress = "suggestions(event)" list="suggestions1" id="playerTeamSearch">
@@ -151,26 +150,6 @@
           </div>
          </div>
       </nav>
-=======
-          <form class="navbar-form navbar-right" role="search">
-            <div class="input-append btn-group">
-              <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeypress = "suggestions(event)" list="suggestions1" id="playerTeamSearch">
-              <datalist id="suggestions1"></datalist>
-              <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" style="float:right;">
-                <span class="caret"></span>
-              </a>
-              <button type="button" id="searchButton" class="btn btn-primary" style="float:right" data-player="true" onclick="textSearch()">Player Search</button>
-              <ul class="dropdown-menu dropdown-menu-right">
-                <li><a onclick = "setTextSearch(true)"><i class="icon-pencil"></i> Search as Player</a></li>
-                <li><a onclick = "setTextSearch(false)"><i class="icon-trash"></i> Search as Team</a></li>
-                
-              </ul>
-            </div>
-          </form>
-        </div>
-      </div>
-    </nav>
->>>>>>> 536ed7617861c6abd4238a4791d0a1aeb72ae3fe
 
     <datalist id="suggestions1"></datalist>
     <div class="alert alert-danger alert-dismissible" role="alert" id="error" hidden>${errorMessage}</div>
