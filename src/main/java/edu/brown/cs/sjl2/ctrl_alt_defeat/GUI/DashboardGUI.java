@@ -212,6 +212,38 @@ public class DashboardGUI {
     }
   }
 
+  
+  /**
+   * Returns all information relevant to scoreboard.
+   * @author awainger
+   */
+  public class ScoreboardHandler implements Route {
+    @Override
+    public Object handle(Request request, Response response) {
+      if (dash.getGame() == null) {
+        return GSON.toJson(ImmutableMap.of("isGame", false));
+      } else {
+        Game g = dash.getGame();
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
+            .put("homeScore", g.getHomeScore())
+            .put("awayScore", g.getAwayScore())
+            .put("possession", g.getPossession())
+            .put("homeFouls", g.getHomeFouls())
+            .put("awayFouls", g.getAwayFouls())
+            .put("homeTimeouts", g.getTO(true))
+            .put("awayTimeouts", g.getTO(false))
+            .put("period", g.getPeriod())
+            .put("homeBonus", g.getHomeBonus())
+            .put("homeDoubleBonus", g.getHomeDoubleBonus())
+            .put("awayBonus", g.getAwayBonus())
+            .put("awayDoubleBonus", g.getAwayDoubleBonus())
+            .put("errorMessage", "")
+            .put("isGame", true).build());
+      }
+    }
+  }
+
+
   /**
    * Gets latest game information to display on dashboard.
    * @author awainger
@@ -225,20 +257,7 @@ public class DashboardGUI {
       }
       Game g = dash.getGame();
       ImmutableMap.Builder<String, Object> builder =
-          new ImmutableMap.Builder<String, Object>()
-          .put("homeScore", g.getHomeScore())
-          .put("awayScore", g.getAwayScore())
-          .put("possession", g.getPossession())
-          .put("homeFouls", g.getHomeFouls())
-          .put("awayFouls", g.getAwayFouls())
-          .put("homeTimeouts", g.getTO(true))
-          .put("awayTimeouts", g.getTO(false))
-          .put("period", g.getPeriod())
-          .put("homeBonus", g.getHomeBonus())
-          .put("homeDoubleBonus", g.getHomeDoubleBonus())
-          .put("awayBonus", g.getAwayBonus())
-          .put("awayDoubleBonus", g.getAwayDoubleBonus())
-          .put("errorMessage", "");
+          new ImmutableMap.Builder<String, Object>().put("isGame", true);
       if (g.getHomeGame()) {
         builder.put("pgStats", g.getHomeBoxScore().getPlayerStats(
             g.getLineup().getPlayers().get(BasketballPosition.HomePG)));
@@ -272,7 +291,6 @@ public class DashboardGUI {
         builder.put("theirRebounds", g.getAwayBoxScore().getTeamStats().getRebounds());
         builder.put("theirAssists", g.getAwayBoxScore().getTeamStats().getAssists());
         builder.put("theirTurnovers", g.getAwayBoxScore().getTeamStats().getTurnovers());
-        builder.put("isGame", true);
       } else {
         builder.put("pgStats", g.getAwayBoxScore().getPlayerStats(
             g.getLineup().getPlayers().get(BasketballPosition.AwayPG)));
@@ -306,9 +324,9 @@ public class DashboardGUI {
         builder.put("theirRebounds", g.getHomeBoxScore().getTeamStats().getRebounds());
         builder.put("theirAssists", g.getHomeBoxScore().getTeamStats().getAssists());
         builder.put("theirTurnovers", g.getHomeBoxScore().getTeamStats().getTurnovers());
-        builder.put("isGame", true);
       }
-      Map<String, Object> variables = builder.build();
+
+      Map<String, Object> variables = builder.put("errorMessage", "").build();
       return GSON.toJson(variables);
     }
   }
