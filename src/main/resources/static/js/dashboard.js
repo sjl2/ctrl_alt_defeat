@@ -61,6 +61,9 @@ $(function() {
     function updateGame() {
 	$.get("/dashboard/updategame", {}, function(responseJSON) {
 	    var res = JSON.parse(responseJSON);
+	    if (res.isGame == false) {
+	    	window.location.href="/dashboard";
+	    }
 	    updateStats("PG", res.pgStats);
 	    updateStats("SG", res.sgStats);
 	    updateStats("SF", res.sfStats);

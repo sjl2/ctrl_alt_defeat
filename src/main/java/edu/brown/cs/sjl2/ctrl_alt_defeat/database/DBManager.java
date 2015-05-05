@@ -1340,10 +1340,12 @@ public class DBManager {
       }
 
       double scaledValue = totalValue / TOTAL_BINS;
-      if (scaledValue < 0) {
-        return -25 * Math.log10(100 * (-scaledValue)) + 50;
+      if (scaledValue == 0) {
+        return 0;
+      } else if (scaledValue < 0) {
+        return -25 * Math.log10(100 * (-scaledValue) + 1) + 50;
       } else {
-        return 25 * Math.log10((100 * scaledValue)) + 50;
+        return 25 * Math.log10((100 * scaledValue) + 1) + 50;
       }
     } catch (SQLException e) {
       close();
@@ -1400,7 +1402,11 @@ public class DBManager {
      * @return Double, estimate of the value of the stats in this bin
      */
     public double getValue() {
-      return value / possibleValue;
+      if (numStats > 0) {
+        return value / possibleValue;
+      } else {
+        return 0;
+      }
     }
 
     /**
