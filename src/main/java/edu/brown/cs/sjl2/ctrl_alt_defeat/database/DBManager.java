@@ -219,7 +219,6 @@ public class DBManager {
   /**
    * Gets team from database.
    * @param id - Int, corresponding to team
-   * @param pf - PlayerFactor, to create players later
    * @return - Team, populated with db info
    * @author sjl2
    */
@@ -1242,7 +1241,6 @@ public class DBManager {
   /**
    * Lookup requested name in database, return first matching id.
    * @param name - Name of player or team
-   * @param isPlayer - Boolean, representing if name is of player or team
    * @return - int, id of matching player / team
    */
   public List<List<Integer>> searchBarResults(String name) {

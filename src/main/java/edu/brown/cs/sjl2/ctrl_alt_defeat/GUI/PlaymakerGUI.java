@@ -36,7 +36,9 @@ public class PlaymakerGUI {
 
   /**
    * Constructor for playmaker gui class.
-   * @param dbManager - DBManager, allows handlers to get data
+   * @param dashboard - Dasboard, allows handlers to get game state and teams/players
+   * @param db - DBManager, allows handlers to get data
+   * @param playmakerDB - PlaymakerDB, allows handlers to get plays from database
    * @author sjl2
    */
   public PlaymakerGUI(Dashboard dashboard, DBManager db,

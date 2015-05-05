@@ -36,6 +36,7 @@ public class WikiGUI {
    *
    * @param dbManager
    *          - DBManager, used to query database
+   * @param dashboard - Dashboard, used to get games
    * @author awainger
    */
   public WikiGUI(DBManager dbManager, Dashboard dashboard) {
