@@ -269,7 +269,7 @@ public class BasketballDatabaseGenerator {
       }
     }
   }
-  
+
   private static void intelligentGameStats(Game game, Team home, Team away, DBManager db) throws GameException {
     Random r = new Random();
     int possessions = (int) (AVE_POSSESSIONS + (2.5 * r.nextGaussian()));
@@ -465,7 +465,7 @@ public class BasketballDatabaseGenerator {
       } else {
         /***** GOOD *****/
         if (playerType.contains("Good")) {
-          if (shootingPercentage < .35 + (.02 * r.nextGaussian())) {
+          if (shootingPercentage < .38 + (.02 * r.nextGaussian())) {
             return "ThreePointer";
           } else {
             return "MissedThreePointer";

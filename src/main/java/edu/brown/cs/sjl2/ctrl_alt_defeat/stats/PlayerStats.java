@@ -287,16 +287,16 @@ public class PlayerStats implements GameStats {
 
   @Override
   public int getOffensiveFouls() {
-    return stats.count("OffensiveFouls");
+    return stats.count("OF");
   }
 
 
   @Override
   public void addOffensiveFouls(int offensiveFoul) {
     if (offensiveFoul < 0) {
-      stats.remove("OffensiveFouls", -1 * offensiveFoul);
+      stats.remove("OF", -1 * offensiveFoul);
     } else {
-      stats.add("OffensiveFouls", offensiveFoul);
+      stats.add("OF", offensiveFoul);
     }
   }
 

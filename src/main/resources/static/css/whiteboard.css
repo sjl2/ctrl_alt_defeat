@@ -1,35 +1,36 @@
 canvas { 
-	display:block; 
-	margin:1em auto; 
+    display:block; 
+    margin:1em auto; 
 }
 
 canvas {
-	background-image:url(/images/Basketball-Court.png);
-	background-size:cover;
- } 
+    background-image:url(/images/Basketball-Court.png);
+    background-size:cover;
+} 
 
- #row {
- 	height : 500px;
- }
+/*#row {
+    height : 500px;
+}*/
 
- .jumbotron {
-  padding: 48px 0 36px;
-  margin-top: 10px;
-  margin-right : 50px;
-  background: @green;
-  background: url(/images/3dcourt.jpg);
-  background-position: 40% 40%;
-  background-size: 100% auto; 
+.jumbotron {
+    padding: 48px 0 36px;
+    margin-top: 10px;
+    margin-right : 50px;
 
+}
+
+#input-background {
+    background-color: white;
+    border: 1px solid #000;
+    border-radius: 4px;
+}
+
+#input-background input {
+    margin: 10px 0px;
 }
 
 h3 {
-	color : black;
-	text-align : center;
-	font-size : 16;
-}
-
-#thumb {
-    height : 48px;
-    width : 48px;
+    color : black;
+    text-align : center;
+    font-size : 16;
 }

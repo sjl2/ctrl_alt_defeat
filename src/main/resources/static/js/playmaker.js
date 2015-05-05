@@ -526,7 +526,6 @@ function onend(event) {
 	    setMaxFrame(tokens[i].path.length - 1);
 	}
     }
-    console.log(ball.possession);
 }
 
 function onballend(event) {
@@ -567,7 +566,7 @@ function updatePath() {
 	}
     }
     
-    if(ball.possession[currentFrame] = possessionToken.index || ball.possession[currentFrame] == undefined) {
+    if(ball.possession[currentFrame] = possessionToken.index || ball.possession[currentFrame + 1] == undefined) {
 	ball.possession[currentFrame + 1] = possessionToken.index;
     }
 
@@ -576,7 +575,6 @@ function updatePath() {
     if(currentFrame > maxFrame) {
 	setMaxFrame(currentFrame);
     }
-    console.log(ball.possession);
 }
 
 function play() {

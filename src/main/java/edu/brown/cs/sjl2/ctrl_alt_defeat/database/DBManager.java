@@ -221,7 +221,6 @@ public class DBManager {
   /**
    * Gets team from database.
    * @param id - Int, corresponding to team
-   * @param pf - PlayerFactor, to create players later
    * @return - Team, populated with db info
    * @author sjl2
    */

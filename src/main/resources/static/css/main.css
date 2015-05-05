@@ -35,11 +35,12 @@ h1, h2, h3 {
     margin: 0 0 10px 0;
 }*/
 
-input[type=color] {
+/*input[type=color] {
     border: 2px solid white;
     background: rgba(255,255,255,0.5);
-
-}
+    width: 30px;
+    height: 30px;
+}*/
 
 input[type=submit] {
     background-color:#3385FF;
