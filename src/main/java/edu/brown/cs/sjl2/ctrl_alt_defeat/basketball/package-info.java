@@ -1,7 +1,9 @@
 /**
- * 
+ *
  */
 /**
+ * The package for all classes specific to the game of basketball.
+ *
  * @author sjl2
  *
  */
