@@ -57,7 +57,7 @@ function startScoreboard(width, height) {
     updateScoreboard();
 
     function updateScoreboard() {
-	$.get("/dashboard/scoreboard", {}, function(responseJSON) {
+	$.get("/scoreboard", {}, function(responseJSON) {
 	    var res = JSON.parse(responseJSON);
 	    scoreboard.isGame = res.isGame;
 	    if(scoreboard.isGame) {

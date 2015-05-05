@@ -77,7 +77,11 @@ public class GUIManager {
     Spark.before("/whiteboard/*", new CoachFilter());
     Spark.before("/playmaker", new CoachFilter());
     Spark.before("/playmaker/*", new CoachFilter());
+    Spark.before("/users/", new CoachFilter());
+    Spark.before("/users/*", new CoachFilter());
 
+    Spark.after("/dashboard/*", new GameCheckFilter());
+    
     Spark.before("/stats", new StatsFilter());
     Spark.before("/stats/*", new StatsFilter());
 
@@ -92,12 +96,12 @@ public class GUIManager {
     Spark.post("/dashboard/new", dashboardGUI.new DashSetupHandler(), freeMarker);
     Spark.post("/dashboard/new/team", dashboardGUI.new NewTeamHandler());
     Spark.post("/dashboard/new/player", dashboardGUI.new NewPlayerHandler());
-    Spark.post("/dashboard/edit/user", dashboardGUI.new EditUserHandler());
-    Spark.get("/dashboard/get/users", dashboardGUI.new GetUsersHandler());
+    Spark.post("/user/edit", dashboardGUI.new EditUserHandler());
+    Spark.get("/users/get", dashboardGUI.new GetUsersHandler());
     Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
-    Spark.get("/dashboard/scoreboard", dashboardGUI.new ScoreboardHandler());
+    Spark.get("/scoreboard", dashboardGUI.new ScoreboardHandler());
     Spark.get("/dashboard/get/opponents", dashboardGUI.new GetOpponentsHandler());
     Spark.get("/dashboard/get/teams", dashboardGUI.new GetOpponentsHandler());
     Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(), freeMarker);
@@ -184,6 +188,15 @@ public class GUIManager {
       }
     }
 
+  }
+
+  private class GameCheckFilter implements Filter {
+    @Override
+    public void handle(Request req, Response res) {
+      if(dash.getMyTeam() == null) {
+        res.redirect("/dashboard");
+      }
+    }
   }
 
   private class StatsFilter implements Filter {

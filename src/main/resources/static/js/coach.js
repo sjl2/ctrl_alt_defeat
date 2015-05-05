@@ -115,7 +115,7 @@ function textSearch() {
 }
 
 function updateEditUsers() {
-    $.get("/dashboard/get/users",
+    $.get("/users/get",
 	  {},
 	  function(response) {
 	      var users = response.users;
