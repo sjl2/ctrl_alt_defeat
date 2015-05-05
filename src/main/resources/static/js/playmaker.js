@@ -501,9 +501,11 @@ function onend(event) {
 	for (i = currentFrame + 1; i <= maxFrame; i++) {
 	    grabbedToken.path[i] = grabbedToken.location.copy();
 	}
-	if(this.index == possessionToken.index) {
-	    for(i = 0; i <= maxFrame; i++) {
-		ball.possession[i] = this.index;
+	for(i = currentFrame + 1; i <= maxFrame; i++) {
+	    if(ball.possession[i] == this.index) {
+		ball.possession[i] = possessionToken.index;
+	    } else {
+		break;
 	    }
 	}
     } else {
@@ -524,7 +526,7 @@ function onend(event) {
 	    setMaxFrame(tokens[i].path.length - 1);
 	}
     }
-
+    console.log(ball.possession);
 }
 
 function onballend(event) {
@@ -564,14 +566,17 @@ function updatePath() {
 	    t.path[currentFrame + 1] = t.location.copy();
 	}
     }
-
-    ball.possession[currentFrame + 1] = possessionToken.index;
+    
+    if(ball.possession[currentFrame] = possessionToken.index || ball.possession[currentFrame] == undefined) {
+	ball.possession[currentFrame + 1] = possessionToken.index;
+    }
 
     setFrame(currentFrame + 1);
 
     if(currentFrame > maxFrame) {
 	setMaxFrame(currentFrame);
     }
+    console.log(ball.possession);
 }
 
 function play() {
