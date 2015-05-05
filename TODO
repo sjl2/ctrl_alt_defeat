@@ -13,16 +13,12 @@ POST-GABE:
 - Substitutions didn't come off as intuitive
 - Enter's for ALL submissions please 
 - Fonts
-- Shooting in playmaker - kind of
 
 
 - Display Change error message from alerts to fancy balloons.
-- Fun Feature: Player distinguishing feature. 
-	- Sharp-Shooter Left/Right/Center (High Percentage on left court)
 - My Dashboard editor
 	- Customize My Team
 - Error Checking
-	- 404 Pages for Teams, Games, Players, that do not exist
 	- Error balloons for non-critical errors. Try and catch on front-end before storing. 
 - Add Option to Build this table from scratch (translate the .schema to java). 
 

@@ -75,7 +75,7 @@ function PlayToken(playName) {
 	},
 
 	getID: function() {
-	    return "playName" + playName.replace(/ /g, "_");
+	    return "playName" + playName.replace(/ /g, ":");
 	},
 
 	showDelete: function() {
@@ -289,6 +289,10 @@ window.onload = function() {
 		}
 	    },
 	    callback: function(result) {
+		if(result.match(/[^\w\s-.]/)) {
+		    bootbox.alert("Play names can only contain alphanumeric characters (A-Z, a-z, 0-9), dashes (-), underscores (_), periods(.), and spaces");
+		    return false;
+		}
 		if(result === null) {
 		} else if(result == "") {
 		    bootbox.alert("Please Enter a Play Name");
@@ -699,7 +703,7 @@ function updateLoadBar(data) {
 	}
 	$(".playNameHolder").removeClass("selected-row");
 	this.className = "list-group-item playNameHolder selected-row";
-	var playName = this.id.replace(/_/g, " ").substring(8);
+	var playName = this.id.replace(/:/g, " ").substring(8);
 	$.get("/playmaker/load",
 	      {
 		  name: playName

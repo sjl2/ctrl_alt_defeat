@@ -127,7 +127,7 @@ public class WikiGUI {
           .build();
         return new ModelAndView(variables, "team.ftl");
       } else {
-        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Game doesn't exist");
+        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Team doesn't exist");
 
         return new ModelAndView(variables, "404.ftl");
       }

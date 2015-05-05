@@ -57,10 +57,6 @@ function startScoreboard(width, height) {
     function updateScoreboard() {
 	$.get("/dashboard/scoreboard", {}, function(responseJSON) {
 	    var res = JSON.parse(responseJSON);
-	    if (!res.isGame) {
-		scoreboard.isGame = false;
-		window.location.href = "/dashboard";
-	    }
 	    scoreboard.homeScore.attr({text : res.homeScore});
 	    scoreboard.awayScore.attr({text : res.awayScore});
 	    scoreboard.period.attr({text : res.period});
