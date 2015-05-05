@@ -44,7 +44,7 @@ public class GUIManager {
   public GUIManager(DBManager db) {
     this.db = db;
     this.dash = new Dashboard(db);
-    this.trie = db.getTrie();
+    this.trie = db.fillTrie();
     trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
 
     this.dashboardGUI = new DashboardGUI(dash, db, trie);
