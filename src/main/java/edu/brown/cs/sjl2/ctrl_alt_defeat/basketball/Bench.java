@@ -3,29 +3,48 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class for a team's bench.
+ *
+ * @author sjl2
+ *
+ */
 public class Bench {
   private List<Player> players;
   //private int teamID;
   private Team team;
 
+  /**
+   * Constructs a bench for a team.
+   * @param t The bench's team.
+   */
   public Bench(Team t) {
     this.team = t;
     this.players = new ArrayList<Player>();
   }
 
+  /**
+   * Getter for the players on the bench.
+   * @return Returns a List of players on the bench.
+   */
   public List<Player> getPlayers() {
     return players;
   }
-  public void setPlayers(List<Player> players) {
-    this.players = players;
-  }
 
+  /**
+   * Get's the team associated with the bench.
+   * @return Returns the team object of the bench's team.
+   */
   public Team getTeam() {
     return team;
   }
-  public void setTeam(Team team) {
-    this.team = team;
-  }
+
+  /**
+   * Subs a player pIn from the bench with a player pOut.
+   * @param pIn The player leaving the bench.
+   * @param pOut The player entering the bench.
+   * @throws ScoreboardException Throws a ScoreboardException for illegal subs.
+   */
   public void sub(Player pIn, Player pOut) throws ScoreboardException {
     if (players.remove(pIn)) {
       players.add(pOut);
