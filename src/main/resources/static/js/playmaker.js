@@ -569,6 +569,7 @@ function play() {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i]
 	    t.circle.undrag();
+	    t.text.undrag();
 	}
 	ball.circle.undrag();
     }
@@ -581,6 +582,7 @@ function stop() {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i]
 	    t.circle.drag(onmove, onstart, onend, t, t, t);
+	    t.text.drag(onmove, onstart, onend, t, t, t);
 	}
 	ball.circle.drag(onmove, onballstart, onballend, ball, ball, ball);
     }
