@@ -41,6 +41,12 @@ $('#team-form').submit(function() {
     return false;
 });
 
+$("#logoutButton").on("click", function() {
+    $.post("/login/logout", {}, function(res) {
+	window.location.href = "/login";
+    });
+});
+
 function suggestions(e) {
     console.log(e);
     if(e.which == 13) {

@@ -7,7 +7,7 @@ $(document).keypress(function(e) {
 });
 
 $(function() {
-    startScoreboard(400, 300);
+    startScoreboard(250, 150);
 })
 
 // STAT GLOBALS

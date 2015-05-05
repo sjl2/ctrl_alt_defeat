@@ -44,7 +44,7 @@ public class GUIManager {
   public GUIManager(DBManager db) {
     this.db = db;
     this.dash = new Dashboard(db);
-    this.trie = db.getTrie();
+    this.trie = db.fillTrie();
     trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
 
     this.dashboardGUI = new DashboardGUI(dash, db, trie);
@@ -71,15 +71,15 @@ public class GUIManager {
     FreeMarkerEngine freeMarker = createEngine();
 
     /*** Setup Filters ***/
-//    Spark.before("/dashboard", new CoachFilter());
-//    Spark.before("/dashboard/*", new CoachFilter());
-//    Spark.before("/whiteboard", new CoachFilter());
-//    Spark.before("/whiteboard/*", new CoachFilter());
-//    Spark.before("/playmaker", new CoachFilter());
-//    Spark.before("/playmaker/*", new CoachFilter());
-//
-//    Spark.before("/stats", new StatsFilter());
-//    Spark.before("/stats/*", new StatsFilter());
+    /*   Spark.before("/dashboard", new CoachFilter());
+    Spark.before("/dashboard/*", new CoachFilter());
+    Spark.before("/whiteboard", new CoachFilter());
+    Spark.before("/whiteboard/*", new CoachFilter());
+    Spark.before("/playmaker", new CoachFilter());
+    Spark.before("/playmaker/*", new CoachFilter());
+
+    Spark.before("/stats", new StatsFilter());
+    Spark.before("/stats/*", new StatsFilter());*/
 
     
     // Setup Spark Routes
@@ -241,8 +241,7 @@ public class GUIManager {
   private class LogoutHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {
-      req.session().attribute("clearance", 0);
-      res.redirect("/login");
+      req.session().attribute("clearance", "0");
       return GSON.toJson(ImmutableMap.of("errorMessage", ""));
     }
   }

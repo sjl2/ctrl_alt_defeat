@@ -77,7 +77,6 @@ public class DBManager {
 
     this.pf = new PlayerFactory(this);
     this.tf = new TeamFactory(this);
-    this.trie = fillTrie();
   }
   
   public PlaymakerDB getPlaymakerDB() {
@@ -1212,7 +1211,7 @@ public class DBManager {
 
 
   /****** AUTOCORRECT METHODS ******/
-  private Trie fillTrie() {
+  public Trie fillTrie() {
     ArrayList<Character> c = new ArrayList<Character>();
     c.add('@');
     c.add('$');
@@ -1239,10 +1238,6 @@ public class DBManager {
       close();
       throw new RuntimeException(e);
     }
-  }
-
-  public Trie getTrie() {
-    return trie;
   }
 
   /**
