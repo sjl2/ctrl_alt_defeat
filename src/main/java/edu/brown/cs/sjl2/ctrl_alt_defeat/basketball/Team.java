@@ -39,6 +39,26 @@ public class Team {
     }
   }
 
+  public Team(
+      int id,
+      String name,
+      String coach,
+      String primary,
+      String secondary,
+      Collection<Player> players) {
+
+    this.id = id;
+    this.name =  name;
+    this.coach = coach;
+    this.primary = primary;
+    this.secondary = secondary;
+    this.playerIds = new HashMap<>();
+
+    for (Player p : players) {
+      addPlayer(p);
+    }
+  }
+
   public int getID() {
     return id;
   }
@@ -89,7 +109,7 @@ public class Team {
   public String getCoach() {
     return coach;
   }
-  
+
   public Link getLink() {
     return new Link(id, "/team/view/", name);
   }
