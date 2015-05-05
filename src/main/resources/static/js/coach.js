@@ -80,7 +80,7 @@ function textSearch() {
 	var res = JSON.parse(responseJSON);
 	console.log(res);
 	if (res.errorMessage.length > 0) {
-	    //error
+	    bootbox.alert(res.errorMessage);
 	} else {
 		if (res.players.length == 0) {
 			if (res.teams.length == 1) {
@@ -96,7 +96,7 @@ function textSearch() {
 				window.location.href = "/player/view/" + res.players[0].id;				
 			} else {
 				for (var i=0; i<res.players.length; i++) {
-		    		$("#linkList").append("<a href=\"/" + a + "/view/" + res.players[i].id + "\">" + res.players[i].name + " (#" + res.players[i].number + " " + res.players[i].teamName + ")</a><br>");
+		    		$("#linkList").append("<a href=\"/" + "player" + "/view/" + res.players[i].id + "\">" + res.players[i].name + " (#" + res.players[i].number + " " + res.players[i].teamName + ")</a><br>");
 				}
 				$('#multipleresults').modal('show');
 			}
@@ -105,7 +105,7 @@ function textSearch() {
 		    		$("#linkList").append("<a href=\"/team/view/" + res.teams[i].id + "\">" + res.teams[i].name  + ")</a><br>");
 			}
 			for (var i=0; i<res.players.length; i++) {
-		    		$("#linkList").append("<a href=\"/" + a + "/view/" + res.players[i].id + "\">" + res.players[i].name + " (#" + res.players[i].number + " " + res.players[i].teamName + ")</a><br>");
+		    		$("#linkList").append("<a href=\"/" + "player" + "/view/" + res.players[i].id + "\">" + res.players[i].name + " (#" + res.players[i].number + " " + res.players[i].teamName + ")</a><br>");
 			}
 			$('#multipleresults').modal('show');
 
