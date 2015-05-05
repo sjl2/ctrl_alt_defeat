@@ -53,8 +53,8 @@ public class BoxScore {
   /**
    * Static Instantiator of a stored box score.
    * @param db
-   * @param game
-   * @param home
+   * @param gameID
+   * @param team
    * @return Returns a Boxscore from the database
    * @throws GameException
    */

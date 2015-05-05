@@ -7,10 +7,10 @@
         <div class = "col-md-10">
           <canvas id="myCanvas" width="760" height="431"></canvas>
         </div>
-        <div class = "col-md-2">
-          <input type="radio" name="groupa" id="draw" value="1" checked>Draw
+        <div class = "col-md-2" id="input-background">
+          <input type="radio" name="groupa" id="draw" value="1" checked><b>Draw</b>
           <br>
-          <input type="radio" name="groupa" id="erase" value="0">Erase
+          <input type="radio" name="groupa" id="erase" value="0"><b>Erase</b>
           <br>
           <input class="btn btn-default" type="button" value="Clear All" onclick = "clearAll()">
 	  <br>
