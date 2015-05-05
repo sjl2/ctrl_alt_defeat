@@ -54,7 +54,6 @@ public class DBManager {
   private PlayerFactory pf;
   private TeamFactory tf;
   private Multiset<String> nextIDs;
-  private Trie trie;
 
   /**
    * Constructor for DBManager class, sets up connection.
@@ -78,11 +77,15 @@ public class DBManager {
     this.pf = new PlayerFactory(this);
     this.tf = new TeamFactory(this);
   }
-  
+
+  /**
+   * Getter for a new PlaymakerDB
+   * @return Returns a new PlaymakerDB
+   */
   public PlaymakerDB getPlaymakerDB() {
     return new PlaymakerDB(conn);
   }
-  
+
   /**
    * Call any time there is an error or you are done with the DBManager.
    * @author awainger
@@ -97,11 +100,21 @@ public class DBManager {
     }
   }
 
+  /**
+   * Getter for the connection.
+   * @return Returns the connection of the datbase.
+   */
   public Connection getConnection() {
     return conn;
   }
-  
+
   /* LOGIN METHODS */
+
+  /**
+   * Checks for whether the string username exists.
+   * @param username The string username to check.
+   * @return Returns true if the username exists.
+   */
   public boolean doesUsernameExist(String username) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT name FROM user WHERE name = ? LIMIT 1;")) {
@@ -114,6 +127,10 @@ public class DBManager {
     }
   }
 
+  /**
+   * Returns a list of all the usernames.
+   * @return Returns a list of all the usernames in the database.
+   */
   public List<String> getUsernames() {
     String query = "SELECT name FROM user";
     List<String> users = new LinkedList<>();
@@ -132,7 +149,17 @@ public class DBManager {
     return users;
   }
 
-  public void updateUser(String oldUsername, String newUsername, String newPassword) {
+  /**
+   * Updates a user with new information.
+   * @param oldUsername The old username
+   * @param newUsername The new username
+   * @param newPassword The new password
+   */
+  public void updateUser(
+      String oldUsername,
+      String newUsername,
+      String newPassword) {
+
     String query = "UPDATE user SET name = ?, password = ? where name = ?;";
     try(PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setString(1, newUsername);
@@ -145,7 +172,14 @@ public class DBManager {
       throw new RuntimeException(e.getMessage());
     }
   }
-  
+
+  /**
+   * Checks whether a password works.
+   * @param username The username
+   * @param password The password
+   * @return Returns an int with the clearance level of the user. -1 if the
+   * password or user does not check out.
+   */
   public int checkPassword(String username, String password) {
     if(!doesUsernameExist(username)) {
       return -1;
@@ -175,8 +209,9 @@ public class DBManager {
   /* TEAM AND PLAYER METHODS */
   /**
    * Gets player from database.
-   * @param id - Int, corresponding to player to get
-   * @return - Player, with fields populated from db info
+   * @param id  Int, corresponding to player to get
+   * @return Returns a player Player, with fields populated from db info
+   *
    * @author sjl2
    */
   public Player getPlayer(int id) {
@@ -216,7 +251,7 @@ public class DBManager {
 
     return player;
   }
-  
+
 
   /**
    * Gets team from database.
@@ -259,6 +294,13 @@ public class DBManager {
     return team;
   }
 
+  /**
+   * Get My Team from the database.
+   * @return Returns the team instance associated with my team. If there are
+   * multiple, the first one is returned.
+   * @throws DashboardException Throws dashboard exception if my team doesn't
+   * exist. One will need to be created.
+   */
   public Team getMyTeam() throws DashboardException {
     String query = "Select id, name, coach, color1, color2 "
         + "FROM team "
@@ -280,10 +322,20 @@ public class DBManager {
     }
   }
 
+  /**
+   * Get the players for the team team.
+   * @param team The team for which to get players.
+   * @return Returns a collection of players for the team.
+   */
   public Collection<Player> getTeamPlayers(Team team) {
     return getTeamPlayers(team.getID());
   }
 
+  /**
+   * Get the team players for an id of a team.
+   * @param id The id of the team.
+   * @return Returns the collection of players.
+   */
   public Collection<Player> getTeamPlayers(int id) {
     String query = "SELECT id "
         + "FROM player "
@@ -308,11 +360,16 @@ public class DBManager {
 
     return players;
   }
-  
-  
+
+
   /******* STAT METHODS *******/
 
-  public void updateBoxscore(Collection<PlayerStats> gameStats, TeamStats ts) {
+  /**
+   * Updates a boxscore in the database with updated stats.
+   * @param playerStats PlayerStats to populate the database with.
+   * @param ts The teamstats of the boxscore.
+   */
+  public void updateBoxscore(Collection<PlayerStats> playerStats, TeamStats ts) {
     StringBuilder query = new StringBuilder("UPDATE player_stats SET ");
 
       List<String> cols = PlayerStats.getCols();
@@ -326,7 +383,7 @@ public class DBManager {
       query.append("WHERE game = ? AND team = ? AND player = ?;");
 
       try (PreparedStatement ps = conn.prepareStatement(query.toString())) {
-        for (PlayerStats gs : gameStats) {
+        for (PlayerStats gs : playerStats) {
           List<Integer> vals = gs.getValues();
           int i = 1;
           for (int v : vals) {
@@ -380,6 +437,15 @@ public class DBManager {
     }
   }
 
+  /**
+   * Get PlayerStats for a game and team.
+   * @param gameID The id of the game.
+   * @param team The team to find stats for.
+   * @return Returns a Map of player id to the player stats for that player in
+   * that game.
+   * @throws GameException Throws new game exception if the player stats cannot
+   * be obtained.
+   */
   public Map<Integer, PlayerStats> getPlayerStats(int gameID, Team team)
       throws GameException {
 
@@ -403,7 +469,11 @@ public class DBManager {
         for (int i = 1; i <= len; i++) {
           values.add(rs.getInt(i));
         }
-        allGameStats.put(values.get(2), new PlayerStats(values, gameID, team, getPlayer(values.get(2))));
+
+        allGameStats.put(
+            values.get(2),
+            new PlayerStats(values, gameID, team, getPlayer(values.get(2))));
+
         values.clear();
       }
 
@@ -415,6 +485,14 @@ public class DBManager {
     return allGameStats;
   }
 
+  /**
+   * Gets teamstats for a team in a game.
+   * @param gameID The id of the game.
+   * @param team The team of the stats
+   * @return Returns the appropriate teamstats
+   * @throws GameException Throws a new game exception if teamstats can't be
+   * found.
+   */
   public TeamStats getTeamStats(int gameID, Team team) throws GameException {
 
     String query =
@@ -445,6 +523,11 @@ public class DBManager {
     return null;
   }
 
+  /**
+   * Creates a boxscore for the player stats and team stats inputted.
+   * @param stats The player stats to initialize in the database.
+   * @param ts The team stats to initialize in the database.
+   */
   public void createBoxScore(Collection<PlayerStats> stats, TeamStats ts) {
     int numCols = PlayerStats.getNumCols();
     StringBuilder query = new StringBuilder("INSERT INTO player_stats VALUES (");
@@ -493,6 +576,11 @@ public class DBManager {
 
   }
 
+  /**
+   * Creates a stat in the database.
+   * @param s The stat to insert
+   * @param game The game of the stat
+   */
   public void createStat(Stat s, int game) {
 
     String query = "INSERT INTO stat VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -516,6 +604,10 @@ public class DBManager {
     }
   }
 
+  /**
+   * Updates a stat in the database.
+   * @param s The updated stat with the same id as the old stat.
+   */
   public void updateStat(Stat s) {
     String query = "UPDATE stat "
         + "SET player = ?, type = ?, x = ?, y = ? "
@@ -535,6 +627,13 @@ public class DBManager {
     }
   }
 
+  /**
+   * Deletes a stat from the database.
+   * @param s The stat to delete.
+   * @throws GameException Throws a new game exception if stat does not match
+   * a stat in the database or some other failure caused the stat not to be
+   * deleted.
+   */
   public void deleteStat(Stat s) throws GameException {
     String query = "DELETE FROM stat WHERE id = ? AND player = ?;";
     try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -546,7 +645,11 @@ public class DBManager {
     }
   }
 
-
+  /**
+   * Gets the next available int id for the table.
+   * @param table The table in question.
+   * @return The int of the next available id in the table.
+   */
   public int getNextID(String table) {
     int nextID = nextIDs.count(table);
 
@@ -574,6 +677,15 @@ public class DBManager {
     return nextIDs.add(table, 1);
   }
 
+  /**
+   * Create's a team object and stores it in the database.
+   * @param name The name of the team.
+   * @param coach The name of the coach
+   * @param primary The string of the primary color
+   * @param secondary The string of the secondary color
+   * @param myTeam The boolean for whether the team is myTeam
+   * @return Returns the new team object, cached and stored in the db.
+   */
   public Team createTeam(String name, String coach, String primary,
       String secondary, boolean myTeam) {
 
@@ -583,6 +695,14 @@ public class DBManager {
     return t;
   }
 
+  /**
+   * Updates a team in the datbase with the new information.
+   * @param id The id of the team to be updated.
+   * @param name The name of the team
+   * @param coach The name of the coach
+   * @param primary The primary color
+   * @param secondary The secondary color
+   */
   public void updateTeam(int id, String name, String coach, String primary,
       String secondary) {
 
@@ -590,6 +710,10 @@ public class DBManager {
     updateTeam(t);
   }
 
+  /**
+   * Updates the id of team in the database with team data.
+   * @param team The updated team
+   */
   public void updateTeam(Team team) {
     String query = "UPDATE team "
         + "SET name = ?, coach = ?, color1 = ?, color2 = ? "
@@ -627,7 +751,20 @@ public class DBManager {
     }
   }
 
-  public Player createPlayer(String name, int teamID, int number, boolean curr) {
+  /**
+   * Creates a player in the database and returns the object.
+   * @param name The name of the player
+   * @param teamID the int id of the team
+   * @param number the number of the player
+   * @param curr the boolean for whether the player is current
+   * @return Returns new player object, stored and cached.
+   */
+  public Player createPlayer(
+      String name,
+      int teamID,
+      int number,
+      boolean curr) {
+
     Team t = getTeam(teamID);
     Player p = pf.getPlayer(
         getNextID("player"),
@@ -643,7 +780,21 @@ public class DBManager {
     return p;
   }
 
-  public void updatePlayer(int id, String name, int teamID, int number, boolean curr) {
+  /**
+   * Updates the player in the database.
+   * @param id The id of the player ot be updated
+   * @param name The name of the player
+   * @param teamID The id of the team.
+   * @param number The player's number
+   * @param curr The boolean if the player is currently playing.
+   */
+  public void updatePlayer(
+      int id,
+      String name,
+      int teamID,
+      int number,
+      boolean curr) {
+
     Player oldPlayer = getPlayer(id);
     if (oldPlayer.getTeamID() != teamID) {
       getTeam(oldPlayer.getTeamID()).removePlayer(oldPlayer);
@@ -686,8 +837,13 @@ public class DBManager {
       throw new RuntimeException(e.getMessage());
     }
   }
-  
+
   /****** LINK METHODS ******/
+  /**
+   * Getter for a game link.
+   * @param id The id of the game.
+   * @return Returns the link for this game.
+   */
   public Link getGameLink(int id) {
     String query = "SELECT g.date, home.name, away.name "
         + "FROM game AS g, team AS home, team AS away "
@@ -739,11 +895,16 @@ public class DBManager {
     }
   }
 
+  /**
+   * Get all teams in the database in the form of links.
+   * @return Returns a list of all the links of teams in the database.
+   */
   public List<Link> getAllTeams() {
     return getTeamLinks(true);
   }
 
   /**
+   * Getter of all opposing teams in the database.
    * @return Returns a list of opposing teams (all teams except my team)
    * @author sjl2
    */
@@ -751,6 +912,10 @@ public class DBManager {
     return getTeamLinks(false);
   }
 
+  /**
+   * Creates a game in the database.
+   * @param game The game to insert into the database.
+   */
   public void createGame(Game game) {
 
     String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
@@ -768,6 +933,13 @@ public class DBManager {
     }
   }
 
+  /**
+   * Creates a game in the database returning it's id.
+   * @param date The date of the game.
+   * @param home The home team id.
+   * @param away The away team id.
+   * @return Returns the id of the game in the database.
+   */
   int createGame(LocalDate date, int home, int away) {
 
     String query = "INSERT INTO game VALUES(?, ?, ?, ?, ?);";
@@ -789,7 +961,12 @@ public class DBManager {
     }
   }
 
-  public int getChampionshipYear(LocalDate date) {
+  /**
+   * Getter for the championship year of the date. Lumps date into the season.
+   * @param date The date to find the championship year for.
+   * @return Returns the int of the year.
+   */
+  public static int getChampionshipYear(LocalDate date) {
     if (date.getMonthValue() < SEVEN) {
       return date.getYear();
     } else {
@@ -797,7 +974,15 @@ public class DBManager {
     }
   }
 
-
+  /**
+   * Getter for a GameView based on a game id.
+   * @param id The game id
+   * @return Returns the view of the old game.
+   * @throws DashboardException Throws a Dashboard Exception if there is no
+   * game in the database.
+   * @throws GameException Throws new game exception if view is not
+   * instantiated
+   */
   public GameView getGameByID(int id)
       throws DashboardException, GameException {
     String query = "SELECT date, home, away FROM game WHERE id = ?";
@@ -819,12 +1004,15 @@ public class DBManager {
       }
 
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new DashboardException("No game in the database with the id " + id);
     }
     return g;
   }
 
+  /**
+   * Deletes a game with the game id.
+   * @param id The id of the game to delete.
+   */
   public void deleteGame(int id) {
     String query = "";
 
@@ -859,6 +1047,11 @@ public class DBManager {
 
   }
 
+  /**
+   * Deletes a player with the player id id.
+   * @param id The id of the player to delete.
+   * @return Returns true if the player is successfully deleted, false if not.
+   */
   public boolean deletePlayer(int id) {
     String query = "SELECT count(*) FROM stat WHERE player = ?;";
     String query2 = "DELETE FROM player WHERE id = ?;";
@@ -874,7 +1067,7 @@ public class DBManager {
           return false;
         }
       }
-      
+
       rs.close();
 
       Player p = getPlayer(id);
@@ -892,23 +1085,14 @@ public class DBManager {
     return true;
   }
 
-  public int getTeamWins(int gameID, int teamID, LocalDate date, boolean inclusive) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  public int getTeamLosses(int gameID, int teamID, LocalDate date, boolean inclusive) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  public void setMyTeam(Team team) {
-    // TODO Auto-generated method stub
-  }
-
-  
   /****** PLAYER AND TEAM STAT PAGE POPULATION METHODS ******/
-  // table = either player_stats or team_stats, depending on whether you are getting player or team years, and id is for either team or player
+
+  /**
+   * Getter for the years active for a team or player.
+   * @param table The table team_stats for teams or player_stats for players
+   * @param id the id of the team or player
+   * @return Returns a list of years for the team or player.
+   */
   public List<Integer> getYearsActive(String table, int id) {
     String entity = "";
     if (table.equals("player_stats")) {
@@ -939,7 +1123,17 @@ public class DBManager {
     }
   }
 
-  public List<GameStats> getSeparateGameStatsForYear(int year, String table, int id) {
+  /**
+   * Getter for gamestats from a certain years.
+   * @param year The year of the stats.
+   * @param table Player_Stats for player and team_stats for teams
+   * @param id The id of the player or team.
+   * @return Returns a list of the GameStats for that year for that player
+   * or team.
+   */
+  public List<GameStats> getSeparateGameStatsForYear(int year, String table,
+      int id) {
+
     String entity = "";
     int cols;
     if (table.equals("player_stats")) {
@@ -953,7 +1147,8 @@ public class DBManager {
     }
 
     String query = "SELECT * FROM " + table + ", game "
-        + "WHERE " + table + "." + entity + " = ? AND game.id = " + table + ".game "
+        + "WHERE " + table + "." + entity + " = ? AND game.id = "
+          + table + ".game "
             + "AND game.championship_year = ? ORDER BY game.date ASC;";
 
 
@@ -974,7 +1169,12 @@ public class DBManager {
         int playerID = values.get(2);
         GameStats toAdd = null;
         if (table.equals("player_stats")) {
-          toAdd = new PlayerStats(values, gameID, getTeam(teamID), getPlayer(playerID));
+          toAdd = new PlayerStats(
+              values,
+              gameID,
+              getTeam(teamID),
+              getPlayer(playerID));
+
         } else if (table.equals("team_stats")) {
           toAdd = new TeamStats(values, gameID, getTeam(teamID));
         }
@@ -991,14 +1191,20 @@ public class DBManager {
 
   /**
    * PLEASE PASS IN "SUM" or "AVG" for type!!!
-   * @param type
-   * @param year
-   * @param table
-   * @param id
-   * @return
+   * @param type The type of aggregate
+   * @param year The year of the stats.
+   * @param table The Table player_stats for players, team_stats for teams
+   * @param id The id of the player or team
+   * @return Returns a GameStats of the aggregrate data for that year.
+   *
    * @author sjl2
    */
-  private GameStats getAggregateGameStatsForYearOfType(String type, int year, String table, int id) {
+  private GameStats getAggregateGameStatsForYearOfType(
+      String type,
+      int year,
+      String table,
+      int id) {
+
     StringBuilder query = new StringBuilder("SELECT ");
     String entity = "";
     int cols;
@@ -1016,7 +1222,8 @@ public class DBManager {
       entity = "team";
       cols = TeamStats.getNumCols();
     } else {
-      throw new IllegalArgumentException("You messed up aggregategamestatsforyearoftype!!!");
+      String message = "You messed up aggregategamestatsforyearoftype!!!";
+      throw new IllegalArgumentException(message);
     }
 
     for (String nonStat : nonStatCols) {
@@ -1075,7 +1282,18 @@ public class DBManager {
     }
   }
 
-  public List<GameStats> getAggregateGameStats(String type, String table, int id) {
+  /**
+   * Getter for aggregate Stats for a player or team.
+   * @param type The type of aggregate stats
+   * @param table player_stats for players, team_stats for teams
+   * @param id The id of the player or team
+   * @return Returns a list of aggregate stats for all active years.
+   */
+  public List<GameStats> getAggregateGameStats(
+      String type,
+      String table,
+      int id) {
+
     List<GameStats> careerStats = new ArrayList<>();
     List<Integer> yearsActive = getYearsActive(table, id);
     for (int year : yearsActive) {
@@ -1085,9 +1303,9 @@ public class DBManager {
 
     return careerStats;
   }
-  
-  
-  
+
+
+
   /****** SHOT CHART AND HEAT MAP METHODS ******/
 
   /**
@@ -1096,22 +1314,28 @@ public class DBManager {
    * @param entityID - either player or team id
    * @param makes - True if you want makes, false if you want misses
    * @param chartType - "team" or "player"
-   * @return
+   * @return Returns a list of locations of the shots.
    */
-  private List<Location> getShotsForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, boolean makes, String chartType) {
+  private List<Location> getShotsForEntityInGames(
+      List<Integer> gameIDs,
+      List<Integer> entityIDs,
+      boolean makes,
+      String chartType) {
+
     int numGames = gameIDs.size();
     int numEntities = entityIDs.size();
     String statType = "";
     if (makes) {
       statType = "(type = \"TwoPointer\" OR type = \"ThreePointer\")";
     } else {
-      statType = "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\")";
+      statType =
+          "(type = \"MissedTwoPointer\" OR type = \"MissedThreePointer\")";
     }
 
     StringBuilder query = new StringBuilder("SELECT x, y FROM stat WHERE ");
     query.append(chartType);
     query.append(" in (");
-    
+
     if (numEntities == 0) {
       query.append(")");
     } else {
@@ -1128,7 +1352,7 @@ public class DBManager {
       query.append("?, ");
     }
     query.append("?);");
-    
+
     try (PreparedStatement prep = conn.prepareStatement(query.toString())) {
       int i = 1;
       for (int entity : entityIDs) {
@@ -1156,6 +1380,11 @@ public class DBManager {
     }
   }
 
+  /**
+   * Getter for a list of game ids for a year.
+   * @param championshipYear The championship  year of the season.
+   * @return Returns a list of game ids for that season.
+   */
   public List<Integer> getGameIDsInYear(int championshipYear) {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT id FROM game WHERE championship_year = ?;")) {
@@ -1172,7 +1401,11 @@ public class DBManager {
       throw new RuntimeException(e);
     }
   }
-  
+
+  /**
+   * Getter for the list of the last 5 gameIDs.
+   * @return Returns a list of game ids for the last five ids.
+   */
   public List<Integer> getLast5GameIDs() {
     try (PreparedStatement prep = conn.prepareStatement(
         "SELECT g.id FROM game as g, team as t "
@@ -1190,26 +1423,64 @@ public class DBManager {
     }
   }
 
-  public List<Location> getMakesForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+  /**
+   * Getter for the the makes in a game.
+   * @param gameIDs The game ids in question
+   * @param entityIDs The ids of the entitites
+   * @param chartType The type of the chart
+   * @return Returns a list of locations of the makes.
+   */
+  public List<Location> getMakesForEntityInGames(
+      List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+
     return getShotsForEntityInGames(gameIDs, entityIDs, true, chartType);
   }
 
-  public List<Location> getMissesForEntityInGames(List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+  /**
+   * Getter for the misses in a list of games.
+   * @param gameIDs The list of game ids
+   * @param entityIDs List of entity ids
+   * @param chartType The type of chart
+   * @return Returns a list of locations for the misses
+   */
+  public List<Location> getMissesForEntityInGames(
+      List<Integer> gameIDs, List<Integer> entityIDs, String chartType) {
+
     return getShotsForEntityInGames(gameIDs, entityIDs, false, chartType);
   }
 
-  public List<Location> getMakesForYear(int championshipYear, List<Integer> entityIDs, String chartType) {
+  /**
+   * Getter for the makes in a year.
+   * @param championshipYear The championship year
+   * @param entityIDs The ids of the entities
+   * @param chartType The chart type
+   * @return Returns the makes for the years
+   */
+  public List<Location> getMakesForYear(
+      int championshipYear, List<Integer> entityIDs, String chartType) {
     List<Integer> gameIDs = getGameIDsInYear(championshipYear);
     return getShotsForEntityInGames(gameIDs, entityIDs, true, chartType);
   }
 
-  public List<Location> getMissesForYear(int championshipYear, List<Integer> entityIDs, String chartType) {
+  /**
+   * Getter for the misses of of the year.
+   * @param championshipYear The championship year.
+   * @param entityIDs The ids of the entities
+   * @param chartType The type of chart.
+   * @return The list of locations for misses.
+   */
+  public List<Location> getMissesForYear(
+      int championshipYear, List<Integer> entityIDs, String chartType) {
     List<Integer> gameIDs = getGameIDsInYear(championshipYear);
     return getShotsForEntityInGames(gameIDs, entityIDs, false, chartType);
   }
 
 
   /****** AUTOCORRECT METHODS ******/
+  /**
+   * Initializes the trie with players and teams.
+   * @return Returns the trie.
+   */
   public Trie fillTrie() {
     ArrayList<Character> c = new ArrayList<Character>();
     c.add('@');
@@ -1231,7 +1502,7 @@ public class DBManager {
       while (r.next()) {
         t.addFirstWord(r.getString(1), StringFormatter.treat(r.getString(1).toLowerCase()));
       }
-      
+
       return t;
     } catch (SQLException e) {
       close();
@@ -1352,7 +1623,7 @@ public class DBManager {
   }
 
   /**
-   * StatBin class, used to track stats in all 
+   * StatBin class, used to track stats in all
    * areas of court and sum their values.
    * @author awainger
    */
@@ -1405,7 +1676,7 @@ public class DBManager {
 
     /**
      * Determines value of various types of stats.
-     * @param stat -String, indicating type of stat 
+     * @param stat -String, indicating type of stat
      * @return double, value of that stat
      */
     private double getStatValue(String stat) {
