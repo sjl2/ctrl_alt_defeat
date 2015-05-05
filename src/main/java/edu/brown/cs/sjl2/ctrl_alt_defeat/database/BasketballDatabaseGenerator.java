@@ -17,6 +17,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
+/**
+ * Class that is used to populate a database with random data.
+ *
+ * @author sjl2
+ *
+ */
 public class BasketballDatabaseGenerator {
 
   private static final int NUM_OF_STATS = 15;
@@ -29,11 +35,25 @@ public class BasketballDatabaseGenerator {
   private static final double BUFFER = 0.05;
   private static final int DEPLETE_STALL = 3;
   private static final int AVE_POSSESSIONS = 202;
+  private static final int LINEUP_SIZE = 5;
 
   private static Map<String, Map<String, String>> teamToPlayerToType;
 
+  /**
+   * Static method that populates a database with random game data.
+   * @param db The db to populate
+   * @param roundRobins The number of roundRobins to run
+   * @param intelligent The boolean flag for whether to run intelligent stat
+   * generations.
+   * @param genTeams The boolean flag to only generate teams and players (no
+   * stats). Much faster than the alternative.
+   */
+  public static void populateDB(
+      DBManager db,
+      int roundRobins,
+      boolean intelligent,
+      boolean genTeams) {
 
-  public static void populateDB(DBManager db, int roundRobins, boolean intelligent, boolean genTeams) {
     Connection conn = db.getConnection();
 
     List<String> teamNames = null;
@@ -73,7 +93,7 @@ public class BasketballDatabaseGenerator {
 
       primary =
           Arrays.asList("#3A61A3", "#860038");
-      secondary = 
+      secondary =
           Arrays.asList("#F29687", "#FDBB30");
 
     } else {
@@ -159,12 +179,12 @@ public class BasketballDatabaseGenerator {
               "Brandon Rush-4",
               "Marreese Speights-5",
               "Harrison Barnes-40"));
-  
-  
+
+
       primary =
           Arrays.asList("#3A61A3", "#860038", "#06730B", "#0953A0", "#04529C");
-  
-      secondary = 
+
+      secondary =
           Arrays.asList("#F29687", "#FDBB30", "#FFBF0D", "#FF7518", "#FFCC33");
     }
 
@@ -210,11 +230,11 @@ public class BasketballDatabaseGenerator {
         }
       }
 
-      if (!genTeams) {  
+      if (!genTeams) {
         int numGames =
             roundRobins * teams.size() * (teams.size() - 1);
         int gamesCompleted = 0;
-  
+
         // Play multiple round robin tournaments in random years.
         for (int i = 0; i < roundRobins; i++) {
           for (Team home : teams) {
@@ -250,7 +270,7 @@ public class BasketballDatabaseGenerator {
       throw new RuntimeException(message + e.getMessage());
     }
   }
-  
+
   private static void randomGameStats(Game game, Team home, Team away,
       DBManager db) throws GameException {
 
@@ -316,7 +336,7 @@ public class BasketballDatabaseGenerator {
       }
     }
   }
-  
+
   private static List<Object> generateIntelligentStat(String currTeamName, List<Player> currentPlayers, List<Player> otherPlayers) {
     List<Object> statPlayer = new ArrayList<Object>();
     Random r = new Random();
@@ -367,7 +387,7 @@ public class BasketballDatabaseGenerator {
       if (turnover < .60 + (.02 * r.nextGaussian())) {
         statPlayer.add("Steal");
         statPlayer.add(generatePlayer(otherPlayers));
-        
+
         /***** OFFENSIVE FOUL *****/
       } else if (turnover < .68 + (.02 * r.nextGaussian())) {
         statPlayer.add("OffensiveFoul");
@@ -378,7 +398,7 @@ public class BasketballDatabaseGenerator {
     } else if (statTypeDet < .995) {
       statPlayer.add("DefensiveFoul");
       statPlayer.add(generatePlayer(otherPlayers));
-      
+
       /***** SHOOTING FOUL *****/
       if (r.nextDouble() < .5) {
         if (r.nextDouble() < .7 + (.5 * r.nextGaussian())) {
@@ -479,7 +499,7 @@ public class BasketballDatabaseGenerator {
           }
         }
       }
-    
+
     /***** SHOOTER PLAYER *****/
     } else if (playerType.contains("Shooter")) {
       double shotType = r.nextDouble();
@@ -540,7 +560,8 @@ public class BasketballDatabaseGenerator {
         }
       }
     } else {
-      throw new RuntimeException("Player is neither a shooter or paint player!");
+      String message = "Player is neither a shooter or paint player!";
+      throw new RuntimeException(message);
     }
   }
 
@@ -548,14 +569,15 @@ public class BasketballDatabaseGenerator {
     Random r = new Random();
     double starterOrReserve = r.nextDouble();
     if (starterOrReserve < .8  + (.02 * r.nextGaussian())) {
-      return players.get(r.nextInt(5));
+      return players.get(r.nextInt(LINEUP_SIZE));
     } else {
-      return players.get(r.nextInt(players.size() - 5) + 5);
+      return players.get(r.nextInt(players.size() - LINEUP_SIZE) + LINEUP_SIZE);
     }
   }
 
 
-  private static Location generateShotLocation(String shotType, String shotLocation, String playerType) {
+  private static Location generateShotLocation(
+      String shotType, String shotLocation, String playerType) {
     Random r = new Random();
     if (shotLocation.equals("Paint")) {
       return genLocInPaint();
@@ -566,19 +588,19 @@ public class BasketballDatabaseGenerator {
         case "MissedTwoPointer":
           if (playerType.contains("Right")) {
             if (loc < .6 + (.03 * r.nextGaussian())) {
-              return genLocMidRangeRight(); 
+              return genLocMidRangeRight();
             } else {
               return genLocMidRangeAnywhere();
             }
           } else if (playerType.contains("Left")) {
             if (loc < .6 + (.03 * r.nextGaussian())) {
-              return genLocMidRangeLeft(); 
+              return genLocMidRangeLeft();
             } else {
               return genLocMidRangeAnywhere();
             }
           } else if (playerType.contains("Middle")) {
             if (loc < .6 + (.03 * r.nextGaussian())) {
-              return genLocMidRangeMiddle(); 
+              return genLocMidRangeMiddle();
             } else {
               return genLocMidRangeAnywhere();
             }
@@ -589,7 +611,7 @@ public class BasketballDatabaseGenerator {
         case "MissedThreePointer":
           if (playerType.contains("Right")) {
             if (loc < .6 + (.03 * r.nextGaussian())) {
-              return genLocThree(120, 180); 
+              return genLocThree(120, 180);
             } else {
               return genLocThree(0, 180);
             }
@@ -601,7 +623,7 @@ public class BasketballDatabaseGenerator {
             }
           } else if (playerType.contains("Middle")) {
             if (loc < .6 + (.03 * r.nextGaussian())) {
-              return genLocThree(60, 120); 
+              return genLocThree(60, 120);
             } else {
               return genLocThree(0, 180);
             }
@@ -674,19 +696,19 @@ public class BasketballDatabaseGenerator {
     Location bottomRight = new Location(.21, .385);
     return calcLocation(topLeft, bottomRight);
   }
-  
+
   private static Location genLocMidRangeMiddle() {
     Location topLeft = new Location(.21, .275);
     Location bottomRight = new Location(.275, .71);
     return calcLocation(topLeft, bottomRight);
   }
-  
+
   private static Location genLocMidRangeRight() {
     Location topLeft = new Location(.035, .619);
     Location bottomRight = new Location(.21, .82);
     return calcLocation(topLeft, bottomRight);
   }
-  
+
   private static Location genLocMidRangeAnywhere() {
     Random r = new Random();
     double d = r.nextDouble();
@@ -701,8 +723,10 @@ public class BasketballDatabaseGenerator {
 
   private static Location calcLocation(Location topLeft, Location bottomRight) {
     Random r = new Random();
-    double x = topLeft.getX() + (bottomRight.getX() - topLeft.getX()) * r.nextDouble();
-    double y = topLeft.getY() + (bottomRight.getY() - topLeft.getY()) * r.nextDouble();
+    double x = topLeft.getX()
+        + (bottomRight.getX() - topLeft.getX()) * r.nextDouble();
+    double y = topLeft.getY()
+        + (bottomRight.getY() - topLeft.getY()) * r.nextDouble();
     return new Location(x, y);
   }
 
@@ -734,10 +758,10 @@ public class BasketballDatabaseGenerator {
     Random r = new Random();
     double x = .4 * r.nextDouble();
     double y = r.nextDouble();
-    
+
     return new Location(x, y);
   }
-  
+
   private static Location convertToDBRepresentation(Location loc) {
     double x_ = loc.getX() / 94.0;
     double y_ = loc.getY() / 50.0;
@@ -848,7 +872,7 @@ public class BasketballDatabaseGenerator {
         } else if (y > 1 - BUFFER) {
           y = 1 - BUFFER;
         }
-  
+
         Location loc =  new Location(x,  y);
 
 
