@@ -41,6 +41,8 @@ public class GameGUI {
         rosterInfo.add(game.getLineup());
         rosterInfo.add(game.getBench(true));
         rosterInfo.add(game.getBench(false));
+        rosterInfo.add(game.getHome().getName());
+        rosterInfo.add(game.getAway().getName());
 
         List<Stat> st = game.getAllStats();
         List<String> lab = new ArrayList<String>();

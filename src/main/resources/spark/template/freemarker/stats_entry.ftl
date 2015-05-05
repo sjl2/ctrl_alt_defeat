@@ -6,10 +6,11 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title">Subs - Drag and drop bench players onto the player they're replacing</h4>
+					<h4 class="modal-title">Subs</h4>
+					<p>Drag players from the benches onto the court</p>
 				</div>
-				<div class="modal-body" id="sub_div">
-
+				<div class="modal-body">
+					<div id="sub_div" style = "margin:0 auto;width:445px;"></div>
 				</div>
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
@@ -81,17 +82,17 @@
 			</div>
 			<div class="row">
 				<div class="col-md-2">
-					Home
+					<h3 id="homeTeamLabel"></h3>
 				</div>
 				<div class="col-md-3">
 				</div>
 				<div class="col-md-2">
-					<button type="button" class = "btn btn-info" id="sendStat" onclick="addStat()">Send Stat</button>
+					<button type="button" class = "btn btn-primary btn-lg" id="sendStat" onclick="addStat()">Send Stat</button>
 				</div>
 				<div class="col-md-3">
 				</div>
 				<div class="col-md-2">
-					Away
+					<h3 id="awayTeamLabel"></h3>
 				</div>
 			</div>
 			<div class = "row">
@@ -130,7 +131,7 @@
 						</div>
 					</div>
 
-					<button type="button" class="btn btn-info" onclick="endGame()">End Game</button>
+					<button type="button" class="btn btn-danger" onclick="endGame()">End Game</button>
 					<button type="button" class="btn btn-info" onclick="advancePeriod()">Advance Period</button>
 				</div>
 			</div>
@@ -154,9 +155,9 @@
 								<button class="btn btn-xs btn-danger pull-right" onclick="deleteEdit(this)" data-editMode="off">
 									<span class="glyphicon glyphicon-trash"></span></button>
 									<p name data-name="stat"> ${stat.getStatType()}</p>
-									<#if (stat.getLocation().getX() > 0.0)>
-									<p data-name="location"> ${stat.getLocation().getX()}, ${stat.getLocation().getY()} </p>
-									</#if>
+									<p data-name="location" <#if (stat.getLocation().getX() < 0.0)> style="visibility:hidden;" </#if>> 
+    									${stat.getLocation().getX()}, ${stat.getLocation().getY()} 
+    								</p>
 								</a>
 								</#list>
 							</div>

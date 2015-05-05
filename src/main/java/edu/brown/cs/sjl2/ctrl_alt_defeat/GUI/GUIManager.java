@@ -42,6 +42,15 @@ public class GUIManager {
   private static final Gson GSON = new Gson();
 
   public GUIManager(DBManager db) {
+    initializeGUIManager(db);
+  }
+
+  public GUIManager(DBManager db, int port) {
+    this.port = port;
+    initializeGUIManager(db);
+  }
+
+  private void initializeGUIManager(DBManager db) {
     this.db = db;
     this.dash = new Dashboard(db);
     this.trie = db.fillTrie();
@@ -52,14 +61,6 @@ public class GUIManager {
     this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     this.wikiGUI = new WikiGUI(db, dash);
-    runServer();
-  }
-
-  public GUIManager(DBManager db, int port) {
-    this.db = db;
-    this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
-    this.statsEntryGUI = new StatsEntryGUI(dash);
     runServer();
   }
 
@@ -103,7 +104,7 @@ public class GUIManager {
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
     Spark.get("/scoreboard", dashboardGUI.new ScoreboardHandler());
     Spark.get("/dashboard/get/opponents", dashboardGUI.new GetOpponentsHandler());
-    Spark.get("/dashboard/get/teams", dashboardGUI.new GetOpponentsHandler());
+    Spark.get("/dashboard/get/teams", dashboardGUI.new GetTeamsHandler());
     Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(), freeMarker);
     Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
     Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
