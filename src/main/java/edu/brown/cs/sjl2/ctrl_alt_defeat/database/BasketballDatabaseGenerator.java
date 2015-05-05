@@ -28,7 +28,7 @@ public class BasketballDatabaseGenerator {
   private static final int NUM_FG = 4;
   private static final double BUFFER = 0.05;
   private static final int DEPLETE_STALL = 3;
-  private static final int AVE_POSSESSIONS = 194;
+  private static final int AVE_POSSESSIONS = 202;
 
   private static Map<String, Map<String, String>> teamToPlayerToType;
 
@@ -53,11 +53,11 @@ public class BasketballDatabaseGenerator {
               "PAR Good SF-3-Good Paint Everywhere",
               "PAR Good PF-4-Good Shooter Right",
               "PAR Good C-5-Good Paint Everywhere",
-              "PAR Bad PG-6-Bad Shooter Middle",
-              "PAR Bad SG-7-Bad Paint Left",
-              "PAR Bad SF-8-Bad Shooter Right",
-              "PAR Bad PF-9-Bad Paint Everywhere",
-              "PAR Bad C-10-Bad Paint Left"));
+              "PAR Bad PG-6-Bad Shooter Left",
+              "PAR Bad SG-7-Bad Shooter Middle",
+              "PAR Bad SF-8-Bad Paint Everywhere",
+              "PAR Bad PF-9-Bad Shooter Right",
+              "PAR Bad C-10-Bad Paint Everywhere"));
       players.add(
           Arrays.asList(
               "POT Bad PG-6-Bad Shooter Everywhere",
@@ -272,7 +272,7 @@ public class BasketballDatabaseGenerator {
   
   private static void intelligentGameStats(Game game, Team home, Team away, DBManager db) throws GameException {
     Random r = new Random();
-    int possessions = (int) (AVE_POSSESSIONS + (3.5 * r.nextGaussian()));
+    int possessions = (int) (AVE_POSSESSIONS + (2.5 * r.nextGaussian()));
     Team currentTeam = home;
     Team otherTeam = away;
 
@@ -424,7 +424,7 @@ public class BasketballDatabaseGenerator {
     if (playerType.contains("Paint")) {
       double shotType = r.nextDouble();
       double shootingPercentage = r.nextDouble();
-      
+
       /***** SHOT IN PAINT *****/
       if (shotType < .6 + (.02 * r.nextGaussian())) {
         /***** GOOD *****/
@@ -436,7 +436,7 @@ public class BasketballDatabaseGenerator {
           }
         } else {
           /***** BAD *****/
-          if (shootingPercentage < .5 + (.03 * r.nextGaussian())) {
+          if (shootingPercentage < .4 + (.03 * r.nextGaussian())) {
             return "TwoPointer Paint";
           } else {
             return "MissedTwoPointer Paint";
@@ -447,14 +447,14 @@ public class BasketballDatabaseGenerator {
       } else if (shotType < .90 + (.02 * r.nextGaussian())) {
         /***** GOOD *****/
         if (playerType.contains("Good")) {
-          if (shootingPercentage < .48 + (.02 * r.nextGaussian())) {
+          if (shootingPercentage < .50 + (.02 * r.nextGaussian())) {
             return "TwoPointer";
           } else {
             return "MissedTwoPointer";
           }
           /***** BAD *****/
         } else {
-          if (shootingPercentage < .4 + (.02 * r.nextGaussian())) {
+          if (shootingPercentage < .38 + (.02 * r.nextGaussian())) {
             return "TwoPointer";
           } else {
             return "MissedTwoPointer";
@@ -472,7 +472,7 @@ public class BasketballDatabaseGenerator {
           }
         } else {
           /***** BAD *****/
-          if (shootingPercentage < .28 + (.02 * r.nextGaussian())) {
+          if (shootingPercentage < .25 + (.02 * r.nextGaussian())) {
             return "ThreePointer";
           } else {
             return "MissedThreePointer";
@@ -496,7 +496,7 @@ public class BasketballDatabaseGenerator {
           }
         /***** BAD *****/
         } else {
-          if (shootingPercentage < .45 + (.03 * r.nextGaussian())) {
+          if (shootingPercentage < .4 + (.03 * r.nextGaussian())) {
             return "TwoPointer Paint";
           } else {
             return "MissedTwoPointer Paint";
@@ -514,7 +514,7 @@ public class BasketballDatabaseGenerator {
           }
         /***** BAD *****/
         } else {
-          if (shootingPercentage < .40 + (.02 * r.nextGaussian())) {
+          if (shootingPercentage < .35 + (.02 * r.nextGaussian())) {
             return "TwoPointer";
           } else {
             return "MissedTwoPointer";
@@ -532,16 +532,16 @@ public class BasketballDatabaseGenerator {
           }
         /***** BAD *****/
         } else {
-          if (shootingPercentage < .35 + (.02 * r.nextGaussian())) {
+          if (shootingPercentage < .3 + (.02 * r.nextGaussian())) {
             return "ThreePointer";
           } else {
             return "MissedThreePointer";
           }
         }
       }
+    } else {
+      throw new RuntimeException("Player is neither a shooter or paint player!");
     }
-
-    return null;
   }
 
   private static Player generatePlayer(List<Player> players) {

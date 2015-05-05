@@ -10,9 +10,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -46,7 +48,7 @@ public class DBManager {
   public static final int SIX = 6;
   public static final int SEVEN = 7;
   public static final int EIGHT = 8;
-  public static final int TOTAL_BINS = 25;
+  public static final int TOTAL_BINS = 16;
 
   private Connection conn;
   private PlayerFactory pf;
@@ -1231,13 +1233,12 @@ public class DBManager {
       while (r.next()) {
         t.addFirstWord(r.getString(1), StringFormatter.treat(r.getString(1).toLowerCase()));
       }
-      prep.close();
-      r.close();
+      
+      return t;
     } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      close();
+      throw new RuntimeException(e);
     }
-    return t;
   }
 
   public Trie getTrie() {
@@ -1247,31 +1248,28 @@ public class DBManager {
   /**
    * Lookup requested name in database, return first matching id.
    * @param name - Name of player or team
-   * @param isPlayer - Boolean, representing if name is of player or team
    * @return - int, id of matching player / team
    */
   public List<List<Integer>> searchBarResults(String name) {
-    String table = "";
-
-    try {
-      PreparedStatement prep = conn.prepareStatement(
-          "SELECT id FROM player WHERE name = ?;");
+    try (PreparedStatement prep = conn.prepareStatement(
+        "SELECT id FROM player WHERE name = ?;");
+        PreparedStatement prep2 = conn.prepareStatement(
+        "SELECT id FROM team WHERE name = ?;")) {
       prep.setString(1, name);
       ResultSet rs = prep.executeQuery();
-      
+
       List<Integer> playerIds = new ArrayList<Integer>();
       while (rs.next()) {
         playerIds.add(rs.getInt(1));
       }
-      
-      prep = conn.prepareStatement(
-          "SELECT id FROM team WHERE name = ?;");
-      prep.setString(1, name);
-      rs = prep.executeQuery();
+
+      prep2.setString(1, name);
+      ResultSet rs2 = prep2.executeQuery();
       List<Integer> teamIds = new ArrayList<Integer>();
-      while (rs.next()) {
-        teamIds.add(rs.getInt(1));
+      while (rs2.next()) {
+        teamIds.add(rs2.getInt(1));
       }
+
       List<List<Integer>> bothIds = new ArrayList<List<Integer>>();
       bothIds.add(playerIds);
       bothIds.add(teamIds);
@@ -1290,10 +1288,11 @@ public class DBManager {
   public double lineupRanking(List<Integer> playerIDs) {
     int numPlayerIDs = playerIDs.size();
     int championshipYear = getChampionshipYear(LocalDate.now());
-    String statsToExclude = " AND NOT type IN (\"Block\", \"DefensiveRebound\""
-        + ", \"Steal\", \"TechnicalFoul\", \"DefensiveFoul\") ";
+    String statsToExclude = " AND type IN (\"FreeThrow\", \"MissedFreeThrow\","
+        + " \"TwoPointer\", \"MissedTwoPointer\", \"ThreePointer\","
+        + " \"MissedThreePointer\") ";
     StringBuilder query = new StringBuilder(
-        "SELECT type, x, y FROM stat as s, game as g "
+        "SELECT g.id, type, x, y FROM stat as s, game as g "
         + "WHERE g.id = s.game AND g.championship_year = ?"
             + statsToExclude + "AND s.player IN (");
     for (int i = 0; i < numPlayerIDs - 1; i++) {
@@ -1310,42 +1309,48 @@ public class DBManager {
       }
 
       ResultSet rs = prep.executeQuery();
-      StatBin[][] statBins = new StatBin[FIVE][FIVE];
-      for (int i = 0; i < FIVE; i++) {
-        StatBin[] bin = new StatBin[FIVE];
-        for (int j = 0; j < FIVE; j++) {
-          bin[j] = new StatBin(numPlayerIDs);
+      StatBin[][] statBins = new StatBin[FOUR][FOUR];
+      for (int i = 0; i < FOUR; i++) {
+        StatBin[] bin = new StatBin[FOUR];
+        for (int j = 0; j < FOUR; j++) {
+          bin[j] = new StatBin();
         }
         statBins[i] = bin;
       }
 
+      Set<Integer> games = new HashSet<>();
+      int numTotalStats = 0;
       while (rs.next()) {
+        games.add(rs.getInt(1));
+        numTotalStats++;
         String stat = rs.getString("type");
         double x = rs.getDouble("x");
         double y = rs.getDouble("y");
         if (x >= 0 && y >= 0) {
           Location adjustedLoc = Location.adjustForHorizontalHalfCourt(x, y);
           int xBin = (int) Math.floor(adjustedLoc.getX() * 10.0);
-          int yBin = (int) Math.floor(adjustedLoc.getY() * 5.0);
-          statBins[xBin][yBin].add(stat);
+          int yBin = (int) Math.floor(adjustedLoc.getY() * 4.0);
+          if (xBin < FOUR) {
+            statBins[xBin][yBin].add(stat);
+          }
         }
       }
 
       double totalValue = 0.0;
       for (StatBin[] col : statBins) {
         for (StatBin bin : col) {
-          System.out.println("Potential Bin");
-          if (bin.exceedsThreshold()) {
-            System.out.println("Bin entered");
+          if (bin.exceedsThreshold(games.size(), numTotalStats)) {
             totalValue += bin.getValue();
           }
         }
       }
 
-      double scaledValue = totalValue / (TOTAL_BINS - 5);//* ((double) qualifiedBins / (double) TOTAL_BINS);
-      System.out.println("TOTAL: " + totalValue);
-      System.out.println("SCALED: " + scaledValue);
-      return 100.0 * scaledValue;
+      double scaledValue = totalValue / TOTAL_BINS;
+      if (scaledValue < 0) {
+        return -25 * Math.log10(100 * (-scaledValue)) + 50;
+      } else {
+        return 25 * Math.log10((100 * scaledValue)) + 50;
+      }
     } catch (SQLException e) {
       close();
       throw new RuntimeException(e);
@@ -1358,34 +1363,32 @@ public class DBManager {
    * @author awainger
    */
   private static class StatBin {
-    private static final double FT_PERCENTAGE = .65;
-    private static final double TWO_PT_PERCENTAGE = .4;
-    private static final double THREE_PT_PERCENTAGE = .3;
-
-    // Hollinger estimate
-    private static final double ASSIST_VALUE = .67;
-    // Value of possession based on offensive efficiency
-    private static final double POSSESSION_VALUE = 1.0;
+    private static final double FT_PERCENTAGE = .6;
+    private static final double TWO_PT_PERCENTAGE = .45;
+    private static final double THREE_PT_PERCENTAGE = .33;
 
     private int numStats;
     private double value;
-    private int threshold;
-    
-    private Map<String, Integer> statToVals;
+    private double possibleValue;
 
     /**
      * Constructor for new StatBin.
      * @author awainger
      */
-    public StatBin(int numPlayers) {
+    public StatBin() {
       numStats = 0;
       value = 0;
-      statToVals = new HashMap<>();
-      threshold = 2 * numPlayers;
+      possibleValue = 0;
     }
 
-    public boolean exceedsThreshold() {
-      return numStats > threshold;
+    /**
+     * Returns whether or not the bin meets the minimum requirements.
+     * @param numGames - int, number of games we are calculating over
+     * @param numTotalStats - int, number of stats we are calculating over
+     * @return Boolean, whether or not the bin qualifies for the calculation
+     */
+    public boolean exceedsThreshold(int numGames, int numTotalStats) {
+      return numStats >= ((double) numTotalStats / (double) (numGames * TOTAL_BINS));
     }
 
     /**
@@ -1393,11 +1396,9 @@ public class DBManager {
      * @param stat - String, stat to add
      */
     public void add(String stat) {
-//      Integer stat
-//      statToVals.put(key, value)
-//      numStats++;
-//      value += getStatValue(stat);
-////      totalPossibleVal += Math.abs(getStatValue(stat));
+      numStats++;
+      value += getStatValue(stat);
+      possibleValue += Math.abs(getStatValue(stat));
     }
 
     /**
@@ -1405,15 +1406,8 @@ public class DBManager {
      * @return Double, estimate of the value of the stats in this bin
      */
     public double getValue() {
-      System.out.println("Value: " + value);
-      System.out.println("Num stats: " + numStats);
-      //System.out.println("Total Possible: " + totalPossibleVal);
-      System.out.println("Bin Value: " + value / numStats);
-      System.out.println();
-      //return value / totalPossibleVal;
-      return value / numStats;
+      return value / possibleValue;
     }
-
 
     /**
      * Determines value of various types of stats.
@@ -1434,14 +1428,6 @@ public class DBManager {
         return 3.0;
       case "MissedThreePointer":
         return -3.0 * (THREE_PT_PERCENTAGE / (1.0 - THREE_PT_PERCENTAGE));
-      case "OffensiveFoul":
-        return -POSSESSION_VALUE;
-      case "OffensiveRebound":
-        return POSSESSION_VALUE;
-      case "Turnover":
-        return -POSSESSION_VALUE;
-      case "Assist":
-        return ASSIST_VALUE;
       default:
         throw new RuntimeException("Default case should never be reached");
       }
