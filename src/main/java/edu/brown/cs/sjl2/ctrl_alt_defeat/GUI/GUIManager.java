@@ -42,6 +42,15 @@ public class GUIManager {
   private static final Gson GSON = new Gson();
 
   public GUIManager(DBManager db) {
+    initializeGUIManager(db);
+  }
+
+  public GUIManager(DBManager db, int port) {
+    this.port = port;
+    initializeGUIManager(db);
+  }
+
+  private void initializeGUIManager(DBManager db) {
     this.db = db;
     this.dash = new Dashboard(db);
     this.trie = db.fillTrie();
@@ -55,14 +64,6 @@ public class GUIManager {
     runServer();
   }
 
-  public GUIManager(DBManager db, int port) {
-    this.db = db;
-    this.port = port;
-    this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
-    this.statsEntryGUI = new StatsEntryGUI(dash);
-    runServer();
-  }
-
   private void runServer() {
     Spark.setPort(port);
     Spark.externalStaticFileLocation("src/main/resources/static");
@@ -71,15 +72,15 @@ public class GUIManager {
     FreeMarkerEngine freeMarker = createEngine();
 
     /*** Setup Filters ***/
-    Spark.before("/dashboard", new CoachFilter());
-    Spark.before("/dashboard/*", new CoachFilter());
-    Spark.before("/whiteboard", new CoachFilter());
-    Spark.before("/whiteboard/*", new CoachFilter());
-    Spark.before("/playmaker", new CoachFilter());
-    Spark.before("/playmaker/*", new CoachFilter());
-
-    Spark.before("/stats", new StatsFilter());
-    Spark.before("/stats/*", new StatsFilter());
+//    Spark.before("/dashboard", new CoachFilter());
+//    Spark.before("/dashboard/*", new CoachFilter());
+//    Spark.before("/whiteboard", new CoachFilter());
+//    Spark.before("/whiteboard/*", new CoachFilter());
+//    Spark.before("/playmaker", new CoachFilter());
+//    Spark.before("/playmaker/*", new CoachFilter());
+//
+//    Spark.before("/stats", new StatsFilter());
+//    Spark.before("/stats/*", new StatsFilter());
 
     
     // Setup Spark Routes
@@ -99,7 +100,7 @@ public class GUIManager {
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
     Spark.get("/dashboard/scoreboard", dashboardGUI.new ScoreboardHandler());
     Spark.get("/dashboard/get/opponents", dashboardGUI.new GetOpponentsHandler());
-    Spark.get("/dashboard/get/teams", dashboardGUI.new GetOpponentsHandler());
+    Spark.get("/dashboard/get/teams", dashboardGUI.new GetTeamsHandler());
     Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(), freeMarker);
     Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
     Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
