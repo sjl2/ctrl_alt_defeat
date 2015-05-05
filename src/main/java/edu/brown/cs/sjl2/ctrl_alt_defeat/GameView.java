@@ -1,10 +1,8 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 

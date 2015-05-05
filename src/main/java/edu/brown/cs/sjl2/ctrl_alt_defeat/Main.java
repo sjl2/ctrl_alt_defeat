@@ -67,6 +67,10 @@ public final class Main {
     }
 
     if (options.has("port")) {
+      System.out.println("In port");
+      System.out.println(options);
+      System.out.println(options.valueOf(portSpec));
+      System.out.println(options.valueOf("port"));
       new GUIManager(dbManager, options.valueOf(portSpec));
     } else {
       new GUIManager(dbManager);

@@ -94,7 +94,7 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">Edit User</h4>
           </div>
-	  <form method="POST" action="/dashboard/edit/user" id="editForm">
+	  <form method="POST" action="/user/edit" id="editForm">
             <div class="modal-body" id="edit_user">
 	      <select name="oldUsername" class="form-control" id="usernames">
 	      </select>
@@ -138,6 +138,7 @@
             </li>
             <li><a href="/whiteboard">Whiteboard</a></li>
             <li><a href="/dashboard/analytics">Analytics</a></li>
+	    <li><a href="#" data-toggle="modal" data-target="#editUser">Edit Users</a></li>
           </ul>
 
           <form class="navbar-form navbar-right" role="search">

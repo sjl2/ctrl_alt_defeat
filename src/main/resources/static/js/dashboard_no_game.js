@@ -47,7 +47,7 @@ $("#createGame").on("click", function() {
 
 	if (responseJSON.length > 0) {
     	    console.log(responseJSON);
-	    bootstrap.alert(responseJSON, function () {}); 
+	    bootbox.alert(responseJSON, function () {}); 
 	} else {
  	    bootbox.alert("Game Started!", function () {
  		window.location.href = "/dashboard";
