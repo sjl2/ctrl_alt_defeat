@@ -13,6 +13,12 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.PlayerStats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.TeamStats;
 
+/**
+ * Class representing a boxscore for a single team in a game.
+ *
+ * @author sjl2
+ *
+ */
 public class BoxScore {
 
   private Map<Integer, PlayerStats> playerStats;
@@ -20,6 +26,12 @@ public class BoxScore {
   private Team team;
   private DBManager db;
 
+  /**
+   * Constructs a boxscore for a team in a game.
+   * @param db The database to store the boxscore.
+   * @param game The game associated with the boxscore.
+   * @param team The team associated with the boxscore.
+   */
   public BoxScore(DBManager db, Game game, Team team) {
 
     Collection<Player> players = team.getPlayers();
@@ -52,11 +64,12 @@ public class BoxScore {
 
   /**
    * Static Instantiator of a stored box score.
-   * @param db
-   * @param gameID
-   * @param team
+   * @param db The database to retrieve data from.
+   * @param gameID The id of the game.
+   * @param team The boxscore's team.
    * @return Returns a Boxscore from the database
-   * @throws GameException
+   * @throws GameException Throws a game exception if a boxscore could not be
+   * obtained.
    */
   public static BoxScore getOldBoxScore(DBManager db, int gameID, Team team)
       throws GameException {
@@ -66,10 +79,20 @@ public class BoxScore {
     return new BoxScore(db, team, playerStats, teamStats);
   }
 
+  /**
+   * Get Player Stats for a player.
+   * @param p The player to find stats for.
+   * @return Returns the player stats for a player. Null if the player is not
+   * in the boxscore.
+   */
   public PlayerStats getPlayerStats(Player p) {
     return playerStats.get(p.getID());
   }
 
+  /**
+   * Getter for all of the player stats in the boxscore.
+   * @return Returns a list of player stats for each player.
+   */
   public List<PlayerStats> getAllPlayerStats() {
     List<PlayerStats> allStats = new ArrayList<>();
     for (int playerID : playerStats.keySet()) {
@@ -80,24 +103,44 @@ public class BoxScore {
     return allStats;
   }
 
+  /**
+   * Getter for the teamstats of the boxscore.
+   * @return Returns the teamstats of the team.
+   */
   public TeamStats getTeamStats() {
     return teamStats;
   }
 
+  /**
+   * Getter for the team.
+   * @return Returns the team object for the boxscore.
+   */
   public Team getTeam() {
     return team;
   }
 
+  /**
+   * Getter for the team's score in the game.
+   * @return Returns an int of the points scored.
+   */
   public int getScore() {
     return getTeamStats().getFreeThrows()
         + (getTeamStats().getTwoPointers() * 2)
         + (getTeamStats().getThreePointers() * 3);
   }
 
+  /**
+   * Getter for the team fouls.
+   * @return Returns the number of team fouls.
+   */
   public int getFouls() {
     return getTeamStats().getPersonalFouls();
   }
 
+  /**
+   * Adds a stat s to the boxscore.
+   * @param s The stat to be added.
+   */
   public void addStat(Stat s) {
     s.execute(playerStats.get(s.getPlayer().getID()));
     s.execute(getTeamStats());
@@ -111,11 +154,14 @@ public class BoxScore {
     db.updateBoxscore(playerStats.values(), teamStats);
   }
 
+  /**
+   * Undoes a stat from the boxscore.
+   * @param s The stat to undo.
+   */
   public void undoStat(Stat s) {
     s.undo(playerStats.get(s.getPlayer().getID()));
     s.undo(getTeamStats());
     updateDB();
   }
-
 
 }

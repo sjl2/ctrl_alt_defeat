@@ -5,6 +5,12 @@ import java.util.Map;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
+/**
+ * Factory class used to cache player objects in the database manager.
+ *
+ * @author sjl2
+ *
+ */
 public class PlayerFactory {
 
   private Map<Integer, Player> players;
@@ -27,6 +33,16 @@ public class PlayerFactory {
     return players.get(id);
   }
 
+  /**
+   * Get's a player object with the following parameters.
+   * @param id The id of the player in the database (must exist before call)
+   * @param name The name of the player.
+   * @param teamID The player's team id
+   * @param teamName The player's team name
+   * @param number The player's number
+   * @param curr The boolean for whether the player is currently playing
+   * @return Returns the player object representing the player info.
+   */
   public Player getPlayer(
       int id,
       String name,
@@ -40,6 +56,10 @@ public class PlayerFactory {
     return p;
   }
 
+  /**
+   * Removes player from the factory cache.
+   * @param id The id of the player to remove.
+   */
   public void removePlayer(int id) {
     players.remove(id);
   }
