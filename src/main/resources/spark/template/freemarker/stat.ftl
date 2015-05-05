@@ -5,7 +5,7 @@
   <button class="btn btn-xs btn-danger pull-right" onclick="deleteEdit(this)" data-editMode="off">
     <span class="glyphicon glyphicon-trash"></span></button>
   <p name data-name="stat"> ${stat.getStatType()}</p>
-  <#if (stat.getLocation().getX() > 0.0)>
-    <p data-name="location"> ${stat.getLocation().getX()}, ${stat.getLocation().getY()} </p>
-  </#if>
+    <p data-name="location" <#if (stat.getLocation().getX() < 0.0)> style="visibility:hidden;" </#if>> 
+    ${stat.getLocation().getX()}, ${stat.getLocation().getY()} 
+    </p>
 </a>

@@ -140,10 +140,13 @@ $(function() {
 
 	}
 	var div = document.getElementById(str);
-	var htmlString = "<ul class=\"list-group\"> <li class=\"list-group-item\" >" + nameNumber + "</li>" + 
-	    "<li class=\"list-group-item\">Pts: " + points + "</li>" +
-	    "<li class=\"list-group-item\">Reb: " + rebounds + "</li>" +
-	    "<li class=\"list-group-item\">Ast: " + assists + "</li>";
+	var htmlString = "<ul class=\"list-group\"> <li class=\"list-group-item\" >" + nameNumber + "</li>";
+	if (points > 10) htmlString += "<li class=\"list-group-item list-group-item-success\">Pts: " + points + "</li>";
+	else htmlString += "<li class=\"list-group-item\">Pts: " + points + "</li>";
+	if (rebounds > 10) htmlString += "<li class=\"list-group-item list-group-item-success\">Reb: " + rebounds + "</li>";
+	else htmlString += "<li class=\"list-group-item\">Pts: " + rebounds + "</li>";
+	if (assists > 10) htmlString += "<li class=\"list-group-item list-group-item-success\">Pts: " + assists + "</li>";
+	else htmlString += "<li class=\"list-group-item\">Pts: " + assists + "</li>";
 	if (fouls > 4) htmlString += "<li class=\"list-group-item list-group-item-danger\">PF: " + fouls + "</li>";
 	else if (fouls > 3) htmlString += "<li class=\"list-group-item list-group-item-warning\">PF: " + fouls + "</li>";
 	else htmlString += "<li class=\"list-group-item\">PF: " + fouls + "</li>";

@@ -29,3 +29,7 @@ svg text {
     width: 100%;
     white-space: normal;
 }
+
+p {
+	font-size : 20;
+}
