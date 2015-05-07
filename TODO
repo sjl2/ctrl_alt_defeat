@@ -5,13 +5,6 @@
 	* For functionally done (needs JS, CSS UI)
 /****************************************************/
 
-POST-GABE:
-- No idea how to do stats -> put a little note 
-- Restrict stat location for three pointers
-- Hover to display player name as well as number in stats
-- Enter's for ALL submissions please 
-- Do something with big benches
-
 - Display Change error message from alerts to fancy balloons.
 - My Dashboard editor
    - Customize My Team
@@ -19,8 +12,11 @@ POST-GABE:
    - Error balloons for non-critical errors. Try and catch on front-end before storing. 
 
 New TODO's
-- Don't let bench get anything but technicals
-- Responses for stat keepers for advance period, timeouts, etc.
+- No idea how to do stats -> put a little note 
+- Restrict stat location for three pointers
+- Hover to display player name as well as number in stats
+- Enter's for ALL submissions please 
+- Do something with big benches
 - Style everything
 - Allow stats guy to navigate team/player/game pages
 
