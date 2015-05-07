@@ -30,7 +30,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
  */
 public class Game {
   private static final String TABLE = "game";
-  private static final int NUMBER_OF_SEASONS = 1; // Years
+  private static final int NUMBER_OF_SEASONS = 3; // Years
   private static final int SEASON_SPAN = 3; // Months
 
   private boolean homeGame;
