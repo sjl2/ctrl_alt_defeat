@@ -638,7 +638,7 @@ function clickThing(b) {
 
 
 function addStat() {
-    if ((clickedStat.statID != "TwoPointer") && (clickedStat.statID != "MissedTwoPointer") && (clickedStat.statID != "ThreePointer") && (clickedStat.statID != "MissedThreePointer")) {
+    if (clickedStat !== undefined && (clickedStat.statID != "TwoPointer") && (clickedStat.statID != "MissedTwoPointer") && (clickedStat.statID != "ThreePointer") && (clickedStat.statID != "MissedThreePointer")) {
        if (clickedPoint === undefined) {
            clickedPoint = court_paper.circle(0,0,0).data("ratioX", -1).data("ratioY", -1);
        }
