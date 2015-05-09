@@ -4,12 +4,23 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
 public class Assist implements Stat {
-
+  /**An assist.
+  *
+  * @author ngoelz
+  *
+  */
   private static final String TYPE = "Assist";
   private int id;
   private Location pos;
   private Player player;
   private int period;
+  /**Constructor of an assist.
+  *
+  * @param id the id of the stat
+  * @param player the player
+  * @param pos the position on the court
+  * @param period the period in the game
+  */
 
   public Assist(int id, Player player, Location pos, int period) {
     this.id = id;
