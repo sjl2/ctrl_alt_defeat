@@ -61,6 +61,9 @@ $(function() {
     function updateGame() {
 	$.get("/dashboard/updategame", {}, function(responseJSON) {
 	    var res = JSON.parse(responseJSON);
+	    if (res.isGame == false) {
+	    	window.location.href="/dashboard";
+	    }
 	    updateStats("PG", res.pgStats);
 	    updateStats("SG", res.sgStats);
 	    updateStats("SF", res.sfStats);
@@ -144,9 +147,9 @@ $(function() {
 	if (points > 10) htmlString += "<li class=\"list-group-item list-group-item-success\">Pts: " + points + "</li>";
 	else htmlString += "<li class=\"list-group-item\">Pts: " + points + "</li>";
 	if (rebounds > 10) htmlString += "<li class=\"list-group-item list-group-item-success\">Reb: " + rebounds + "</li>";
-	else htmlString += "<li class=\"list-group-item\">Pts: " + rebounds + "</li>";
+	else htmlString += "<li class=\"list-group-item\">Reb: " + rebounds + "</li>";
 	if (assists > 10) htmlString += "<li class=\"list-group-item list-group-item-success\">Pts: " + assists + "</li>";
-	else htmlString += "<li class=\"list-group-item\">Pts: " + assists + "</li>";
+	else htmlString += "<li class=\"list-group-item\">Ast: " + assists + "</li>";
 	if (fouls > 4) htmlString += "<li class=\"list-group-item list-group-item-danger\">PF: " + fouls + "</li>";
 	else if (fouls > 3) htmlString += "<li class=\"list-group-item list-group-item-warning\">PF: " + fouls + "</li>";
 	else htmlString += "<li class=\"list-group-item\">PF: " + fouls + "</li>";

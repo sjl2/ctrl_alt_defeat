@@ -3,7 +3,7 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Link;
 
 /**
- * The class represeting a player.
+ * The class representing a player.
  *
  * @author sjl2
  *

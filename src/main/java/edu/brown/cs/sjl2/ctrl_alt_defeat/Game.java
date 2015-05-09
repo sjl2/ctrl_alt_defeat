@@ -30,7 +30,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
  */
 public class Game {
   private static final String TABLE = "game";
-  private static final int NUMBER_OF_SEASONS = 1; // Years
+  private static final int NUMBER_OF_SEASONS = 3; // Years
   private static final int SEASON_SPAN = 3; // Months
 
   private boolean homeGame;
@@ -58,15 +58,8 @@ public class Game {
   private RuleSet rules;
   private StatFactory sf;
 
-  private int homeWins;
-
   private DBManager db;
 
-  private int homeLosses;
-
-  private int awayWins;
-
-  private int awayLosses;
 
   /**
    * Constructor for a live game.
@@ -228,50 +221,6 @@ public class Game {
    */
   public Team getAway() {
     return awayTeam;
-  }
-
-  /**
-   * Getter for the number of home team wins at this date.
-   * @return Returns the number of wins for the home team at this time.
-   */
-  public int getHomeWins() {
-    if (homeWins == -1) {
-      homeWins = db.getTeamWins(getID(), homeTeam.getID(), date, false);
-    }
-    return homeWins;
-  }
-
-  /**
-   * Getter for the number of home team losses at this date.
-   * @return Returns the number of losses for the home team at this time.
-   */
-  public int getHomeLosses() {
-    if (homeLosses == -1) {
-      homeLosses = db.getTeamWins(getID(), homeTeam.getID(), date, false);
-    }
-    return homeLosses;
-  }
-
-  /**
-   * Getter for the number of away team wins at this date.
-   * @return Returns the number of wins for the away team at this time.
-   */
-  public int getAwayWins() {
-    if (awayWins == -1) {
-      awayWins = db.getTeamWins(getID(), awayTeam.getID(), date, false);
-    }
-    return awayWins;
-  }
-
-  /**
-   * Getter for the number of away team losses at this date.
-   * @return Returns the number of away team losses at this time.
-   */
-  public int getAwayLosses() {
-    if (awayLosses == -1) {
-      awayLosses = db.getTeamWins(getID(), awayTeam.getID(), date, false);
-    }
-    return awayLosses;
   }
 
   /**

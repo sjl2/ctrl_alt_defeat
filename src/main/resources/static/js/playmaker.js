@@ -530,29 +530,14 @@ function onend(event) {
 
 function onballend(event) {
     this.grabbed = false;
-    var playerCol = false;
     for(i = 0; i < tokens.length; i++) {
 	var t = tokens[i];
 	if(this.checkCollision(t)) {
-	    playerCol = true;
 	    possessionToken = t;
-	    break;
-	}
-    }
-    if(playerCol) {
-	ball.setRelativeLocation(possessionToken);
-	for(i = currentFrame; i <= maxFrame; i++) {
-	    ball.possession[i] = possessionToken.index;
-	}
-    } else {
-	for(i = 0; i < basketLocations.length; i++) {
-	    if(ball.checkBasket(i)) {
-		ball.setLocationWithLoc(basketLocations[i]);
-		for(i = currentFrame; i <= maxFrame; i++) {
-		    //ball.possession[i] = 10 + i;
-		}
-		return;
+	    for(i = currentFrame; i <= maxFrame; i++) {
+		ball.possession[i] = possessionToken.index;
 	    }
+	    break;
 	}
     }
     ball.setRelativeLocation(possessionToken);
@@ -566,7 +551,7 @@ function updatePath() {
 	}
     }
     
-    if(ball.possession[currentFrame] = possessionToken.index || ball.possession[currentFrame + 1] == undefined) {
+    if(ball.possession[currentFrame + 1] == possessionToken.index || ball.possession[currentFrame + 1] == undefined) {
 	ball.possession[currentFrame + 1] = possessionToken.index;
     }
 
@@ -584,6 +569,7 @@ function play() {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i]
 	    t.circle.undrag();
+	    t.text.undrag();
 	}
 	ball.circle.undrag();
     }
@@ -596,6 +582,7 @@ function stop() {
 	for(i = 0; i < tokens.length; i++) {
 	    var t = tokens[i]
 	    t.circle.drag(onmove, onstart, onend, t, t, t);
+	    t.text.drag(onmove, onstart, onend, t, t, t);
 	}
 	ball.circle.drag(onmove, onballstart, onballend, ball, ball, ball);
     }

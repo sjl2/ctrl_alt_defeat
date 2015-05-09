@@ -212,7 +212,7 @@ public class DashboardGUI {
     }
   }
 
-  
+
   /**
    * Returns all information relevant to scoreboard.
    * @author awainger
@@ -348,7 +348,7 @@ public class DashboardGUI {
       return GSON.toJson(variables);
     }
   }
-  
+
   /**
    * Used to populate create game select list with player names.
    * @author awainger
@@ -404,15 +404,15 @@ public class DashboardGUI {
 
       ArrayList<String> resOne;
       String start = qm.value("spot");
-      
+
       //System.out.println("spot, " + start);
-      
+
       if (start.length() != 0) {
         resOne = trie.evaluateWord(StringFormatter.treat(start.toLowerCase()), null);
       } else {
         resOne = new ArrayList<String>();
       }
-      
+
       //System.out.println("res, " + resOne);
       for (int i = 0; i < resOne.size(); i++) {
         resOneString[i] = resOne.get(i);
@@ -420,6 +420,7 @@ public class DashboardGUI {
       Map<String, Object> variables = new HashMap<String, Object>();
       variables.put("title", "Updated");
       variables.put("res", resOneString);
+      variables.put("errorMessage", "");
 
       return GSON.toJson(variables);
     }
@@ -438,7 +439,7 @@ public class DashboardGUI {
       String searchString = qm.value("searchString");
       List<List<Integer>> ids = db.searchBarResults(searchString);
 
-      if (ids.isEmpty()) {
+      if (ids.get(0).isEmpty() && ids.get(1).isEmpty()) {
         return GSON.toJson(new ImmutableMap.Builder<String, Object>()
             .put("errorMessage",
                 "Sorry, no players or teams matched your search.")
@@ -453,9 +454,9 @@ public class DashboardGUI {
           teams.add(db.getTeam(id));
         }
         return GSON.toJson(new ImmutableMap.Builder<String, Object>()
-            .put("errorMessage", "")
             .put("teams", teams)
             .put("players", players)
+            .put("errorMessage", "")
             .build());
 
       }

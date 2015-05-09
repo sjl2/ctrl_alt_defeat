@@ -3,8 +3,9 @@ $('.modal-chart').modal({ show: false});
 $(document).ready(function(){
     console.log("a");
     console.log(document.getElementById("forCharts"));
-    width = window.innerWidth / 2.3; 
-    height = 14 * width / 15; 
+    var forCharts = $("#forCharts");
+    width = 450;
+    height = 420; 
     $("#forCharts").css('width', width);
     paper = Raphael(document.getElementById("forCharts"), width, height);
     paper.shots = paper.set();
