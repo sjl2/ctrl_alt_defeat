@@ -16,7 +16,7 @@ public class OffensiveRebound implements Stat {
   /**Constructor of a offensive rebound.
   *
   * @param id the id of the stat
-  * @param player the player
+  * @param p the player
   * @param pos the position on the court
   * @param period the period in the game
   */

@@ -110,7 +110,7 @@ public interface GameStats {
   public int getSteals();
   /**Adds steals.
   *
-  * @param steals to be added
+  * @param stl to be added
   */
   public void addSteals(int stl);
   /**A getter for the blocks.
@@ -120,7 +120,7 @@ public interface GameStats {
   public int getBlocks();
   /**Adds blocks.
   *
-  * @param blocks to be added
+  * @param blk to be added
   */
   public void addBlocks(int blk);
   /**A getter for the turnovers.

@@ -117,7 +117,7 @@ public class TeamStats implements GameStats {
   }
   /**
    * Getter for the Game of these stats.
-   * @return
+   * @return the game id
    */
   public int getGameID() {
     return gameID;

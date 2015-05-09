@@ -43,7 +43,7 @@ public class Link {
 
   /**
    * Getter for the text to be displayed on the link.
-   * @return
+   * @return the text of the link
    */
   public String getText() {
     return text;

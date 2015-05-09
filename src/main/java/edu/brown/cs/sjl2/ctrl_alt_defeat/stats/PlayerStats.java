@@ -126,7 +126,7 @@ public class PlayerStats implements GameStats {
 
   /**
    * Getter for the Player that these stats refer to.
-   * @return
+   * @return the player
    */
   public Player getPlayer() {
     return player;
@@ -141,7 +141,7 @@ public class PlayerStats implements GameStats {
   }
   /**
    * Getter for the Game of these stats.
-   * @return
+   * @return the game id
    */
   public int getGameID() {
     return game;
