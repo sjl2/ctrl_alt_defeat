@@ -60,20 +60,24 @@ public class Game {
 
   private DBManager db;
 
-
   /**
    * Constructor for a live game.
-   * @param home The home team object
-   * @param away The away team object
-   * @param db The database to store game information
-   * @param starterIDs The Map of positions to player ids for determining
-   * starters
-   * @param homeGame Boolean for whether it is a home game for my team
-   * @throws GameException Throws a game exception if the game could not be
-   * created.
+   * 
+   * @param home
+   *          The home team object
+   * @param away
+   *          The away team object
+   * @param db
+   *          The database to store game information
+   * @param starterIDs
+   *          The Map of positions to player ids for determining starters
+   * @param homeGame
+   *          Boolean for whether it is a home game for my team
+   * @throws GameException
+   *           Throws a game exception if the game could not be created.
    */
   public Game(Team home, Team away, DBManager db,
-              Map<BasketballPosition, Integer> starterIDs, boolean homeGame)
+      Map<BasketballPosition, Integer> starterIDs, boolean homeGame)
       throws GameException {
     this.homeGame = homeGame;
     if (home.getID() == away.getID()) {
@@ -125,18 +129,23 @@ public class Game {
    * Constructor for a game where starting lineup is unnecessary. Used for
    * simulations mostly. Starting line up is the top five players obtained for
    * each team.
-   * @param home Home team object
-   * @param away Away team object
-   * @param db The DBManager of the basketball database to store data in
-   * @throws GameException Throws a game exception if the game fails to start
+   * 
+   * @param home
+   *          Home team object
+   * @param away
+   *          Away team object
+   * @param db
+   *          The DBManager of the basketball database to store data in
+   * @throws GameException
+   *           Throws a game exception if the game fails to start
    */
   public Game(Team home, Team away, DBManager db)
-    throws GameException {
+      throws GameException {
 
     if (home.getID() == away.getID()) {
-    // Cannot play with yourselves
-    String message = "This is no time to play with yourself!";
-    throw new GameException(message);
+      // Cannot play with yourselves
+      String message = "This is no time to play with yourself!";
+      throw new GameException(message);
     }
 
     // Game Fields in DB
@@ -148,38 +157,39 @@ public class Game {
     this.db = db;
 
     try {
-    // Remaining fields
-    this.rules = new ProRules(); // TODO Change in settings
+      // Remaining fields
+      this.rules = new ProRules(); // TODO Change in settings
 
-    this.homeBoxScore = new BoxScore(db, this, home);
-    this.awayBoxScore = new BoxScore(db, this, away);
-    this.lineup = new Lineup();
-    this.homeBench = new Bench(home);
-    this.awayBench = new Bench(away);
+      this.homeBoxScore = new BoxScore(db, this, home);
+      this.awayBoxScore = new BoxScore(db, this, away);
+      this.lineup = new Lineup();
+      this.homeBench = new Bench(home);
+      this.awayBench = new Bench(away);
 
-    this.sf = new StatFactory(db, this);
+      this.sf = new StatFactory(db, this);
 
-    this.homeBonus = false;
-    this.homeDoubleBonus = false;
-    this.awayBonus = false;
-    this.awayDoubleBonus = false;
-    this.homeTO = rules.getTimeOuts();
-    this.awayTO = rules.getTimeOuts();
-    this.period = 1;
+      this.homeBonus = false;
+      this.homeDoubleBonus = false;
+      this.awayBonus = false;
+      this.awayDoubleBonus = false;
+      this.homeTO = rules.getTimeOuts();
+      this.awayTO = rules.getTimeOuts();
+      this.period = 1;
 
-    defaultStartingLineup(home, away);
+      defaultStartingLineup(home, away);
 
     } catch (GameException e) {
-    db.deleteGame(id);
-    String message = e.getMessage() + " Game information deleted "
-      + "from database.";
-    throw new GameException(message);
-}
+      db.deleteGame(id);
+      String message = e.getMessage() + " Game information deleted "
+          + "from database.";
+      throw new GameException(message);
+    }
 
-}
+  }
 
   /**
    * Getter for the game id.
+   * 
    * @return Returns the database id of the game.
    */
   public int getID() {
@@ -189,9 +199,11 @@ public class Game {
   /**
    * Returns true if the team input is the home team of the game. Checks via
    * team id.
-   * @param team The team to check
+   * 
+   * @param team
+   *          The team to check
    * @return Returns true if team is the home team, false otherwise. Checks for
-   * equivalent team ids.
+   *         equivalent team ids.
    */
   public boolean isHome(Team team) {
     return this.homeTeam.getID() == team.getID();
@@ -199,9 +211,11 @@ public class Game {
 
   /**
    * Returns true if the team id input represents the home team of this game.
-   * @param teamID The team to be queried
+   * 
+   * @param teamID
+   *          The team to be queried
    * @return Returns true if the teamID represents the home team, false
-   * otherwise
+   *         otherwise
    */
   public boolean isHome(int teamID) {
     return this.homeTeam.getID() == teamID;
@@ -209,6 +223,7 @@ public class Game {
 
   /**
    * Getter for the home team object.
+   * 
    * @return Returns the home team object.
    */
   public Team getHome() {
@@ -217,6 +232,7 @@ public class Game {
 
   /**
    * Getter for the away team object.
+   * 
    * @return Returns away team object.
    */
   public Team getAway() {
@@ -225,6 +241,7 @@ public class Game {
 
   /**
    * Getter for the home score.
+   * 
    * @return Returns the int number of home team points.
    */
   public int getHomeScore() {
@@ -233,6 +250,7 @@ public class Game {
 
   /**
    * Getter for the away score.
+   * 
    * @return Returns the int number of away team points.
    */
   public int getAwayScore() {
@@ -241,6 +259,7 @@ public class Game {
 
   /**
    * Getter for the home team boxscore.
+   * 
    * @return Returns the home team's boxscore object.
    */
   public BoxScore getHomeBoxScore() {
@@ -249,6 +268,7 @@ public class Game {
 
   /**
    * Getter for the away team boxscore.
+   * 
    * @return Returns the away team's boxscore object.
    */
   public BoxScore getAwayBoxScore() {
@@ -257,11 +277,15 @@ public class Game {
 
   /**
    * Substitutes a player from the bench to on the court.
-   * @param idIn The player id of the player going in.
-   * @param idOut The player id of the playering going to the bench.
-   * @param home Boolean for whether this is for the home team or not.
-   * @throws ScoreboardException Throws a scoreboard exception if the
-   * substitution is illegal.
+   * 
+   * @param idIn
+   *          The player id of the player going in.
+   * @param idOut
+   *          The player id of the playering going to the bench.
+   * @param home
+   *          Boolean for whether this is for the home team or not.
+   * @throws ScoreboardException
+   *           Throws a scoreboard exception if the substitution is illegal.
    */
   public void subPlayer(int idIn, int idOut, boolean home)
       throws ScoreboardException {
@@ -278,10 +302,13 @@ public class Game {
 
   /**
    * Use a timeout for one of the teams.
-   * @param home A Boolean for whether the home team is taking a time out. False
-   * if the away team is using a timeout.
-   * @throws GameException Returns a gameexception if a time out cannot be
-   * taken for the specified team.
+   * 
+   * @param home
+   *          A Boolean for whether the home team is taking a time out. False if
+   *          the away team is using a timeout.
+   * @throws GameException
+   *           Returns a gameexception if a time out cannot be taken for the
+   *           specified team.
    */
   public void takeTimeout(Boolean home) throws GameException {
     if (home) {
@@ -302,8 +329,10 @@ public class Game {
   /**
    * Increments the period by one. Resets necessary team stats and checks for
    * end gaming conditions.
-   * @throws GameException Throws a game exception if the period increments too
-   * high without a tied score.
+   * 
+   * @throws GameException
+   *           Throws a game exception if the period increments too high without
+   *           a tied score.
    */
   public void incrementPeriod() throws GameException {
 
@@ -330,8 +359,10 @@ public class Game {
 
   /**
    * Decrements a period in case of a mistake.
-   * @throws GameException Throws a GameException if the period is at one.
-   * There is no zero period.
+   * 
+   * @throws GameException
+   *           Throws a GameException if the period is at one. There is no zero
+   *           period.
    */
   public void decrementPeriod() throws GameException {
     if (this.period == 1) {
@@ -352,8 +383,9 @@ public class Game {
   /**
    * Getter for the possesion arrow. True represents the possesion favors the
    * home team.
-   * @return Returns a boolean representing the possession. True states that
-   * the home team recieves the next tie up.
+   * 
+   * @return Returns a boolean representing the possession. True states that the
+   *         home team recieves the next tie up.
    */
   public boolean getPossession() {
     return possession;
@@ -361,8 +393,10 @@ public class Game {
 
   /**
    * Getter for the number of timeouts remaining for a team.
-   * @param home Boolean for whether to grab home timeouts if true. Away team is
-   * false.
+   * 
+   * @param home
+   *          Boolean for whether to grab home timeouts if true. Away team is
+   *          false.
    * @return Returns the int number of timeouts remaining.
    */
   public int getTO(boolean home) {
@@ -375,6 +409,7 @@ public class Game {
 
   /**
    * Getter for all of the stat objects made for this game.
+   * 
    * @return Returns a list of all the stats made for this game.
    */
   public List<Stat> getAllStats() {
@@ -383,12 +418,17 @@ public class Game {
 
   /**
    * Adds a stat to the game based on input parameters. Used by handlers.
-   * @param statType The type of stat
-   * @param playerID The id of the player associated with the stat
-   * @param location The on court location of the stat
+   * 
+   * @param statType
+   *          The type of stat
+   * @param playerID
+   *          The id of the player associated with the stat
+   * @param location
+   *          The on court location of the stat
    * @return Returns the stat object for this pairing.
-   * @throws GameException Throws a game exception if the stat could not be
-   * added to the game.
+   * @throws GameException
+   *           Throws a game exception if the stat could not be added to the
+   *           game.
    */
   public Stat addStat(String statType, int playerID, Location location)
       throws GameException {
@@ -399,12 +439,17 @@ public class Game {
 
   /**
    * Updates a stat with the id with all the new parameters.
-   * @param id The id of the stat in the database
-   * @param statType The type of the stat
-   * @param playerID The id of the player
-   * @param location The on-court location of the stat
-   * @throws GameException Throws a GameException if the stat could not be
-   * updated.
+   * 
+   * @param id
+   *          The id of the stat in the database
+   * @param statType
+   *          The type of the stat
+   * @param playerID
+   *          The id of the player
+   * @param location
+   *          The on-court location of the stat
+   * @throws GameException
+   *           Throws a GameException if the stat could not be updated.
    */
   public void updateStat(int id, String statType,
       int playerID, Location location) throws GameException {
@@ -419,9 +464,11 @@ public class Game {
 
   /**
    * Deletes a stat of the id id from the game. Undoes all of its effects.
-   * @param id The stat's id
-   * @throws GameException Throws a game exception if the stat could not be
-   * deleted.
+   * 
+   * @param id
+   *          The stat's id
+   * @throws GameException
+   *           Throws a game exception if the stat could not be deleted.
    */
   public void deleteStat(int id) throws GameException {
     Stat s = sf.removeStat(id);
@@ -448,10 +495,12 @@ public class Game {
 
   /**
    * Adds a Stat object to the game.
-   * @param s The stat object to be added.
+   * 
+   * @param s
+   *          The stat object to be added.
    * @return Returns the stat that was added to the game.
-   * @throws GameException Throws a game exception if the stat could not be
-   * added.
+   * @throws GameException
+   *           Throws a game exception if the stat could not be added.
    */
   public Stat addStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
@@ -464,8 +513,9 @@ public class Game {
       awayFouls = awayBoxScore.getFouls();
       updateBonuses();
     } else {
-      String message = "Cannot add stat for " + s.getPlayer() + " because they "
-          + "are not on either team.";
+      String message =
+          "Cannot add stat for " + s.getPlayer() + " because they "
+              + "are not on either team.";
       throw new GameException(message);
     }
 
@@ -475,8 +525,11 @@ public class Game {
 
   /**
    * Undoes a stat from the game.
-   * @param s The stat to be undone
-   * @throws GameException Throws a game exception if the stat cannot be undone.
+   * 
+   * @param s
+   *          The stat to be undone
+   * @throws GameException
+   *           Throws a game exception if the stat cannot be undone.
    */
   public void undoStat(Stat s) throws GameException {
     if (s.getPlayer().getTeamID() == homeTeam.getID()) {
@@ -496,6 +549,7 @@ public class Game {
 
   /**
    * Getter for the ruleset governing this game.
+   * 
    * @return Returns the ruleset of the game.
    */
   public RuleSet getRules() {
@@ -504,7 +558,9 @@ public class Game {
 
   /**
    * Setter for the ruleset of this game.
-   * @param rules The new rules to use.
+   * 
+   * @param rules
+   *          The new rules to use.
    */
   public void setRules(RuleSet rules) {
     this.rules = rules;
@@ -512,6 +568,7 @@ public class Game {
 
   /**
    * Getter for the number of fouls commited by the home team.
+   * 
    * @return Returns the int number of home fouls
    */
   public int getHomeFouls() {
@@ -520,6 +577,7 @@ public class Game {
 
   /**
    * Getter for the number of fouls commited by the away team.
+   * 
    * @return Returns the int number of away fouls
    */
   public int getAwayFouls() {
@@ -528,6 +586,7 @@ public class Game {
 
   /**
    * Getter for the period of the game.
+   * 
    * @return Returns the period of the game.
    */
   public int getPeriod() {
@@ -536,6 +595,7 @@ public class Game {
 
   /**
    * Returns the current lineup of the game (all players on court).
+   * 
    * @return Returns the current lineup.
    */
   public Lineup getLineup() {
@@ -544,8 +604,10 @@ public class Game {
 
   /**
    * Getter for a team's bench.
-   * @param home A Boolean that is true if the home's bench is to be returned.
-   * False otherwise.
+   * 
+   * @param home
+   *          A Boolean that is true if the home's bench is to be returned.
+   *          False otherwise.
    * @return Returns the home bench if home is true, false otherwise.
    */
   public Bench getBench(boolean home) {
@@ -559,16 +621,16 @@ public class Game {
   private void placePlayers(Team h, Team a,
       Map<BasketballPosition, Integer> starterIDs) throws GameException {
 
-    for(BasketballPosition bp : BasketballPosition.values()) {
+    for (BasketballPosition bp : BasketballPosition.values()) {
       Integer playerID = starterIDs.get(bp);
-      if(playerID == null) {
+      if (playerID == null) {
         continue;
       }
       Player p = db.getPlayer(playerID);
       lineup.addStarter(bp, p);
     }
 
-    Collection<Player> players =  h.getPlayers();
+    Collection<Player> players = h.getPlayers();
     Iterator<Player> homeIterator = players.iterator();
 
     if (players.size() < 5) {
@@ -577,12 +639,12 @@ public class Game {
 
     while (homeIterator.hasNext()) {
       Player p = homeIterator.next();
-      if(!starterIDs.containsValue(p.getID())) {
+      if (!starterIDs.containsValue(p.getID())) {
         homeBench.getPlayers().add(p);
       }
     }
 
-    players =  a.getPlayers();
+    players = a.getPlayers();
     Iterator<Player> awayIterator = players.iterator();
 
     if (players.size() < 5) {
@@ -591,7 +653,7 @@ public class Game {
 
     while (awayIterator.hasNext()) {
       Player p = awayIterator.next();
-      if(!starterIDs.containsValue(p.getID())) {
+      if (!starterIDs.containsValue(p.getID())) {
         awayBench.getPlayers().add(p);
       }
     }
@@ -600,7 +662,7 @@ public class Game {
 
   private void defaultStartingLineup(Team h, Team a) throws GameException {
 
-    Collection<Player> players =  h.getPlayers();
+    Collection<Player> players = h.getPlayers();
     Iterator<Player> homeIterator = players.iterator();
 
     if (players.size() < 5) {
@@ -608,16 +670,16 @@ public class Game {
     }
 
     lineup.addStarter(BasketballPosition.HomePG, homeIterator.next())
-      .addStarter(BasketballPosition.HomeSG, homeIterator.next())
-      .addStarter(BasketballPosition.HomeSF, homeIterator.next())
-      .addStarter(BasketballPosition.HomePF, homeIterator.next())
-      .addStarter(BasketballPosition.HomeC, homeIterator.next());
+        .addStarter(BasketballPosition.HomeSG, homeIterator.next())
+        .addStarter(BasketballPosition.HomeSF, homeIterator.next())
+        .addStarter(BasketballPosition.HomePF, homeIterator.next())
+        .addStarter(BasketballPosition.HomeC, homeIterator.next());
 
     while (homeIterator.hasNext()) {
       homeBench.getPlayers().add(homeIterator.next());
     }
 
-    players =  a.getPlayers();
+    players = a.getPlayers();
     Iterator<Player> awayIterator = players.iterator();
 
     if (players.size() < 5) {
@@ -625,10 +687,10 @@ public class Game {
     }
 
     lineup.addStarter(BasketballPosition.AwayPG, awayIterator.next())
-      .addStarter(BasketballPosition.AwaySG, awayIterator.next())
-      .addStarter(BasketballPosition.AwaySF, awayIterator.next())
-      .addStarter(BasketballPosition.AwayPF, awayIterator.next())
-      .addStarter(BasketballPosition.AwayC, awayIterator.next());
+        .addStarter(BasketballPosition.AwaySG, awayIterator.next())
+        .addStarter(BasketballPosition.AwaySF, awayIterator.next())
+        .addStarter(BasketballPosition.AwayPF, awayIterator.next())
+        .addStarter(BasketballPosition.AwayC, awayIterator.next());
 
     while (awayIterator.hasNext()) {
       awayBench.getPlayers().add(awayIterator.next());
@@ -638,6 +700,7 @@ public class Game {
 
   /**
    * Getter for the date of the game.
+   * 
    * @return Returns the date that the game was played as a local date object.
    */
   public LocalDate getDate() {
@@ -646,6 +709,7 @@ public class Game {
 
   /**
    * Getter for whether the home team is in the bonus.
+   * 
    * @return Returns true if home team is in bonus.
    */
   public boolean getHomeBonus() {
@@ -654,6 +718,7 @@ public class Game {
 
   /**
    * Getter home team double bonus.
+   * 
    * @return Returns true if the home team is in the double bonus.
    */
   public boolean getHomeDoubleBonus() {
@@ -662,6 +727,7 @@ public class Game {
 
   /**
    * Getter for away team bonus.
+   * 
    * @return Returns true if Away team is in the bonus.
    */
   public boolean getAwayBonus() {
@@ -670,6 +736,7 @@ public class Game {
 
   /**
    * Getter for away team double bonus.
+   * 
    * @return Returns true if the away team is in the double bonus.
    */
   public boolean getAwayDoubleBonus() {
@@ -683,6 +750,7 @@ public class Game {
 
   /**
    * Getter for whether the game is a home game for my team.
+   * 
    * @return Returns true if the game is a hometeam for my team.
    */
   public boolean getHomeGame() {

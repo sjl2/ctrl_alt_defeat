@@ -1,7 +1,7 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.GUI;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +25,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
-/**Class that contains information for handlers relating to our wiki
- * feature.
+/**
+ * Class that contains information for handlers relating to our wiki feature.
  *
  * @author ngoelz
  *
@@ -42,7 +42,8 @@ public class WikiGUI {
    *
    * @param dbManager
    *          - DBManager, used to query database
-   * @param dashboard - Dashboard, used to get games
+   * @param dashboard
+   *          - Dashboard, used to get games
    * @author awainger
    */
   public WikiGUI(DBManager dbManager, Dashboard dashboard) {
@@ -70,10 +71,10 @@ public class WikiGUI {
 
       if (game != null) {
         Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", game.toString(),
-                          "allTeams", dbManager.getAllTeams(),
-                          "game", game,
-                          "errorMessage", error);
+            ImmutableMap.of("tabTitle", game.toString(),
+                "allTeams", dbManager.getAllTeams(),
+                "game", game,
+                "errorMessage", error);
 
         return new ModelAndView(variables, "game.ftl");
       } else {
@@ -131,13 +132,14 @@ public class WikiGUI {
       if (team != null) {
         Map<String, Object> variables =
             new ImmutableMap.Builder<String, Object>()
-            .put("tabTitle", team.toString()).put("db", dbManager)
-            .put("team", team).put("years", years).put("rows", rows)
-            .put("allTeams", dbManager.getAllTeams())
-            .put("seasonTotals", seasonTotals)
-            .put("seasonAverages", seasonAverages).put("errorMessage", error)
-            .put("clearance", clearance)
-            .build();
+                .put("tabTitle", team.toString()).put("db", dbManager)
+                .put("team", team).put("years", years).put("rows", rows)
+                .put("allTeams", dbManager.getAllTeams())
+                .put("seasonTotals", seasonTotals)
+                .put("seasonAverages", seasonAverages)
+                .put("errorMessage", error)
+                .put("clearance", clearance)
+                .build();
         return new ModelAndView(variables, "team.ftl");
       } else {
         Map<String, Object> variables = ImmutableMap.of("tabTitle",
@@ -150,6 +152,7 @@ public class WikiGUI {
 
   /**
    * Handler for editing information about a player.
+   * 
    * @author awainger
    */
   public class EditPlayer implements Route {
@@ -173,7 +176,8 @@ public class WikiGUI {
     }
   }
 
-  /**Handler for deletion of players.
+  /**
+   * Handler for deletion of players.
    *
    * @author ngoelz
    *
@@ -192,6 +196,7 @@ public class WikiGUI {
 
   /**
    * Handler for editing information about a team.
+   * 
    * @author awainger
    */
   public class EditTeam implements Route {
@@ -267,13 +272,14 @@ public class WikiGUI {
       if (player != null) {
         Map<String, Object> variables =
             new ImmutableMap.Builder<String, Object>()
-            .put("tabTitle", player.toString()).put("db", dbManager)
-            .put("player", player).put("years", years).put("rows", rows)
-            .put("seasonTotals", seasonTotals)
-            .put("allTeams", dbManager.getAllTeams())
-            .put("seasonAverages", seasonAverages).put("errorMessage", error)
-            .put("clearance", clearance)
-            .build();
+                .put("tabTitle", player.toString()).put("db", dbManager)
+                .put("player", player).put("years", years).put("rows", rows)
+                .put("seasonTotals", seasonTotals)
+                .put("allTeams", dbManager.getAllTeams())
+                .put("seasonAverages", seasonAverages)
+                .put("errorMessage", error)
+                .put("clearance", clearance)
+                .build();
         return new ModelAndView(variables, "player.ftl");
       } else {
         Map<String, Object> variables = ImmutableMap.of("tabTitle",
@@ -314,8 +320,9 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("db", dbManager).put("rows", rows).put("errorMessage", error)
-          .put("isPlayer", isPlayer).build();
+              .put("db", dbManager).put("rows", rows)
+              .put("errorMessage", error)
+              .put("isPlayer", isPlayer).build();
 
       return new ModelAndView(variables, "season.ftl");
     }
@@ -393,8 +400,8 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes).put("misses", misses)
-          .put("errorMessage", errorMessage).build();
+              .put("makes", makes).put("misses", misses)
+              .put("errorMessage", errorMessage).build();
       return GSON.toJson(variables);
     }
   }
@@ -437,15 +444,16 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-            .put("makes", makes)
-            .put("misses", misses).put("errorMessage", errorMessage)
-            .build();
+              .put("makes", makes)
+              .put("misses", misses).put("errorMessage", errorMessage)
+              .build();
       return GSON.toJson(variables);
 
     }
   }
 
-  /**Handler for providing information for the heat maps of analytics.
+  /**
+   * Handler for providing information for the heat maps of analytics.
    *
    * @author ngoelz
    *
@@ -464,27 +472,28 @@ public class WikiGUI {
             GSON.fromJson(playerIDsString, Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
         makes = dbManager.getMakesForYear(
-            dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
+            DBManager.getChampionshipYear(LocalDate.now()), ids, "player");
         misses = dbManager.getMissesForYear(
-            dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
+            DBManager.getChampionshipYear(LocalDate.now()), ids, "player");
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id format!";
       }
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-            .put("makes", makes)
-            .put("misses", misses).put("errorMessage", errorMessage)
-            .build();
+              .put("makes", makes)
+              .put("misses", misses).put("errorMessage", errorMessage)
+              .build();
       return GSON.toJson(variables);
     }
   }
 
-  /**Handler for providing information for the recent shot charts of analytics.
-  *
-  * @author ngoelz
-  *
-  */
+  /**
+   * Handler for providing information for the recent shot charts of analytics.
+   *
+   * @author ngoelz
+   *
+   */
   public class GetAnalyticsShotChart implements Route {
 
     @Override
@@ -507,14 +516,15 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-            .put("makes", makes)
-            .put("misses", misses).put("errorMessage", errorMessage)
-            .build();
+              .put("makes", makes)
+              .put("misses", misses).put("errorMessage", errorMessage)
+              .build();
       return GSON.toJson(variables);
     }
   }
 
-  /**Handler that returns the lineup ranking of a given lineup.
+  /**
+   * Handler that returns the lineup ranking of a given lineup.
    *
    * @author ngoelz
    *
@@ -538,8 +548,8 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("ranking", ranking).put("errorMessage", errorMessage)
-          .build();
+              .put("ranking", ranking).put("errorMessage", errorMessage)
+              .build();
       return GSON.toJson(variables);
     }
 
