@@ -28,7 +28,7 @@ public class BoxScore {
 
   /**
    * Constructs a boxscore for a team in a game.
-   * 
+   *
    * @param db The database to store the boxscore.
    * @param game The game associated with the boxscore.
    * @param team The team associated with the boxscore.
@@ -64,7 +64,7 @@ public class BoxScore {
 
   /**
    * Static Instantiator of a stored box score.
-   * 
+   *
    * @param db The database to retrieve data from.
    * @param gameID The id of the game.
    * @param team The boxscore's team.
@@ -82,7 +82,7 @@ public class BoxScore {
 
   /**
    * Get Player Stats for a player.
-   * 
+   *
    * @param p The player to find stats for.
    * @return Returns the player stats for a player. Null if the player is not in
    *         the boxscore.
@@ -93,7 +93,7 @@ public class BoxScore {
 
   /**
    * Getter for all of the player stats in the boxscore.
-   * 
+   *
    * @return Returns a list of player stats for each player.
    */
   public List<PlayerStats> getAllPlayerStats() {
@@ -108,7 +108,7 @@ public class BoxScore {
 
   /**
    * Getter for the teamstats of the boxscore.
-   * 
+   *
    * @return Returns the teamstats of the team.
    */
   public TeamStats getTeamStats() {
@@ -117,7 +117,7 @@ public class BoxScore {
 
   /**
    * Getter for the team.
-   * 
+   *
    * @return Returns the team object for the boxscore.
    */
   public Team getTeam() {
@@ -126,7 +126,7 @@ public class BoxScore {
 
   /**
    * Getter for the team's score in the game.
-   * 
+   *
    * @return Returns an int of the points scored.
    */
   public int getScore() {
@@ -137,7 +137,7 @@ public class BoxScore {
 
   /**
    * Getter for the team fouls.
-   * 
+   *
    * @return Returns the number of team fouls.
    */
   public int getFouls() {
@@ -146,7 +146,7 @@ public class BoxScore {
 
   /**
    * Adds a stat s to the boxscore.
-   * 
+   *
    * @param s The stat to be added.
    */
   public void addStat(Stat s) {
@@ -164,7 +164,7 @@ public class BoxScore {
 
   /**
    * Undoes a stat from the boxscore.
-   * 
+   *
    * @param s The stat to undo.
    */
   public void undoStat(Stat s) {

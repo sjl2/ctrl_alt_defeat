@@ -15,7 +15,7 @@ public class GameException extends Exception {
 
   /**
    * Constructs A Game Exception for the Game Object.
-   * 
+   *
    * @param message The error message to display with the exception.
    */
   public GameException(String message) {

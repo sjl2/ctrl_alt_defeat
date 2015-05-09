@@ -150,7 +150,7 @@ public class WikiGUI {
 
   /**
    * Handler for editing information about a player.
-   * 
+   *
    * @author awainger
    */
   public class EditPlayer implements Route {
@@ -194,7 +194,7 @@ public class WikiGUI {
 
   /**
    * Handler for editing information about a team.
-   * 
+   *
    * @author awainger
    */
   public class EditTeam implements Route {

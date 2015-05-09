@@ -17,7 +17,7 @@ public final class Main {
 
   /**
    * The entry static function for Ctrl-Alt-Defeat.
-   * 
+   *
    * @param args The command line arguments used to execute.
    */
   public static void main(String[] args) {

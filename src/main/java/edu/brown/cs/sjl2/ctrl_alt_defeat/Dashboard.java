@@ -26,7 +26,7 @@ public class Dashboard {
 
   /**
    * Constructor for the dashboard using a basketball database.
-   * 
+   *
    * @param db The DBManager for the basketball database
    */
   public Dashboard(DBManager db) {
@@ -44,7 +44,7 @@ public class Dashboard {
 
   /**
    * Retrieves the current game.
-   * 
+   *
    * @return Returns the current game. Returns null if there is no current game.
    */
   public Game getGame() {
@@ -60,7 +60,7 @@ public class Dashboard {
 
   /**
    * Starts a game between my team and an opponent with a specified lineup.
-   * 
+   *
    * @param home A boolean true if it is a home game for myteam, false for away.
    * @param opponentID The team id for the opponent
    * @param starterIDs A Map between the positions and the player ids.
@@ -94,7 +94,7 @@ public class Dashboard {
 
   /**
    * Getter for my team.
-   * 
+   *
    * @return Returns the Team object of the coach's team.
    */
   public Team getMyTeam() {
@@ -103,7 +103,7 @@ public class Dashboard {
 
   /**
    * Retrieves team from database.
-   * 
+   *
    * @param id The team id to be searched for.
    * @return Returns the Team stored with the id.
    */
@@ -113,7 +113,7 @@ public class Dashboard {
 
   /**
    * Retrieves a player form the database.
-   * 
+   *
    * @param id The player id to be searched for.
    * @return Returns the Player stored with the id.
    */
@@ -124,7 +124,7 @@ public class Dashboard {
   /**
    * Retrieves a list of Links representing all teams in the database (my team
    * inclusive).
-   * 
+   *
    * @return Returns a list of links representing all teams in the database.
    */
   public List<Link> getAllTeams() {
@@ -134,7 +134,7 @@ public class Dashboard {
   /**
    * Retrieves a list of links representing all teams in the database EXCLUDING
    * my team.
-   * 
+   *
    * @return Returns a list of links representing all teams in the database
    *         excluding my team.
    */
@@ -144,7 +144,7 @@ public class Dashboard {
 
   /**
    * Getter for a boxscore for a team in a game.
-   * 
+   *
    * @param gameID The id of the game for the boxscore.
    * @param team The team of interest
    * @return Returns a boxscore object of the game for the team.
@@ -164,7 +164,7 @@ public class Dashboard {
   /**
    * Sets the coach's team for the dashboard. It is assumed the team does not
    * previously exist in the database.
-   * 
+   *
    * @param name The Team Name
    * @param coach Coach's name
    * @param primary The string value of the primary color (preferably
@@ -183,7 +183,7 @@ public class Dashboard {
 
   /**
    * Sets my team to a team of id teamID.
-   * 
+   *
    * @param teamID The id of myTeam.
    */
   public void setMyTeam(int teamID) {
@@ -192,7 +192,7 @@ public class Dashboard {
 
   /**
    * Sets my team to the team object.
-   * 
+   *
    * @param team The team object that will be my team.
    */
   public void setMyTeam(Team team) {
@@ -203,7 +203,7 @@ public class Dashboard {
   /**
    * Creates a new team with the specified parameters. Team is then stored in
    * the database.
-   * 
+   *
    * @param name Team name
    * @param coach Coach's name
    * @param primary String of primary color (preferably hexadecimal)
@@ -219,7 +219,7 @@ public class Dashboard {
   /**
    * Creates a new player with the specified parameters. The player is then
    * stored in the database.
-   * 
+   *
    * @param name Player Name
    * @param teamID ID of team that the player is going on (must exist in db)
    * @param number The player's number
@@ -237,7 +237,7 @@ public class Dashboard {
 
   /**
    * Getter for an old game. Returns a view of the game (not interactive).
-   * 
+   *
    * @param gameID The id of the old game.
    * @return Returns a GameView of the game.
    * @throws DashboardException Throws a DashboardException if the game does not

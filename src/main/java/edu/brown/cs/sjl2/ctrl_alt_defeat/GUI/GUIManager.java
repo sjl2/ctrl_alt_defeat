@@ -59,7 +59,7 @@ public class GUIManager {
 
   /**
    * Initializes the class.
-   * 
+   *
    * @param db the database manager.
    * @param port the port to be assigned.
    */
@@ -72,7 +72,7 @@ public class GUIManager {
    * Sets the internals of the class. Fills the trie and sets its parameters,
    * initializes the various helper classes containing the handlers, and runs
    * the server.
-   * 
+   *
    * @param db The DBManager to be assigned
    */
   private void initializeGUIManager(DBManager db) {
@@ -282,7 +282,7 @@ public class GUIManager {
 
   /*
    * private class PageNotFoundFilter implements Filter {
-   * 
+   *
    * @Override public void handle(Request req, Response res) {
    * System.out.println(req.raw().getRequestURL()); } }
    */

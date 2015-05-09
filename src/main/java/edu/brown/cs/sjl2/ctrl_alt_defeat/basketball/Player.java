@@ -18,7 +18,7 @@ public class Player {
 
   /**
    * Constructs a player with the parameters below.
-   * 
+   *
    * @param id The database id of the player.
    * @param name The player's name.
    * @param number The player's jersey number.
@@ -44,7 +44,7 @@ public class Player {
 
   /**
    * Getter for the player's database id.
-   * 
+   *
    * @return Returns the int of the player id.
    */
   public int getID() {
@@ -53,7 +53,7 @@ public class Player {
 
   /**
    * Getter for the player's name.
-   * 
+   *
    * @return Returns the player's name.
    */
   public String getName() {
@@ -62,7 +62,7 @@ public class Player {
 
   /**
    * Getter for the player's number.
-   * 
+   *
    * @return Returns the player's number.
    */
   public int getNumber() {
@@ -71,7 +71,7 @@ public class Player {
 
   /**
    * Getter for the team's id.
-   * 
+   *
    * @return Returns the team id.
    */
   public int getTeamID() {
@@ -80,7 +80,7 @@ public class Player {
 
   /**
    * Getter for the name of the team.
-   * 
+   *
    * @return Returns the name of the team.
    */
   public String getTeamName() {
@@ -89,7 +89,7 @@ public class Player {
 
   /**
    * Getter for whether player is current.
-   * 
+   *
    * @return Returns true if the player is currently playing, false if retired.
    */
   public boolean getCurrent() {
@@ -103,7 +103,7 @@ public class Player {
 
   /**
    * Getter for a link representing the player.
-   * 
+   *
    * @return Returns the link of the player.
    */
   public Link getLink() {

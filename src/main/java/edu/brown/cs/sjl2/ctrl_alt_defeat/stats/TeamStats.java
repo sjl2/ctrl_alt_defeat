@@ -11,7 +11,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 
 /**
  * Class that contains the stats for a team for a given game.
- * 
+ *
  * @author ngoelz
  *
  */
@@ -32,7 +32,7 @@ public class TeamStats implements GameStats {
 
   /**
    * Simple constructor for teamstats.
-   * 
+   *
    * @param gameID id of the game
    * @param team the team.
    */
@@ -133,7 +133,7 @@ public class TeamStats implements GameStats {
 
   /**
    * Getter for the Game of these stats.
-   * 
+   *
    * @return the game id
    */
   public int getGameID() {

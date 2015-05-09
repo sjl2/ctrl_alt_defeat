@@ -62,7 +62,7 @@ public class Game {
 
   /**
    * Constructor for a live game.
-   * 
+   *
    * @param home The home team object
    * @param away The away team object
    * @param db The database to store game information
@@ -125,7 +125,7 @@ public class Game {
    * Constructor for a game where starting lineup is unnecessary. Used for
    * simulations mostly. Starting line up is the top five players obtained for
    * each team.
-   * 
+   *
    * @param home Home team object
    * @param away Away team object
    * @param db The DBManager of the basketball database to store data in
@@ -181,7 +181,7 @@ public class Game {
 
   /**
    * Getter for the game id.
-   * 
+   *
    * @return Returns the database id of the game.
    */
   public int getID() {
@@ -191,7 +191,7 @@ public class Game {
   /**
    * Returns true if the team input is the home team of the game. Checks via
    * team id.
-   * 
+   *
    * @param team The team to check
    * @return Returns true if team is the home team, false otherwise. Checks for
    *         equivalent team ids.
@@ -202,7 +202,7 @@ public class Game {
 
   /**
    * Returns true if the team id input represents the home team of this game.
-   * 
+   *
    * @param teamID The team to be queried
    * @return Returns true if the teamID represents the home team, false
    *         otherwise
@@ -213,7 +213,7 @@ public class Game {
 
   /**
    * Getter for the home team object.
-   * 
+   *
    * @return Returns the home team object.
    */
   public Team getHome() {
@@ -222,7 +222,7 @@ public class Game {
 
   /**
    * Getter for the away team object.
-   * 
+   *
    * @return Returns away team object.
    */
   public Team getAway() {
@@ -231,7 +231,7 @@ public class Game {
 
   /**
    * Getter for the home score.
-   * 
+   *
    * @return Returns the int number of home team points.
    */
   public int getHomeScore() {
@@ -240,7 +240,7 @@ public class Game {
 
   /**
    * Getter for the away score.
-   * 
+   *
    * @return Returns the int number of away team points.
    */
   public int getAwayScore() {
@@ -249,7 +249,7 @@ public class Game {
 
   /**
    * Getter for the home team boxscore.
-   * 
+   *
    * @return Returns the home team's boxscore object.
    */
   public BoxScore getHomeBoxScore() {
@@ -258,7 +258,7 @@ public class Game {
 
   /**
    * Getter for the away team boxscore.
-   * 
+   *
    * @return Returns the away team's boxscore object.
    */
   public BoxScore getAwayBoxScore() {
@@ -267,7 +267,7 @@ public class Game {
 
   /**
    * Substitutes a player from the bench to on the court.
-   * 
+   *
    * @param idIn The player id of the player going in.
    * @param idOut The player id of the playering going to the bench.
    * @param home Boolean for whether this is for the home team or not.
@@ -289,7 +289,7 @@ public class Game {
 
   /**
    * Use a timeout for one of the teams.
-   * 
+   *
    * @param home A Boolean for whether the home team is taking a time out. False
    *          if the away team is using a timeout.
    * @throws GameException Returns a gameexception if a time out cannot be taken
@@ -314,7 +314,7 @@ public class Game {
   /**
    * Increments the period by one. Resets necessary team stats and checks for
    * end gaming conditions.
-   * 
+   *
    * @throws GameException Throws a game exception if the period increments too
    *           high without a tied score.
    */
@@ -343,7 +343,7 @@ public class Game {
 
   /**
    * Decrements a period in case of a mistake.
-   * 
+   *
    * @throws GameException Throws a GameException if the period is at one. There
    *           is no zero period.
    */
@@ -366,7 +366,7 @@ public class Game {
   /**
    * Getter for the possesion arrow. True represents the possesion favors the
    * home team.
-   * 
+   *
    * @return Returns a boolean representing the possession. True states that the
    *         home team recieves the next tie up.
    */
@@ -376,7 +376,7 @@ public class Game {
 
   /**
    * Getter for the number of timeouts remaining for a team.
-   * 
+   *
    * @param home Boolean for whether to grab home timeouts if true. Away team is
    *          false.
    * @return Returns the int number of timeouts remaining.
@@ -391,7 +391,7 @@ public class Game {
 
   /**
    * Getter for all of the stat objects made for this game.
-   * 
+   *
    * @return Returns a list of all the stats made for this game.
    */
   public List<Stat> getAllStats() {
@@ -400,7 +400,7 @@ public class Game {
 
   /**
    * Adds a stat to the game based on input parameters. Used by handlers.
-   * 
+   *
    * @param statType The type of stat
    * @param playerID The id of the player associated with the stat
    * @param location The on court location of the stat
@@ -417,7 +417,7 @@ public class Game {
 
   /**
    * Updates a stat with the id with all the new parameters.
-   * 
+   *
    * @param id The id of the stat in the database
    * @param statType The type of the stat
    * @param playerID The id of the player
@@ -438,7 +438,7 @@ public class Game {
 
   /**
    * Deletes a stat of the id id from the game. Undoes all of its effects.
-   * 
+   *
    * @param id The stat's id
    * @throws GameException Throws a game exception if the stat could not be
    *           deleted.
@@ -468,7 +468,7 @@ public class Game {
 
   /**
    * Adds a Stat object to the game.
-   * 
+   *
    * @param s The stat object to be added.
    * @return Returns the stat that was added to the game.
    * @throws GameException Throws a game exception if the stat could not be
@@ -497,7 +497,7 @@ public class Game {
 
   /**
    * Undoes a stat from the game.
-   * 
+   *
    * @param s The stat to be undone
    * @throws GameException Throws a game exception if the stat cannot be undone.
    */
@@ -519,7 +519,7 @@ public class Game {
 
   /**
    * Getter for the ruleset governing this game.
-   * 
+   *
    * @return Returns the ruleset of the game.
    */
   public RuleSet getRules() {
@@ -528,7 +528,7 @@ public class Game {
 
   /**
    * Setter for the ruleset of this game.
-   * 
+   *
    * @param rules The new rules to use.
    */
   public void setRules(RuleSet rules) {
@@ -537,7 +537,7 @@ public class Game {
 
   /**
    * Getter for the number of fouls commited by the home team.
-   * 
+   *
    * @return Returns the int number of home fouls
    */
   public int getHomeFouls() {
@@ -546,7 +546,7 @@ public class Game {
 
   /**
    * Getter for the number of fouls commited by the away team.
-   * 
+   *
    * @return Returns the int number of away fouls
    */
   public int getAwayFouls() {
@@ -555,7 +555,7 @@ public class Game {
 
   /**
    * Getter for the period of the game.
-   * 
+   *
    * @return Returns the period of the game.
    */
   public int getPeriod() {
@@ -564,7 +564,7 @@ public class Game {
 
   /**
    * Returns the current lineup of the game (all players on court).
-   * 
+   *
    * @return Returns the current lineup.
    */
   public Lineup getLineup() {
@@ -573,7 +573,7 @@ public class Game {
 
   /**
    * Getter for a team's bench.
-   * 
+   *
    * @param home A Boolean that is true if the home's bench is to be returned.
    *          False otherwise.
    * @return Returns the home bench if home is true, false otherwise.
@@ -668,7 +668,7 @@ public class Game {
 
   /**
    * Getter for the date of the game.
-   * 
+   *
    * @return Returns the date that the game was played as a local date object.
    */
   public LocalDate getDate() {
@@ -677,7 +677,7 @@ public class Game {
 
   /**
    * Getter for whether the home team is in the bonus.
-   * 
+   *
    * @return Returns true if home team is in bonus.
    */
   public boolean getHomeBonus() {
@@ -686,7 +686,7 @@ public class Game {
 
   /**
    * Getter home team double bonus.
-   * 
+   *
    * @return Returns true if the home team is in the double bonus.
    */
   public boolean getHomeDoubleBonus() {
@@ -695,7 +695,7 @@ public class Game {
 
   /**
    * Getter for away team bonus.
-   * 
+   *
    * @return Returns true if Away team is in the bonus.
    */
   public boolean getAwayBonus() {
@@ -704,7 +704,7 @@ public class Game {
 
   /**
    * Getter for away team double bonus.
-   * 
+   *
    * @return Returns true if the away team is in the double bonus.
    */
   public boolean getAwayDoubleBonus() {
@@ -718,7 +718,7 @@ public class Game {
 
   /**
    * Getter for whether the game is a home game for my team.
-   * 
+   *
    * @return Returns true if the game is a hometeam for my team.
    */
   public boolean getHomeGame() {

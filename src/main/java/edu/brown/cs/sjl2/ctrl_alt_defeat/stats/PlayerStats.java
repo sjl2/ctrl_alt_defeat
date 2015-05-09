@@ -13,7 +13,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 /**
  * Class that contains the stats for a player for a given game. Contains
  * information about their team as well.
- * 
+ *
  * @author ngoelz
  *
  */
@@ -132,7 +132,7 @@ public class PlayerStats implements GameStats {
 
   /**
    * Getter for the Player that these stats refer to.
-   * 
+   *
    * @return the player
    */
   public Player getPlayer() {
@@ -150,7 +150,7 @@ public class PlayerStats implements GameStats {
 
   /**
    * Getter for the Game of these stats.
-   * 
+   *
    * @return the game id
    */
   public int getGameID() {

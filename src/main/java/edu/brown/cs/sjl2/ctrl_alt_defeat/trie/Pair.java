@@ -44,7 +44,7 @@ public class Pair<S1, S2> {
   /**
    * Performs equality check. Pairs are equal if both their first and second
    * object are equal
-   * 
+   *
    * @param o an object o.
    * @return true of this is equal to o, false otherwise
    */

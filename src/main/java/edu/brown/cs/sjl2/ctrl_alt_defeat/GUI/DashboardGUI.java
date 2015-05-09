@@ -28,7 +28,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 
 /**
  * Houses all handlers that deal with dashboard-related events.
- * 
+ *
  * @author awainger
  */
 public class DashboardGUI {
@@ -40,7 +40,7 @@ public class DashboardGUI {
 
   /**
    * Constructor for dashboardgui class.
-   * 
+   *
    * @param dash - Dashboard, a reference.
    * @param dbManager - DBManager, to retrieve data from the database.
    * @param trie - Used for autocorrecting the coach's search bar.
@@ -54,7 +54,7 @@ public class DashboardGUI {
   /**
    * Loads dashboard setup page if myTeam has not been set, otherwise loads
    * regular dashboard page.
-   * 
+   *
    * @author awainger
    */
   public class DashboardHandler implements TemplateViewRoute {
@@ -84,7 +84,7 @@ public class DashboardGUI {
 
   /**
    * Loads new team creation page.
-   * 
+   *
    * @author awainger
    */
   public class NewTeamHandler implements Route {
@@ -104,7 +104,7 @@ public class DashboardGUI {
 
   /**
    * Handler for starting a new game.
-   * 
+   *
    * @author awainger
    */
   public class NewGameHandler implements TemplateViewRoute {
@@ -121,7 +121,7 @@ public class DashboardGUI {
 
   /**
    * Set up handler for the dashboard.
-   * 
+   *
    * @author awainger
    */
   public class DashSetupHandler implements TemplateViewRoute {
@@ -212,7 +212,7 @@ public class DashboardGUI {
 
   /**
    * Handler for populating the scoreboard on the dashboard.
-   * 
+   *
    * @author awainger
    */
   public class GetGameHandler implements Route {
@@ -237,7 +237,7 @@ public class DashboardGUI {
 
   /**
    * Returns all information relevant to scoreboard.
-   * 
+   *
    * @author awainger
    */
   public class ScoreboardHandler implements Route {
@@ -268,7 +268,7 @@ public class DashboardGUI {
 
   /**
    * Gets latest game information to display on dashboard.
-   * 
+   *
    * @author awainger
    */
   public class UpdateGameHandler implements Route {
@@ -430,7 +430,7 @@ public class DashboardGUI {
 
   /**
    * Used to populate create game select list with player names.
-   * 
+   *
    * @author awainger
    */
   public class GetPlayersHandler implements TemplateViewRoute {
@@ -481,7 +481,7 @@ public class DashboardGUI {
 
   /**
    * Generates and ranks autocorrection suggestions for search bar.
-   * 
+   *
    * @author awainger
    */
   public class AutocompleteHandler implements Route {
@@ -520,7 +520,7 @@ public class DashboardGUI {
   /**
    * Takes search bar results, returns list of teams or players that match the
    * search term.
-   * 
+   *
    * @author awainger
    */
   public class SearchBarResultsHandler implements Route {

@@ -20,7 +20,7 @@ public class TeamFactory {
 
   /**
    * Constructor for a team factory.
-   * 
+   *
    * @param db The database to retrieve players from.
    */
   public TeamFactory(DBManager db) {
@@ -30,7 +30,7 @@ public class TeamFactory {
 
   /**
    * Getter for Team by id.
-   * 
+   *
    * @param id The id of the team
    * @return Returns the team object associated with id.
    */
@@ -40,7 +40,7 @@ public class TeamFactory {
 
   /**
    * Gets a team object with the preceding information.
-   * 
+   *
    * @param id Team id
    * @param name Team's name
    * @param coach Team's coach
@@ -74,7 +74,7 @@ public class TeamFactory {
 
   /**
    * Returns all teams in the database.
-   * 
+   *
    * @return Returns links of all teams in the database.
    */
   public List<Link> getAllTeams() {
@@ -83,7 +83,7 @@ public class TeamFactory {
 
   /**
    * Getter for all opponents of my teams.
-   * 
+   *
    * @return Returns links of all opposing teams.
    */
   public List<Link> getOpposingTeams() {

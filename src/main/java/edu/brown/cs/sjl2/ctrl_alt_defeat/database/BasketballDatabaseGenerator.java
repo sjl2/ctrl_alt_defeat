@@ -41,7 +41,7 @@ public class BasketballDatabaseGenerator {
 
   /**
    * Static method that populates a database with random game data.
-   * 
+   *
    * @param db The db to populate
    * @param roundRobins The number of roundRobins to run
    * @param intelligent The boolean flag for whether to run intelligent stat

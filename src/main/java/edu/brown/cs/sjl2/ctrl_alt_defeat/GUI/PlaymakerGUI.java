@@ -25,7 +25,7 @@ import spark.TemplateViewRoute;
 
 /**
  * PlaymakerGUI class, houses all gui handlers related to the playmaker
- * 
+ *
  * @author awainger
  */
 public class PlaymakerGUI {
@@ -37,7 +37,7 @@ public class PlaymakerGUI {
 
   /**
    * Constructor for playmaker gui class.
-   * 
+   *
    * @param dashboard - Dasboard, allows handlers to get game state and
    *          teams/players
    * @param db - DBManager, allows handlers to get data
@@ -55,7 +55,7 @@ public class PlaymakerGUI {
 
   /**
    * Playmaker handler, loads main playmaker class.
-   * 
+   *
    * @author ngoelz
    */
   public class PlaymakerHandler implements TemplateViewRoute {
@@ -71,7 +71,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads whiteboard feature of playmaker.
-   * 
+   *
    * @author ngoelz
    */
   public class WhiteboardHandler implements TemplateViewRoute {
@@ -89,7 +89,7 @@ public class PlaymakerGUI {
   /**
    * Save handler, parses play, saves to database, returns list of play ids and
    * names to front end.
-   * 
+   *
    * @author ngoelz
    */
   public class SaveHandler implements Route {
@@ -126,7 +126,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads a play for the front end.
-   * 
+   *
    * @author ngoelz
    */
   public class LoadHandler implements Route {
@@ -146,7 +146,7 @@ public class PlaymakerGUI {
 
   /**
    * Handles deletion of a play.
-   * 
+   *
    * @author ngoelz
    */
   public class DeleteHandler implements Route {
@@ -164,7 +164,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads list of play names for playmaker sidebar.
-   * 
+   *
    * @author ngoelz
    */
   public class PlayNamesHandler implements Route {
@@ -177,7 +177,7 @@ public class PlaymakerGUI {
 
   /**
    * Get numbers for players on court for playmaker.
-   * 
+   *
    * @author ngoelz
    */
   public class PlayerNumberHandler implements Route {
@@ -208,7 +208,7 @@ public class PlaymakerGUI {
   /**
    * Gets play names from DB, used to updated list of plays on front end after
    * each update.
-   * 
+   *
    * @return - String, GSON'ed map from "plays" to the list of play names
    */
   private String getPlayNamesFromDB() {

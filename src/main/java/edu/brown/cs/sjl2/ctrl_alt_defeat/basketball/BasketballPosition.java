@@ -22,7 +22,7 @@ public enum BasketballPosition {
 
   /**
    * Constructor for a Basketball Position with a name of the position.
-   * 
+   *
    * @param name
    */
   BasketballPosition(String name) {
@@ -31,7 +31,7 @@ public enum BasketballPosition {
 
   /**
    * Getter for name.
-   * 
+   *
    * @return String, representing
    */
   public String getName() {
