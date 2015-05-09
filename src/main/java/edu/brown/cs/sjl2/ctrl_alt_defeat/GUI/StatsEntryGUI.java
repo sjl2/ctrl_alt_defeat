@@ -23,6 +23,11 @@ import spark.Response;
 import spark.Route;
 import spark.TemplateViewRoute;
 
+/** Class containing handlers involved with updating stats.
+ *
+ * @author ngoelz
+ *
+ */
 public class StatsEntryGUI {
 
   private final static Gson GSON = new Gson();
@@ -32,6 +37,12 @@ public class StatsEntryGUI {
     this.dash = dash;
   }
 
+  /**Returns all stats for the current game, used to maintain editablity
+   * of stats when refreshing the page.
+   *
+   * @author ngoelz
+   *
+   */
   public class StatsEntryHandler implements TemplateViewRoute {
 
     @Override
@@ -60,6 +71,11 @@ public class StatsEntryGUI {
 
   }
 
+  /**Handler for adding a stat that has been logged on the front end.
+   *
+   * @author ngoelz
+   *
+   */
   public class AddStatHandler implements TemplateViewRoute {
 
     @Override
@@ -87,6 +103,11 @@ public class StatsEntryGUI {
     }
   }
 
+  /**Handler for updating a stat that has previously been logged.
+   *
+   * @author ngoelz
+   *
+   */
   public class UpdateStatHandler implements Route {
 
     @Override
@@ -114,6 +135,11 @@ public class StatsEntryGUI {
     }
   }
 
+  /**Handler for deleting a stat that has been logged.
+   *
+   * @author ngoelz
+   *
+   */
   public class DeleteStatHandler implements Route {
 
     @Override
@@ -133,6 +159,11 @@ public class StatsEntryGUI {
     }
   }
 
+  /**Handler for changing the possession arrow of the game.
+   *
+   * @author ngoelz
+   *
+   */
   public class FlipPossessionHandler implements Route {
 
     @Override
@@ -144,6 +175,11 @@ public class StatsEntryGUI {
     }
   }
 
+  /**Handler for calling a timeout.
+   *
+   * @author ngoelz
+   *
+   */
   public class TimeoutHandler implements Route {
 
     @Override
@@ -162,6 +198,11 @@ public class StatsEntryGUI {
     }
   }
 
+  /**Handler for substituting players.
+   *
+   * @author ngoelz
+   *
+   */
   public class SubHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
@@ -182,6 +223,11 @@ public class StatsEntryGUI {
 
   }
 
+  /**Handler for ending the game.
+   *
+   * @author ngoelz
+   *
+   */
   public class EndGameHandler implements Route {
     @Override
     public Object handle(Request arg0, Response arg1) {
@@ -191,6 +237,11 @@ public class StatsEntryGUI {
 
   }
 
+  /**Handler for advancing the period.
+   *
+   * @author ngoelz
+   *
+   */
   public class AdvancePeriodHandler implements Route {
 
     @Override

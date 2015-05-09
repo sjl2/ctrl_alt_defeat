@@ -25,9 +25,15 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
+/**Class that contains information for handlers relating to our wiki
+ * feature.
+ *
+ * @author ngoelz
+ *
+ */
 public class WikiGUI {
 
-  private final static Gson GSON = new Gson();
+  private static final Gson GSON = new Gson();
   private DBManager dbManager;
   private Dashboard dashboard;
 
@@ -62,7 +68,7 @@ public class WikiGUI {
         error = "No game exists with that id.";
       }
 
-      if(game != null) {
+      if (game != null) {
         Map<String, Object> variables =
           ImmutableMap.of("tabTitle", game.toString(),
                           "allTeams", dbManager.getAllTeams(),
@@ -71,7 +77,9 @@ public class WikiGUI {
 
         return new ModelAndView(variables, "game.ftl");
       } else {
-        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Game doesn't exist");
+        Map<String, Object> variables =
+            ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage",
+                "Game doesn't exist");
 
         return new ModelAndView(variables, "404.ftl");
       }
@@ -102,9 +110,12 @@ public class WikiGUI {
         } else {
           years = dbManager.getYearsActive("team_stats", teamID);
           if (!years.isEmpty()) {
-            rows = dbManager.getSeparateGameStatsForYear(years.get(0), "team_stats", teamID);
-            seasonAverages = dbManager.getAggregateGameStats("AVG", "team_stats", teamID);
-            seasonTotals = dbManager.getAggregateGameStats("SUM", "team_stats", teamID);
+            rows = dbManager.getSeparateGameStatsForYear(years.get(0),
+                "team_stats", teamID);
+            seasonAverages = dbManager.getAggregateGameStats("AVG",
+                "team_stats", teamID);
+            seasonTotals = dbManager.getAggregateGameStats("SUM",
+                "team_stats", teamID);
           }
         }
       } catch (NumberFormatException e) {
@@ -113,22 +124,24 @@ public class WikiGUI {
 
       int clearance = 0;
       String clearanceString = request.session().attribute("clearance");
-      if(clearanceString != null) {
+      if (clearanceString != null) {
         clearance = Integer.parseInt(clearanceString);
       }
 
-      if(team != null) {
-        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("tabTitle", team.toString()).put("db", dbManager)
-          .put("team", team).put("years", years).put("rows", rows)
-          .put("allTeams", dbManager.getAllTeams())
-          .put("seasonTotals", seasonTotals)
-          .put("seasonAverages", seasonAverages).put("errorMessage", error)
-          .put("clearance", clearance)
-          .build();
+      if (team != null) {
+        Map<String, Object> variables =
+            new ImmutableMap.Builder<String, Object>()
+            .put("tabTitle", team.toString()).put("db", dbManager)
+            .put("team", team).put("years", years).put("rows", rows)
+            .put("allTeams", dbManager.getAllTeams())
+            .put("seasonTotals", seasonTotals)
+            .put("seasonAverages", seasonAverages).put("errorMessage", error)
+            .put("clearance", clearance)
+            .build();
         return new ModelAndView(variables, "team.ftl");
       } else {
-        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Team doesn't exist");
+        Map<String, Object> variables = ImmutableMap.of("tabTitle",
+            "Page Not Found", "errorMessage", "Team doesn't exist");
 
         return new ModelAndView(variables, "404.ftl");
       }
@@ -154,11 +167,17 @@ public class WikiGUI {
 
         return GSON.toJson(ImmutableMap.of("errorMessage", ""));
       } catch (NumberFormatException e) {
-        return GSON.toJson(ImmutableMap.of("errorMessage", "Error parsing changes to player."));
+        return GSON.toJson(ImmutableMap.of("errorMessage",
+            "Error parsing changes to player."));
       }
     }
   }
 
+  /**Handler for deletion of players.
+   *
+   * @author ngoelz
+   *
+   */
   public class DeletePlayer implements Route {
 
     @Override
@@ -166,7 +185,8 @@ public class WikiGUI {
       QueryParamsMap qm = request.queryMap();
       int id = Integer.parseInt(qm.value("id"));
 
-      return GSON.toJson(ImmutableMap.of("success", dbManager.deletePlayer(id)));
+      return GSON.toJson(ImmutableMap.of("success",
+          dbManager.deletePlayer(id)));
     }
   }
 
@@ -192,7 +212,8 @@ public class WikiGUI {
         }
         return ImmutableMap.of("errorMessage", "");
       } catch (NumberFormatException e) {
-        return ImmutableMap.of("errorMessage", "Error parsing changes to team.");
+        return ImmutableMap.of("errorMessage",
+            "Error parsing changes to team.");
       } catch (DashboardException e) {
         return ImmutableMap.of("errorMessage", "Stop messing with your team");
       }
@@ -222,13 +243,16 @@ public class WikiGUI {
           error = "Could not find player by that ID!";
         } else {
           years = dbManager.getYearsActive("player_stats", playerID);
-          if(!years.isEmpty()) {
-            rows = dbManager.getSeparateGameStatsForYear(years.get(0), "player_stats", playerID);
+          if (!years.isEmpty()) {
+            rows = dbManager.getSeparateGameStatsForYear(years.get(0),
+                "player_stats", playerID);
           } else {
             rows = new ArrayList<>();
           }
-          seasonAverages = dbManager.getAggregateGameStats("AVG", "player_stats", playerID);
-          seasonTotals = dbManager.getAggregateGameStats("SUM", "player_stats", playerID);
+          seasonAverages = dbManager.getAggregateGameStats("AVG",
+              "player_stats", playerID);
+          seasonTotals = dbManager.getAggregateGameStats("SUM",
+              "player_stats", playerID);
         }
       } catch (NumberFormatException e) {
         error = "That's not a valid player id!";
@@ -236,22 +260,24 @@ public class WikiGUI {
 
       int clearance = 0;
       String clearanceString = request.session().attribute("clearance");
-      if(clearanceString != null) {
+      if (clearanceString != null) {
         clearance = Integer.parseInt(clearanceString);
       }
 
-      if(player != null) {      
-        Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("tabTitle", player.toString()).put("db", dbManager)
-          .put("player", player).put("years", years).put("rows", rows)
-          .put("seasonTotals", seasonTotals)
-          .put("allTeams", dbManager.getAllTeams())
-          .put("seasonAverages", seasonAverages).put("errorMessage", error)
-          .put("clearance", clearance)
-          .build();
+      if (player != null) {
+        Map<String, Object> variables =
+            new ImmutableMap.Builder<String, Object>()
+            .put("tabTitle", player.toString()).put("db", dbManager)
+            .put("player", player).put("years", years).put("rows", rows)
+            .put("seasonTotals", seasonTotals)
+            .put("allTeams", dbManager.getAllTeams())
+            .put("seasonAverages", seasonAverages).put("errorMessage", error)
+            .put("clearance", clearance)
+            .build();
         return new ModelAndView(variables, "player.ftl");
       } else {
-        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage", "Player doesn't exist");
+        Map<String, Object> variables = ImmutableMap.of("tabTitle",
+            "Page Not Found", "errorMessage", "Player doesn't exist");
 
         return new ModelAndView(variables, "404.ftl");
       }
@@ -286,7 +312,8 @@ public class WikiGUI {
         error = "That's either an invalid year or ID!";
       }
 
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
           .put("db", dbManager).put("rows", rows).put("errorMessage", error)
           .put("isPlayer", isPlayer).build();
 
@@ -315,39 +342,57 @@ public class WikiGUI {
         if (currentGame) {
           if (player) {
             int playerID = Integer.parseInt(qm.value("id"));
-            makes = dbManager.getMakesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(playerID), "player");
-            misses = dbManager.getMissesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(playerID), "player");
+            makes = dbManager.getMakesForEntityInGames(
+                Arrays.asList(dashboard.getGame().getID()),
+                Arrays.asList(playerID), "player");
+            misses = dbManager.getMissesForEntityInGames(
+                Arrays.asList(dashboard.getGame().getID()),
+                Arrays.asList(playerID), "player");
           } else {
             boolean us = Boolean.parseBoolean(qm.value("us"));
             int teamID;
-            if ((us && dashboard.getGame().getHomeGame()) || (!us && !dashboard.getGame().getHomeGame())) {
+            if ((us && dashboard.getGame().getHomeGame())
+                || (!us && !dashboard.getGame().getHomeGame())) {
               teamID = dashboard.getGame().getHome().getID();
-              makes = dbManager.getMakesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
-              misses = dbManager.getMissesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
+              makes = dbManager.getMakesForEntityInGames(
+                  Arrays.asList(dashboard.getGame().getID()),
+                  Arrays.asList(teamID), "team");
+              misses = dbManager.getMissesForEntityInGames(
+                  Arrays.asList(dashboard.getGame().getID()),
+                  Arrays.asList(teamID), "team");
             } else {
               teamID = dashboard.getGame().getAway().getID();
-              makes = dbManager.getMakesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
-              misses = dbManager.getMissesForEntityInGames(Arrays.asList(dashboard.getGame().getID()), Arrays.asList(teamID), "team");
+              makes = dbManager.getMakesForEntityInGames(
+                  Arrays.asList(dashboard.getGame().getID()),
+                  Arrays.asList(teamID), "team");
+              misses = dbManager.getMissesForEntityInGames(
+                  Arrays.asList(dashboard.getGame().getID()),
+                  Arrays.asList(teamID), "team");
             }
           }
         } else {
           if (player) {
             int playerID = Integer.parseInt(qm.value("id"));
             int gameID = Integer.parseInt(qm.value("gameID"));
-            makes = dbManager.getMakesForEntityInGames(Arrays.asList(gameID), Arrays.asList(playerID), "player");
-            misses = dbManager.getMissesForEntityInGames(Arrays.asList(gameID), Arrays.asList(playerID), "player");
+            makes = dbManager.getMakesForEntityInGames(
+                Arrays.asList(gameID), Arrays.asList(playerID), "player");
+            misses = dbManager.getMissesForEntityInGames(
+                Arrays.asList(gameID), Arrays.asList(playerID), "player");
           } else {
             int teamID = Integer.parseInt(qm.value("id"));
             int gameID = Integer.parseInt(qm.value("gameID"));
-            makes = dbManager.getMakesForEntityInGames(Arrays.asList(gameID), Arrays.asList(teamID), "team");
-            misses = dbManager.getMissesForEntityInGames(Arrays.asList(gameID), Arrays.asList(teamID), "team");
+            makes = dbManager.getMakesForEntityInGames(
+                Arrays.asList(gameID), Arrays.asList(teamID), "team");
+            misses = dbManager.getMissesForEntityInGames(
+                Arrays.asList(gameID), Arrays.asList(teamID), "team");
           }
         }
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id!";
       }
 
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
           .put("makes", makes).put("misses", misses)
           .put("errorMessage", errorMessage).build();
       return GSON.toJson(variables);
@@ -382,20 +427,29 @@ public class WikiGUI {
           type = "team";
         }
 
-        makes = dbManager.getMakesForYear(championshipYear, Arrays.asList(entityID), type);
-        misses = dbManager.getMissesForYear(championshipYear, Arrays.asList(entityID), type);
+        makes = dbManager.getMakesForYear(championshipYear,
+            Arrays.asList(entityID), type);
+        misses = dbManager.getMissesForYear(championshipYear,
+            Arrays.asList(entityID), type);
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id format!";
       }
 
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
-          .build();
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
+            .put("makes", makes)
+            .put("misses", misses).put("errorMessage", errorMessage)
+            .build();
       return GSON.toJson(variables);
 
     }
   }
 
+  /**Handler for providing information for the heat maps of analytics.
+   *
+   * @author ngoelz
+   *
+   */
   public class GetAnalyticsHeatMap implements Route {
 
     @Override
@@ -406,21 +460,31 @@ public class WikiGUI {
       String errorMessage = "";
       try {
         String playerIDsString = qm.value("ids");
-        Integer[] playerIDArray = GSON.fromJson(playerIDsString, Integer[].class);
+        Integer[] playerIDArray =
+            GSON.fromJson(playerIDsString, Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
-        makes = dbManager.getMakesForYear(dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
-        misses = dbManager.getMissesForYear(dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
+        makes = dbManager.getMakesForYear(
+            dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
+        misses = dbManager.getMissesForYear(
+            dbManager.getChampionshipYear(LocalDate.now()), ids, "player");
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id format!";
       }
 
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
-          .build();
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
+            .put("makes", makes)
+            .put("misses", misses).put("errorMessage", errorMessage)
+            .build();
       return GSON.toJson(variables);
     }
   }
 
+  /**Handler for providing information for the recent shot charts of analytics.
+  *
+  * @author ngoelz
+  *
+  */
   public class GetAnalyticsShotChart implements Route {
 
     @Override
@@ -431,7 +495,8 @@ public class WikiGUI {
       String errorMessage = "";
       try {
         String playerIDsString = qm.value("ids");
-        Integer[] playerIDArray = GSON.fromJson(playerIDsString, Integer[].class);
+        Integer[] playerIDArray =
+            GSON.fromJson(playerIDsString, Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
         List<Integer> last5Games = dbManager.getLast5GameIDs();
         makes = dbManager.getMakesForEntityInGames(last5Games, ids, "player");
@@ -440,13 +505,20 @@ public class WikiGUI {
         errorMessage = "Invalid id format!";
       }
 
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes).put("misses", misses).put("errorMessage", errorMessage)
-          .build();
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
+            .put("makes", makes)
+            .put("misses", misses).put("errorMessage", errorMessage)
+            .build();
       return GSON.toJson(variables);
     }
   }
 
+  /**Handler that returns the lineup ranking of a given lineup.
+   *
+   * @author ngoelz
+   *
+   */
   public class GetLineupRanking implements Route {
 
     @Override
@@ -456,14 +528,16 @@ public class WikiGUI {
       String errorMessage = "";
       try {
         String playerIDsString = qm.value("ids");
-        Integer[] playerIDArray = GSON.fromJson(playerIDsString, Integer[].class);
+        Integer[] playerIDArray =
+            GSON.fromJson(playerIDsString, Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
         ranking = (float) dbManager.lineupRanking(ids);
       } catch (NumberFormatException e) {
         errorMessage = "Error calculating lineup ranking.";
       }
 
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
           .put("ranking", ranking).put("errorMessage", errorMessage)
           .build();
       return GSON.toJson(variables);

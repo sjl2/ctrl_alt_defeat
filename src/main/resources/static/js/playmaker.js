@@ -77,13 +77,17 @@ function PlayToken(playName) {
 	getID: function() {
 	    return "playName" + playName.replace(/ /g, ":");
 	},
+	
+	getJQueryID: function() {
+	    return "playName" + playName.replace(/ /g, "\\:");
+	},
 
 	showDelete: function() {
-	    $("#delete" + this.getID()).css("display", "inline");
+	    $("#delete" + this.getJQueryID()).css("display", "inline");
 	},
 
 	hideDelete: function() {
-	    $("#delete" + this.getID()).css("display", "none");
+	    $("#delete" + this.getJQueryID()).css("display", "none");
 	},
 	
 	getHTML: function() {
@@ -685,7 +689,7 @@ function updateLoadBar(data) {
 	var playToken = PlayToken(plays[i]);
 	existingPlays[plays[i]] = playToken;
 	table.append(playToken.getHTML());
-	$("#delete" + playToken.getID()).on("click", playToken.delete);
+	$("#delete" + playToken.getJQueryID()).on("click", playToken.delete);
     }
     $(".playNameHolder").on("click", function() {
 	if(deletingPlays) {

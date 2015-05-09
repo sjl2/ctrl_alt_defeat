@@ -23,7 +23,13 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 import freemarker.template.Configuration;
-
+/**A class that contains all Spark routing that calls the appropriate
+ * manager.  Also contains information for Spark such as port and 
+ * session management.
+ *
+ * @author ngoelz
+ *
+ */
 public class GUIManager {
 
   private DBManager db;
@@ -41,15 +47,29 @@ public class GUIManager {
 
   private static final Gson GSON = new Gson();
 
+  /**Initializes the Class.
+   *
+   * @param db The database manager to be assigned.
+   */
   public GUIManager(DBManager db) {
     initializeGUIManager(db);
   }
 
+  /**Initializes the class.
+   * 
+   * @param db the database manager.
+   * @param port the port to be assigned.
+   */
   public GUIManager(DBManager db, int port) {
     this.port = port;
     initializeGUIManager(db);
   }
 
+  /**Sets the internals of the class.
+   * Fills the trie and sets its parameters, initializes the various
+   * helper classes containing the handlers, and runs the server.
+   * @param db The DBManager to be assigned
+   */
   private void initializeGUIManager(DBManager db) {
     this.db = db;
     this.dash = new Dashboard(db);
@@ -64,6 +84,9 @@ public class GUIManager {
     runServer();
   }
 
+  /**Runs the server on the selected port.
+   * There are a lot of routes here.
+   */
   private void runServer() {
     Spark.setPort(port);
     Spark.externalStaticFileLocation("src/main/resources/static");
@@ -94,20 +117,26 @@ public class GUIManager {
 
     /*** DashboardGUI routes ***/
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
-    Spark.post("/dashboard/new", dashboardGUI.new DashSetupHandler(), freeMarker);
+    Spark.post("/dashboard/new",
+        dashboardGUI.new DashSetupHandler(), freeMarker);
     Spark.post("/dashboard/new/team", dashboardGUI.new NewTeamHandler());
     Spark.post("/dashboard/new/player", dashboardGUI.new NewPlayerHandler());
     Spark.post("/user/edit", dashboardGUI.new EditUserHandler());
     Spark.get("/users/get", dashboardGUI.new GetUsersHandler());
-    Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(), freeMarker);
+    Spark.get("/dashboard/new/game",
+        dashboardGUI.new NewGameHandler(), freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
     Spark.get("/scoreboard", dashboardGUI.new ScoreboardHandler());
-    Spark.get("/dashboard/get/opponents", dashboardGUI.new GetOpponentsHandler());
+    Spark.get("/dashboard/get/opponents",
+        dashboardGUI.new GetOpponentsHandler());
     Spark.get("/dashboard/get/teams", dashboardGUI.new GetTeamsHandler());
-    Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(), freeMarker);
-    Spark.post("/dashboard/autocomplete", dashboardGUI.new AutocompleteHandler());
-    Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
+    Spark.get("/dashboard/opponent/get",
+        dashboardGUI.new GetPlayersHandler(), freeMarker);
+    Spark.post("/dashboard/autocomplete",
+        dashboardGUI.new AutocompleteHandler());
+    Spark.post("/dashboard/search",
+        dashboardGUI.new SearchBarResultsHandler());
 
     /*** WikiGUI routes ***/
     Spark.get("/game/view/:id", wikiGUI.new GameViewHandler(), freeMarker);
@@ -125,7 +154,8 @@ public class GUIManager {
     /* Rename these at some point */
     Spark.post("/shotchart", wikiGUI.new GetShotChartData());
     Spark.post("/heatmap", wikiGUI.new GetHeatMapData());
-    Spark.get("/dashboard/analytics", dashboardGUI.new AnalyticsHandler(), freeMarker);
+    Spark.get("/dashboard/analytics",
+        dashboardGUI.new AnalyticsHandler(), freeMarker);
 
     /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());
@@ -137,7 +167,8 @@ public class GUIManager {
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
     Spark.post("/playmaker/delete", playmakerGUI.new DeleteHandler());
     Spark.get("/playmaker/playNames", playmakerGUI.new PlayNamesHandler());
-    Spark.get("/playmaker/getPlayerNumbers", playmakerGUI.new PlayerNumberHandler());
+    Spark.get("/playmaker/getPlayerNumbers",
+        playmakerGUI.new PlayerNumberHandler());
     Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
 
     /*** Stats routes ***/
@@ -145,16 +176,22 @@ public class GUIManager {
 		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler(), freeMarker);
     Spark.post("/stats/update", statsEntryGUI.new UpdateStatHandler());
     Spark.post("/stats/delete", statsEntryGUI.new DeleteStatHandler());
-		Spark.post("/stats/changepossession", statsEntryGUI.new FlipPossessionHandler());
+		Spark.post("/stats/changepossession",
+		    statsEntryGUI.new FlipPossessionHandler());
 		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
 		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
 
 		Spark.post("/stats/endgame", statsEntryGUI.new EndGameHandler());
-		Spark.post("/stats/advanceperiod", statsEntryGUI.new AdvancePeriodHandler());
+		Spark.post("/stats/advanceperiod",
+		    statsEntryGUI.new AdvancePeriodHandler());
 
     //Spark.get("*", new PageNotFoundHandler(), freeMarker);
   }
 
+  /**Initializes the FreeMarker for use with the template route.
+   *
+   * @return
+   */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
     File templates = new File("src/main/resources/spark/template/freemarker");
@@ -169,6 +206,11 @@ public class GUIManager {
     return new FreeMarkerEngine(config);
   }
 
+  /**Filters webpages to allow for coach-only functionality and pages.
+   *
+   * @author ngoelz
+   *
+   */
   private class CoachFilter implements Filter {
 
     @Override
@@ -191,6 +233,11 @@ public class GUIManager {
 
   }
 
+  /** A filter to allow access based on game progress.
+   *
+   * @author ngoelz
+   *
+   */
   private class GameCheckFilter implements Filter {
     @Override
     public void handle(Request req, Response res) {
@@ -200,6 +247,11 @@ public class GUIManager {
     }
   }
 
+  /** Filters based on a stats entry login.
+   *
+   * @author ngoelz
+   *
+   */
   private class StatsFilter implements Filter {
 
     @Override
@@ -228,6 +280,12 @@ public class GUIManager {
     }
   }*/
 
+  /**Handler for initial login view.  Located here because is small and
+   * central to the project.
+   *
+   * @author ngoelz
+   *
+   */
   public class LoginViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
@@ -237,6 +295,11 @@ public class GUIManager {
     }
   }
 
+  /**Actual handler that handles a login.
+   *
+   * @author ngoelz
+   *
+   */
   private class LoginHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {
@@ -252,6 +315,11 @@ public class GUIManager {
     }
   }
 
+  /**Handles logging out, resets clearance to 0.
+   *
+   * @author ngoelz
+   *
+   */
   private class LogoutHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {

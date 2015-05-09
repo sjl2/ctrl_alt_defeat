@@ -158,6 +158,7 @@ public class Trie {
    * previous word.
    *
    * @param word the word to be added.
+   * @param w the word in its word form
    */
   public void addFirstWord(String w, List<Character> word) {
     capKey.put(StringFormatter.unlist(word), w);

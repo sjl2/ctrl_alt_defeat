@@ -19,6 +19,11 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
+/**Container for all handlers directly interacting with the game state.
+ *
+ * @author ngoelz
+ *
+ */
 public class GameGUI {
   private final static Gson GSON = new Gson();
   private Dashboard dash;
@@ -27,6 +32,12 @@ public class GameGUI {
     this.dash = dash;
   }
 
+  /**Handler that provides information for the initial setup of the
+   * stats entry interface.
+   *
+   * @author ngoelz
+   *
+   */
   public class StatPageHandler implements Route {
 
     @Override
@@ -64,6 +75,11 @@ public class GameGUI {
     }
   }
 
+  /**Handler for providing information for starting a game on the front end.
+   *
+   * @author ngoelz
+   *
+   */
   public class StartHandler implements Route {
 
     @Override

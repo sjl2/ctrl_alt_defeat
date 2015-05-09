@@ -3,6 +3,11 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
+/**A missed three pointer stat.
+ *
+ * @author ngoelz
+ *
+ */
 public class MissedThreePointer implements Stat {
   private static final String TYPE = "MissedThreePointer";
   private Location pos;
@@ -10,6 +15,13 @@ public class MissedThreePointer implements Stat {
   private int id;
   private int period;
 
+  /**Constructor of a missed three pointer.
+   *
+   * @param id the id of the stat
+   * @param player the player
+   * @param pos the position on the court
+   * @param period the period in the game
+   */
   public MissedThreePointer(int id, Player player, Location pos, int period) {
     this.id = id;
     this.pos = pos;

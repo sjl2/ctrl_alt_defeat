@@ -5,14 +5,6 @@
 	* For functionally done (needs JS, CSS UI)
 /****************************************************/
 
-POST-GABE:
-- No idea how to do stats -> put a little note 
-- Home/Away Positions 
-- Restrict stat location for three pointers
-- Hover to display player name as well as number in stats
-- Substitutions didn't come off as intuitive
-- Enter's for ALL submissions please 
-
 - Display Change error message from alerts to fancy balloons.
 - My Dashboard editor
    - Customize My Team
@@ -20,8 +12,11 @@ POST-GABE:
    - Error balloons for non-critical errors. Try and catch on front-end before storing. 
 
 New TODO's
-- Don't let bench get anything but technicals
-- Responses for stat keepers for advance period, timeouts, etc.
+- No idea how to do stats -> put a little note 
+- Restrict stat location for three pointers
+- Hover to display player name as well as number in stats
+- Enter's for ALL submissions please 
+- Do something with big benches
 - Style everything
 - Allow stats guy to navigate team/player/game pages
 
@@ -33,19 +28,9 @@ Testing:
 - GameStats JUnit
 - PlayMaker JUnit 
 
-Stats-entry:
- - Header for player columns
- - Center/more intuitive layout of bottom buttons
- - Notifications
- - Do something with big benches
- - Center court
-
 Tyler:
- - Ball doesn't change it's first frame. 
- - If player with possesion is being edited, the ball's future path should also be cleared. 
  - Ball sometimes get's lost
  - Show user that they are editting default pos's even when sidebar is closed
- - Move play title to center of court so that button doesn't block it
      
 var path = paper.path("path string");
 path.setAttribute("attribute name", value);
