@@ -50,7 +50,10 @@ public class DBManager {
   public static final int SEVEN = 7;
   public static final int EIGHT = 8;
   public static final int TOTAL_BINS = 16;
-
+  public static final float FREE_THROW_POINT_VALUE = 1.0f;
+  public static final float TWO_POINT_VALUE = 2.0f;
+  public static final float THREE_POINT_VALUE = 3.0f;
+  
   private Connection conn;
   private PlayerFactory pf;
   private TeamFactory tf;
@@ -82,7 +85,7 @@ public class DBManager {
   }
 
   /**
-   * Getter for a new PlaymakerDB
+   * Getter for a new PlaymakerDB.
    *
    * @return Returns a new PlaymakerDB
    */
@@ -177,7 +180,7 @@ public class DBManager {
     try (PreparedStatement prep = conn.prepareStatement(query)) {
       prep.setString(1, newUsername);
       prep.setString(2, Integer.valueOf(newPassword.hashCode()).toString());
-      prep.setString(3, oldUsername);
+      prep.setString(THREE, oldUsername);
 
       prep.execute();
     } catch (SQLException e) {
@@ -1831,17 +1834,17 @@ public class DBManager {
     private double getStatValue(String stat) {
       switch (stat) {
       case "FreeThrow":
-        return 1.0;
+        return FREE_THROW_POINT_VALUE;
       case "MissedFreeThrow":
         return -FT_PERCENTAGE / (1.0 - FT_PERCENTAGE);
       case "TwoPointer":
-        return 2.0;
+        return TWO_POINT_VALUE;
       case "MissedTwoPointer":
-        return -2.0 * (TWO_PT_PERCENTAGE / (1.0 - TWO_PT_PERCENTAGE));
+        return -TWO_POINT_VALUE * (TWO_PT_PERCENTAGE / (1.0 - TWO_PT_PERCENTAGE));
       case "ThreePointer":
-        return 3.0;
+        return THREE_POINT_VALUE;
       case "MissedThreePointer":
-        return -3.0 * (THREE_PT_PERCENTAGE / (1.0 - THREE_PT_PERCENTAGE));
+        return -THREE_POINT_VALUE * (THREE_PT_PERCENTAGE / (1.0 - THREE_PT_PERCENTAGE));
       default:
         throw new RuntimeException("Default case should never be reached");
       }
