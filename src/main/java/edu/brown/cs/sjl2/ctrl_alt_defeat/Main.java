@@ -8,7 +8,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 /**
- * Main serves as the entry point for using Ctrl-Alt-Defeat
+ * Main serves as the entry point for using Ctrl-Alt-Defeat.
  *
  * @author awainger, ngoelz, sjl2, tschicke
  *
@@ -18,7 +18,8 @@ public final class Main {
   /**
    * The entry static function for Ctrl-Alt-Defeat.
    *
-   * @param args The command line arguments used to execute.
+   * @param args
+   *          The command line arguments used to execute.
    */
   public static void main(String[] args) {
     new Main(args).run();
@@ -33,12 +34,12 @@ public final class Main {
   private void run() {
     OptionParser parser = new OptionParser();
 
-    OptionSpec<Integer> randomRoundRobins =
-        parser.accepts("random").withRequiredArg().ofType(Integer.class);
-    OptionSpec<Integer> intelligentRoundRobins =
-        parser.accepts("intelligent").withRequiredArg().ofType(Integer.class);
-    OptionSpec<Integer> portSpec =
-        parser.accepts("port").withRequiredArg().ofType(Integer.class);
+    OptionSpec<Integer> randomRoundRobins = parser.accepts("random")
+        .withRequiredArg().ofType(Integer.class);
+    OptionSpec<Integer> intelligentRoundRobins = parser.accepts("intelligent")
+        .withRequiredArg().ofType(Integer.class);
+    OptionSpec<Integer> portSpec = parser.accepts("port").withRequiredArg()
+        .ofType(Integer.class);
     OptionSpec<String> fileSpec = parser.nonOptions().ofType(String.class);
 
     parser.accepts("genTeams");

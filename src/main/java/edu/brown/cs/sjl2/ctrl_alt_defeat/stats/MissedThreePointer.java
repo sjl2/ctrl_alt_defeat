@@ -19,10 +19,14 @@ public class MissedThreePointer implements Stat {
   /**
    * Constructor of a missed three pointer.
    *
-   * @param id the id of the stat
-   * @param player the player
-   * @param pos the position on the court
-   * @param period the period in the game
+   * @param id
+   *          the id of the stat
+   * @param player
+   *          the player
+   * @param pos
+   *          the position on the court
+   * @param period
+   *          the period in the game
    */
   public MissedThreePointer(int id, Player player, Location pos, int period) {
     this.id = id;

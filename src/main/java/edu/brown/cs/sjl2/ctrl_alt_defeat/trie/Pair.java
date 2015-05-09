@@ -5,8 +5,10 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.trie;
  *
  * @author nickgoelz
  *
- * @param <S1> The first object
- * @param <S2> The second object
+ * @param <S1>
+ *          The first object
+ * @param <S2>
+ *          The second object
  */
 public class Pair<S1, S2> {
   private S1 first;
@@ -15,8 +17,10 @@ public class Pair<S1, S2> {
   /**
    * A constructor requiring both objects.
    *
-   * @param a an S1 to be the first object
-   * @param b an S2 to be the second
+   * @param a
+   *          an S1 to be the first object
+   * @param b
+   *          an S2 to be the second
    */
   public Pair(S1 a, S2 b) {
     this.first = a;
@@ -45,7 +49,8 @@ public class Pair<S1, S2> {
    * Performs equality check. Pairs are equal if both their first and second
    * object are equal
    *
-   * @param o an object o.
+   * @param o
+   *          an object o.
    * @return true of this is equal to o, false otherwise
    */
   @Override
@@ -53,8 +58,8 @@ public class Pair<S1, S2> {
     if (!(o instanceof Pair)) {
       return false;
     } else {
-      return (first.equals(((Pair<?, ?>) o).getFirst())
-      && second.equals(((Pair<?, ?>) o).getSecond()));
+      return (first.equals(((Pair<?, ?>) o).getFirst()) && second
+          .equals(((Pair<?, ?>) o).getSecond()));
     }
   }
 
@@ -71,7 +76,8 @@ public class Pair<S1, S2> {
   /**
    * A setter for the second object.
    *
-   * @param s the new second object
+   * @param s
+   *          the new second object
    */
   public void setSecond(S2 s) {
     second = s;
@@ -80,7 +86,8 @@ public class Pair<S1, S2> {
   /**
    * A setter for the first object.
    *
-   * @param s the new first object
+   * @param s
+   *          the new first object
    */
   public void setFirst(S1 s) {
     first = s;

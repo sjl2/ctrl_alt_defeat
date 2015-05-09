@@ -14,8 +14,10 @@ public class Location {
   /**
    * Constructor for a location.
    *
-   * @param x Ratio of the sideline.
-   * @param y Ratio of the baseline.
+   * @param x
+   *          Ratio of the sideline.
+   * @param y
+   *          Ratio of the baseline.
    */
   public Location(double x, double y) {
     this.x = x;
@@ -44,8 +46,10 @@ public class Location {
    * Reflects x, y to one side of the court to display information on half a
    * court.
    *
-   * @param x The x to reflect
-   * @param y The y to reflect
+   * @param x
+   *          The x to reflect
+   * @param y
+   *          The y to reflect
    * @return Returns the new reflected location.
    */
   private static Location reflect(double x, double y) {
@@ -62,17 +66,19 @@ public class Location {
   }
 
   private static Location rotate(Location loc) {
-    double _x = loc.getY();
-    double _y = 1 - (2 * loc.getX());
+    double x = loc.getY();
+    double y = 1 - (2 * loc.getX());
 
-    return new Location(_x, _y);
+    return new Location(x, y);
   }
 
   /**
    * Vertically converts x, y to respective halfcourt location.
    *
-   * @param x The x to move
-   * @param y The y to move
+   * @param x
+   *          The x to move
+   * @param y
+   *          The y to move
    * @return Returns the adjusted location to a halfcourt view.
    */
   public static Location adjustForVerticalHalfCourt(double x, double y) {
@@ -82,8 +88,10 @@ public class Location {
   /**
    * Horizontally converts x, y to respective halfcourt location.
    *
-   * @param x The x to move
-   * @param y The y to move
+   * @param x
+   *          The x to move
+   * @param y
+   *          The y to move
    * @return Returns the adjusted location to a halfcourt view.
    */
   public static Location adjustForHorizontalHalfCourt(double x, double y) {

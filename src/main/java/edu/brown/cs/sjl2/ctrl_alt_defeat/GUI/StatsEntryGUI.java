@@ -31,7 +31,7 @@ import spark.TemplateViewRoute;
  */
 public class StatsEntryGUI {
 
-  private final static Gson GSON = new Gson();
+  private static final Gson GSON = new Gson();
   private Dashboard dash;
 
   public StatsEntryGUI(Dashboard dash) {
@@ -61,11 +61,8 @@ public class StatsEntryGUI {
       }
 
       Collections.reverse(s);
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Stats Entry",
-              "stats", s,
-              "isGame", isGame,
-              "errorMessage", "");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle",
+          "Stats Entry", "stats", s, "isGame", isGame, "errorMessage", "");
 
       return new ModelAndView(variables, "stats_entry.ftl");
 
@@ -95,7 +92,7 @@ public class StatsEntryGUI {
       try {
         s = dash.getGame().addStat(statID, playerID, new Location(x, y));
       } catch (GameException ex) {
-        return null;// TODO ex.getMessage();
+        return null;
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -123,8 +120,8 @@ public class StatsEntryGUI {
       double x = GSON.fromJson(qm.value("x"), Double.class);
       double y = GSON.fromJson(qm.value("y"), Double.class);
 
-      System.out.println(
-          "Updating: " + statID + " " + playerID + " " + x + " " + y);
+      System.out.println("Updating: " + statID + " " + playerID + " " + x + " "
+          + y);
 
       String errorMessage = "";
       try {
@@ -177,7 +174,7 @@ public class StatsEntryGUI {
       System.out.println("changed possession");
       dash.getGame().flipPossession();
 
-      return 27;
+      return null;
     }
   }
 
@@ -200,7 +197,6 @@ public class StatsEntryGUI {
       } catch (JsonSyntaxException | GameException e) {
         errorMessage = e.getMessage();
       }
-      ;
 
       return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage));
     }
@@ -269,10 +265,8 @@ public class StatsEntryGUI {
         return GSON.toJson(ImmutableMap.of("errorMessage", e.getMessage()));
       }
 
-      return GSON.toJson(
-          ImmutableMap.of(
-              "errorMessage", errorMessage,
-              "period", dash.getGame().getPeriod()));
+      return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage,
+          "period", dash.getGame().getPeriod()));
     }
 
   }

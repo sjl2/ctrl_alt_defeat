@@ -21,11 +21,11 @@ public class PlayerStats implements GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
 
-  private static final List<String> NON_STAT_COLS =
-      Arrays.asList("game", "team", "player");
-  private static final List<String> STAT_COLS =
-      Arrays.asList("MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA", "FTM",
-          "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF");
+  private static final List<String> NON_STAT_COLS = Arrays.asList("game",
+      "team", "player");
+  private static final List<String> STAT_COLS = Arrays.asList("MIN", "TwoPM",
+      "TwoPA", "ThreePM", "ThreePA", "FTM", "FTA", "ORB", "DRB", "AST", "STL",
+      "BLK", "TOV", "OF", "DF");
 
   private Player player;
   private Team team;
@@ -35,9 +35,12 @@ public class PlayerStats implements GameStats {
   /**
    * Constructor for the playerstats. Takes in a game, a team and a player.
    *
-   * @param game the game
-   * @param team the team
-   * @param player the player
+   * @param game
+   *          the game
+   * @param team
+   *          the team
+   * @param player
+   *          the player
    */
   public PlayerStats(int game, Team team, Player player) {
     this.player = player;
@@ -58,12 +61,17 @@ public class PlayerStats implements GameStats {
   /**
    * Constructor that also intializes a multiset for storign the stats.
    *
-   * @param values the values of the categories in the multimap - all the stats.
-   * @param gameID the game
-   * @param team the team
-   * @param player the player
+   * @param values
+   *          the values of the categories in the multimap - all the stats.
+   * @param gameID
+   *          the game
+   * @param team
+   *          the team
+   * @param player
+   *          the player
    */
-  public PlayerStats(List<Integer> values, int gameID, Team team, Player player) {
+  public PlayerStats(List<Integer> values, int gameID,
+      Team team, Player player) {
     this.game = gameID;
     this.team = team;
 
@@ -432,8 +440,7 @@ public class PlayerStats implements GameStats {
    * @return points scored.
    */
   public int getPoints() {
-    return stats.count("FTM")
-        + TWO_POINTS * stats.count("TwoPM")
+    return stats.count("FTM") + TWO_POINTS * stats.count("TwoPM")
         + THREE_POINTS * stats.count("ThreePM");
   }
 

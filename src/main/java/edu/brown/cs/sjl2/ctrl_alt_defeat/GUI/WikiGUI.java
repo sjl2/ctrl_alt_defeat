@@ -40,8 +40,10 @@ public class WikiGUI {
   /**
    * Constructor for class.
    *
-   * @param dbManager - DBManager, used to query database
-   * @param dashboard - Dashboard, used to get games
+   * @param dbManager
+   *          - DBManager, used to query database
+   * @param dashboard
+   *          - Dashboard, used to get games
    * @author awainger
    */
   public WikiGUI(DBManager dbManager, Dashboard dashboard) {
@@ -68,17 +70,14 @@ public class WikiGUI {
       }
 
       if (game != null) {
-        Map<String, Object> variables =
-            ImmutableMap.of("tabTitle", game.toString(),
-                "allTeams", dbManager.getAllTeams(),
-                "game", game,
-                "errorMessage", error);
+        Map<String, Object> variables = ImmutableMap.of("tabTitle",
+            game.toString(), "allTeams", dbManager.getAllTeams(), "game", game,
+            "errorMessage", error);
 
         return new ModelAndView(variables, "game.ftl");
       } else {
-        Map<String, Object> variables =
-            ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage",
-                "Game doesn't exist");
+        Map<String, Object> variables = ImmutableMap.of("tabTitle",
+            "Page Not Found", "errorMessage", "Game doesn't exist");
 
         return new ModelAndView(variables, "404.ftl");
       }
@@ -113,8 +112,8 @@ public class WikiGUI {
                 "team_stats", teamID);
             seasonAverages = dbManager.getAggregateGameStats("AVG",
                 "team_stats", teamID);
-            seasonTotals = dbManager.getAggregateGameStats("SUM",
-                "team_stats", teamID);
+            seasonTotals = dbManager.getAggregateGameStats("SUM", "team_stats",
+                teamID);
           }
         }
       } catch (NumberFormatException e) {
@@ -130,14 +129,12 @@ public class WikiGUI {
       if (team != null) {
         Map<String, Object> variables =
             new ImmutableMap.Builder<String, Object>()
-                .put("tabTitle", team.toString()).put("db", dbManager)
-                .put("team", team).put("years", years).put("rows", rows)
-                .put("allTeams", dbManager.getAllTeams())
-                .put("seasonTotals", seasonTotals)
-                .put("seasonAverages", seasonAverages)
-                .put("errorMessage", error)
-                .put("clearance", clearance)
-                .build();
+            .put("tabTitle", team.toString()).put("db", dbManager)
+            .put("team", team).put("years", years).put("rows", rows)
+            .put("allTeams", dbManager.getAllTeams())
+            .put("seasonTotals", seasonTotals)
+            .put("seasonAverages", seasonAverages).put("errorMessage", error)
+            .put("clearance", clearance).build();
         return new ModelAndView(variables, "team.ftl");
       } else {
         Map<String, Object> variables = ImmutableMap.of("tabTitle",
@@ -187,8 +184,8 @@ public class WikiGUI {
       QueryParamsMap qm = request.queryMap();
       int id = Integer.parseInt(qm.value("id"));
 
-      return GSON.toJson(ImmutableMap.of("success",
-          dbManager.deletePlayer(id)));
+      return GSON
+          .toJson(ImmutableMap.of("success", dbManager.deletePlayer(id)));
     }
   }
 
@@ -215,8 +212,8 @@ public class WikiGUI {
         }
         return ImmutableMap.of("errorMessage", "");
       } catch (NumberFormatException e) {
-        return ImmutableMap.of("errorMessage",
-            "Error parsing changes to team.");
+        return ImmutableMap
+            .of("errorMessage", "Error parsing changes to team.");
       } catch (DashboardException e) {
         return ImmutableMap.of("errorMessage", "Stop messing with your team");
       }
@@ -254,8 +251,8 @@ public class WikiGUI {
           }
           seasonAverages = dbManager.getAggregateGameStats("AVG",
               "player_stats", playerID);
-          seasonTotals = dbManager.getAggregateGameStats("SUM",
-              "player_stats", playerID);
+          seasonTotals = dbManager.getAggregateGameStats("SUM", "player_stats",
+              playerID);
         }
       } catch (NumberFormatException e) {
         error = "That's not a valid player id!";
@@ -270,14 +267,12 @@ public class WikiGUI {
       if (player != null) {
         Map<String, Object> variables =
             new ImmutableMap.Builder<String, Object>()
-                .put("tabTitle", player.toString()).put("db", dbManager)
-                .put("player", player).put("years", years).put("rows", rows)
-                .put("seasonTotals", seasonTotals)
-                .put("allTeams", dbManager.getAllTeams())
-                .put("seasonAverages", seasonAverages)
-                .put("errorMessage", error)
-                .put("clearance", clearance)
-                .build();
+            .put("tabTitle", player.toString()).put("db", dbManager)
+            .put("player", player).put("years", years).put("rows", rows)
+            .put("seasonTotals", seasonTotals)
+            .put("allTeams", dbManager.getAllTeams())
+            .put("seasonAverages", seasonAverages).put("errorMessage", error)
+            .put("clearance", clearance).build();
         return new ModelAndView(variables, "player.ftl");
       } else {
         Map<String, Object> variables = ImmutableMap.of("tabTitle",
@@ -316,11 +311,9 @@ public class WikiGUI {
         error = "That's either an invalid year or ID!";
       }
 
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-              .put("db", dbManager).put("rows", rows)
-              .put("errorMessage", error)
-              .put("isPlayer", isPlayer).build();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("db", dbManager).put("rows", rows).put("errorMessage", error)
+          .put("isPlayer", isPlayer).build();
 
       return new ModelAndView(variables, "season.ftl");
     }
@@ -379,27 +372,26 @@ public class WikiGUI {
           if (player) {
             int playerID = Integer.parseInt(qm.value("id"));
             int gameID = Integer.parseInt(qm.value("gameID"));
-            makes = dbManager.getMakesForEntityInGames(
-                Arrays.asList(gameID), Arrays.asList(playerID), "player");
-            misses = dbManager.getMissesForEntityInGames(
-                Arrays.asList(gameID), Arrays.asList(playerID), "player");
+            makes = dbManager.getMakesForEntityInGames(Arrays.asList(gameID),
+                Arrays.asList(playerID), "player");
+            misses = dbManager.getMissesForEntityInGames(Arrays.asList(gameID),
+                Arrays.asList(playerID), "player");
           } else {
             int teamID = Integer.parseInt(qm.value("id"));
             int gameID = Integer.parseInt(qm.value("gameID"));
-            makes = dbManager.getMakesForEntityInGames(
-                Arrays.asList(gameID), Arrays.asList(teamID), "team");
-            misses = dbManager.getMissesForEntityInGames(
-                Arrays.asList(gameID), Arrays.asList(teamID), "team");
+            makes = dbManager.getMakesForEntityInGames(Arrays.asList(gameID),
+                Arrays.asList(teamID), "team");
+            misses = dbManager.getMissesForEntityInGames(Arrays.asList(gameID),
+                Arrays.asList(teamID), "team");
           }
         }
       } catch (NumberFormatException e) {
         errorMessage = "Invalid id!";
       }
 
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-              .put("makes", makes).put("misses", misses)
-              .put("errorMessage", errorMessage).build();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses)
+          .put("errorMessage", errorMessage).build();
       return GSON.toJson(variables);
     }
   }
@@ -440,11 +432,9 @@ public class WikiGUI {
         errorMessage = "Invalid id format!";
       }
 
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-              .put("makes", makes)
-              .put("misses", misses).put("errorMessage", errorMessage)
-              .build();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses)
+          .put("errorMessage", errorMessage).build();
       return GSON.toJson(variables);
 
     }
@@ -466,8 +456,8 @@ public class WikiGUI {
       String errorMessage = "";
       try {
         String playerIDsString = qm.value("ids");
-        Integer[] playerIDArray =
-            GSON.fromJson(playerIDsString, Integer[].class);
+        Integer[] playerIDArray = GSON.fromJson(playerIDsString,
+            Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
         makes = dbManager.getMakesForYear(
             DBManager.getChampionshipYear(LocalDate.now()), ids, "player");
@@ -477,11 +467,9 @@ public class WikiGUI {
         errorMessage = "Invalid id format!";
       }
 
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-              .put("makes", makes)
-              .put("misses", misses).put("errorMessage", errorMessage)
-              .build();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses)
+          .put("errorMessage", errorMessage).build();
       return GSON.toJson(variables);
     }
   }
@@ -502,8 +490,8 @@ public class WikiGUI {
       String errorMessage = "";
       try {
         String playerIDsString = qm.value("ids");
-        Integer[] playerIDArray =
-            GSON.fromJson(playerIDsString, Integer[].class);
+        Integer[] playerIDArray = GSON.fromJson(playerIDsString,
+            Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
         List<Integer> last5Games = dbManager.getLast5GameIDs();
         makes = dbManager.getMakesForEntityInGames(last5Games, ids, "player");
@@ -512,11 +500,9 @@ public class WikiGUI {
         errorMessage = "Invalid id format!";
       }
 
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-              .put("makes", makes)
-              .put("misses", misses).put("errorMessage", errorMessage)
-              .build();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("makes", makes).put("misses", misses)
+          .put("errorMessage", errorMessage).build();
       return GSON.toJson(variables);
     }
   }
@@ -536,18 +522,16 @@ public class WikiGUI {
       String errorMessage = "";
       try {
         String playerIDsString = qm.value("ids");
-        Integer[] playerIDArray =
-            GSON.fromJson(playerIDsString, Integer[].class);
+        Integer[] playerIDArray = GSON.fromJson(playerIDsString,
+            Integer[].class);
         List<Integer> ids = Arrays.asList(playerIDArray);
         ranking = (float) dbManager.lineupRanking(ids);
       } catch (NumberFormatException e) {
         errorMessage = "Error calculating lineup ranking.";
       }
 
-      Map<String, Object> variables =
-          new ImmutableMap.Builder<String, Object>()
-              .put("ranking", ranking).put("errorMessage", errorMessage)
-              .build();
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("ranking", ranking).put("errorMessage", errorMessage).build();
       return GSON.toJson(variables);
     }
 

@@ -22,12 +22,13 @@ public class Dashboard {
   private DBManager db;
   private Team myTeam;
 
-  StatFactory sf;
+  private StatFactory sf;
 
   /**
    * Constructor for the dashboard using a basketball database.
    *
-   * @param db The DBManager for the basketball database
+   * @param db
+   *          The DBManager for the basketball database
    */
   public Dashboard(DBManager db) {
 
@@ -51,9 +52,11 @@ public class Dashboard {
     return this.currentGame;
   }
 
-  private Game newGame(Team home, Team away,
-      Map<BasketballPosition, Integer> starterIDs, boolean b)
-      throws GameException {
+  private Game newGame(Team home,
+      Team away,
+      Map<BasketballPosition, Integer> starterIDs,
+      boolean b)
+    throws GameException {
 
     return new Game(home, away, db, starterIDs, b);
   }
@@ -61,12 +64,16 @@ public class Dashboard {
   /**
    * Starts a game between my team and an opponent with a specified lineup.
    *
-   * @param home A boolean true if it is a home game for myteam, false for away.
-   * @param opponentID The team id for the opponent
-   * @param starterIDs A Map between the positions and the player ids.
-   * @throws DashboardException Throws an exception if a game cannot be started.
-   *           This is usually due to a game in play or a database failure
-   *           during initialization.
+   * @param home
+   *          A boolean true if it is a home game for myteam, false for away.
+   * @param opponentID
+   *          The team id for the opponent
+   * @param starterIDs
+   *          A Map between the positions and the player ids.
+   * @throws DashboardException
+   *           Throws an exception if a game cannot be started. This is usually
+   *           due to a game in play or a database failure during
+   *           initialization.
    */
   public void startGame(Boolean home, int opponentID,
       Map<BasketballPosition, Integer> starterIDs) throws DashboardException {
@@ -77,11 +84,11 @@ public class Dashboard {
     } else if (currentGame == null) {
       try {
         if (home) {
-          currentGame =
-              newGame(myTeam, db.getTeam(opponentID), starterIDs, true);
+          currentGame = newGame(myTeam, db.getTeam(opponentID), starterIDs,
+              true);
         } else {
-          currentGame =
-              newGame(db.getTeam(opponentID), myTeam, starterIDs, false);
+          currentGame = newGame(db.getTeam(opponentID), myTeam, starterIDs,
+              false);
         }
       } catch (GameException e) {
         throw new DashboardException("Cannot start game. " + e.getMessage());
@@ -104,7 +111,8 @@ public class Dashboard {
   /**
    * Retrieves team from database.
    *
-   * @param id The team id to be searched for.
+   * @param id
+   *          The team id to be searched for.
    * @return Returns the Team stored with the id.
    */
   public Team getTeam(int id) {
@@ -114,7 +122,8 @@ public class Dashboard {
   /**
    * Retrieves a player form the database.
    *
-   * @param id The player id to be searched for.
+   * @param id
+   *          The player id to be searched for.
    * @return Returns the Player stored with the id.
    */
   public Player getPlayer(int id) {
@@ -145,11 +154,14 @@ public class Dashboard {
   /**
    * Getter for a boxscore for a team in a game.
    *
-   * @param gameID The id of the game for the boxscore.
-   * @param team The team of interest
+   * @param gameID
+   *          The id of the game for the boxscore.
+   * @param team
+   *          The team of interest
    * @return Returns a boxscore object of the game for the team.
-   * @throws DashboardException Throws Dashboard Exception if the Boxscore is
-   *           not retrieved successfully from the database.
+   * @throws DashboardException
+   *           Throws Dashboard Exception if the Boxscore is not retrieved
+   *           successfully from the database.
    */
   BoxScore getBoxscore(int gameID, Team team) throws DashboardException {
     try {
@@ -165,17 +177,19 @@ public class Dashboard {
    * Sets the coach's team for the dashboard. It is assumed the team does not
    * previously exist in the database.
    *
-   * @param name The Team Name
-   * @param coach Coach's name
-   * @param primary The string value of the primary color (preferably
-   *          hexadecimal).
-   * @param secondary The string value of the secondary color(preferably
-   *          hexadecimal)
+   * @param name
+   *          The Team Name
+   * @param coach
+   *          Coach's name
+   * @param primary
+   *          The string value of the primary color (preferably hexadecimal).
+   * @param secondary
+   *          The string value of the secondary color(preferably hexadecimal)
    * @return Returns the new Team object now stored as my team in the database
    *         and dashboard.
    */
-  public Team addMyTeam(String name,
-      String coach, String primary, String secondary) {
+  public Team addMyTeam(String name, String coach, String primary,
+      String secondary) {
 
     this.myTeam = db.createTeam(name, coach, primary, secondary, true);
     return this.myTeam;
@@ -184,7 +198,8 @@ public class Dashboard {
   /**
    * Sets my team to a team of id teamID.
    *
-   * @param teamID The id of myTeam.
+   * @param teamID
+   *          The id of myTeam.
    */
   public void setMyTeam(int teamID) {
     setMyTeam(db.getTeam(teamID));
@@ -193,7 +208,8 @@ public class Dashboard {
   /**
    * Sets my team to the team object.
    *
-   * @param team The team object that will be my team.
+   * @param team
+   *          The team object that will be my team.
    */
   public void setMyTeam(Team team) {
     this.myTeam = team;
@@ -204,10 +220,14 @@ public class Dashboard {
    * Creates a new team with the specified parameters. Team is then stored in
    * the database.
    *
-   * @param name Team name
-   * @param coach Coach's name
-   * @param primary String of primary color (preferably hexadecimal)
-   * @param secondary String of secondary color (preferably hexadecimal)
+   * @param name
+   *          Team name
+   * @param coach
+   *          Coach's name
+   * @param primary
+   *          String of primary color (preferably hexadecimal)
+   * @param secondary
+   *          String of secondary color (preferably hexadecimal)
    * @return Returns the new team object to of the team.
    */
   public Team createTeam(String name, String coach, String primary,
@@ -220,16 +240,17 @@ public class Dashboard {
    * Creates a new player with the specified parameters. The player is then
    * stored in the database.
    *
-   * @param name Player Name
-   * @param teamID ID of team that the player is going on (must exist in db)
-   * @param number The player's number
-   * @param current A Boolean on whether a player is current or not.
+   * @param name
+   *          Player Name
+   * @param teamID
+   *          ID of team that the player is going on (must exist in db)
+   * @param number
+   *          The player's number
+   * @param current
+   *          A Boolean on whether a player is current or not.
    * @return Returns the new player object.
    */
-  public Player createPlayer(
-      String name,
-      int teamID,
-      int number,
+  public Player createPlayer(String name, int teamID, int number,
       boolean current) {
 
     return db.createPlayer(name, teamID, number, current);
@@ -238,10 +259,12 @@ public class Dashboard {
   /**
    * Getter for an old game. Returns a view of the game (not interactive).
    *
-   * @param gameID The id of the old game.
+   * @param gameID
+   *          The id of the old game.
    * @return Returns a GameView of the game.
-   * @throws DashboardException Throws a DashboardException if the game does not
-   *           exist or if it was not retieved correctly.
+   * @throws DashboardException
+   *           Throws a DashboardException if the game does not exist or if it
+   *           was not retieved correctly.
    */
   public GameView getOldGame(int gameID) throws DashboardException {
     try {

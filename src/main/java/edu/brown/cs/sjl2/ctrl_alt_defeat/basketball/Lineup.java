@@ -33,31 +33,37 @@ public class Lineup {
   /**
    * Substitutes a pIn into the lineup, removing pOut.
    *
-   * @param pIn The player going into the lineup
-   * @param pOut The player going to the bench.
-   * @throws ScoreboardException Throws a Scoreboard Exception on an illegal
-   *           substitution.
+   * @param pIn
+   *          The player going into the lineup
+   * @param pOut
+   *          The player going to the bench.
+   * @throws ScoreboardException
+   *           Throws a Scoreboard Exception on an illegal substitution.
    */
   public void sub(Player pIn, Player pOut) throws ScoreboardException {
     BasketballPosition b = players.inverse().get(pOut);
     if (b != null) {
       players.put(b, pIn);
     } else {
-      throw new ScoreboardException("Illegal substitution: player not on court");
+      throw new ScoreboardException("Illegal substitution:"
+          + " player not on court");
     }
   }
 
   /**
    * Adds a starter to the lineup after initialization.
    *
-   * @param position The Basketball position of the player.
-   * @param player The starting player.
+   * @param position
+   *          The Basketball position of the player.
+   * @param player
+   *          The starting player.
    * @return Returns the lineup for convenient chaining of additions.
-   * @throws GameException Throws a game exception if the same player is added
-   *           multiple times.
+   * @throws GameException
+   *           Throws a game exception if the same player is added multiple
+   *           times.
    */
   public Lineup addStarter(BasketballPosition position, Player player)
-      throws GameException {
+    throws GameException {
     try {
       players.put(position, player);
     } catch (IllegalArgumentException e) {

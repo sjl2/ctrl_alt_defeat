@@ -19,10 +19,14 @@ public class Play {
   /**
    * Constructor for a play.
    *
-   * @param name name of the play
-   * @param numFrames number of frames in the play
-   * @param playerPaths array of location arrays of the paths of the players
-   * @param ballPath path of the ball (who has it at each frame)
+   * @param name
+   *          name of the play
+   * @param numFrames
+   *          number of frames in the play
+   * @param playerPaths
+   *          array of location arrays of the paths of the players
+   * @param ballPath
+   *          path of the ball (who has it at each frame)
    */
   public Play(String name, int numFrames, Location[][] playerPaths,
       int[] ballPath) {
@@ -35,8 +39,10 @@ public class Play {
   /**
    * Constructor for play without that fancy stuff.
    *
-   * @param name name of the play
-   * @param numFrames number of frames
+   * @param name
+   *          name of the play
+   * @param numFrames
+   *          number of frames
    */
   public Play(String name, int numFrames) {
     this.name = name;
@@ -73,7 +79,8 @@ public class Play {
   /**
    * Setter for the player paths.
    *
-   * @param playerPaths New array to serve as paths.
+   * @param playerPaths
+   *          New array to serve as paths.
    */
   public void setPlayerPaths(Location[][] playerPaths) {
     this.playerPaths = playerPaths;
@@ -91,7 +98,8 @@ public class Play {
   /**
    * Setter for the ball path.
    *
-   * @param ballPath The new array of players holding the ball.
+   * @param ballPath
+   *          The new array of players holding the ball.
    */
   public void setBallPath(int[] ballPath) {
     this.ballPath = ballPath;

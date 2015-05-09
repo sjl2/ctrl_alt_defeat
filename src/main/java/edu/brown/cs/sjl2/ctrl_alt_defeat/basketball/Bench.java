@@ -17,7 +17,8 @@ public class Bench {
   /**
    * Constructs a bench for a team.
    *
-   * @param t The bench's team.
+   * @param t
+   *          The bench's team.
    */
   public Bench(Team t) {
     this.team = t;
@@ -45,9 +46,12 @@ public class Bench {
   /**
    * Subs a player pIn from the bench with a player pOut.
    *
-   * @param pIn The player leaving the bench.
-   * @param pOut The player entering the bench.
-   * @throws ScoreboardException Throws a ScoreboardException for illegal subs.
+   * @param pIn
+   *          The player leaving the bench.
+   * @param pOut
+   *          The player entering the bench.
+   * @throws ScoreboardException
+   *           Throws a ScoreboardException for illegal subs.
    */
   public void sub(Player pIn, Player pOut) throws ScoreboardException {
     if (players.remove(pIn)) {

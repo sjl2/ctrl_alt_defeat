@@ -21,7 +21,8 @@ public class TeamFactory {
   /**
    * Constructor for a team factory.
    *
-   * @param db The database to retrieve players from.
+   * @param db
+   *          The database to retrieve players from.
    */
   public TeamFactory(DBManager db) {
     this.db = db;
@@ -31,7 +32,8 @@ public class TeamFactory {
   /**
    * Getter for Team by id.
    *
-   * @param id The id of the team
+   * @param id
+   *          The id of the team
    * @return Returns the team object associated with id.
    */
   public Team getTeam(int id) {
@@ -41,27 +43,22 @@ public class TeamFactory {
   /**
    * Gets a team object with the preceding information.
    *
-   * @param id Team id
-   * @param name Team's name
-   * @param coach Team's coach
-   * @param primary Team's primary color
-   * @param secondary Team's secondary color
+   * @param id
+   *          Team id
+   * @param name
+   *          Team's name
+   * @param coach
+   *          Team's coach
+   * @param primary
+   *          Team's primary color
+   * @param secondary
+   *          Team's secondary color
    * @return Returns the Team Object and caches it
    */
-  public Team getTeam(
-      int id,
-      String name,
-      String coach,
-      String primary,
+  public Team getTeam(int id, String name, String coach, String primary,
       String secondary) {
 
-    Team t = new Team(
-        id,
-        name,
-        coach,
-        primary,
-        secondary,
-        db);
+    Team t = new Team(id, name, coach, primary, secondary, db);
 
     cacheTeam(t);
 

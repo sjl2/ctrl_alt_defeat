@@ -19,10 +19,14 @@ public class DefensiveFoul implements Stat {
   /**
    * Constructor of a defensive fouls.
    *
-   * @param id the id of the stat
-   * @param player the player
-   * @param pos the position on the court
-   * @param period the period in the game
+   * @param id
+   *          the id of the stat
+   * @param player
+   *          the player
+   * @param pos
+   *          the position on the court
+   * @param period
+   *          the period in the game
    */
 
   public DefensiveFoul(int id, Player player, Location pos, int period) {

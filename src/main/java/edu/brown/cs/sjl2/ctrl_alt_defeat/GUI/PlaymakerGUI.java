@@ -9,8 +9,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
@@ -24,7 +24,7 @@ import spark.Route;
 import spark.TemplateViewRoute;
 
 /**
- * PlaymakerGUI class, houses all gui handlers related to the playmaker
+ * PlaymakerGUI class, houses all gui handlers related to the playmaker.
  *
  * @author awainger
  */
@@ -38,14 +38,16 @@ public class PlaymakerGUI {
   /**
    * Constructor for playmaker gui class.
    *
-   * @param dashboard - Dasboard, allows handlers to get game state and
-   *          teams/players
-   * @param db - DBManager, allows handlers to get data
-   * @param playmakerDB - PlaymakerDB, allows handlers to get plays from
-   *          database
+   * @param dashboard
+   *          - Dasboard, allows handlers to get game state and teams/players
+   * @param db
+   *          - DBManager, allows handlers to get data
+   * @param playmakerDB
+   *          - PlaymakerDB, allows handlers to get plays from database
    * @author ngoelz
    */
-  public PlaymakerGUI(Dashboard dashboard, DBManager db,
+  public PlaymakerGUI(Dashboard dashboard,
+      DBManager db,
       PlaymakerDB playmakerDB) {
 
     this.db = db;
@@ -61,10 +63,8 @@ public class PlaymakerGUI {
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Playmaker",
-              "allTeams", db.getAllTeams(),
-              "errorMessage", "");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle", "Playmaker",
+          "allTeams", db.getAllTeams(), "errorMessage", "");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
@@ -77,11 +77,8 @@ public class PlaymakerGUI {
   public class WhiteboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-          ImmutableMap.of(
-              "tabTitle", "Whiteboard",
-              "allTeams", db.getAllTeams(),
-              "errorMessage", "");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle", "Whiteboard",
+          "allTeams", db.getAllTeams(), "errorMessage", "");
       return new ModelAndView(variables, "whiteboard.ftl");
     }
   }
@@ -101,8 +98,8 @@ public class PlaymakerGUI {
       String jsonPlayerString = qm.value("paths");
       String jsonBallString = qm.value("ballPath");
 
-      double[][][] playerPaths =
-          GSON.fromJson(jsonPlayerString, double[][][].class);
+      double[][][] playerPaths = GSON.fromJson(jsonPlayerString,
+          double[][][].class);
       BasketballPosition[] bballPositions = BasketballPosition.values();
       int numBasketballPlayers = bballPositions.length;
       Location[][] parsedPlayerPaths = new Location[numBasketballPlayers][];
@@ -187,19 +184,17 @@ public class PlaymakerGUI {
       Game game = dash.getGame();
       Map<String, Object> variables;
       if (game == null) {
-        variables = new ImmutableMap.Builder<String, Object>()
-            .put("errorMessage", "").build();
+        variables = new ImmutableMap.Builder<String, Object>().put(
+            "errorMessage", "").build();
       } else {
-        BiMap<BasketballPosition, Player> players =
-            game.getLineup().getPlayers();
+        BiMap<BasketballPosition, Player> players = game.getLineup()
+            .getPlayers();
         List<Integer> numbers = new ArrayList<>(10);
         for (BasketballPosition bp : BasketballPosition.values()) {
           numbers.add(players.get(bp).getNumber());
         }
         variables = new ImmutableMap.Builder<String, Object>()
-            .put("playerNumbers", numbers)
-            .put("errorMessage", "")
-            .build();
+            .put("playerNumbers", numbers).put("errorMessage", "").build();
       }
       return GSON.toJson(variables);
     }

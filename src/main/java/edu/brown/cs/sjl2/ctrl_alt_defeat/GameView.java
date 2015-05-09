@@ -24,16 +24,21 @@ public class GameView {
   /**
    * Constructs a GameView from necessary parameters.
    *
-   * @param db The DBManager needed to build the game view.
-   * @param id The database id of the game.
-   * @param home The Home Team Object
-   * @param away The Away Team Object.
-   * @param date The LocalDate of the game's date.
-   * @throws GameException Throws GameException if the old boxscore could not be
-   *           obtained.
+   * @param db
+   *          The DBManager needed to build the game view.
+   * @param id
+   *          The database id of the game.
+   * @param home
+   *          The Home Team Object
+   * @param away
+   *          The Away Team Object.
+   * @param date
+   *          The LocalDate of the game's date.
+   * @throws GameException
+   *           Throws GameException if the old boxscore could not be obtained.
    */
   public GameView(DBManager db, int id, Team home, Team away, LocalDate date)
-      throws GameException {
+    throws GameException {
 
     this.id = id;
     this.home = home;
@@ -57,7 +62,8 @@ public class GameView {
    * Returns true if the team input is the home team of the game. Checks via
    * team id.
    *
-   * @param team The team to check
+   * @param team
+   *          The team to check
    * @return Returns true if team is the home team, false otherwise. Checks for
    *         equivalent team ids.
    */

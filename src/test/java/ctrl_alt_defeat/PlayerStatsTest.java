@@ -370,8 +370,8 @@ public class PlayerStatsTest {
     ps.addFreeThrows(freeThrows);
     ps.addFreeThrowsA(freeThrows + r.nextInt(10));
 
-    assertTrue(
-        ps.getPoints() == 2 * twoPointers + 3 * threePointers + freeThrows);
+    assertTrue(ps.getPoints() == 2 * twoPointers + 3 * threePointers
+        + freeThrows);
   }
 
   @Test
@@ -396,6 +396,5 @@ public class PlayerStatsTest {
 
     assertTrue(ps.getPersonalFouls() == offensive + defensive);
   }
-
 
 }

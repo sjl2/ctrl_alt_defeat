@@ -11,7 +11,8 @@ public class DashboardException extends Exception {
   /**
    * Constructor for a Dashboard Exception.
    *
-   * @param string The error message associated with this particular exception.
+   * @param string
+   *          The error message associated with this particular exception.
    */
   public DashboardException(String string) {
     super(string);

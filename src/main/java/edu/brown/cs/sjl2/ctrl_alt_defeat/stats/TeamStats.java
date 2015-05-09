@@ -19,12 +19,12 @@ public class TeamStats implements GameStats {
   private static final int TWO_POINTS = 2;
   private static final int THREE_POINTS = 3;
 
-  private static final List<String> NON_STAT_COLS =
-      Arrays.asList("game", "team");
+  private static final List<String> NON_STAT_COLS = Arrays.asList("game",
+      "team");
 
-  private static final List<String> STAT_COLS =
-      Arrays.asList("MIN", "TwoPM", "TwoPA", "ThreePM", "ThreePA", "FTM",
-          "FTA", "ORB", "DRB", "AST", "STL", "BLK", "TOV", "OF", "DF");
+  private static final List<String> STAT_COLS = Arrays.asList("MIN", "TwoPM",
+      "TwoPA", "ThreePM", "ThreePA", "FTM", "FTA", "ORB", "DRB", "AST", "STL",
+      "BLK", "TOV", "OF", "DF");
 
   private Team team;
   private int gameID;
@@ -33,8 +33,10 @@ public class TeamStats implements GameStats {
   /**
    * Simple constructor for teamstats.
    *
-   * @param gameID id of the game
-   * @param team the team.
+   * @param gameID
+   *          id of the game
+   * @param team
+   *          the team.
    */
   public TeamStats(int gameID, Team team) {
     this.team = team;
@@ -53,9 +55,12 @@ public class TeamStats implements GameStats {
   /**
    * Constructor for given stats.
    *
-   * @param values stats to be compiled in multimap.
-   * @param gameID id of the game
-   * @param team the team
+   * @param values
+   *          stats to be compiled in multimap.
+   * @param gameID
+   *          id of the game
+   * @param team
+   *          the team
    */
   public TeamStats(List<Integer> values, int gameID, Team team) {
     this.gameID = gameID;
@@ -415,8 +420,7 @@ public class TeamStats implements GameStats {
    * @return points scored.
    */
   public int getPoints() {
-    return stats.count("FTM")
-        + TWO_POINTS * stats.count("TwoPM")
+    return stats.count("FTM") + TWO_POINTS * stats.count("TwoPM")
         + THREE_POINTS * stats.count("ThreePM");
   }
 

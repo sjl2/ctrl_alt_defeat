@@ -19,10 +19,14 @@ public class OffensiveFoul implements Stat {
   /**
    * Constructor of a offensive foul.
    *
-   * @param id the id of the stat
-   * @param player the player
-   * @param pos the position on the court
-   * @param period the period in the game
+   * @param id
+   *          the id of the stat
+   * @param player
+   *          the player
+   * @param pos
+   *          the position on the court
+   * @param period
+   *          the period in the game
    */
   public OffensiveFoul(int id, Player player, Location pos, int period) {
     this.id = id;

@@ -29,9 +29,12 @@ public class BoxScore {
   /**
    * Constructs a boxscore for a team in a game.
    *
-   * @param db The database to store the boxscore.
-   * @param game The game associated with the boxscore.
-   * @param team The team associated with the boxscore.
+   * @param db
+   *          The database to store the boxscore.
+   * @param game
+   *          The game associated with the boxscore.
+   * @param team
+   *          The team associated with the boxscore.
    */
   public BoxScore(DBManager db, Game game, Team team) {
 
@@ -65,15 +68,18 @@ public class BoxScore {
   /**
    * Static Instantiator of a stored box score.
    *
-   * @param db The database to retrieve data from.
-   * @param gameID The id of the game.
-   * @param team The boxscore's team.
+   * @param db
+   *          The database to retrieve data from.
+   * @param gameID
+   *          The id of the game.
+   * @param team
+   *          The boxscore's team.
    * @return Returns a Boxscore from the database
-   * @throws GameException Throws a game exception if a boxscore could not be
-   *           obtained.
+   * @throws GameException
+   *           Throws a game exception if a boxscore could not be obtained.
    */
   public static BoxScore getOldBoxScore(DBManager db, int gameID, Team team)
-      throws GameException {
+    throws GameException {
 
     Map<Integer, PlayerStats> playerStats = db.getPlayerStats(gameID, team);
     TeamStats teamStats = db.getTeamStats(gameID, team);
@@ -83,7 +89,8 @@ public class BoxScore {
   /**
    * Get Player Stats for a player.
    *
-   * @param p The player to find stats for.
+   * @param p
+   *          The player to find stats for.
    * @return Returns the player stats for a player. Null if the player is not in
    *         the boxscore.
    */
@@ -147,7 +154,8 @@ public class BoxScore {
   /**
    * Adds a stat s to the boxscore.
    *
-   * @param s The stat to be added.
+   * @param s
+   *          The stat to be added.
    */
   public void addStat(Stat s) {
     s.execute(playerStats.get(s.getPlayer().getID()));
@@ -165,7 +173,8 @@ public class BoxScore {
   /**
    * Undoes a stat from the boxscore.
    *
-   * @param s The stat to undo.
+   * @param s
+   *          The stat to undo.
    */
   public void undoStat(Stat s) {
     s.undo(playerStats.get(s.getPlayer().getID()));

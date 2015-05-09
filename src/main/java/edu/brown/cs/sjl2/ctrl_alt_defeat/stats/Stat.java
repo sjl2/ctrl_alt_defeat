@@ -24,14 +24,16 @@ public interface Stat {
    * called once on the player who got the stat and once on the his/her team's
    * stats.
    *
-   * @param gs Who gets the stat (their gamestat)
+   * @param gs
+   *          Who gets the stat (their gamestat)
    */
   void execute(GameStats gs);
 
   /**
    * Undo the given stat on the game stats provided.
    *
-   * @param gs The game stats to have the stat undone.
+   * @param gs
+   *          The game stats to have the stat undone.
    */
   void undo(GameStats gs);
 

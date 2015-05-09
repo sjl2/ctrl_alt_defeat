@@ -26,20 +26,21 @@ public class Team {
   /**
    * Constructor for a team object.
    *
-   * @param id The id of the team
-   * @param name The name of the team
-   * @param coach The name of the team's coach
-   * @param primary The primary color of the team (preferably hex)
-   * @param secondary The secondary color of the team (preferably hex)
-   * @param db The database to grab the team players from.
+   * @param id
+   *          The id of the team
+   * @param name
+   *          The name of the team
+   * @param coach
+   *          The name of the team's coach
+   * @param primary
+   *          The primary color of the team (preferably hex)
+   * @param secondary
+   *          The secondary color of the team (preferably hex)
+   * @param db
+   *          The database to grab the team players from.
    */
-  public Team(
-      int id,
-      String name,
-      String coach,
-      String primary,
-      String secondary,
-      DBManager db) {
+  public Team(int id, String name, String coach, String primary,
+      String secondary, DBManager db) {
 
     this.id = id;
     this.name = name;
@@ -57,20 +58,21 @@ public class Team {
   /**
    * Constructor for a team when the players are already known.
    *
-   * @param id The id of the team
-   * @param name The name of the team
-   * @param coach The name of the coach
-   * @param primary The primary color (preferably hex)
-   * @param secondary The secondary color (preferably hex)
-   * @param players The collection of players.
+   * @param id
+   *          The id of the team
+   * @param name
+   *          The name of the team
+   * @param coach
+   *          The name of the coach
+   * @param primary
+   *          The primary color (preferably hex)
+   * @param secondary
+   *          The secondary color (preferably hex)
+   * @param players
+   *          The collection of players.
    */
-  public Team(
-      int id,
-      String name,
-      String coach,
-      String primary,
-      String secondary,
-      Collection<Player> players) {
+  public Team(int id, String name, String coach, String primary,
+      String secondary, Collection<Player> players) {
 
     this.id = id;
     this.name = name;
@@ -123,11 +125,12 @@ public class Team {
   /**
    * Gets a player on the team by its id.
    *
-   * @param id The id of the player.
+   * @param playerId
+   *          The id of the player.
    * @return Returns the player object.
    */
-  public Player getPlayerById(int id) {
-    return playerIds.get(id);
+  public Player getPlayerById(int playerId) {
+    return playerIds.get(playerId);
   }
 
   /**
@@ -142,7 +145,8 @@ public class Team {
   /**
    * Adds a player to the team.
    *
-   * @param p The player to be added.
+   * @param p
+   *          The player to be added.
    */
   public void addPlayer(Player p) {
     playerIds.put(p.getID(), p);
@@ -151,7 +155,8 @@ public class Team {
   /**
    * Removes a player from the team.
    *
-   * @param p The player to be removed.
+   * @param p
+   *          The player to be removed.
    */
   public void removePlayer(Player p) {
     playerIds.remove(p.getID());

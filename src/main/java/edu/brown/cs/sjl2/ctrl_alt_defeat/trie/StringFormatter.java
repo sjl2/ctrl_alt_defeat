@@ -18,7 +18,8 @@ public final class StringFormatter {
    * A method that takes a string and returns a list of characters ready for
    * insertion into the trie.
    *
-   * @param str the string
+   * @param str
+   *          the string
    * @return the string with '@' prepended and '$' appended
    */
   public static List<Character> treat(String str) {
@@ -34,7 +35,8 @@ public final class StringFormatter {
   /**
    * Simple list representation of a string.
    *
-   * @param str the string.
+   * @param str
+   *          the string.
    * @return a list containing each character in the string.
    */
   public static List<Character> listify(String str) {
@@ -48,7 +50,8 @@ public final class StringFormatter {
   /**
    * Inverse of treat.
    *
-   * @param c the character list
+   * @param c
+   *          the character list
    * @return the string hidden inside
    */
   public static String unlist(List<Character> c) {

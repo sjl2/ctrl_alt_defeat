@@ -6,9 +6,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-
 import spark.ExceptionHandler;
 import spark.Filter;
 import spark.ModelAndView;
@@ -19,6 +16,10 @@ import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
@@ -34,8 +35,9 @@ import freemarker.template.Configuration;
 public class GUIManager {
 
   private DBManager db;
-  private int port = 8585;
-  private final static int STATUS = 500;
+  private int port = 0;
+  private static final int DEFAULT_PORT = 8585;
+  private static final int STATUS = 500;
 
   private Dashboard dash;
 
@@ -51,17 +53,21 @@ public class GUIManager {
   /**
    * Initializes the Class.
    *
-   * @param db The database manager to be assigned.
+   * @param db
+   *          The database manager to be assigned.
    */
   public GUIManager(DBManager db) {
+    this.port = DEFAULT_PORT;
     initializeGUIManager(db);
   }
 
   /**
    * Initializes the class.
    *
-   * @param db the database manager.
-   * @param port the port to be assigned.
+   * @param db
+   *          the database manager.
+   * @param port
+   *          the port to be assigned.
    */
   public GUIManager(DBManager db, int port) {
     this.port = port;
@@ -73,19 +79,20 @@ public class GUIManager {
    * initializes the various helper classes containing the handlers, and runs
    * the server.
    *
-   * @param db The DBManager to be assigned
+   * @param database
+   *          The DBManager to be assigned
    */
-  private void initializeGUIManager(DBManager db) {
-    this.db = db;
-    this.dash = new Dashboard(db);
-    this.trie = db.fillTrie();
+  private void initializeGUIManager(DBManager database) {
+    this.db = database;
+    this.dash = new Dashboard(database);
+    this.trie = database.fillTrie();
     trie.whiteSpaceOn().prefixOn().editDistanceOn().setK(2);
 
-    this.dashboardGUI = new DashboardGUI(dash, db, trie);
+    this.dashboardGUI = new DashboardGUI(dash, database, trie);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dash, db, db.getPlaymakerDB());
+    this.playmakerGUI = new PlaymakerGUI(dash, database, database.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
-    this.wikiGUI = new WikiGUI(db, dash);
+    this.wikiGUI = new WikiGUI(database, dash);
     runServer();
   }
 
@@ -121,26 +128,25 @@ public class GUIManager {
 
     /*** DashboardGUI routes ***/
     Spark.get("/dashboard", dashboardGUI.new DashboardHandler(), freeMarker);
-    Spark.post("/dashboard/new",
-        dashboardGUI.new DashSetupHandler(), freeMarker);
+    Spark.post("/dashboard/new", dashboardGUI.new DashSetupHandler(),
+        freeMarker);
     Spark.post("/dashboard/new/team", dashboardGUI.new NewTeamHandler());
     Spark.post("/dashboard/new/player", dashboardGUI.new NewPlayerHandler());
     Spark.post("/user/edit", dashboardGUI.new EditUserHandler());
     Spark.get("/users/get", dashboardGUI.new GetUsersHandler());
-    Spark.get("/dashboard/new/game",
-        dashboardGUI.new NewGameHandler(), freeMarker);
+    Spark.get("/dashboard/new/game", dashboardGUI.new NewGameHandler(),
+        freeMarker);
     Spark.get("/dashboard/getgame", dashboardGUI.new GetGameHandler());
     Spark.get("/dashboard/updategame", dashboardGUI.new UpdateGameHandler());
     Spark.get("/scoreboard", dashboardGUI.new ScoreboardHandler());
     Spark.get("/dashboard/get/opponents",
         dashboardGUI.new GetOpponentsHandler());
     Spark.get("/dashboard/get/teams", dashboardGUI.new GetTeamsHandler());
-    Spark.get("/dashboard/opponent/get",
-        dashboardGUI.new GetPlayersHandler(), freeMarker);
+    Spark.get("/dashboard/opponent/get", dashboardGUI.new GetPlayersHandler(),
+        freeMarker);
     Spark.post("/dashboard/autocomplete",
         dashboardGUI.new AutocompleteHandler());
-    Spark.post("/dashboard/search",
-        dashboardGUI.new SearchBarResultsHandler());
+    Spark.post("/dashboard/search", dashboardGUI.new SearchBarResultsHandler());
 
     /*** WikiGUI routes ***/
     Spark.get("/game/view/:id", wikiGUI.new GameViewHandler(), freeMarker);
@@ -158,8 +164,8 @@ public class GUIManager {
     /* Rename these at some point */
     Spark.post("/shotchart", wikiGUI.new GetShotChartData());
     Spark.post("/heatmap", wikiGUI.new GetHeatMapData());
-    Spark.get("/dashboard/analytics",
-        dashboardGUI.new AnalyticsHandler(), freeMarker);
+    Spark.get("/dashboard/analytics", dashboardGUI.new AnalyticsHandler(),
+        freeMarker);
 
     /*** GameGUI routes ***/
     Spark.post("/game/start", gameGUI.new StartHandler());
@@ -186,8 +192,8 @@ public class GUIManager {
     Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
 
     Spark.post("/stats/endgame", statsEntryGUI.new EndGameHandler());
-    Spark.post("/stats/advanceperiod",
-        statsEntryGUI.new AdvancePeriodHandler());
+    Spark
+        .post("/stats/advanceperiod", statsEntryGUI.new AdvancePeriodHandler());
 
     // Spark.get("*", new PageNotFoundHandler(), freeMarker);
   }
@@ -297,8 +303,8 @@ public class GUIManager {
   public class LoginViewHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle", "Login",
+          "errorMessage", "");
       return new ModelAndView(variables, "login.ftl");
     }
   }
@@ -318,8 +324,8 @@ public class GUIManager {
       int clearance = db.checkPassword(username, password);
       req.session().attribute("clearance",
           Integer.valueOf(clearance).toString());
-      Map<String, Object> variables =
-          ImmutableMap.of("clearance", clearance, "errorMessage", "");
+      Map<String, Object> variables = ImmutableMap.of("clearance", clearance,
+          "errorMessage", "");
 
       return GSON.toJson(variables);
     }

@@ -19,10 +19,14 @@ public class Assist implements Stat {
   /**
    * Constructor of an assist.
    *
-   * @param id the id of the stat
-   * @param player the player
-   * @param pos the position on the court
-   * @param period the period in the game
+   * @param id
+   *          the id of the stat
+   * @param player
+   *          the player
+   * @param pos
+   *          the position on the court
+   * @param period
+   *          the period in the game
    */
 
   public Assist(int id, Player player, Location pos, int period) {

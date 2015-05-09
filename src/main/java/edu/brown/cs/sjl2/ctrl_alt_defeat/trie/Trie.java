@@ -55,8 +55,9 @@ public class Trie {
    * be treated just like every other node and b) all nodes that represent the
    * end of a word are terminal.
    *
-   * @param init The intial characters for the trie. For my tries it's the
-   *          string "@$"
+   * @param init
+   *          The intial characters for the trie. For my tries it's the string
+   *          "@$"
    */
   public Trie(List<Character> init) {
     root = new Node<Character>(init, null);
@@ -122,7 +123,8 @@ public class Trie {
   /**
    * Sets the k cutoff associated with L.E.D.
    *
-   * @param n The integer k is to be set to
+   * @param n
+   *          The integer k is to be set to
    * @return returns itself
    */
   public Trie setK(Integer n) {
@@ -133,7 +135,8 @@ public class Trie {
   /**
    * Adds a list of words to the trie.
    *
-   * @param l The list of words, represented as Lists of Characters, to the
+   * @param l
+   *          The list of words, represented as Lists of Characters, to the
    *          trie.
    */
   public void addWords(List<List<Character>> l) {
@@ -157,8 +160,10 @@ public class Trie {
   /**
    * Adds a single word to the trie.
    *
-   * @param word The word to be added.
-   * @param prev The previous word (needed for dictionary construction).
+   * @param word
+   *          The word to be added.
+   * @param prev
+   *          The previous word (needed for dictionary construction).
    */
   public void addWord(List<Character> word, List<Character> prev) {
     if (root == null) {
@@ -174,8 +179,10 @@ public class Trie {
    * Adds the first word to the dictionary, significant because there's no
    * previous word.
    *
-   * @param word the word to be added.
-   * @param w the word in its word form
+   * @param word
+   *          the word to be added.
+   * @param w
+   *          the word in its word form
    */
   public void addFirstWord(String w, List<Character> word) {
     capKey.put(StringFormatter.unlist(word), w);
@@ -188,7 +195,8 @@ public class Trie {
    * have been intended.
    *
    *
-   * @param word The word to be checked to see if two words are contained within
+   * @param word
+   *          The word to be checked to see if two words are contained within
    *          it.
    * @return A list of all pairs of words possibly contained in the examined
    *         word.
@@ -221,8 +229,8 @@ public class Trie {
       tempLast.add(lastToken);
 
       if (search(tempFirst) && search(tempLast)) {
-        toReturn.add(
-            new Pair<List<Character>, List<Character>>(tempFirst, tempLast));
+        toReturn.add(new Pair<List<Character>, List<Character>>(tempFirst,
+            tempLast));
       }
 
       changing = first.remove(first.size() - 1);
@@ -237,7 +245,8 @@ public class Trie {
   /**
    * A search to see if a provided word is in the trie.
    *
-   * @param word the query
+   * @param word
+   *          the query
    * @return true is the word is in the trie, false otherwise.
    */
   public boolean search(List<Character> word) {
@@ -251,7 +260,8 @@ public class Trie {
    * meaning that the trie will not consider its own initiating and terminating
    * characters here.
    *
-   * @param word the word being examined.
+   * @param word
+   *          the word being examined.
    * @return true if the word is a prefix to any word in the trie, false
    *         otherwise.
    */
@@ -262,7 +272,8 @@ public class Trie {
   /**
    * Returns a list of all words that contain the prefix provided.
    *
-   * @param p the prefix
+   * @param p
+   *          the prefix
    * @return A list of all words, represented as lists of Characters, which have
    *         prefix p
    */
@@ -301,8 +312,10 @@ public class Trie {
    * Dynamically computes edit distance for prefixes/words in the tree and
    * returns words which are within k edit distance of the provided word.
    *
-   * @param word the query.
-   * @param inputK the edit distance limit for returned words.
+   * @param word
+   *          the query.
+   * @param inputK
+   *          the edit distance limit for returned words.
    * @return A list of words within k of word
    */
   public List<List<Character>> editDistance(List<Character> word, int inputK) {
@@ -321,39 +334,48 @@ public class Trie {
    *
    */
   public class Dictionary {
-    private HashMap<List<Character>, Pair<HashMap<List<Character>, Pair<List<Character>, Integer>>, Integer>> dictionary;
+    private HashMap<List<Character>,
+      Pair<HashMap<List<Character>,
+      Pair<List<Character>,
+      Integer>>, Integer>> dictionary;
 
     /**
      * The constructor for a dictionary.
      *
      */
     public Dictionary() {
-      this.dictionary = new HashMap<List<Character>,
-          Pair<HashMap<List<Character>,
-          Pair<List<Character>, Integer>>, Integer>>();
+      this.dictionary = new HashMap<>();
     }
 
     /**
      * How a word is added to the dictionary.
      *
-     * @param word the word to be added
-     * @param prev the previous word (used for bigram counts)
+     * @param word
+     *          the word to be added
+     * @param prev
+     *          the previous word (used for bigram counts)
      */
     public void addWord(List<Character> word, List<Character> prev) {
       if (dictionary.get(word) == null) {
         HashMap<List<Character>, Pair<List<Character>, Integer>> temp =
             new HashMap<List<Character>, Pair<List<Character>, Integer>>();
         temp.put(prev, new Pair<List<Character>, Integer>(prev, 1));
-        dictionary.put(word, new Pair<HashMap<List<Character>,
-            Pair<List<Character>, Integer>>, Integer>(temp, 1));
+        dictionary
+            .put(
+                word,
+                new Pair<>(temp, 1));
       } else if (dictionary.get(word).getFirst().get(prev) == null) {
         HashMap<List<Character>, Pair<List<Character>, Integer>> temp =
             dictionary.get(word).getFirst();
         temp.put(prev, new Pair<List<Character>, Integer>(prev, 1));
         dictionary.get(word).setSecond(dictionary.get(word).getSecond() + 1);
       } else {
-        dictionary.get(word).getFirst().get(prev).setSecond(
-            dictionary.get(word).getFirst().get(prev).getSecond() + 1);
+        dictionary
+            .get(word)
+            .getFirst()
+            .get(prev)
+            .setSecond(
+                dictionary.get(word).getFirst().get(prev).getSecond() + 1);
         dictionary.get(word).setSecond(dictionary.get(word).getSecond() + 1);
       }
 
@@ -362,7 +384,8 @@ public class Trie {
     /**
      * How the first word of a phrase is added.
      *
-     * @param word only takes the word as input
+     * @param word
+     *          only takes the word as input
      */
     public void addFirstWord(List<Character> word) {
       if (dictionary.get(word) == null) {
@@ -370,20 +393,25 @@ public class Trie {
             new HashMap<List<Character>, Pair<List<Character>, Integer>>();
         temp.put(new ArrayList<Character>(),
             new Pair<List<Character>, Integer>(new ArrayList<Character>(), 1));
-        dictionary.put(word, new Pair<HashMap<List<Character>,
-            Pair<List<Character>, Integer>>, Integer>(temp, 1));
+        dictionary
+            .put(
+                word,
+                new Pair<>(temp, 1));
       } else if (dictionary.get(word).getFirst()
-          .get(new ArrayList<Character>())
-          == null) {
+          .get(new ArrayList<Character>()) == null) {
         HashMap<List<Character>, Pair<List<Character>, Integer>> temp =
             dictionary.get(word).getFirst();
-        temp.put(new ArrayList<Character>(), new Pair<List<Character>,
-            Integer>(new ArrayList<Character>(), 1));
+        temp.put(new ArrayList<Character>(),
+            new Pair<List<Character>, Integer>(new ArrayList<Character>(), 1));
         dictionary.get(word).setSecond(dictionary.get(word).getSecond() + 1);
       } else {
-        dictionary.get(word).getFirst()
-            .get(new ArrayList<Character>()).setSecond(dictionary.get(word)
-                .getFirst().get(new ArrayList<Character>()).getSecond() + 1);
+        dictionary
+            .get(word)
+            .getFirst()
+            .get(new ArrayList<Character>())
+            .setSecond(
+                dictionary.get(word).getFirst().get(new ArrayList<Character>())
+                    .getSecond() + 1);
         dictionary.get(word).setSecond(dictionary.get(word).getSecond() + 1);
       }
     }
@@ -393,8 +421,11 @@ public class Trie {
      *
      * @return the mapping of words
      */
-    public HashMap<List<Character>, Pair<HashMap<List<Character>,
-        Pair<List<Character>, Integer>>, Integer>> getMap() {
+    public HashMap<
+      List<Character>,
+      Pair<HashMap<List<Character>, Pair<List<Character>, Integer>>, Integer>>
+    getMap() {
+
       return dictionary;
     }
   }
@@ -413,19 +444,21 @@ public class Trie {
    * method takes in two words as argument and returns the five most likely
    * words that it could be autocorrected to.
    *
-   * @param word The input word
-   * @param prev The previous word, also provided for bigram scoring
+   * @param word
+   *          The input word
+   * @param prev
+   *          The previous word, also provided for bigram scoring
    * @return A list of Pairs of characters and scoring criteria
    */
-  public ArrayList<String>
-      evaluateWord(List<Character> word, List<Character> prev) {
+  public ArrayList<String> evaluateWord(List<Character> word,
+      List<Character> prev) {
     PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>> heap =
-        new PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>>(
-            5, new ScoringComparator());
+        new PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>>(5,
+            new ScoringComparator());
     if (search(word)) {
       conditionallyAdd(heap, new Pair<List<Character>, Pair<Integer, Integer>>(
-          word, new Pair<Integer, Integer>(
-              Integer.MAX_VALUE, Integer.MAX_VALUE)));
+          word,
+          new Pair<Integer, Integer>(Integer.MAX_VALUE, Integer.MAX_VALUE)));
     }
 
     if (usePrefix) {
@@ -437,14 +470,17 @@ public class Trie {
       for (List<Character> pfW : pfWords) {
         Pair<Integer, Integer> scores;
         if (!word.equals(pfW)) {
-          if (prev == null || getDictionary().dictionary.get(pfW).getFirst().
-              get(prev) == null) {
-            scores = new Pair<Integer, Integer>(0, getDictionary().dictionary.
-                get(pfW).getSecond());
+          if (prev == null
+              || getDictionary().dictionary.get(pfW).getFirst().get(prev)
+              == null) {
+            scores =
+                new Pair<Integer, Integer>(0, getDictionary().dictionary.get(
+                    pfW).getSecond());
           } else {
-            scores = new Pair<Integer, Integer>(getDictionary().dictionary.
-                get(pfW).getFirst().get(prev).getSecond(), getDictionary().
-                dictionary.get(pfW).getSecond());
+            scores =
+                new Pair<Integer, Integer>(getDictionary().dictionary.get(pfW)
+                    .getFirst().get(prev).getSecond(),
+                    getDictionary().dictionary.get(pfW).getSecond());
           }
           if (smartRank && pfW.size() < word.size() + smartAdd) {
             scores.setFirst(scores.getFirst() * 2);
@@ -454,8 +490,8 @@ public class Trie {
               scores.setSecond(scores.getSecond() * smartMult);
             }
           }
-          conditionallyAdd(heap, new Pair<List<Character>,
-              Pair<Integer, Integer>>(pfW, scores));
+          conditionallyAdd(heap,
+              new Pair<List<Character>, Pair<Integer, Integer>>(pfW, scores));
 
         }
       }
@@ -466,23 +502,25 @@ public class Trie {
         if (edW.size() > 2 && !prefix(edW, word)) {
           Pair<Integer, Integer> scores;
           if (word.equals(edW)) {
-            scores = new Pair<Integer, Integer>(
-                Integer.MAX_VALUE, Integer.MAX_VALUE);
-          } else if (prev == null || getDictionary().dictionary.
-              get(edW).getFirst().get(prev) == null) {
-            scores = new Pair<Integer, Integer>(0, getDictionary().
-                dictionary.get(edW).getSecond());
+            scores = new Pair<>(Integer.MAX_VALUE, Integer.MAX_VALUE);
+          } else if (prev == null
+              || getDictionary().dictionary.get(edW).getFirst().get(prev)
+              == null) {
+
+            scores =
+                new Pair<>(0, getDictionary().dictionary.get(edW).getSecond());
           } else {
-            scores = new Pair<Integer, Integer>(getDictionary().
-                dictionary.get(edW).getFirst().get(prev).getSecond(),
-                getDictionary().dictionary.get(edW).getSecond());
+            scores =
+                new Pair<Integer, Integer>(getDictionary().dictionary.get(edW)
+                    .getFirst().get(prev).getSecond(),
+                    getDictionary().dictionary.get(edW).getSecond());
           }
           if (word.size() < k + 2 && smartRank) {
             scores.setFirst(scores.getFirst() / smartMult);
             scores.setSecond(scores.getSecond() / smartMult);
           }
-          conditionallyAdd(heap, new Pair<List<Character>,
-              Pair<Integer, Integer>>(edW, scores));
+          conditionallyAdd(heap,
+              new Pair<List<Character>, Pair<Integer, Integer>>(edW, scores));
         }
       }
     }
@@ -493,21 +531,23 @@ public class Trie {
       for (Pair<List<Character>, List<Character>> p : wsWords) {
 
         Pair<Integer, Integer> scores;
-        if (prev == null || getDictionary().dictionary.get(p.getFirst()).
-            getFirst().get(prev) == null) {
-          scores = new Pair<Integer, Integer>(0, getDictionary().
-              dictionary.get(p.getFirst()).getSecond());
+        if (prev == null
+            || getDictionary().dictionary.get(p.getFirst()).getFirst()
+                .get(prev) == null) {
+          scores =
+              new Pair<Integer, Integer>(0, getDictionary().dictionary.get(
+                  p.getFirst()).getSecond());
         } else {
-          scores = new Pair<Integer, Integer>(getDictionary().
-              dictionary.get(p.getFirst()).getFirst().get(prev).getSecond(),
-              getDictionary().dictionary.get(p.getFirst()).getSecond());
+          scores =
+              new Pair<Integer, Integer>(getDictionary().dictionary
+                  .get(p.getFirst()).getFirst().get(prev).getSecond(),
+                  getDictionary().dictionary.get(p.getFirst()).getSecond());
         }
 
         ArrayList<Character> forPair = new ArrayList<Character>();
         forPair.addAll(p.getFirst());
         forPair.addAll(p.getSecond());
-        conditionallyAdd(heap, new Pair<List<Character>,
-            Pair<Integer, Integer>>(forPair, scores));
+        conditionallyAdd(heap, new Pair<>(forPair, scores));
 
       }
 
@@ -525,8 +565,10 @@ public class Trie {
   /**
    * A helper method to improve the scoring.
    *
-   * @param word a word
-   * @param pre a prefix of a word
+   * @param word
+   *          a word
+   * @param pre
+   *          a prefix of a word
    * @return A boolean stating if pre is a prefix of word
    */
   private boolean prefix(List<Character> word, List<Character> pre) {
@@ -547,8 +589,10 @@ public class Trie {
    * the heap and the proposed addition to the heap to decide whether to update
    * the heap or not.
    *
-   * @param heap The heap
-   * @param p The proposed addition to the heap
+   * @param heap
+   *          The heap
+   * @param p
+   *          The proposed addition to the heap
    */
   private void conditionallyAdd(
       PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>> heap,

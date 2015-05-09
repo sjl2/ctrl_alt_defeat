@@ -18,7 +18,8 @@ public class PlaymakerDB {
   /**
    * Constructor for playmakerDB class.
    *
-   * @param conn - Connection, comes from DBManager
+   * @param conn
+   *          - Connection, comes from DBManager
    */
   public PlaymakerDB(Connection conn) {
     this.conn = conn;
@@ -42,7 +43,8 @@ public class PlaymakerDB {
   /**
    * Saves the inputted play name and data into the database.
    *
-   * @param play - Play, with name, frames and paths set from front end.
+   * @param play
+   *          - Play, with name, frames and paths set from front end.
    * @author awainger
    */
   public void savePlay(Play play) {
@@ -58,14 +60,15 @@ public class PlaymakerDB {
     BasketballPosition[] bballPositions = BasketballPosition.values();
     int length = bballPositions.length;
 
-    try (PreparedStatement prep1 = conn.prepareStatement(
-        "DELETE FROM play_detail WHERE play = ?;");
-        PreparedStatement prep2 = conn.prepareStatement(
-            "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
-        PreparedStatement prep3 = conn.prepareStatement(
-            "DELETE FROM play_detail_ball WHERE play = ?;");
-        PreparedStatement prep4 = conn.prepareStatement(
-            "INSERT into play_detail_ball VALUES(?, ?, ?);")) {
+    try (PreparedStatement prep1 = conn
+        .prepareStatement("DELETE FROM play_detail WHERE play = ?;");
+        PreparedStatement prep2 = conn
+            .prepareStatement("INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
+        PreparedStatement prep3 = conn
+            .prepareStatement("DELETE FROM play_detail_ball WHERE play = ?;");
+        PreparedStatement prep4 = conn
+            .prepareStatement("INSERT into play_detail_ball"
+                + " VALUES(?, ?, ?);")) {
 
       prep1.setString(1, name);
       prep1.executeUpdate();
@@ -93,7 +96,7 @@ public class PlaymakerDB {
       for (int frame = 0; frame < numFrames; frame++) {
         prep4.setString(1, name);
         prep4.setInt(2, frame);
-        prep4.setInt(3, ballPath[frame]);
+        prep4.setInt(DBManager.THREE, ballPath[frame]);
         prep4.addBatch();
       }
 
@@ -135,7 +138,8 @@ public class PlaymakerDB {
    * Fetches all the data associated with a single play to send to the front
    * end.
    *
-   * @param name - String, corresponding to play front end is requesting
+   * @param name
+   *          - String, corresponding to play front end is requesting
    * @return Play, with all fields set.
    * @author awainger
    */
@@ -174,8 +178,10 @@ public class PlaymakerDB {
   }
 
   private int[] loadBallPath(String name, int numFrames) {
-    try (PreparedStatement prep = conn.prepareStatement(
-        "SELECT frame, player_index FROM play_detail_ball WHERE play = ?;")) {
+    try (PreparedStatement prep =
+        conn
+            .prepareStatement("SELECT frame, player_index FROM"
+                + " play_detail_ball WHERE play = ?;")) {
 
       prep.setString(1, name);
       ResultSet rs = prep.executeQuery();
@@ -213,7 +219,7 @@ public class PlaymakerDB {
   }
 
   /**
-   * Loads play names to pass to front end
+   * Loads play names to pass to front end.
    *
    * @return List strings, play names
    * @author awainger
@@ -236,16 +242,17 @@ public class PlaymakerDB {
   /**
    * Deletes the indicated play from the database.
    *
-   * @param name - String, name of play to delete
+   * @param name
+   *          - String, name of play to delete
    * @author awainger
    */
   public void deletePlay(String name) {
-    try (PreparedStatement prep1 = conn.prepareStatement(
-        "DELETE FROM play WHERE name = ?;");
-        PreparedStatement prep2 = conn.prepareStatement(
-            "DELETE FROM play_detail WHERE play = ?;");
-        PreparedStatement prep3 = conn.prepareStatement(
-            "DELETE FROM play_detail_ball WHERE play = ?;")) {
+    try (PreparedStatement prep1 = conn
+        .prepareStatement("DELETE FROM play WHERE name = ?;");
+        PreparedStatement prep2 = conn
+            .prepareStatement("DELETE FROM play_detail WHERE play = ?;");
+        PreparedStatement prep3 = conn
+            .prepareStatement("DELETE FROM play_detail_ball WHERE play = ?;")) {
       prep1.setString(1, name);
       prep2.setString(1, name);
       prep3.setString(1, name);

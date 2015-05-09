@@ -10,7 +10,8 @@ import java.util.List;
  *
  * @author nickgoelz
  *
- * @param <T> T was a generic when I first started this project. I ended up
+ * @param <T>
+ *          T was a generic when I first started this project. I ended up
  *          leaving it generic because the Nodes do not need to know that
  *          they're dealing with Strings/Characters.
  */
@@ -23,8 +24,10 @@ public class Node<T> {
   /**
    * The constructor for a new Node.
    *
-   * @param list The sequence that this Node represents.
-   * @param parent The parent node for this Node.
+   * @param list
+   *          The sequence that this Node represents.
+   * @param parent
+   *          The parent node for this Node.
    */
   public Node(List<T> list, Node<T> parent) {
     this.parent = parent;
@@ -85,7 +88,8 @@ public class Node<T> {
    * which has two children (the remainder of the Node and the Node's old
    * children and a new Node representing the rest of the input sequence).
    *
-   * @param newSequence A new sequence of T's (characters for the Trie).
+   * @param newSequence
+   *          A new sequence of T's (characters for the Trie).
    */
   public void addSequence(List<T> newSequence) {
     Iterator<T> iterateOld = sequence.iterator();
@@ -121,10 +125,9 @@ public class Node<T> {
 
         HashMap<T, Node<T>> currChildren = children;
         children = new HashMap<T, Node<T>>();
-        children.put(listForNewNode.get(0),
-            new Node<T>(listForNewNode, this));
-        children.put(listForRemainder.get(0),
-            new Node<T>(listForRemainder, this));
+        children.put(listForNewNode.get(0), new Node<T>(listForNewNode, this));
+        children.put(listForRemainder.get(0), new Node<T>(listForRemainder,
+            this));
         this.sequence = listForCurrent;
         this.isTerminal = false;
 
@@ -146,8 +149,8 @@ public class Node<T> {
           }
         }
         if (!found) {
-          children.put(listForNewNode.get(0),
-              new Node<T>(listForNewNode, this));
+          children
+              .put(listForNewNode.get(0), new Node<T>(listForNewNode, this));
         }
       } else if (iterateOld.hasNext()) {
         System.out.println("ERROR: input error");
@@ -161,9 +164,12 @@ public class Node<T> {
    * A method recursively returns all words that are within k edit distance
    * units of a query word beneath this node in the tree.
    *
-   * @param word the query
-   * @param k the distance
-   * @param a an array of ints representing the current state of the 2D dynamic
+   * @param word
+   *          the query
+   * @param k
+   *          the distance
+   * @param a
+   *          an array of ints representing the current state of the 2D dynamic
    *          programming table that is implicitely constructed here.
    * @return the list of all words that are beneath this node within k units of
    *         word
@@ -217,7 +223,8 @@ public class Node<T> {
    * A setter for the HashMap of children stored at each node. Also udatees the
    * isTerminal field if the new set of children is of size 0.
    *
-   * @param c A new set of children for the node.
+   * @param c
+   *          A new set of children for the node.
    */
   public void setChildren(HashMap<T, Node<T>> c) {
     this.children = c;
@@ -254,7 +261,8 @@ public class Node<T> {
    * A recursive search that seeks a Node below (or at) this Node represented by
    * a given sequence.
    *
-   * @param word the sought word
+   * @param word
+   *          the sought word
    * @return the Node represented by word or null if the word is not beneath
    *         this Node.
    */

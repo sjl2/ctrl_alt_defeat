@@ -23,7 +23,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
  * @author sjl2
  *
  */
-public class BasketballDatabaseGenerator {
+public final class BasketballDatabaseGenerator {
 
   private static final int NUM_OF_STATS = 15;
   private static final double HALF = 0.5;
@@ -39,22 +39,25 @@ public class BasketballDatabaseGenerator {
 
   private static Map<String, Map<String, String>> teamToPlayerToType;
 
+  private BasketballDatabaseGenerator() {
+
+  }
+
   /**
    * Static method that populates a database with random game data.
    *
-   * @param db The db to populate
-   * @param roundRobins The number of roundRobins to run
-   * @param intelligent The boolean flag for whether to run intelligent stat
-   *          generations.
-   * @param genTeams The boolean flag to only generate teams and players (no
-   *          stats). Much faster than the alternative.
+   * @param db
+   *          The db to populate
+   * @param roundRobins
+   *          The number of roundRobins to run
+   * @param intelligent
+   *          The boolean flag for whether to run intelligent stat generations.
+   * @param genTeams
+   *          The boolean flag to only generate teams and players (no stats).
+   *          Much faster than the alternative.
    */
-  public static void populateDB(
-      DBManager db,
-      int roundRobins,
-      boolean intelligent,
-      boolean genTeams) {
-
+  public static void populateDB(DBManager db, int roundRobins,
+      boolean intelligent, boolean genTeams) {
     Connection conn = db.getConnection();
 
     List<String> teamNames = null;
@@ -62,14 +65,11 @@ public class BasketballDatabaseGenerator {
     List<String> primary = null;
     List<String> secondary = null;
     teamToPlayerToType = new HashMap<>();
-
     List<Team> teams = new ArrayList<>();
-
     if (intelligent) {
       teamNames = Arrays.asList("Parsnips", "Potatoes");
-      players.add(
-          Arrays.asList(
-              "PAR Good PG-1-Good Shooter Left",
+      players.add(Arrays
+          .asList("PAR Good PG-1-Good Shooter Left",
               "PAR Good SG-2-Good Shooter Middle",
               "PAR Good SF-3-Good Paint Everywhere",
               "PAR Good PF-4-Good Shooter Right",
@@ -79,9 +79,8 @@ public class BasketballDatabaseGenerator {
               "PAR Bad SF-8-Bad Paint Everywhere",
               "PAR Bad PF-9-Bad Shooter Right",
               "PAR Bad C-10-Bad Paint Everywhere"));
-      players.add(
-          Arrays.asList(
-              "POT Bad PG-6-Bad Shooter Everywhere",
+      players
+          .add(Arrays.asList("POT Bad PG-6-Bad Shooter Everywhere",
               "POT Bad SG-7-Bad Shooter Right",
               "POT Bad SF-8-Bad Paint Middle",
               "POT Bad PF-9-Bad Shooter Middle",
@@ -92,100 +91,46 @@ public class BasketballDatabaseGenerator {
               "POT Good PF-4-Good Shooter Right",
               "POT Good C-5-Good Paint Middle"));
 
-      primary =
-          Arrays.asList("#3A61A3", "#860038");
-      secondary =
-          Arrays.asList("#F29687", "#FDBB30");
+      primary = Arrays.asList("#3A61A3", "#860038");
+      secondary = Arrays.asList("#F29687", "#FDBB30");
 
     } else {
-      teamNames =
-          Arrays.asList(
-              "Parsers",
-              "Cleveland Caveliers",
-              "Seattle Sonics",
-              "New York Knicks",
-              "Golden State Warriors");
+      teamNames = Arrays.asList("Parsers", "Cleveland Caveliers",
+          "Seattle Sonics", "New York Knicks", "Golden State Warriors");
 
-      players.add(
-          Arrays.asList(
-              "jj-32",
-              "Nick Goelz-30",
-              "Stewart Lynch-15",
-              "Alex Wainger-7",
-              "Tyler Schicke-53",
-              "Ankit Shah-21",
-              "Gabe Lyons-64"));
+      players.add(Arrays.asList("jj-32", "Nick Goelz-30", "Stewart Lynch-15",
+          "Alex Wainger-7", "Tyler Schicke-53", "Ankit Shah-21",
+          "Gabe Lyons-64"));
 
-      players.add(
-          Arrays.asList(
-              "Lebron James-23",
-              "Kyrie Irving-2",
-              "Kevin Love-0",
-              "J.R. Smith-5",
-              "Timofey Mozgov-20",
-              "Tristan Thompson-13",
-              "Iman Shumpert-4",
-              "James Jones-1",
-              "jj-32",
-              "Matthew Dellavedova-8",
-              "Kendrick Perkins-3"));
+      players.add(Arrays.asList("Lebron James-23", "Kyrie Irving-2",
+          "Kevin Love-0", "J.R. Smith-5", "Timofey Mozgov-20",
+          "Tristan Thompson-13", "Iman Shumpert-4", "James Jones-1", "jj-32",
+          "Matthew Dellavedova-8", "Kendrick Perkins-3"));
 
-      players.add(
-          Arrays.asList(
-              "Gary Payton-20",
-              "Fred Brown-32",
-              "Jack Sikma-43",
-              "Rashard Lewis-7",
-              "Shawn Kemp-40",
-              "Gus Williams-1",
-              "Dale Ellis-3",
-              "Spencer Haywood-24",
-              "Ray Allen-34"));
+      players.add(Arrays.asList("Gary Payton-20", "Fred Brown-32",
+          "Jack Sikma-43", "Rashard Lewis-7", "Shawn Kemp-40",
+          "Gus Williams-1", "Dale Ellis-3", "Spencer Haywood-24",
+          "Ray Allen-34"));
 
-      players.add(
-          Arrays.asList(
-              "Quincy Acy-4",
-              "Cole ALdrich-45",
-              "Lou Amundson-21",
-              "jj-32",
-              "Carmelo Anthony-7",
-              "Andrea Bargnani-77",
-              "Jose Calderon-3",
-              "Cleanthony Early-17",
-              "Langston Galloway-2",
-              "Tim Hardaway Jr.-5",
-              "Shane Larkin-0",
-              "Ricardo Ledo-11",
-              "Alexey Shved-1",
-              "Jason Smith-14",
-              "Lance Thomas-42",
-              "Travis Wear-6",
-              "Jahlil Okafor-15"));
+      players.add(Arrays.asList("Quincy Acy-4", "Cole ALdrich-45",
+          "Lou Amundson-21", "jj-32", "Carmelo Anthony-7",
+          "Andrea Bargnani-77", "Jose Calderon-3", "Cleanthony Early-17",
+          "Langston Galloway-2", "Tim Hardaway Jr.-5", "Shane Larkin-0",
+          "Ricardo Ledo-11", "Alexey Shved-1", "Jason Smith-14",
+          "Lance Thomas-42", "Travis Wear-6", "Jahlil Okafor-15"));
 
-      players.add(
-          Arrays.asList(
-              "Leandro Barbosa-19",
-              "Klay Thompson-11",
-              "Andrew Bogut-12",
-              "jj-32",
-              "Stephen Curry-30",
-              "Festus Ezeli-31",
-              "Draymond Green-23",
-              "Justin Holiday-7",
-              "Andre Iguodala-9",
-              "Ognjen Kuzmic-1",
-              "David Lee-10",
-              "Shaun Livingston-34",
-              "James Michael McAdoo-20",
-              "Brandon Rush-4",
-              "Marreese Speights-5",
-              "Harrison Barnes-40"));
+      players.add(Arrays.asList("Leandro Barbosa-19", "Klay Thompson-11",
+          "Andrew Bogut-12", "jj-32", "Stephen Curry-30", "Festus Ezeli-31",
+          "Draymond Green-23", "Justin Holiday-7", "Andre Iguodala-9",
+          "Ognjen Kuzmic-1", "David Lee-10", "Shaun Livingston-34",
+          "James Michael McAdoo-20", "Brandon Rush-4", "Marreese Speights-5",
+          "Harrison Barnes-40"));
 
-      primary =
-          Arrays.asList("#3A61A3", "#860038", "#06730B", "#0953A0", "#04529C");
+      primary = Arrays.asList("#3A61A3", "#860038", "#06730B", "#0953A0",
+          "#04529C");
 
-      secondary =
-          Arrays.asList("#F29687", "#FDBB30", "#FFBF0D", "#FF7518", "#FFCC33");
+      secondary = Arrays.asList("#F29687", "#FDBB30", "#FFBF0D", "#FF7518",
+          "#FFCC33");
     }
 
     try {
@@ -201,26 +146,18 @@ public class BasketballDatabaseGenerator {
           myTeam = true;
         }
 
-        Team t = db.createTeam(
-            teamNames.get(i),
-            "Coach Ankit",
-            primary.get(i),
-            secondary.get(i),
-            myTeam);
+        Team t = db.createTeam(teamNames.get(i), "Coach Ankit", primary.get(i),
+            secondary.get(i), myTeam);
 
         Map<String, String> playerTypes = new HashMap<>();
         for (String p : players.get(i)) {
-          String[] p_split = p.split("-");
-          String name = p_split[0];
-          int number = Integer.parseInt(p_split[1]);
-          db.createPlayer(
-              name,
-              t.getID(),
-              number,
-              true);
+          String[] pSplit = p.split("-");
+          String name = pSplit[0];
+          int number = Integer.parseInt(pSplit[1]);
+          db.createPlayer(name, t.getID(), number, true);
 
           if (intelligent) {
-            playerTypes.put(p_split[0], p_split[2]);
+            playerTypes.put(pSplit[0], pSplit[2]);
           }
         }
 
@@ -231,8 +168,7 @@ public class BasketballDatabaseGenerator {
       }
 
       if (!genTeams) {
-        int numGames =
-            roundRobins * teams.size() * (teams.size() - 1);
+        int numGames = roundRobins * teams.size() * (teams.size() - 1);
         int gamesCompleted = 0;
 
         // Play multiple round robin tournaments in random years.
@@ -298,9 +234,8 @@ public class BasketballDatabaseGenerator {
     Team otherTeam = away;
 
     for (int i = 0; i < possessions; i++) {
-      List<Object> statPlayer =
-          generateIntelligentStat(currentTeam.getName(),
-              currentTeam.getPlayers(), otherTeam.getPlayers());
+      List<Object> statPlayer = generateIntelligentStat(currentTeam.getName(),
+          currentTeam.getPlayers(), otherTeam.getPlayers());
       for (int j = 0; j < statPlayer.size(); j += 2) {
         String[] fullStat = ((String) statPlayer.get(j)).split(" ");
         String statType = fullStat[0];
@@ -321,9 +256,8 @@ public class BasketballDatabaseGenerator {
         Location loc = null;
         if (statType.contains("TwoPointer")
             || statType.contains("ThreePointer")) {
-          loc =
-              generateShotLocation(statType, statLocation, teamToPlayerToType
-                  .get(currentTeam.getName()).get(p.getName()));
+          loc = generateShotLocation(statType, statLocation, teamToPlayerToType
+              .get(currentTeam.getName()).get(p.getName()));
         } else {
           loc = generateLocation(statType);
         }
@@ -353,8 +287,8 @@ public class BasketballDatabaseGenerator {
     /***** SHOT *****/
     if (statTypeDet < .75 + (.02 * r.nextGaussian())) {
       Player p = generatePlayer(currentPlayers);
-      String shotType =
-          generateShot(teamToPlayerToType.get(currTeamName).get(p.getName()));
+      String shotType = generateShot(teamToPlayerToType.get(currTeamName).get(
+          p.getName()));
       statPlayer.add(shotType);
       statPlayer.add(p);
 
@@ -584,62 +518,62 @@ public class BasketballDatabaseGenerator {
     }
   }
 
-  private static Location generateShotLocation(
-      String shotType, String shotLocation, String playerType) {
+  private static Location generateShotLocation(String shotType,
+      String shotLocation, String playerType) {
     Random r = new Random();
     if (shotLocation.equals("Paint")) {
       return genLocInPaint();
     } else {
       double loc = r.nextDouble();
       switch (shotType) {
-      case "TwoPointer":
-      case "MissedTwoPointer":
-        if (playerType.contains("Right")) {
-          if (loc < .6 + (.03 * r.nextGaussian())) {
-            return genLocMidRangeRight();
+        case "TwoPointer":
+        case "MissedTwoPointer":
+          if (playerType.contains("Right")) {
+            if (loc < .6 + (.03 * r.nextGaussian())) {
+              return genLocMidRangeRight();
+            } else {
+              return genLocMidRangeAnywhere();
+            }
+          } else if (playerType.contains("Left")) {
+            if (loc < .6 + (.03 * r.nextGaussian())) {
+              return genLocMidRangeLeft();
+            } else {
+              return genLocMidRangeAnywhere();
+            }
+          } else if (playerType.contains("Middle")) {
+            if (loc < .6 + (.03 * r.nextGaussian())) {
+              return genLocMidRangeMiddle();
+            } else {
+              return genLocMidRangeAnywhere();
+            }
           } else {
             return genLocMidRangeAnywhere();
           }
-        } else if (playerType.contains("Left")) {
-          if (loc < .6 + (.03 * r.nextGaussian())) {
-            return genLocMidRangeLeft();
-          } else {
-            return genLocMidRangeAnywhere();
-          }
-        } else if (playerType.contains("Middle")) {
-          if (loc < .6 + (.03 * r.nextGaussian())) {
-            return genLocMidRangeMiddle();
-          } else {
-            return genLocMidRangeAnywhere();
-          }
-        } else {
-          return genLocMidRangeAnywhere();
-        }
-      case "ThreePointer":
-      case "MissedThreePointer":
-        if (playerType.contains("Right")) {
-          if (loc < .6 + (.03 * r.nextGaussian())) {
-            return genLocThree(120, 180);
-          } else {
-            return genLocThree(0, 180);
-          }
-        } else if (playerType.contains("Left")) {
-          if (loc < .6 + (.03 * r.nextGaussian())) {
-            return genLocThree(0, 60);
+        case "ThreePointer":
+        case "MissedThreePointer":
+          if (playerType.contains("Right")) {
+            if (loc < .6 + (.03 * r.nextGaussian())) {
+              return genLocThree(120, 180);
+            } else {
+              return genLocThree(0, 180);
+            }
+          } else if (playerType.contains("Left")) {
+            if (loc < .6 + (.03 * r.nextGaussian())) {
+              return genLocThree(0, 60);
+            } else {
+              return genLocThree(0, 180);
+            }
+          } else if (playerType.contains("Middle")) {
+            if (loc < .6 + (.03 * r.nextGaussian())) {
+              return genLocThree(60, 120);
+            } else {
+              return genLocThree(0, 180);
+            }
           } else {
             return genLocThree(0, 180);
           }
-        } else if (playerType.contains("Middle")) {
-          if (loc < .6 + (.03 * r.nextGaussian())) {
-            return genLocThree(60, 120);
-          } else {
-            return genLocThree(0, 180);
-          }
-        } else {
-          return genLocThree(0, 180);
-        }
-      default:
-        return null;
+        default:
+          return null;
       }
     }
   }
@@ -647,49 +581,49 @@ public class BasketballDatabaseGenerator {
   private static Location generateLocation(String stat) {
     Random r = new Random();
     switch (stat) {
-    case "FreeThrow":
-      return new Location(.21, .5);
-    case "MissedFreeThrow":
-      return new Location(.21, .5);
-    case "OffensiveFoul":
-      return genLocAnywhere();
-    case "OffensiveRebound":
-      if (r.nextDouble() < .75 + (.02 * r.nextGaussian())) {
-        return genLocInPaint();
-      } else {
-        return genLocMidRangeAnywhere();
-      }
-    case "Turnover":
-      return genLocAnywhere();
-    case "Assist":
-      if (r.nextDouble() < .4 + (.02 * r.nextGaussian())) {
-        return genLocThree(0, 180);
-      } else {
-        return genLocMidRangeAnywhere();
-      }
-    case "DefensiveRebound":
-      if (r.nextDouble() < .75 + (.02 * r.nextGaussian())) {
-        return genLocInPaint();
-      } else {
-        return genLocMidRangeAnywhere();
-      }
-    case "Block":
-      double det = r.nextDouble();
-      if (det < .6 + (.02 * r.nextGaussian())) {
-        return genLocInPaint();
-      } else if (det < .95 + (.02 * r.nextGaussian())) {
-        return genLocMidRangeAnywhere();
-      } else {
-        return genLocThree(0, 180);
-      }
-    case "DefensiveFoul":
-      return genLocAnywhere();
-    case "TechnicalFoul":
-      return genLocAnywhere();
-    case "Steal":
-      return genLocAnywhere();
-    default:
-      return null;
+      case "FreeThrow":
+        return new Location(.21, .5);
+      case "MissedFreeThrow":
+        return new Location(.21, .5);
+      case "OffensiveFoul":
+        return genLocAnywhere();
+      case "OffensiveRebound":
+        if (r.nextDouble() < .75 + (.02 * r.nextGaussian())) {
+          return genLocInPaint();
+        } else {
+          return genLocMidRangeAnywhere();
+        }
+      case "Turnover":
+        return genLocAnywhere();
+      case "Assist":
+        if (r.nextDouble() < .4 + (.02 * r.nextGaussian())) {
+          return genLocThree(0, 180);
+        } else {
+          return genLocMidRangeAnywhere();
+        }
+      case "DefensiveRebound":
+        if (r.nextDouble() < .75 + (.02 * r.nextGaussian())) {
+          return genLocInPaint();
+        } else {
+          return genLocMidRangeAnywhere();
+        }
+      case "Block":
+        double det = r.nextDouble();
+        if (det < .6 + (.02 * r.nextGaussian())) {
+          return genLocInPaint();
+        } else if (det < .95 + (.02 * r.nextGaussian())) {
+          return genLocMidRangeAnywhere();
+        } else {
+          return genLocThree(0, 180);
+        }
+      case "DefensiveFoul":
+        return genLocAnywhere();
+      case "TechnicalFoul":
+        return genLocAnywhere();
+      case "Steal":
+        return genLocAnywhere();
+      default:
+        return null;
     }
   }
 
@@ -731,10 +665,10 @@ public class BasketballDatabaseGenerator {
 
   private static Location calcLocation(Location topLeft, Location bottomRight) {
     Random r = new Random();
-    double x = topLeft.getX()
-        + (bottomRight.getX() - topLeft.getX()) * r.nextDouble();
-    double y = topLeft.getY()
-        + (bottomRight.getY() - topLeft.getY()) * r.nextDouble();
+    double x = topLeft.getX() + (bottomRight.getX() - topLeft.getX())
+        * r.nextDouble();
+    double y = topLeft.getY() + (bottomRight.getY() - topLeft.getY())
+        * r.nextDouble();
     return new Location(x, y);
   }
 
@@ -770,9 +704,9 @@ public class BasketballDatabaseGenerator {
   }
 
   private static Location convertToDBRepresentation(Location loc) {
-    double x_ = loc.getX() / 94.0;
-    double y_ = loc.getY() / 50.0;
-    return new Location(x_, y_);
+    double x = loc.getX() / 94.0;
+    double y = loc.getY() / 50.0;
+    return new Location(x, y);
   }
 
   private static void randomPlayerStats(Game game, Player p, DBManager db,
@@ -783,61 +717,54 @@ public class BasketballDatabaseGenerator {
 
     for (String type : types) {
 
-      int numStats =
-          new Double(percentOfGame * r.nextDouble() * NUM_OF_STATS).intValue();
+      int numStats = new Double(percentOfGame * r.nextDouble() * NUM_OF_STATS)
+          .intValue();
 
       switch (type) {
-      case "TwoPointer":
-        if (numStats > NUM_FG) {
-          numStats = new Double(r.nextDouble() * numStats)
-              .intValue();
-        }
-        break;
-      case "ThreePointer":
-        if (numStats > NUM_FG) {
-          numStats = new Double(r.nextDouble() * numStats)
-              .intValue();
-        }
-        break;
-      case "MissedThreePointer":
-        if (numStats > NUM_FG) {
-          numStats = new Double(r.nextDouble() * NUM_FG)
-              .intValue();
-        }
-        break;
-      case "MissedTwoPointer":
-        if (numStats > NUM_FG) {
-          numStats = new Double(r.nextDouble() * NUM_FG)
-              .intValue();
-        }
-        break;
-      case "FreeThrow":
-        if (numStats > NUM_FG) {
-          numStats = new Double(r.nextDouble() * NUM_FG)
-              .intValue();
-        }
-        break;
-      case "MissedFreeThrow":
-        if (numStats > 2) {
-          numStats = new Double(r.nextDouble() * NUM_FG)
-              .intValue();
-        }
-        break;
-      case "OffensiveFoul":
-        if (numStats > NUM_FOULS) {
-          numStats = NUM_FOULS;
-        }
-        break;
-      case "DefensiveFoul":
-        if (numStats > NUM_FOULS) {
-          numStats = new Double(r.nextDouble() * NUM_FOULS)
-              .intValue();
-        }
-        break;
-      default:
-        if (numStats > 5) {
-          numStats = numStats / 2;
-        }
+        case "TwoPointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * numStats).intValue();
+          }
+          break;
+        case "ThreePointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * numStats).intValue();
+          }
+          break;
+        case "MissedThreePointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * NUM_FG).intValue();
+          }
+          break;
+        case "MissedTwoPointer":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * NUM_FG).intValue();
+          }
+          break;
+        case "FreeThrow":
+          if (numStats > NUM_FG) {
+            numStats = new Double(r.nextDouble() * NUM_FG).intValue();
+          }
+          break;
+        case "MissedFreeThrow":
+          if (numStats > 2) {
+            numStats = new Double(r.nextDouble() * NUM_FG).intValue();
+          }
+          break;
+        case "OffensiveFoul":
+          if (numStats > NUM_FOULS) {
+            numStats = NUM_FOULS;
+          }
+          break;
+        case "DefensiveFoul":
+          if (numStats > NUM_FOULS) {
+            numStats = new Double(r.nextDouble() * NUM_FOULS).intValue();
+          }
+          break;
+        default:
+          if (numStats > 5) {
+            numStats = numStats / 2;
+          }
       }
 
       for (int z = 0; z < numStats; z++) {

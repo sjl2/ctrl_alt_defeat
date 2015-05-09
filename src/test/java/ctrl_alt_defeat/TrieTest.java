@@ -226,8 +226,8 @@ public class TrieTest {
   @Test
   public void nodeFunctionTest() {
 
-    Node<Character> n =
-        new Node<Character>(StringFormatter.listify("abcdefg"), null);
+    Node<Character> n = new Node<Character>(StringFormatter.listify("abcdefg"),
+        null);
     n.addSequence(StringFormatter.listify("abde"));
     assertTrue(n.getSequence().equals(StringFormatter.listify("ab")));
     assertTrue(n.getChildren().get('c').getSequence()

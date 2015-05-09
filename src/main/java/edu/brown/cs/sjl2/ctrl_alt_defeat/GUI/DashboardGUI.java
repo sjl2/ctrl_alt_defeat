@@ -41,9 +41,12 @@ public class DashboardGUI {
   /**
    * Constructor for dashboardgui class.
    *
-   * @param dash - Dashboard, a reference.
-   * @param dbManager - DBManager, to retrieve data from the database.
-   * @param trie - Used for autocorrecting the coach's search bar.
+   * @param dash
+   *          - Dashboard, a reference.
+   * @param dbManager
+   *          - DBManager, to retrieve data from the database.
+   * @param trie
+   *          - Used for autocorrecting the coach's search bar.
    */
   public DashboardGUI(Dashboard dash, DBManager dbManager, Trie trie) {
     this.db = dbManager;
@@ -61,18 +64,16 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request req, Response res) {
       if (dash.getMyTeam() == null) {
-        Map<String, Object> variables =
-            ImmutableMap.of("tabTitle", "Set-Up",
-                "errorMessage", "");
+        Map<String, Object> variables = ImmutableMap.of("tabTitle", "Set-Up",
+            "errorMessage", "");
         return new ModelAndView(variables, "dashboard_setup.ftl");
       }
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-              .put("tabTitle", "Dashboard")
-              .put("myTeam", dash.getMyTeam())
-              .put("isGame", dash.getGame() != null)
-              .put("errorMessage", "").build();
+              .put("tabTitle", "Dashboard").put("myTeam", dash.getMyTeam())
+              .put("isGame", dash.getGame() != null).put("errorMessage", "")
+              .build();
 
       if (dash.getGame() == null) {
         return new ModelAndView(variables, "dashboard_no_game.ftl");
@@ -92,11 +93,8 @@ public class DashboardGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      dash.createTeam(
-          qm.value("name").trim(),
-          qm.value("coach").trim(),
-          qm.value("color1"),
-          qm.value("color2"));
+      dash.createTeam(qm.value("name").trim(), qm.value("coach").trim(),
+          qm.value("color1"), qm.value("color2"));
 
       return "";
     }
@@ -110,11 +108,9 @@ public class DashboardGUI {
   public class NewGameHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request request, Response response) {
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "New Game",
-              "players", dash.getMyTeam().getPlayers(),
-              "teams", dash.getOpposingTeams(),
-              "errorMessage", "");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle", "New Game",
+          "players", dash.getMyTeam().getPlayers(), "teams",
+          dash.getOpposingTeams(), "errorMessage", "");
       return new ModelAndView(variables, "newGame.ftl");
     }
   }
@@ -137,8 +133,8 @@ public class DashboardGUI {
 
       dash.addMyTeam(name, coach, color1, color2);
 
-      Map<String, Object> variables =
-          ImmutableMap.of("tabTitle", "Dashboard Set-up", "errorMessage", "");
+      Map<String, Object> variables = ImmutableMap.of("tabTitle",
+          "Dashboard Set-up", "errorMessage", "");
 
       return new ModelAndView(variables, "setup_complete.ftl");
     }
@@ -153,11 +149,9 @@ public class DashboardGUI {
     @Override
     public Object handle(Request request, Response response) {
       QueryParamsMap qm = request.queryMap();
-      dash.createPlayer(
-          qm.value("name").trim(),
+      dash.createPlayer(qm.value("name").trim(),
           Integer.parseInt(qm.value("team")),
-          Integer.parseInt(qm.value("number")),
-          true);
+          Integer.parseInt(qm.value("number")), true);
 
       return "";
     }
@@ -179,8 +173,8 @@ public class DashboardGUI {
 
       boolean success = false;
       String errorMessage = "";
-      if (oldUsername.equals(newUsername) ||
-          !db.doesUsernameExist(newUsername)) {
+      if (oldUsername.equals(newUsername)
+          || !db.doesUsernameExist(newUsername)) {
         db.updateUser(oldUsername, newUsername, newPassword);
         success = true;
       } else {
@@ -188,8 +182,8 @@ public class DashboardGUI {
         errorMessage = "ERROR: Couldn't update username.\nUsername \""
             + newUsername + "\" is already used";
       }
-      Map<String, Object> variables =
-          ImmutableMap.of("success", success, "errorMessage", errorMessage);
+      Map<String, Object> variables = ImmutableMap.of("success", success,
+          "errorMessage", errorMessage);
 
       return GSON.toJson(variables);
     }
@@ -204,8 +198,8 @@ public class DashboardGUI {
   public class GetUsersHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
-      Map<String, Object> variables =
-          ImmutableMap.of("users", db.getUsernames());
+      Map<String, Object> variables = ImmutableMap.of("users",
+          db.getUsernames());
       return GSON.toJson(variables);
     }
   }
@@ -221,8 +215,7 @@ public class DashboardGUI {
       if (dash.getGame() == null) {
         Map<String, Object> variables =
             new ImmutableMap.Builder<String, Object>()
-                .put("tabTitle", "Dashboard")
-                .put("isGame", false).build();
+                .put("tabTitle", "Dashboard").put("isGame", false).build();
         return GSON.toJson(variables);
       } else {
         Map<String, Object> variables =
@@ -254,14 +247,12 @@ public class DashboardGUI {
             .put("homeFouls", g.getHomeFouls())
             .put("awayFouls", g.getAwayFouls())
             .put("homeTimeouts", g.getTO(true))
-            .put("awayTimeouts", g.getTO(false))
-            .put("period", g.getPeriod())
+            .put("awayTimeouts", g.getTO(false)).put("period", g.getPeriod())
             .put("homeBonus", g.getHomeBonus())
             .put("homeDoubleBonus", g.getHomeDoubleBonus())
             .put("awayBonus", g.getAwayBonus())
             .put("awayDoubleBonus", g.getAwayDoubleBonus())
-            .put("errorMessage", "")
-            .put("isGame", true).build());
+            .put("errorMessage", "").put("isGame", true).build());
       }
     }
   }
@@ -280,117 +271,138 @@ public class DashboardGUI {
       }
       Game g = dash.getGame();
       ImmutableMap.Builder<String, Object> builder =
-          new ImmutableMap.Builder<String, Object>().put("isGame", true);
+          new ImmutableMap.Builder<String, Object>()
+              .put("isGame", true);
       if (g.getHomeGame()) {
-        builder.put("pgStats", g.getHomeBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.HomePG)));
-        builder.put("sgStats", g.getHomeBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.HomeSG)));
-        builder.put("sfStats", g.getHomeBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.HomeSF)));
-        builder.put("pfStats", g.getHomeBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.HomePF)));
-        builder.put("cStats", g.getHomeBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.HomeC)));
-        builder.put("ourFGMade",
-            g.getHomeBoxScore().getTeamStats().getFieldGoals());
-        builder.put("ourFGAttempted",
-            g.getHomeBoxScore().getTeamStats().getFieldGoalsA());
-        builder.put("our3ptMade",
-            g.getHomeBoxScore().getTeamStats().getThreePointers());
-        builder.put("our3ptAttempted",
-            g.getHomeBoxScore().getTeamStats().getThreePointersA());
-        builder.put("ourFTMade",
-            g.getHomeBoxScore().getTeamStats().getFreeThrows());
-        builder.put("ourFTAttempted",
-            g.getHomeBoxScore().getTeamStats().getFreeThrowsA());
-        builder.put("ourSteals",
-            g.getHomeBoxScore().getTeamStats().getSteals());
-        builder.put("ourBlocks",
-            g.getHomeBoxScore().getTeamStats().getBlocks());
-        builder.put("ourRebounds",
-            g.getHomeBoxScore().getTeamStats().getRebounds());
-        builder.put("ourAssists",
-            g.getHomeBoxScore().getTeamStats().getAssists());
-        builder.put("ourTurnovers",
-            g.getHomeBoxScore().getTeamStats().getTurnovers());
-        builder.put("theirFGMade",
-            g.getAwayBoxScore().getTeamStats().getFieldGoals());
-        builder.put("theirFGAttempted",
-            g.getAwayBoxScore().getTeamStats().getFieldGoalsA());
-        builder.put("their3ptMade",
-            g.getAwayBoxScore().getTeamStats().getThreePointers());
-        builder.put("their3ptAttempted",
-            g.getAwayBoxScore().getTeamStats().getThreePointersA());
-        builder.put("theirFTMade",
-            g.getAwayBoxScore().getTeamStats().getFreeThrows());
-        builder.put("theirFTAttempted",
-            g.getAwayBoxScore().getTeamStats().getFreeThrowsA());
-        builder.put("theirSteals",
-            g.getAwayBoxScore().getTeamStats().getSteals());
-        builder.put("theirBlocks",
-            g.getAwayBoxScore().getTeamStats().getBlocks());
-        builder.put("theirRebounds",
-            g.getAwayBoxScore().getTeamStats().getRebounds());
-        builder.put("theirAssists",
-            g.getAwayBoxScore().getTeamStats().getAssists());
-        builder.put("theirTurnovers",
-            g.getAwayBoxScore().getTeamStats().getTurnovers());
+        builder.put(
+            "pgStats",
+            g.getHomeBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.HomePG)));
+        builder.put(
+            "sgStats",
+            g.getHomeBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.HomeSG)));
+        builder.put(
+            "sfStats",
+            g.getHomeBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.HomeSF)));
+        builder.put(
+            "pfStats",
+            g.getHomeBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.HomePF)));
+        builder.put(
+            "cStats",
+            g.getHomeBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.HomeC)));
+        builder.put("ourFGMade", g.getHomeBoxScore().getTeamStats()
+            .getFieldGoals());
+        builder.put("ourFGAttempted", g.getHomeBoxScore().getTeamStats()
+            .getFieldGoalsA());
+        builder.put("our3ptMade", g.getHomeBoxScore().getTeamStats()
+            .getThreePointers());
+        builder.put("our3ptAttempted", g.getHomeBoxScore().getTeamStats()
+            .getThreePointersA());
+        builder.put("ourFTMade", g.getHomeBoxScore().getTeamStats()
+            .getFreeThrows());
+        builder.put("ourFTAttempted", g.getHomeBoxScore().getTeamStats()
+            .getFreeThrowsA());
+        builder
+            .put("ourSteals", g.getHomeBoxScore().getTeamStats().getSteals());
+        builder
+            .put("ourBlocks", g.getHomeBoxScore().getTeamStats().getBlocks());
+        builder.put("ourRebounds", g.getHomeBoxScore().getTeamStats()
+            .getRebounds());
+        builder.put("ourAssists", g.getHomeBoxScore().getTeamStats()
+            .getAssists());
+        builder.put("ourTurnovers", g.getHomeBoxScore().getTeamStats()
+            .getTurnovers());
+        builder.put("theirFGMade", g.getAwayBoxScore().getTeamStats()
+            .getFieldGoals());
+        builder.put("theirFGAttempted", g.getAwayBoxScore().getTeamStats()
+            .getFieldGoalsA());
+        builder.put("their3ptMade", g.getAwayBoxScore().getTeamStats()
+            .getThreePointers());
+        builder.put("their3ptAttempted", g.getAwayBoxScore().getTeamStats()
+            .getThreePointersA());
+        builder.put("theirFTMade", g.getAwayBoxScore().getTeamStats()
+            .getFreeThrows());
+        builder.put("theirFTAttempted", g.getAwayBoxScore().getTeamStats()
+            .getFreeThrowsA());
+        builder.put("theirSteals", g.getAwayBoxScore().getTeamStats()
+            .getSteals());
+        builder.put("theirBlocks", g.getAwayBoxScore().getTeamStats()
+            .getBlocks());
+        builder.put("theirRebounds", g.getAwayBoxScore().getTeamStats()
+            .getRebounds());
+        builder.put("theirAssists", g.getAwayBoxScore().getTeamStats()
+            .getAssists());
+        builder.put("theirTurnovers", g.getAwayBoxScore().getTeamStats()
+            .getTurnovers());
       } else {
-        builder.put("pgStats", g.getAwayBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.AwayPG)));
-        builder.put("sgStats", g.getAwayBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.AwaySG)));
-        builder.put("sfStats", g.getAwayBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.AwaySF)));
-        builder.put("pfStats", g.getAwayBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.AwayPF)));
-        builder.put("cStats", g.getAwayBoxScore().getPlayerStats(
-            g.getLineup().getPlayers().get(BasketballPosition.AwayC)));
-        builder.put("ourFGMade",
-            g.getAwayBoxScore().getTeamStats().getFieldGoals());
-        builder.put("ourFGAttempted",
-            g.getAwayBoxScore().getTeamStats().getFieldGoalsA());
-        builder.put("our3ptMade",
-            g.getAwayBoxScore().getTeamStats().getThreePointers());
-        builder.put("our3ptAttempted",
-            g.getAwayBoxScore().getTeamStats().getThreePointersA());
-        builder.put("ourFTMade",
-            g.getAwayBoxScore().getTeamStats().getFreeThrows());
-        builder.put("ourFTAttempted",
-            g.getAwayBoxScore().getTeamStats().getFreeThrowsA());
-        builder.put("ourSteals",
-            g.getAwayBoxScore().getTeamStats().getSteals());
-        builder.put("ourBlocks",
-            g.getAwayBoxScore().getTeamStats().getBlocks());
-        builder.put("ourRebounds",
-            g.getAwayBoxScore().getTeamStats().getRebounds());
-        builder.put("ourAssists",
-            g.getAwayBoxScore().getTeamStats().getAssists());
-        builder.put("ourTurnovers",
-            g.getAwayBoxScore().getTeamStats().getTurnovers());
-        builder.put("theirFGMade",
-            g.getHomeBoxScore().getTeamStats().getFieldGoals());
-        builder.put("theirFGAttempted",
-            g.getHomeBoxScore().getTeamStats().getFieldGoalsA());
-        builder.put("their3ptMade",
-            g.getHomeBoxScore().getTeamStats().getThreePointers());
-        builder.put("their3ptAttempted",
-            g.getHomeBoxScore().getTeamStats().getThreePointersA());
-        builder.put("theirFTMade",
-            g.getHomeBoxScore().getTeamStats().getFreeThrows());
-        builder.put("theirFTAttempted",
-            g.getHomeBoxScore().getTeamStats().getFreeThrowsA());
-        builder.put("theirSteals",
-            g.getHomeBoxScore().getTeamStats().getSteals());
-        builder.put("theirBlocks",
-            g.getHomeBoxScore().getTeamStats().getBlocks());
-        builder.put("theirRebounds",
-            g.getHomeBoxScore().getTeamStats().getRebounds());
-        builder.put("theirAssists",
-            g.getHomeBoxScore().getTeamStats().getAssists());
-        builder.put("theirTurnovers",
-            g.getHomeBoxScore().getTeamStats().getTurnovers());
+        builder.put(
+            "pgStats",
+            g.getAwayBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.AwayPG)));
+        builder.put(
+            "sgStats",
+            g.getAwayBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.AwaySG)));
+        builder.put(
+            "sfStats",
+            g.getAwayBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.AwaySF)));
+        builder.put(
+            "pfStats",
+            g.getAwayBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.AwayPF)));
+        builder.put(
+            "cStats",
+            g.getAwayBoxScore().getPlayerStats(
+                g.getLineup().getPlayers().get(BasketballPosition.AwayC)));
+        builder.put("ourFGMade", g.getAwayBoxScore().getTeamStats()
+            .getFieldGoals());
+        builder.put("ourFGAttempted", g.getAwayBoxScore().getTeamStats()
+            .getFieldGoalsA());
+        builder.put("our3ptMade", g.getAwayBoxScore().getTeamStats()
+            .getThreePointers());
+        builder.put("our3ptAttempted", g.getAwayBoxScore().getTeamStats()
+            .getThreePointersA());
+        builder.put("ourFTMade", g.getAwayBoxScore().getTeamStats()
+            .getFreeThrows());
+        builder.put("ourFTAttempted", g.getAwayBoxScore().getTeamStats()
+            .getFreeThrowsA());
+        builder
+            .put("ourSteals", g.getAwayBoxScore().getTeamStats().getSteals());
+        builder
+            .put("ourBlocks", g.getAwayBoxScore().getTeamStats().getBlocks());
+        builder.put("ourRebounds", g.getAwayBoxScore().getTeamStats()
+            .getRebounds());
+        builder.put("ourAssists", g.getAwayBoxScore().getTeamStats()
+            .getAssists());
+        builder.put("ourTurnovers", g.getAwayBoxScore().getTeamStats()
+            .getTurnovers());
+        builder.put("theirFGMade", g.getHomeBoxScore().getTeamStats()
+            .getFieldGoals());
+        builder.put("theirFGAttempted", g.getHomeBoxScore().getTeamStats()
+            .getFieldGoalsA());
+        builder.put("their3ptMade", g.getHomeBoxScore().getTeamStats()
+            .getThreePointers());
+        builder.put("their3ptAttempted", g.getHomeBoxScore().getTeamStats()
+            .getThreePointersA());
+        builder.put("theirFTMade", g.getHomeBoxScore().getTeamStats()
+            .getFreeThrows());
+        builder.put("theirFTAttempted", g.getHomeBoxScore().getTeamStats()
+            .getFreeThrowsA());
+        builder.put("theirSteals", g.getHomeBoxScore().getTeamStats()
+            .getSteals());
+        builder.put("theirBlocks", g.getHomeBoxScore().getTeamStats()
+            .getBlocks());
+        builder.put("theirRebounds", g.getHomeBoxScore().getTeamStats()
+            .getRebounds());
+        builder.put("theirAssists", g.getHomeBoxScore().getTeamStats()
+            .getAssists());
+        builder.put("theirTurnovers", g.getHomeBoxScore().getTeamStats()
+            .getTurnovers());
       }
 
       Map<String, Object> variables = builder.put("errorMessage", "").build();
@@ -442,8 +454,8 @@ public class DashboardGUI {
       boolean myTeam = Boolean.parseBoolean(qm.value("myTeam"));
       Team team = dash.getTeam(teamID);
       Collection<Player> players = team.getPlayers();
-      Map<String, Object> variables =
-          ImmutableMap.of("players", players, "myTeam", myTeam);
+      Map<String, Object> variables = ImmutableMap.of("players", players,
+          "myTeam", myTeam);
 
       return new ModelAndView(variables, "opponent_lineup.ftl");
     }
@@ -461,18 +473,13 @@ public class DashboardGUI {
     @Override
     public ModelAndView handle(Request arg0, Response arg1) {
       if (dash.getMyTeam() != null) {
-        Map<String, Object> variables =
-            ImmutableMap.of("tabTitle", "Analytics",
-                "allTeams", db.getAllTeams(),
-                "players", dash.getMyTeam().getPlayers(),
-                "errorMessage", "");
+        Map<String, Object> variables = ImmutableMap.of("tabTitle",
+            "Analytics", "allTeams", db.getAllTeams(), "players", dash
+                .getMyTeam().getPlayers(), "errorMessage", "");
         return new ModelAndView(variables, "analytics.ftl");
       } else {
-        Map<String, Object> variables =
-            ImmutableMap.of(
-                "tabTitle", "Analytics",
-                "content", "No My Team",
-                "errorMessage", "");
+        Map<String, Object> variables = ImmutableMap.of("tabTitle",
+            "Analytics", "content", "No My Team", "errorMessage", "");
 
         return new ModelAndView(variables, "main.ftl");
       }
@@ -498,8 +505,8 @@ public class DashboardGUI {
       // System.out.println("spot, " + start);
 
       if (start.length() != 0) {
-        resOne =
-            trie.evaluateWord(StringFormatter.treat(start.toLowerCase()), null);
+        resOne = trie.evaluateWord(StringFormatter.treat(start.toLowerCase()),
+            null);
       } else {
         resOne = new ArrayList<String>();
       }
@@ -532,9 +539,8 @@ public class DashboardGUI {
       List<List<Integer>> ids = db.searchBarResults(searchString);
 
       if (ids.get(0).isEmpty() && ids.get(1).isEmpty()) {
-        return GSON.toJson(new ImmutableMap.Builder<String, Object>()
-            .put("errorMessage",
-                "Sorry, no players or teams matched your search.")
+        return GSON.toJson(new ImmutableMap.Builder<String, Object>().put(
+            "errorMessage", "Sorry, no players or teams matched your search.")
             .build());
       } else {
         List<Player> players = new ArrayList<>();
@@ -546,8 +552,7 @@ public class DashboardGUI {
           teams.add(db.getTeam(id));
         }
         return GSON.toJson(new ImmutableMap.Builder<String, Object>()
-            .put("teams", teams)
-            .put("players", players)
+            .put("teams", teams).put("players", players)
             .put("errorMessage", "").build());
 
       }

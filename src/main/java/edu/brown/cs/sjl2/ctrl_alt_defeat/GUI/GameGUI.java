@@ -13,10 +13,10 @@ import spark.Route;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
-import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
+import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
 /**
@@ -26,7 +26,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
  *
  */
 public class GameGUI {
-  private final static Gson GSON = new Gson();
+  private static final Gson GSON = new Gson();
   private Dashboard dash;
 
   public GameGUI(Dashboard dash) {
@@ -62,16 +62,13 @@ public class GameGUI {
         for (Stat s : st) {
           lab.add(s.getStatType());
         }
-        Map<String, Object> toReturn =
-            ImmutableMap.of(
-                "roster", rosterInfo,
-                "types", lab,
-                "errorMessage", "");
+        Map<String, Object> toReturn = ImmutableMap.of("roster", rosterInfo,
+            "types", lab, "errorMessage", "");
 
         return GSON.toJson(toReturn);
       } else {
-        Map<String, Object> variables =
-            ImmutableMap.of("errorMessage", "No Game");
+        Map<String, Object> variables = ImmutableMap.of("errorMessage",
+            "No Game");
 
         return GSON.toJson(variables);
       }
@@ -95,8 +92,8 @@ public class GameGUI {
         boolean isHome = Boolean.parseBoolean(qm.value("isHome"));
         int teamID = Integer.parseInt(qm.value("opponent"));
 
-        Map<BasketballPosition, Integer> starterIDs =
-            new EnumMap<>(BasketballPosition.class);
+        Map<BasketballPosition, Integer> starterIDs = new EnumMap<>(
+            BasketballPosition.class);
 
         starterIDs.put(BasketballPosition.HomePG,
             Integer.parseInt(qm.value("hpg")));

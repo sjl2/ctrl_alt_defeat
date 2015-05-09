@@ -19,26 +19,27 @@ public class ScoringComparator implements Comparator<Pair<?, ?>> {
    * by the alphabetic order of the lists of Characters.
    *
    *
-   * @param pair The first pair to be compared
-   * @param p The second pair to be compared
+   * @param pair
+   *          The first pair to be compared
+   * @param p
+   *          The second pair to be compared
    * @return -1 if the first element is greater, 0 if they are equal, 1 if the
    *         second is geater.
    *
    */
   @Override
-  public int compare(Pair<?, ?> pair,
-      Pair<?, ?> p) {
+  public int compare(Pair<?, ?> pair, Pair<?, ?> p) {
     Pair<List<Character>, Pair<Integer, Integer>> pairCast =
         (Pair<List<Character>, Pair<Integer, Integer>>) pair;
     Pair<List<Character>, Pair<Integer, Integer>> pCast =
         (Pair<List<Character>, Pair<Integer, Integer>>) p;
-    int bigram = Integer.compare(pairCast.getSecond().getFirst(),
-        pCast.getSecond().getFirst());
+    int bigram = Integer.compare(pairCast.getSecond().getFirst(), pCast
+        .getSecond().getFirst());
     if (bigram != 0) {
       return bigram;
     }
-    int unigram = Integer.compare(pairCast.getSecond().getSecond(),
-        pCast.getSecond().getSecond());
+    int unigram = Integer.compare(pairCast.getSecond().getSecond(), pCast
+        .getSecond().getSecond());
     if (unigram != 0) {
       return unigram;
     }

@@ -16,9 +16,12 @@ public class Link {
    * Constructs a Link object used to represent an entity or list item on front
    * end.
    *
-   * @param id ID of the object that the link represents.
-   * @param path The url path to the id.
-   * @param text The text to display on the link.
+   * @param id
+   *          ID of the object that the link represents.
+   * @param path
+   *          The url path to the id.
+   * @param text
+   *          The text to display on the link.
    */
   public Link(int id, String path, String text) {
     this.id = id;

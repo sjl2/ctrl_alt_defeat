@@ -19,19 +19,20 @@ public class Player {
   /**
    * Constructs a player with the parameters below.
    *
-   * @param id The database id of the player.
-   * @param name The player's name.
-   * @param number The player's jersey number.
-   * @param teamID The id of the team for the player.
-   * @param teamName The name of the team.
-   * @param current Boolean true if the player is currently playing.
+   * @param id
+   *          The database id of the player.
+   * @param name
+   *          The player's name.
+   * @param number
+   *          The player's jersey number.
+   * @param teamID
+   *          The id of the team for the player.
+   * @param teamName
+   *          The name of the team.
+   * @param current
+   *          Boolean true if the player is currently playing.
    */
-  public Player(
-      int id,
-      String name,
-      int number,
-      int teamID,
-      String teamName,
+  public Player(int id, String name, int number, int teamID, String teamName,
       boolean current) {
 
     this.id = id;

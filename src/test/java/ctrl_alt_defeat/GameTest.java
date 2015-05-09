@@ -60,8 +60,8 @@ public class GameTest {
       fail("Sub player threw and exception");
     }
 
-    assertTrue(
-        l.getPlayers().get(BasketballPosition.HomePG).getID() == pIn.getID());
+    assertTrue(l.getPlayers().get(BasketballPosition.HomePG).getID() == pIn
+        .getID());
   }
 
   @Test
@@ -79,8 +79,8 @@ public class GameTest {
     }
 
     l = game.getLineup();
-    assertTrue(
-        l.getPlayers().get(BasketballPosition.AwayPG).getID() == pIn.getID());
+    assertTrue(l.getPlayers().get(BasketballPosition.AwayPG).getID() == pIn
+        .getID());
   }
 
   @Test
@@ -151,7 +151,6 @@ public class GameTest {
       game.addStat("FreeThrow", p2.getID(),
           new Location(r.nextDouble(), r.nextDouble()));
 
-
       game.deleteStat(freeThrow.getID());
       game.deleteStat(twoPointer.getID());
       game.deleteStat(threePointer.getID());
@@ -195,12 +194,8 @@ public class GameTest {
       game.addStat("FreeThrow", p2.getID(),
           new Location(r.nextDouble(), r.nextDouble()));
 
-
-      game.updateStat(
-          freeThrow.getID(),
-          "ThreePointer",
-          freeThrow.getPlayer().getID(),
-          new Location(r.nextDouble(), r.nextDouble()));
+      game.updateStat(freeThrow.getID(), "ThreePointer", freeThrow.getPlayer()
+          .getID(), new Location(r.nextDouble(), r.nextDouble()));
 
       BoxScore home = game.getHomeBoxScore();
       assertTrue(game.getHomeScore() == 6 + 6 + 4);
