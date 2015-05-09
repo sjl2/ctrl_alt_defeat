@@ -53,7 +53,7 @@ public class DBManager {
   public static final float FREE_THROW_POINT_VALUE = 1.0f;
   public static final float TWO_POINT_VALUE = 2.0f;
   public static final float THREE_POINT_VALUE = 3.0f;
-  
+
   private Connection conn;
   private PlayerFactory pf;
   private TeamFactory tf;
@@ -1840,11 +1840,13 @@ public class DBManager {
       case "TwoPointer":
         return TWO_POINT_VALUE;
       case "MissedTwoPointer":
-        return -TWO_POINT_VALUE * (TWO_PT_PERCENTAGE / (1.0 - TWO_PT_PERCENTAGE));
+        return -TWO_POINT_VALUE
+            * (TWO_PT_PERCENTAGE / (1.0 - TWO_PT_PERCENTAGE));
       case "ThreePointer":
         return THREE_POINT_VALUE;
       case "MissedThreePointer":
-        return -THREE_POINT_VALUE * (THREE_PT_PERCENTAGE / (1.0 - THREE_PT_PERCENTAGE));
+        return -THREE_POINT_VALUE
+            * (THREE_PT_PERCENTAGE / (1.0 - THREE_PT_PERCENTAGE));
       default:
         throw new RuntimeException("Default case should never be reached");
       }

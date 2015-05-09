@@ -19,8 +19,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
  */
 public class Dashboard {
   private Game currentGame;
-  DBManager db;
-  Team myTeam;
+  private DBManager db;
+  private Team myTeam;
 
   StatFactory sf;
 
