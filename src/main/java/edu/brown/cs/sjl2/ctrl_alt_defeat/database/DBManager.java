@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -107,6 +108,25 @@ public class DBManager {
   public Connection getConnection() {
     return conn;
   }
+
+  /**
+   * Clears the database.
+   */
+  public void clearDatabase() {
+    List<String> tables =
+        Arrays.asList("play_detail", "play_detail_ball", "play", "team_stats",
+            "player_stats", "stat", "user", "game", "player", "team");
+
+    for (String table : tables) {
+      String query = "DELETE FROM " + table + ";";
+      try (PreparedStatement prep = conn.prepareStatement(query)) {
+        prep.execute();
+      } catch (SQLException e) {
+        throw new RuntimeException("Failed to clear db. " + e.getMessage());
+      }
+    }
+  }
+
 
   /* LOGIN METHODS */
 
