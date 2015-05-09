@@ -33,7 +33,7 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
  */
 public class DashboardGUI {
 
-  private final static Gson GSON = new Gson();
+  private static final Gson GSON = new Gson();
   private DBManager db;
   private Dashboard dash;
   private Trie trie;
@@ -521,8 +521,7 @@ public class DashboardGUI {
         return GSON.toJson(new ImmutableMap.Builder<String, Object>()
             .put("teams", teams)
             .put("players", players)
-            .put("errorMessage", "")
-            .build());
+            .put("errorMessage", "").build());
 
       }
     }
