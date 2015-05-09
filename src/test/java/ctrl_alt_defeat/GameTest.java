@@ -166,4 +166,61 @@ public class GameTest {
 
   }
 
+  @Test
+  public void updatingStats() {
+    Lineup l = game.getLineup();
+    Player p1 = l.getPlayers().get(BasketballPosition.HomeSF);
+    Player p2 = l.getPlayers().get(BasketballPosition.HomeSG);
+    Random r = new Random();
+    try {
+      game.addStat("TwoPointer", p1.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+      game.addStat("TwoPointer", p1.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+      game.addStat("TwoPointer", p1.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+
+      game.addStat("Assist", p2.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+      game.addStat("Assist", p1.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+
+      game.addStat("ThreePointer", p1.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+      game.addStat("ThreePointer", p2.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+
+      Stat freeThrow = game.addStat("FreeThrow", p1.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+      game.addStat("FreeThrow", p2.getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+
+
+      game.updateStat(
+          freeThrow.getID(),
+          "ThreePointer",
+          freeThrow.getPlayer().getID(),
+          new Location(r.nextDouble(), r.nextDouble()));
+
+      BoxScore home = game.getHomeBoxScore();
+      assertTrue(game.getHomeScore() == 6 + 6 + 4);
+      assertTrue(home.getPlayerStats(p1).getPoints() == 12);
+
+    } catch (GameException e) {
+      fail();
+    }
+
+  }
+
+  @Test
+  public void incrementPeriod() {
+    int curr = game.getPeriod();
+    try {
+      game.incrementPeriod();
+      assertTrue(game.getPeriod() == curr + 1);
+    } catch (GameException e) {
+      fail();
+    }
+  }
+
 }
