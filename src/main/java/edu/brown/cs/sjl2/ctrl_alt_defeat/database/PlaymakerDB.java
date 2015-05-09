@@ -83,7 +83,7 @@ public class PlaymakerDB {
           prep2.setDouble(DBManager.FIVE, l.getY());
           prep2.addBatch();
         }
-      }      
+      }
       prep2.executeBatch();
 
       // Adding ball
@@ -131,8 +131,7 @@ public class PlaymakerDB {
   /**
    * Fetches all the data associated with a single play to send to the front
    * end.
-   * @param name
-   *          - String, corresponding to play front end is requesting
+   * @param name - String, corresponding to play front end is requesting
    * @return Play, with all fields set.
    * @author awainger
    */
@@ -211,7 +210,7 @@ public class PlaymakerDB {
 
   /**
    * Loads play names to pass to front end
-   * 
+   *
    * @return List strings, play names
    * @author awainger
    */
@@ -232,8 +231,7 @@ public class PlaymakerDB {
 
   /**
    * Deletes the indicated play from the database.
-   * @param name
-   *          - String, name of play to delete
+   * @param name - String, name of play to delete
    * @author awainger
    */
   public void deletePlay(String name) {

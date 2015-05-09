@@ -97,7 +97,7 @@ public class Game {
 
     try {
       // Remaining fields
-      this.rules = new ProRules(); // TODO Change in settings
+      this.rules = new ProRules();
 
       this.homeBoxScore = new BoxScore(db, this, home);
       this.awayBoxScore = new BoxScore(db, this, away);
