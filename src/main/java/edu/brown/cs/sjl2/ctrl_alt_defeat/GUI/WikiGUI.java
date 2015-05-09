@@ -25,9 +25,15 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.GameStats;
 
+/**Class that contains information for handlers relating to our wiki
+ * feature.
+ *
+ * @author ngoelz
+ *
+ */
 public class WikiGUI {
 
-  private final static Gson GSON = new Gson();
+  private static final Gson GSON = new Gson();
   private DBManager dbManager;
   private Dashboard dashboard;
 
@@ -62,7 +68,7 @@ public class WikiGUI {
         error = "No game exists with that id.";
       }
 
-      if(game != null) {
+      if (game != null) {
         Map<String, Object> variables =
           ImmutableMap.of("tabTitle", game.toString(),
                           "allTeams", dbManager.getAllTeams(),
@@ -71,7 +77,7 @@ public class WikiGUI {
 
         return new ModelAndView(variables, "game.ftl");
       } else {
-        Map<String, Object> variables = 
+        Map<String, Object> variables =
             ImmutableMap.of("tabTitle", "Page Not Found", "errorMessage",
                 "Game doesn't exist");
 
@@ -104,7 +110,7 @@ public class WikiGUI {
         } else {
           years = dbManager.getYearsActive("team_stats", teamID);
           if (!years.isEmpty()) {
-            rows =dbManager.getSeparateGameStatsForYear(years.get(0),
+            rows = dbManager.getSeparateGameStatsForYear(years.get(0),
                 "team_stats", teamID);
             seasonAverages = dbManager.getAggregateGameStats("AVG",
                 "team_stats", teamID);
@@ -118,20 +124,20 @@ public class WikiGUI {
 
       int clearance = 0;
       String clearanceString = request.session().attribute("clearance");
-      if(clearanceString != null) {
+      if (clearanceString != null) {
         clearance = Integer.parseInt(clearanceString);
       }
 
-      if(team != null) {
+      if (team != null) {
         Map<String, Object> variables =
             new ImmutableMap.Builder<String, Object>()
-          .put("tabTitle", team.toString()).put("db", dbManager)
-          .put("team", team).put("years", years).put("rows", rows)
-          .put("allTeams", dbManager.getAllTeams())
-          .put("seasonTotals", seasonTotals)
-          .put("seasonAverages", seasonAverages).put("errorMessage", error)
-          .put("clearance", clearance)
-          .build();
+            .put("tabTitle", team.toString()).put("db", dbManager)
+            .put("team", team).put("years", years).put("rows", rows)
+            .put("allTeams", dbManager.getAllTeams())
+            .put("seasonTotals", seasonTotals)
+            .put("seasonAverages", seasonAverages).put("errorMessage", error)
+            .put("clearance", clearance)
+            .build();
         return new ModelAndView(variables, "team.ftl");
       } else {
         Map<String, Object> variables = ImmutableMap.of("tabTitle",
@@ -167,6 +173,11 @@ public class WikiGUI {
     }
   }
 
+  /**Handler for deletion of players.
+   *
+   * @author ngoelz
+   *
+   */
   public class DeletePlayer implements Route {
 
     @Override
@@ -232,7 +243,7 @@ public class WikiGUI {
           error = "Could not find player by that ID!";
         } else {
           years = dbManager.getYearsActive("player_stats", playerID);
-          if(!years.isEmpty()) {
+          if (!years.isEmpty()) {
             rows = dbManager.getSeparateGameStatsForYear(years.get(0),
                 "player_stats", playerID);
           } else {
@@ -249,20 +260,20 @@ public class WikiGUI {
 
       int clearance = 0;
       String clearanceString = request.session().attribute("clearance");
-      if(clearanceString != null) {
+      if (clearanceString != null) {
         clearance = Integer.parseInt(clearanceString);
       }
 
-      if(player != null) {      
+      if (player != null) {
         Map<String, Object> variables =
             new ImmutableMap.Builder<String, Object>()
-          .put("tabTitle", player.toString()).put("db", dbManager)
-          .put("player", player).put("years", years).put("rows", rows)
-          .put("seasonTotals", seasonTotals)
-          .put("allTeams", dbManager.getAllTeams())
-          .put("seasonAverages", seasonAverages).put("errorMessage", error)
-          .put("clearance", clearance)
-          .build();
+            .put("tabTitle", player.toString()).put("db", dbManager)
+            .put("player", player).put("years", years).put("rows", rows)
+            .put("seasonTotals", seasonTotals)
+            .put("allTeams", dbManager.getAllTeams())
+            .put("seasonAverages", seasonAverages).put("errorMessage", error)
+            .put("clearance", clearance)
+            .build();
         return new ModelAndView(variables, "player.ftl");
       } else {
         Map<String, Object> variables = ImmutableMap.of("tabTitle",
@@ -426,9 +437,9 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes)
-          .put("misses", misses).put("errorMessage", errorMessage)
-          .build();
+            .put("makes", makes)
+            .put("misses", misses).put("errorMessage", errorMessage)
+            .build();
       return GSON.toJson(variables);
 
     }
@@ -462,9 +473,9 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes)
-          .put("misses", misses).put("errorMessage", errorMessage)
-          .build();
+            .put("makes", makes)
+            .put("misses", misses).put("errorMessage", errorMessage)
+            .build();
       return GSON.toJson(variables);
     }
   }
@@ -496,15 +507,15 @@ public class WikiGUI {
 
       Map<String, Object> variables =
           new ImmutableMap.Builder<String, Object>()
-          .put("makes", makes)
-          .put("misses", misses).put("errorMessage", errorMessage)
-          .build();
+            .put("makes", makes)
+            .put("misses", misses).put("errorMessage", errorMessage)
+            .build();
       return GSON.toJson(variables);
     }
   }
 
   /**Handler that returns the lineup ranking of a given lineup.
-   * 
+   *
    * @author ngoelz
    *
    */
