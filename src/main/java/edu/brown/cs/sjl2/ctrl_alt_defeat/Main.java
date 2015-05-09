@@ -17,6 +17,7 @@ public final class Main {
 
   /**
    * The entry static function for Ctrl-Alt-Defeat.
+   * 
    * @param args The command line arguments used to execute.
    */
   public static void main(String[] args) {
@@ -37,17 +38,14 @@ public final class Main {
     OptionSpec<Integer> intelligentRoundRobins =
         parser.accepts("intelligent").withRequiredArg().ofType(Integer.class);
     OptionSpec<Integer> portSpec =
-      parser.accepts("port").withRequiredArg().ofType(Integer.class);
+        parser.accepts("port").withRequiredArg().ofType(Integer.class);
     OptionSpec<String> fileSpec = parser.nonOptions().ofType(String.class);
-    
-    parser.accepts("genTeams");
 
-    
+    parser.accepts("genTeams");
 
     OptionSet options = parser.parse(args);
 
     String db = options.valueOf(fileSpec);
-
 
     if (db == null) {
       System.out.println("ERROR: Please input a basketball database.");
@@ -57,8 +55,8 @@ public final class Main {
     DBManager dbManager = new DBManager(db);
 
     if (options.has("random")) {
-     BasketballDatabaseGenerator.populateDB(dbManager,
-         options.valueOf(randomRoundRobins), false, false);
+      BasketballDatabaseGenerator.populateDB(dbManager,
+          options.valueOf(randomRoundRobins), false, false);
     } else if (options.has("intelligent")) {
       BasketballDatabaseGenerator.populateDB(dbManager,
           options.valueOf(intelligentRoundRobins), true, false);

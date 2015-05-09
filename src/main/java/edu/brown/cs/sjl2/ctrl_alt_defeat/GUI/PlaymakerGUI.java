@@ -25,6 +25,7 @@ import spark.TemplateViewRoute;
 
 /**
  * PlaymakerGUI class, houses all gui handlers related to the playmaker
+ * 
  * @author awainger
  */
 public class PlaymakerGUI {
@@ -36,9 +37,12 @@ public class PlaymakerGUI {
 
   /**
    * Constructor for playmaker gui class.
-   * @param dashboard - Dasboard, allows handlers to get game state and teams/players
+   * 
+   * @param dashboard - Dasboard, allows handlers to get game state and
+   *          teams/players
    * @param db - DBManager, allows handlers to get data
-   * @param playmakerDB - PlaymakerDB, allows handlers to get plays from database
+   * @param playmakerDB - PlaymakerDB, allows handlers to get plays from
+   *          database
    * @author ngoelz
    */
   public PlaymakerGUI(Dashboard dashboard, DBManager db,
@@ -51,31 +55,33 @@ public class PlaymakerGUI {
 
   /**
    * Playmaker handler, loads main playmaker class.
+   * 
    * @author ngoelz
    */
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Playmaker",
-          "allTeams", db.getAllTeams(),
-          "errorMessage", "");
+          ImmutableMap.of("tabTitle", "Playmaker",
+              "allTeams", db.getAllTeams(),
+              "errorMessage", "");
       return new ModelAndView(variables, "playmaker.ftl");
     }
   }
 
   /**
    * Loads whiteboard feature of playmaker.
+   * 
    * @author ngoelz
    */
   public class WhiteboardHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of(
-          "tabTitle", "Whiteboard",
-          "allTeams", db.getAllTeams(),
-          "errorMessage", "");
+          ImmutableMap.of(
+              "tabTitle", "Whiteboard",
+              "allTeams", db.getAllTeams(),
+              "errorMessage", "");
       return new ModelAndView(variables, "whiteboard.ftl");
     }
   }
@@ -83,6 +89,7 @@ public class PlaymakerGUI {
   /**
    * Save handler, parses play, saves to database, returns list of play ids and
    * names to front end.
+   * 
    * @author ngoelz
    */
   public class SaveHandler implements Route {
@@ -94,7 +101,8 @@ public class PlaymakerGUI {
       String jsonPlayerString = qm.value("paths");
       String jsonBallString = qm.value("ballPath");
 
-      double[][][] playerPaths = GSON.fromJson(jsonPlayerString, double[][][].class);
+      double[][][] playerPaths =
+          GSON.fromJson(jsonPlayerString, double[][][].class);
       BasketballPosition[] bballPositions = BasketballPosition.values();
       int numBasketballPlayers = bballPositions.length;
       Location[][] parsedPlayerPaths = new Location[numBasketballPlayers][];
@@ -110,13 +118,15 @@ public class PlaymakerGUI {
 
       int[] ballPath = GSON.fromJson(jsonBallString, int[].class);
 
-      playmakerDB.savePlay(new Play(name, numFrames, parsedPlayerPaths, ballPath));
+      playmakerDB.savePlay(new Play(name, numFrames, parsedPlayerPaths,
+          ballPath));
       return getPlayNamesFromDB();
     }
   }
 
   /**
    * Loads a play for the front end.
+   * 
    * @author ngoelz
    */
   public class LoadHandler implements Route {
@@ -126,16 +136,17 @@ public class PlaymakerGUI {
       QueryParamsMap qm = request.queryMap();
       String name = qm.value("name");
       Play play = playmakerDB.loadPlay(name);
-      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
-          .put("play", play).put("errorMessage", "").build();
+      Map<String, Object> variables =
+          new ImmutableMap.Builder<String, Object>()
+              .put("play", play).put("errorMessage", "").build();
 
       return GSON.toJson(variables);
     }
   }
 
-
   /**
    * Handles deletion of a play.
+   * 
    * @author ngoelz
    */
   public class DeleteHandler implements Route {
@@ -153,6 +164,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads list of play names for playmaker sidebar.
+   * 
    * @author ngoelz
    */
   public class PlayNamesHandler implements Route {
@@ -165,6 +177,7 @@ public class PlaymakerGUI {
 
   /**
    * Get numbers for players on court for playmaker.
+   * 
    * @author ngoelz
    */
   public class PlayerNumberHandler implements Route {
@@ -173,13 +186,14 @@ public class PlaymakerGUI {
     public Object handle(Request request, Response response) {
       Game game = dash.getGame();
       Map<String, Object> variables;
-      if(game == null) {
+      if (game == null) {
         variables = new ImmutableMap.Builder<String, Object>()
-          .put("errorMessage", "").build();
+            .put("errorMessage", "").build();
       } else {
-        BiMap<BasketballPosition, Player> players = game.getLineup().getPlayers();
+        BiMap<BasketballPosition, Player> players =
+            game.getLineup().getPlayers();
         List<Integer> numbers = new ArrayList<>(10);
-        for(BasketballPosition bp : BasketballPosition.values()) {
+        for (BasketballPosition bp : BasketballPosition.values()) {
           numbers.add(players.get(bp).getNumber());
         }
         variables = new ImmutableMap.Builder<String, Object>()
@@ -191,10 +205,10 @@ public class PlaymakerGUI {
     }
   }
 
-
   /**
-   * Gets play names from DB, used to updated list of plays on front
-   * end after each update.
+   * Gets play names from DB, used to updated list of plays on front end after
+   * each update.
+   * 
    * @return - String, GSON'ed map from "plays" to the list of play names
    */
   private String getPlayNamesFromDB() {

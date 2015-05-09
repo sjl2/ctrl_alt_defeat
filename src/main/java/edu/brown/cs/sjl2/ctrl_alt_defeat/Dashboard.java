@@ -26,6 +26,7 @@ public class Dashboard {
 
   /**
    * Constructor for the dashboard using a basketball database.
+   * 
    * @param db The DBManager for the basketball database
    */
   public Dashboard(DBManager db) {
@@ -43,6 +44,7 @@ public class Dashboard {
 
   /**
    * Retrieves the current game.
+   * 
    * @return Returns the current game. Returns null if there is no current game.
    */
   public Game getGame() {
@@ -51,20 +53,20 @@ public class Dashboard {
 
   private Game newGame(Team home, Team away,
       Map<BasketballPosition, Integer> starterIDs, boolean b)
-          throws GameException {
+      throws GameException {
 
     return new Game(home, away, db, starterIDs, b);
   }
 
-
   /**
    * Starts a game between my team and an opponent with a specified lineup.
+   * 
    * @param home A boolean true if it is a home game for myteam, false for away.
    * @param opponentID The team id for the opponent
    * @param starterIDs A Map between the positions and the player ids.
    * @throws DashboardException Throws an exception if a game cannot be started.
-   * This is usually due to a game in play or a database failure during
-   * initialization.
+   *           This is usually due to a game in play or a database failure
+   *           during initialization.
    */
   public void startGame(Boolean home, int opponentID,
       Map<BasketballPosition, Integer> starterIDs) throws DashboardException {
@@ -92,6 +94,7 @@ public class Dashboard {
 
   /**
    * Getter for my team.
+   * 
    * @return Returns the Team object of the coach's team.
    */
   public Team getMyTeam() {
@@ -100,6 +103,7 @@ public class Dashboard {
 
   /**
    * Retrieves team from database.
+   * 
    * @param id The team id to be searched for.
    * @return Returns the Team stored with the id.
    */
@@ -109,6 +113,7 @@ public class Dashboard {
 
   /**
    * Retrieves a player form the database.
+   * 
    * @param id The player id to be searched for.
    * @return Returns the Player stored with the id.
    */
@@ -119,6 +124,7 @@ public class Dashboard {
   /**
    * Retrieves a list of Links representing all teams in the database (my team
    * inclusive).
+   * 
    * @return Returns a list of links representing all teams in the database.
    */
   public List<Link> getAllTeams() {
@@ -128,8 +134,9 @@ public class Dashboard {
   /**
    * Retrieves a list of links representing all teams in the database EXCLUDING
    * my team.
+   * 
    * @return Returns a list of links representing all teams in the database
-   * excluding my team.
+   *         excluding my team.
    */
   public List<Link> getOpposingTeams() {
     return db.getOpposingTeams();
@@ -137,11 +144,12 @@ public class Dashboard {
 
   /**
    * Getter for a boxscore for a team in a game.
+   * 
    * @param gameID The id of the game for the boxscore.
    * @param team The team of interest
    * @return Returns a boxscore object of the game for the team.
    * @throws DashboardException Throws Dashboard Exception if the Boxscore is
-   * not retrieved successfully from the database.
+   *           not retrieved successfully from the database.
    */
   BoxScore getBoxscore(int gameID, Team team) throws DashboardException {
     try {
@@ -156,14 +164,15 @@ public class Dashboard {
   /**
    * Sets the coach's team for the dashboard. It is assumed the team does not
    * previously exist in the database.
+   * 
    * @param name The Team Name
    * @param coach Coach's name
-   * @param primary The string value of the primary color
-   * (preferably hexadecimal).
+   * @param primary The string value of the primary color (preferably
+   *          hexadecimal).
    * @param secondary The string value of the secondary color(preferably
-   * hexadecimal)
+   *          hexadecimal)
    * @return Returns the new Team object now stored as my team in the database
-   * and dashboard.
+   *         and dashboard.
    */
   public Team addMyTeam(String name,
       String coach, String primary, String secondary) {
@@ -174,6 +183,7 @@ public class Dashboard {
 
   /**
    * Sets my team to a team of id teamID.
+   * 
    * @param teamID The id of myTeam.
    */
   public void setMyTeam(int teamID) {
@@ -182,6 +192,7 @@ public class Dashboard {
 
   /**
    * Sets my team to the team object.
+   * 
    * @param team The team object that will be my team.
    */
   public void setMyTeam(Team team) {
@@ -192,6 +203,7 @@ public class Dashboard {
   /**
    * Creates a new team with the specified parameters. Team is then stored in
    * the database.
+   * 
    * @param name Team name
    * @param coach Coach's name
    * @param primary String of primary color (preferably hexadecimal)
@@ -207,6 +219,7 @@ public class Dashboard {
   /**
    * Creates a new player with the specified parameters. The player is then
    * stored in the database.
+   * 
    * @param name Player Name
    * @param teamID ID of team that the player is going on (must exist in db)
    * @param number The player's number
@@ -224,10 +237,11 @@ public class Dashboard {
 
   /**
    * Getter for an old game. Returns a view of the game (not interactive).
+   * 
    * @param gameID The id of the old game.
    * @return Returns a GameView of the game.
-   * @throws DashboardException Throws a DashboardException if the game does
-   * not exist or if it was not retieved correctly.
+   * @throws DashboardException Throws a DashboardException if the game does not
+   *           exist or if it was not retieved correctly.
    */
   public GameView getOldGame(int gameID) throws DashboardException {
     try {

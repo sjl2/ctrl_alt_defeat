@@ -2,11 +2,13 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-/**A turnover stat.
-*
-* @author ngoelz
-*
-*/
+
+/**
+ * A turnover stat.
+ *
+ * @author ngoelz
+ *
+ */
 public class Turnover implements Stat {
   private static final String TYPE = "Turnover";
   private Location pos;
@@ -14,13 +16,14 @@ public class Turnover implements Stat {
   private int id;
   private int period;
 
-  /**Constructor of a turnover.
-  *
-  * @param id the id of the stat
-  * @param player the player
-  * @param pos the position on the court
-  * @param period the period in the game
-  */
+  /**
+   * Constructor of a turnover.
+   *
+   * @param id the id of the stat
+   * @param player the player
+   * @param pos the position on the court
+   * @param period the period in the game
+   */
   public Turnover(int id, Player player, Location pos, int period) {
     this.id = id;
     this.period = period;

@@ -7,15 +7,16 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
  * @author sjl2
  *
  */
-public class ScoreboardException extends Exception{
+public class ScoreboardException extends Exception {
 
- /**
+  /**
    *
    */
   private static final long serialVersionUID = 1L;
 
   /**
    * A constructor that takes a message.
+   * 
    * @param message A message defined as in the super class.
    */
   public ScoreboardException(String message) {
@@ -24,6 +25,7 @@ public class ScoreboardException extends Exception{
 
   /**
    * A constructor that takes a throwable.
+   * 
    * @param cause A throwable defined as in the super class.
    */
   public ScoreboardException(Throwable cause) {
@@ -32,6 +34,7 @@ public class ScoreboardException extends Exception{
 
   /**
    * A constructor that takes a message and a throwable.
+   * 
    * @param message A message defined as in the super class.
    * @param cause A throwable defined as in the super class.
    */

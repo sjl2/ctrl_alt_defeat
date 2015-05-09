@@ -7,32 +7,34 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
  *
  */
 public enum BasketballPosition {
-	HomePG("Home Point Guard"),
-	HomeSG("Home Shooting Guard"),
-	HomeSF("Home Small Forward"),
-	HomePF("Home Power Forward"),
-	HomeC("Home Center"),
-	AwayPG("Away Point Guard"),
-	AwaySG("Away Shooting Guard"),
-	AwaySF("Away Small Forward"),
-	AwayPF("Away Power Forward"),
-	AwayC("Away Center");
+  HomePG("Home Point Guard"),
+  HomeSG("Home Shooting Guard"),
+  HomeSF("Home Small Forward"),
+  HomePF("Home Power Forward"),
+  HomeC("Home Center"),
+  AwayPG("Away Point Guard"),
+  AwaySG("Away Shooting Guard"),
+  AwaySF("Away Small Forward"),
+  AwayPF("Away Power Forward"),
+  AwayC("Away Center");
 
-	private String positionName;
+  private String positionName;
 
-	/**
-	 * Constructor for a Basketball Position with a name of the position.
-	 * @param name
-	 */
-	BasketballPosition(String name) {
-		positionName = name;
-	}
+  /**
+   * Constructor for a Basketball Position with a name of the position.
+   * 
+   * @param name
+   */
+  BasketballPosition(String name) {
+    positionName = name;
+  }
 
-	/**
-	 * Getter for name.
-	 * @return String, representing
-	 */
-	public String getName() {
-	  return positionName;
-	}
+  /**
+   * Getter for name.
+   * 
+   * @return String, representing
+   */
+  public String getName() {
+    return positionName;
+  }
 }

@@ -2,24 +2,28 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-/**A two pointer stat.
-*
-* @author ngoelz
-*
-*/
+
+/**
+ * A two pointer stat.
+ *
+ * @author ngoelz
+ *
+ */
 public class TwoPointer implements Stat {
   private static final String TYPE = "TwoPointer";
   private Location pos;
   private Player player;
   private int id;
   private int period;
-  /**Constructor of a two pointer.
-  *
-  * @param id the id of the stat
-  * @param player the player
-  * @param pos the position on the court
-  * @param period the period in the game
-  */
+
+  /**
+   * Constructor of a two pointer.
+   *
+   * @param id the id of the stat
+   * @param player the player
+   * @param pos the position on the court
+   * @param period the period in the game
+   */
   public TwoPointer(int id, Player player, Location pos, int period) {
     this.id = id;
     this.period = period;
@@ -68,6 +72,5 @@ public class TwoPointer implements Stat {
   public String getStatType() {
     return TYPE;
   }
-
 
 }

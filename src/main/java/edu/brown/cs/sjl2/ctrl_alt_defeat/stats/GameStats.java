@@ -12,8 +12,7 @@ public interface GameStats {
   /**
    * Adds minutes.
    *
-   * @param minutes
-   *          to be added
+   * @param minutes to be added
    */
   public void addMinutes(int minutes);
 
@@ -27,8 +26,7 @@ public interface GameStats {
   /**
    * Adds two pointers.
    *
-   * @param twoPointers
-   *          to be added
+   * @param twoPointers to be added
    */
   public void addTwoPointers(int twoPointers);
 
@@ -42,8 +40,7 @@ public interface GameStats {
   /**
    * Adds two pointers attempted.
    *
-   * @param twoPointersA
-   *          to be added
+   * @param twoPointersA to be added
    */
   public void addTwoPointersA(int twoPointersA);
 
@@ -57,8 +54,7 @@ public interface GameStats {
   /**
    * Adds three pointers.
    *
-   * @param threePointers
-   *          to be added
+   * @param threePointers to be added
    */
   public void addThreePointers(int threePointers);
 
@@ -72,8 +68,7 @@ public interface GameStats {
   /**
    * Adds three pointers attempted.
    *
-   * @param threePointersA
-   *          to be added
+   * @param threePointersA to be added
    */
   public void addThreePointersA(int threePointersA);
 
@@ -87,8 +82,7 @@ public interface GameStats {
   /**
    * Adds free throws.
    *
-   * @param freeThrows
-   *          to be added
+   * @param freeThrows to be added
    */
   public void addFreeThrows(int freeThrows);
 
@@ -102,8 +96,7 @@ public interface GameStats {
   /**
    * Adds free throws attempted.
    *
-   * @param freeThrowsA
-   *          to be added
+   * @param freeThrowsA to be added
    */
   public void addFreeThrowsA(int freeThrowsA);
 
@@ -117,8 +110,7 @@ public interface GameStats {
   /**
    * Adds offensive rebound.
    *
-   * @param orb
-   *          to be added
+   * @param orb to be added
    */
   public void addOffensiveRebounds(int orb);
 
@@ -132,8 +124,7 @@ public interface GameStats {
   /**
    * Adds defensive rebound.
    *
-   * @param drb
-   *          to be added
+   * @param drb to be added
    */
   public void addDefensiveRebounds(int drb);
 
@@ -147,8 +138,7 @@ public interface GameStats {
   /**
    * Adds assists.
    *
-   * @param ast
-   *          to be added
+   * @param ast to be added
    */
   public void addAssists(int ast);
 
@@ -162,8 +152,7 @@ public interface GameStats {
   /**
    * Adds steals.
    *
-   * @param stl
-   *          to be added
+   * @param stl to be added
    */
   public void addSteals(int stl);
 
@@ -177,8 +166,7 @@ public interface GameStats {
   /**
    * Adds blocks.
    *
-   * @param blk
-   *          to be added
+   * @param blk to be added
    */
   public void addBlocks(int blk);
 
@@ -192,8 +180,7 @@ public interface GameStats {
   /**
    * Adds turnovers.
    *
-   * @param tov
-   *          to be added
+   * @param tov to be added
    */
   public void addTurnovers(int tov);
 
@@ -207,8 +194,7 @@ public interface GameStats {
   /**
    * Adds offensive fouls.
    *
-   * @param offensiveFoul
-   *          to be added
+   * @param offensiveFoul to be added
    */
   public void addOffensiveFouls(int offensiveFoul);
 
@@ -222,8 +208,7 @@ public interface GameStats {
   /**
    * Adds defensive fouls.
    *
-   * @param defensiveFoul
-   *          to be added
+   * @param defensiveFoul to be added
    */
   public void addDefensiveFouls(int defensiveFoul);
 
@@ -237,8 +222,7 @@ public interface GameStats {
   /**
    * Add technical fouls
    *
-   * @param technicalFouls
-   *          to be added.
+   * @param technicalFouls to be added.
    */
   public void addTechnicalFouls(int technicalFouls);
 }

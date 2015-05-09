@@ -23,9 +23,10 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Dashboard;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.trie.Trie;
 import freemarker.template.Configuration;
-/**A class that contains all Spark routing that calls the appropriate
- * manager.  Also contains information for Spark such as port and 
- * session management.
+
+/**
+ * A class that contains all Spark routing that calls the appropriate manager.
+ * Also contains information for Spark such as port and session management.
  *
  * @author ngoelz
  *
@@ -47,7 +48,8 @@ public class GUIManager {
 
   private static final Gson GSON = new Gson();
 
-  /**Initializes the Class.
+  /**
+   * Initializes the Class.
    *
    * @param db The database manager to be assigned.
    */
@@ -55,7 +57,8 @@ public class GUIManager {
     initializeGUIManager(db);
   }
 
-  /**Initializes the class.
+  /**
+   * Initializes the class.
    * 
    * @param db the database manager.
    * @param port the port to be assigned.
@@ -65,9 +68,11 @@ public class GUIManager {
     initializeGUIManager(db);
   }
 
-  /**Sets the internals of the class.
-   * Fills the trie and sets its parameters, initializes the various
-   * helper classes containing the handlers, and runs the server.
+  /**
+   * Sets the internals of the class. Fills the trie and sets its parameters,
+   * initializes the various helper classes containing the handlers, and runs
+   * the server.
+   * 
    * @param db The DBManager to be assigned
    */
   private void initializeGUIManager(DBManager db) {
@@ -84,8 +89,8 @@ public class GUIManager {
     runServer();
   }
 
-  /**Runs the server on the selected port.
-   * There are a lot of routes here.
+  /**
+   * Runs the server on the selected port. There are a lot of routes here.
    */
   private void runServer() {
     Spark.setPort(port);
@@ -95,21 +100,20 @@ public class GUIManager {
     FreeMarkerEngine freeMarker = createEngine();
 
     /*** Setup Filters ***/
-//    Spark.before("/dashboard", new CoachFilter());
-//    Spark.before("/dashboard/*", new CoachFilter());
-//    Spark.before("/whiteboard", new CoachFilter());
-//    Spark.before("/whiteboard/*", new CoachFilter());
-//    Spark.before("/playmaker", new CoachFilter());
-//    Spark.before("/playmaker/*", new CoachFilter());
-//    Spark.before("/users/", new CoachFilter());
-//    Spark.before("/users/*", new CoachFilter());
-//
-//    Spark.after("/dashboard/*", new GameCheckFilter());
-//
-//    Spark.before("/stats", new StatsFilter());
-//    Spark.before("/stats/*", new StatsFilter());
+    // Spark.before("/dashboard", new CoachFilter());
+    // Spark.before("/dashboard/*", new CoachFilter());
+    // Spark.before("/whiteboard", new CoachFilter());
+    // Spark.before("/whiteboard/*", new CoachFilter());
+    // Spark.before("/playmaker", new CoachFilter());
+    // Spark.before("/playmaker/*", new CoachFilter());
+    // Spark.before("/users/", new CoachFilter());
+    // Spark.before("/users/*", new CoachFilter());
+    //
+    // Spark.after("/dashboard/*", new GameCheckFilter());
+    //
+    // Spark.before("/stats", new StatsFilter());
+    // Spark.before("/stats/*", new StatsFilter());
 
-    
     // Setup Spark Routes
     Spark.get("/login", new LoginViewHandler(), freeMarker);
     Spark.post("/login/login", new LoginHandler());
@@ -162,7 +166,7 @@ public class GUIManager {
     Spark.get("/game/roster", gameGUI.new StatPageHandler());
 
     /*** PlaymakerGUI routes ***/
-		Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
+    Spark.get("/playmaker", playmakerGUI.new PlaymakerHandler(), freeMarker);
     Spark.post("/playmaker/save", playmakerGUI.new SaveHandler());
     Spark.get("/playmaker/load", playmakerGUI.new LoadHandler());
     Spark.post("/playmaker/delete", playmakerGUI.new DeleteHandler());
@@ -172,23 +176,24 @@ public class GUIManager {
     Spark.get("/whiteboard", playmakerGUI.new WhiteboardHandler(), freeMarker);
 
     /*** Stats routes ***/
-		Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
-		Spark.post("/stats/add", statsEntryGUI.new AddStatHandler(), freeMarker);
+    Spark.get("/stats", statsEntryGUI.new StatsEntryHandler(), freeMarker);
+    Spark.post("/stats/add", statsEntryGUI.new AddStatHandler(), freeMarker);
     Spark.post("/stats/update", statsEntryGUI.new UpdateStatHandler());
     Spark.post("/stats/delete", statsEntryGUI.new DeleteStatHandler());
-		Spark.post("/stats/changepossession",
-		    statsEntryGUI.new FlipPossessionHandler());
-		Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
-		Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
+    Spark.post("/stats/changepossession",
+        statsEntryGUI.new FlipPossessionHandler());
+    Spark.post("/stats/sub", statsEntryGUI.new SubHandler());
+    Spark.post("/stats/timeout", statsEntryGUI.new TimeoutHandler());
 
-		Spark.post("/stats/endgame", statsEntryGUI.new EndGameHandler());
-		Spark.post("/stats/advanceperiod",
-		    statsEntryGUI.new AdvancePeriodHandler());
+    Spark.post("/stats/endgame", statsEntryGUI.new EndGameHandler());
+    Spark.post("/stats/advanceperiod",
+        statsEntryGUI.new AdvancePeriodHandler());
 
-    //Spark.get("*", new PageNotFoundHandler(), freeMarker);
+    // Spark.get("*", new PageNotFoundHandler(), freeMarker);
   }
 
-  /**Initializes the FreeMarker for use with the template route.
+  /**
+   * Initializes the FreeMarker for use with the template route.
    *
    * @return
    */
@@ -206,7 +211,8 @@ public class GUIManager {
     return new FreeMarkerEngine(config);
   }
 
-  /**Filters webpages to allow for coach-only functionality and pages.
+  /**
+   * Filters webpages to allow for coach-only functionality and pages.
    *
    * @author ngoelz
    *
@@ -217,23 +223,24 @@ public class GUIManager {
     public void handle(Request req, Response res) {
       String clearanceString = req.session().attribute("clearance");
 
-      if(clearanceString == null) {
+      if (clearanceString == null) {
         res.redirect("/login");
         return;
       }
 
       int clearance = Integer.parseInt(clearanceString);
 
-      if(clearance == 1) {
+      if (clearance == 1) {
         res.redirect("/stats");
-      } else if(clearance < 1) {
+      } else if (clearance < 1) {
         res.redirect("/login");
       }
     }
 
   }
 
-  /** A filter to allow access based on game progress.
+  /**
+   * A filter to allow access based on game progress.
    *
    * @author ngoelz
    *
@@ -241,13 +248,14 @@ public class GUIManager {
   private class GameCheckFilter implements Filter {
     @Override
     public void handle(Request req, Response res) {
-      if(dash.getMyTeam() == null) {
+      if (dash.getMyTeam() == null) {
         res.redirect("/dashboard");
       }
     }
   }
 
-  /** Filters based on a stats entry login.
+  /**
+   * Filters based on a stats entry login.
    *
    * @author ngoelz
    *
@@ -258,30 +266,30 @@ public class GUIManager {
     public void handle(Request req, Response res) {
       String clearanceString = req.session().attribute("clearance");
 
-      if(clearanceString == null) {
+      if (clearanceString == null) {
         res.redirect("/login");
         return;
       }
 
       int clearance = Integer.parseInt(clearanceString);
 
-      if(clearance < 1) {
+      if (clearance < 1) {
         res.redirect("/login");
       }
     }
 
   }
 
-  /*private class PageNotFoundFilter implements Filter {
+  /*
+   * private class PageNotFoundFilter implements Filter {
+   * 
+   * @Override public void handle(Request req, Response res) {
+   * System.out.println(req.raw().getRequestURL()); } }
+   */
 
-    @Override
-    public void handle(Request req, Response res) {
-      System.out.println(req.raw().getRequestURL());
-    }
-  }*/
-
-  /**Handler for initial login view.  Located here because is small and
-   * central to the project.
+  /**
+   * Handler for initial login view. Located here because is small and central
+   * to the project.
    *
    * @author ngoelz
    *
@@ -290,12 +298,13 @@ public class GUIManager {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables =
-        ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
+          ImmutableMap.of("tabTitle", "Login", "errorMessage", "");
       return new ModelAndView(variables, "login.ftl");
     }
   }
 
-  /**Actual handler that handles a login.
+  /**
+   * Actual handler that handles a login.
    *
    * @author ngoelz
    *
@@ -307,15 +316,17 @@ public class GUIManager {
       String username = qm.value("username");
       String password = qm.value("password");
       int clearance = db.checkPassword(username, password);
-      req.session().attribute("clearance", Integer.valueOf(clearance).toString());
+      req.session().attribute("clearance",
+          Integer.valueOf(clearance).toString());
       Map<String, Object> variables =
-        ImmutableMap.of("clearance", clearance, "errorMessage", "");
+          ImmutableMap.of("clearance", clearance, "errorMessage", "");
 
       return GSON.toJson(variables);
     }
   }
 
-  /**Handles logging out, resets clearance to 0.
+  /**
+   * Handles logging out, resets clearance to 0.
    *
    * @author ngoelz
    *

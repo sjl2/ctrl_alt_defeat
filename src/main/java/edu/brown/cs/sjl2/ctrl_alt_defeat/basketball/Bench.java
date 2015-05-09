@@ -11,11 +11,12 @@ import java.util.List;
  */
 public class Bench {
   private List<Player> players;
-  //private int teamID;
+  // private int teamID;
   private Team team;
 
   /**
    * Constructs a bench for a team.
+   * 
    * @param t The bench's team.
    */
   public Bench(Team t) {
@@ -25,6 +26,7 @@ public class Bench {
 
   /**
    * Getter for the players on the bench.
+   * 
    * @return Returns a List of players on the bench.
    */
   public List<Player> getPlayers() {
@@ -33,6 +35,7 @@ public class Bench {
 
   /**
    * Get's the team associated with the bench.
+   * 
    * @return Returns the team object of the bench's team.
    */
   public Team getTeam() {
@@ -41,6 +44,7 @@ public class Bench {
 
   /**
    * Subs a player pIn from the bench with a player pOut.
+   * 
    * @param pIn The player leaving the bench.
    * @param pOut The player entering the bench.
    * @throws ScoreboardException Throws a ScoreboardException for illegal subs.
@@ -49,7 +53,8 @@ public class Bench {
     if (players.remove(pIn)) {
       players.add(pOut);
     } else {
-      throw new ScoreboardException("Illegal substitution: player subbing in not found");
+      throw new ScoreboardException(
+          "Illegal substitution: player subbing in not found");
     }
   }
 }

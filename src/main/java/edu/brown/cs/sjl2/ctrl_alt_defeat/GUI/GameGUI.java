@@ -19,7 +19,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.DashboardException;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Game;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.Stat;
 
-/**Container for all handlers directly interacting with the game state.
+/**
+ * Container for all handlers directly interacting with the game state.
  *
  * @author ngoelz
  *
@@ -32,8 +33,9 @@ public class GameGUI {
     this.dash = dash;
   }
 
-  /**Handler that provides information for the initial setup of the
-   * stats entry interface.
+  /**
+   * Handler that provides information for the initial setup of the stats entry
+   * interface.
    *
    * @author ngoelz
    *
@@ -68,14 +70,16 @@ public class GameGUI {
 
         return GSON.toJson(toReturn);
       } else {
-        Map<String, Object> variables = ImmutableMap.of("errorMessage", "No Game");
+        Map<String, Object> variables =
+            ImmutableMap.of("errorMessage", "No Game");
 
         return GSON.toJson(variables);
       }
     }
   }
 
-  /**Handler for providing information for starting a game on the front end.
+  /**
+   * Handler for providing information for starting a game on the front end.
    *
    * @author ngoelz
    *
@@ -91,18 +95,29 @@ public class GameGUI {
         boolean isHome = Boolean.parseBoolean(qm.value("isHome"));
         int teamID = Integer.parseInt(qm.value("opponent"));
 
-        Map<BasketballPosition, Integer> starterIDs = new EnumMap<>(BasketballPosition.class);
+        Map<BasketballPosition, Integer> starterIDs =
+            new EnumMap<>(BasketballPosition.class);
 
-        starterIDs.put(BasketballPosition.HomePG, Integer.parseInt(qm.value("hpg")));
-        starterIDs.put(BasketballPosition.HomeSG, Integer.parseInt(qm.value("hsg")));
-        starterIDs.put(BasketballPosition.HomeSF, Integer.parseInt(qm.value("hsf")));
-        starterIDs.put(BasketballPosition.HomePF, Integer.parseInt(qm.value("hpf")));
-        starterIDs.put(BasketballPosition.HomeC, Integer.parseInt(qm.value("hc")));
-        starterIDs.put(BasketballPosition.AwayPG, Integer.parseInt(qm.value("apg")));
-        starterIDs.put(BasketballPosition.AwaySG, Integer.parseInt(qm.value("asg")));
-        starterIDs.put(BasketballPosition.AwaySF, Integer.parseInt(qm.value("asf")));
-        starterIDs.put(BasketballPosition.AwayPF, Integer.parseInt(qm.value("apf")));
-        starterIDs.put(BasketballPosition.AwayC, Integer.parseInt(qm.value("ac")));
+        starterIDs.put(BasketballPosition.HomePG,
+            Integer.parseInt(qm.value("hpg")));
+        starterIDs.put(BasketballPosition.HomeSG,
+            Integer.parseInt(qm.value("hsg")));
+        starterIDs.put(BasketballPosition.HomeSF,
+            Integer.parseInt(qm.value("hsf")));
+        starterIDs.put(BasketballPosition.HomePF,
+            Integer.parseInt(qm.value("hpf")));
+        starterIDs.put(BasketballPosition.HomeC,
+            Integer.parseInt(qm.value("hc")));
+        starterIDs.put(BasketballPosition.AwayPG,
+            Integer.parseInt(qm.value("apg")));
+        starterIDs.put(BasketballPosition.AwaySG,
+            Integer.parseInt(qm.value("asg")));
+        starterIDs.put(BasketballPosition.AwaySF,
+            Integer.parseInt(qm.value("asf")));
+        starterIDs.put(BasketballPosition.AwayPF,
+            Integer.parseInt(qm.value("apf")));
+        starterIDs.put(BasketballPosition.AwayC,
+            Integer.parseInt(qm.value("ac")));
 
         dash.startGame(isHome, teamID, starterIDs);
       } catch (DashboardException e) {

@@ -10,9 +10,9 @@ import com.google.common.collect.Multiset;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 
-/**Class that contains the stats for a player for a given game.
- * Contains information about
- * their team as well.
+/**
+ * Class that contains the stats for a player for a given game. Contains
+ * information about their team as well.
  * 
  * @author ngoelz
  *
@@ -32,9 +32,8 @@ public class PlayerStats implements GameStats {
   private int game;
   private Multiset<String> stats;
 
-
-  /**Constructor for the playerstats.
-   * Takes in a game, a team and a player.
+  /**
+   * Constructor for the playerstats. Takes in a game, a team and a player.
    *
    * @param game the game
    * @param team the team
@@ -55,7 +54,9 @@ public class PlayerStats implements GameStats {
     stats.setCount("player", player.getID());
 
   }
-  /**Constructor that also intializes a multiset for storign the stats.
+
+  /**
+   * Constructor that also intializes a multiset for storign the stats.
    *
    * @param values the values of the categories in the multimap - all the stats.
    * @param gameID the game
@@ -77,7 +78,8 @@ public class PlayerStats implements GameStats {
     }
   }
 
-  /**A getter for the list of things in the multimap columns.
+  /**
+   * A getter for the list of things in the multimap columns.
    *
    * @return all the titles of the multimap column
    */
@@ -87,7 +89,8 @@ public class PlayerStats implements GameStats {
     return toReturn;
   }
 
-  /**Getter for number of columns.
+  /**
+   * Getter for number of columns.
    *
    * @return the number of columns in the multimap.
    */
@@ -95,7 +98,8 @@ public class PlayerStats implements GameStats {
     return NON_STAT_COLS.size() + STAT_COLS.size();
   }
 
-  /**The entries of the non-stat columns.
+  /**
+   * The entries of the non-stat columns.
    *
    * @return the entries.
    */
@@ -103,7 +107,8 @@ public class PlayerStats implements GameStats {
     return NON_STAT_COLS;
   }
 
-  /**The entries in the stat columns.
+  /**
+   * The entries in the stat columns.
    *
    * @return the entries.
    */
@@ -111,7 +116,8 @@ public class PlayerStats implements GameStats {
     return STAT_COLS;
   }
 
-  /**Getter for values in the columns, the stats the player has.
+  /**
+   * Getter for values in the columns, the stats the player has.
    *
    * @return The stats of the player.
    */
@@ -126,21 +132,25 @@ public class PlayerStats implements GameStats {
 
   /**
    * Getter for the Player that these stats refer to.
+   * 
    * @return the player
    */
   public Player getPlayer() {
     return player;
   }
 
-  /**Getter for the team.
+  /**
+   * Getter for the team.
    *
    * @return the team
    */
   public Team getTeam() {
     return team;
   }
+
   /**
    * Getter for the Game of these stats.
+   * 
    * @return the game id
    */
   public int getGameID() {
@@ -279,7 +289,7 @@ public class PlayerStats implements GameStats {
   }
 
   @Override
-  public void addAssists (int ast) {
+  public void addAssists(int ast) {
     if (ast < 0) {
       stats.remove("AST", -1 * ast);
     } else {
@@ -334,7 +344,6 @@ public class PlayerStats implements GameStats {
     return stats.count("OF");
   }
 
-
   @Override
   public void addOffensiveFouls(int offensiveFoul) {
     if (offensiveFoul < 0) {
@@ -372,43 +381,53 @@ public class PlayerStats implements GameStats {
     }
   }
 
-  /**Getter for field goals made.
+  /**
+   * Getter for field goals made.
    *
    * @return number of field goals made.
    */
   public int getFieldGoals() {
     return stats.count("ThreePM") + stats.count("TwoPM");
   }
-  /**Getter for field goals attempted.
-  *
-  * @return number of field goals attempted.
-  */
+
+  /**
+   * Getter for field goals attempted.
+   *
+   * @return number of field goals attempted.
+   */
   public int getFieldGoalsA() {
     return stats.count("ThreePA") + stats.count("TwoPA");
   }
-  /**Getter for 2pt percent.
-  *
-  * @return 2pt percent.
-  */
+
+  /**
+   * Getter for 2pt percent.
+   *
+   * @return 2pt percent.
+   */
   public double getTwoPointPercentage() {
-    return  stats.count("TwoPM") / (double) stats.count("TwoPA");
+    return stats.count("TwoPM") / (double) stats.count("TwoPA");
   }
-  /**Getter for 3pt percent.
-  *
-  * @return 3pt percent.
-  */
+
+  /**
+   * Getter for 3pt percent.
+   *
+   * @return 3pt percent.
+   */
   public double getThreePointPercentage() {
-    return  stats.count("ThreePM") / (double) stats.count("ThreePA");
+    return stats.count("ThreePM") / (double) stats.count("ThreePA");
   }
-  /**Getter for free throw percent.
-  *
-  * @return free throw percent.
-  */
+
+  /**
+   * Getter for free throw percent.
+   *
+   * @return free throw percent.
+   */
   public double getFreeThrowPercentage() {
     return stats.count("FTM") / (double) stats.count("FTA");
   }
 
-  /**Getter for total points scored.
+  /**
+   * Getter for total points scored.
    *
    * @return points scored.
    */
@@ -417,17 +436,21 @@ public class PlayerStats implements GameStats {
         + TWO_POINTS * stats.count("TwoPM")
         + THREE_POINTS * stats.count("ThreePM");
   }
-  /**Getter for total rebounds.
-  *
-  * @return rebounds.
-  */
+
+  /**
+   * Getter for total rebounds.
+   *
+   * @return rebounds.
+   */
   public int getRebounds() {
     return stats.count("ORB") + stats.count("DRB");
   }
-  /**Getter for personal fouls.
-  *
-  * @return personal fouls.
-  */
+
+  /**
+   * Getter for personal fouls.
+   *
+   * @return personal fouls.
+   */
   public int getPersonalFouls() {
     return stats.count("OF") + stats.count("DF");
   }

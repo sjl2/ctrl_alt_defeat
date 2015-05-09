@@ -1,8 +1,8 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat;
 
 /**
- * Location object for a position on the court. x and y are ratios where x
- * is the ratio of the court's sideline and y is the amount of the baseline.
+ * Location object for a position on the court. x and y are ratios where x is
+ * the ratio of the court's sideline and y is the amount of the baseline.
  *
  * @author sjl2
  *
@@ -13,6 +13,7 @@ public class Location {
 
   /**
    * Constructor for a location.
+   * 
    * @param x Ratio of the sideline.
    * @param y Ratio of the baseline.
    */
@@ -23,6 +24,7 @@ public class Location {
 
   /**
    * Getter for the x value.
+   * 
    * @return Returns a double between 0 and 1 unless -1 for undefined location.
    */
   public double getX() {
@@ -31,6 +33,7 @@ public class Location {
 
   /**
    * Getter for the y value.
+   * 
    * @return Returns a double between 0 and 1 unless -1 for undefined location.
    */
   public double getY() {
@@ -38,8 +41,9 @@ public class Location {
   }
 
   /**
-   * Reflects x, y to one side of the court to display information on
-   * half a court.
+   * Reflects x, y to one side of the court to display information on half a
+   * court.
+   * 
    * @param x The x to reflect
    * @param y The y to reflect
    * @return Returns the new reflected location.
@@ -66,6 +70,7 @@ public class Location {
 
   /**
    * Vertically converts x, y to respective halfcourt location.
+   * 
    * @param x The x to move
    * @param y The y to move
    * @return Returns the adjusted location to a halfcourt view.
@@ -76,6 +81,7 @@ public class Location {
 
   /**
    * Horizontally converts x, y to respective halfcourt location.
+   * 
    * @param x The x to move
    * @param y The y to move
    * @return Returns the adjusted location to a halfcourt view.

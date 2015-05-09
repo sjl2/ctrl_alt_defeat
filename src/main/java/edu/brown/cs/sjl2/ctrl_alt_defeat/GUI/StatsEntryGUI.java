@@ -23,7 +23,8 @@ import spark.Response;
 import spark.Route;
 import spark.TemplateViewRoute;
 
-/** Class containing handlers involved with updating stats.
+/**
+ * Class containing handlers involved with updating stats.
  *
  * @author ngoelz
  *
@@ -37,8 +38,9 @@ public class StatsEntryGUI {
     this.dash = dash;
   }
 
-  /**Returns all stats for the current game, used to maintain editablity
-   * of stats when refreshing the page.
+  /**
+   * Returns all stats for the current game, used to maintain editablity of
+   * stats when refreshing the page.
    *
    * @author ngoelz
    *
@@ -60,18 +62,19 @@ public class StatsEntryGUI {
 
       Collections.reverse(s);
       Map<String, Object> variables =
-                ImmutableMap.of("tabTitle", "Stats Entry",
-                          "stats", s,
-                          "isGame", isGame,
-                          "errorMessage", "");
+          ImmutableMap.of("tabTitle", "Stats Entry",
+              "stats", s,
+              "isGame", isGame,
+              "errorMessage", "");
 
-        return new ModelAndView(variables, "stats_entry.ftl");
+      return new ModelAndView(variables, "stats_entry.ftl");
 
     }
 
   }
 
-  /**Handler for adding a stat that has been logged on the front end.
+  /**
+   * Handler for adding a stat that has been logged on the front end.
    *
    * @author ngoelz
    *
@@ -103,7 +106,8 @@ public class StatsEntryGUI {
     }
   }
 
-  /**Handler for updating a stat that has previously been logged.
+  /**
+   * Handler for updating a stat that has previously been logged.
    *
    * @author ngoelz
    *
@@ -135,7 +139,8 @@ public class StatsEntryGUI {
     }
   }
 
-  /**Handler for deleting a stat that has been logged.
+  /**
+   * Handler for deleting a stat that has been logged.
    *
    * @author ngoelz
    *
@@ -159,7 +164,8 @@ public class StatsEntryGUI {
     }
   }
 
-  /**Handler for changing the possession arrow of the game.
+  /**
+   * Handler for changing the possession arrow of the game.
    *
    * @author ngoelz
    *
@@ -175,7 +181,8 @@ public class StatsEntryGUI {
     }
   }
 
-  /**Handler for calling a timeout.
+  /**
+   * Handler for calling a timeout.
    *
    * @author ngoelz
    *
@@ -192,13 +199,15 @@ public class StatsEntryGUI {
             GSON.fromJson(request.queryMap().value("h"), Boolean.class));
       } catch (JsonSyntaxException | GameException e) {
         errorMessage = e.getMessage();
-      };
+      }
+      ;
 
       return GSON.toJson(ImmutableMap.of("errorMessage", errorMessage));
     }
   }
 
-  /**Handler for substituting players.
+  /**
+   * Handler for substituting players.
    *
    * @author ngoelz
    *
@@ -223,7 +232,8 @@ public class StatsEntryGUI {
 
   }
 
-  /**Handler for ending the game.
+  /**
+   * Handler for ending the game.
    *
    * @author ngoelz
    *
@@ -237,7 +247,8 @@ public class StatsEntryGUI {
 
   }
 
-  /**Handler for advancing the period.
+  /**
+   * Handler for advancing the period.
    *
    * @author ngoelz
    *
@@ -265,6 +276,5 @@ public class StatsEntryGUI {
     }
 
   }
-
 
 }

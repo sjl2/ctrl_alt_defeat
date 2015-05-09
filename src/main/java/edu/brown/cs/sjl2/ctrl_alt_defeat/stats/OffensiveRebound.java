@@ -2,24 +2,28 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-/**An offensive rebound stat.
-*
-* @author ngoelz
-*
-*/
+
+/**
+ * An offensive rebound stat.
+ *
+ * @author ngoelz
+ *
+ */
 public class OffensiveRebound implements Stat {
   private static final String TYPE = "OffensiveRebound";
   private Location pos;
   private Player player;
   private int id;
   private int period;
-  /**Constructor of a offensive rebound.
-  *
-  * @param id the id of the stat
-  * @param p the player
-  * @param pos the position on the court
-  * @param period the period in the game
-  */
+
+  /**
+   * Constructor of a offensive rebound.
+   *
+   * @param id the id of the stat
+   * @param p the player
+   * @param pos the position on the court
+   * @param period the period in the game
+   */
 
   public OffensiveRebound(int id, Player p, Location pos, int period) {
     this.id = id;

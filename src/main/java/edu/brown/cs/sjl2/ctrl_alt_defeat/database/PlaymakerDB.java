@@ -17,6 +17,7 @@ public class PlaymakerDB {
 
   /**
    * Constructor for playmakerDB class.
+   * 
    * @param conn - Connection, comes from DBManager
    */
   public PlaymakerDB(Connection conn) {
@@ -25,6 +26,7 @@ public class PlaymakerDB {
 
   /**
    * Call any time there is an error.
+   * 
    * @author awainger
    */
   public void close() {
@@ -39,6 +41,7 @@ public class PlaymakerDB {
 
   /**
    * Saves the inputted play name and data into the database.
+   * 
    * @param play - Play, with name, frames and paths set from front end.
    * @author awainger
    */
@@ -56,7 +59,7 @@ public class PlaymakerDB {
     int length = bballPositions.length;
 
     try (PreparedStatement prep1 = conn.prepareStatement(
-            "DELETE FROM play_detail WHERE play = ?;");
+        "DELETE FROM play_detail WHERE play = ?;");
         PreparedStatement prep2 = conn.prepareStatement(
             "INSERT INTO play_detail VALUES(?, ?, ?, ?, ?);");
         PreparedStatement prep3 = conn.prepareStatement(
@@ -131,6 +134,7 @@ public class PlaymakerDB {
   /**
    * Fetches all the data associated with a single play to send to the front
    * end.
+   * 
    * @param name - String, corresponding to play front end is requesting
    * @return Play, with all fields set.
    * @author awainger
@@ -231,12 +235,13 @@ public class PlaymakerDB {
 
   /**
    * Deletes the indicated play from the database.
+   * 
    * @param name - String, name of play to delete
    * @author awainger
    */
   public void deletePlay(String name) {
     try (PreparedStatement prep1 = conn.prepareStatement(
-            "DELETE FROM play WHERE name = ?;");
+        "DELETE FROM play WHERE name = ?;");
         PreparedStatement prep2 = conn.prepareStatement(
             "DELETE FROM play_detail WHERE play = ?;");
         PreparedStatement prep3 = conn.prepareStatement(

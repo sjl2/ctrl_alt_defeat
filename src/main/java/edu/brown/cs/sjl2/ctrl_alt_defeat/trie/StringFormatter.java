@@ -3,7 +3,8 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.trie;
 import java.util.ArrayList;
 import java.util.List;
 
-/**A class containing useful utilities for trie construction.
+/**
+ * A class containing useful utilities for trie construction.
  *
  * @author ngoelz
  *
@@ -13,8 +14,9 @@ public final class StringFormatter {
   private StringFormatter() {
   }
 
-  /**A method that takes a string and returns a list of characters
-   * ready for insertion into the trie.
+  /**
+   * A method that takes a string and returns a list of characters ready for
+   * insertion into the trie.
    *
    * @param str the string
    * @return the string with '@' prepended and '$' appended
@@ -28,7 +30,9 @@ public final class StringFormatter {
     toReturn.add('$');
     return toReturn;
   }
-  /**Simple list representation of a string.
+
+  /**
+   * Simple list representation of a string.
    *
    * @param str the string.
    * @return a list containing each character in the string.
@@ -40,7 +44,9 @@ public final class StringFormatter {
     }
     return toReturn;
   }
-  /**Inverse of treat.
+
+  /**
+   * Inverse of treat.
    *
    * @param c the character list
    * @return the string hidden inside

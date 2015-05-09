@@ -12,7 +12,8 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
-/**Cache that constructs and stores stats.
+/**
+ * Cache that constructs and stores stats.
  *
  * @author ngoelz
  *
@@ -30,7 +31,8 @@ public class StatFactory {
   private Game game;
   private Map<Integer, Stat> stats;
 
-  /**Constructor for a given game.
+  /**
+   * Constructor for a given game.
    *
    * @param db the database
    * @param game the current game
@@ -41,7 +43,8 @@ public class StatFactory {
     this.stats = new LinkedHashMap<>();
   }
 
-  /**Getter for types of stats.
+  /**
+   * Getter for types of stats.
    *
    * @return the types of stats.
    */
@@ -49,7 +52,8 @@ public class StatFactory {
     return types;
   }
 
-  /**Getter for a stat by id.
+  /**
+   * Getter for a stat by id.
    *
    * @param id the id of the stat
    * @return the stat
@@ -58,7 +62,8 @@ public class StatFactory {
     return stats.get(id);
   }
 
-  /**Updater for a stat.
+  /**
+   * Updater for a stat.
    *
    * @param id id of stat to be updated
    * @param statType the new type
@@ -79,7 +84,8 @@ public class StatFactory {
     return s;
   }
 
-  /**Adds a stat
+  /**
+   * Adds a stat
    *
    * @param statType the type
    * @param p the player
@@ -98,7 +104,8 @@ public class StatFactory {
     return s;
   }
 
-  /**Construtor of a stat (subtly different than addStat).
+  /**
+   * Construtor of a stat (subtly different than addStat).
    *
    * @param statType the type
    * @param id the id of the stat
@@ -113,59 +120,60 @@ public class StatFactory {
     Stat s = null;
 
     switch (statType) {
-      case "Block":
-        s = new Block(id, p, location, period);
-        break;
-      case "DefensiveFoul":
-        s = new DefensiveFoul(id, p, location, period);
-        break;
-      case "FreeThrow":
-        s = new FreeThrow(id, p, location, period);
-        break;
-      case "MissedFreeThrow":
-        s = new MissedFreeThrow(id, p, location, period);
-        break;
-      case "MissedTwoPointer":
-        s = new MissedTwoPointer(id, p, location, period);
-        break;
-      case "MissedThreePointer":
-        s = new MissedThreePointer(id, p, location, period);
-        break;
-      case "OffensiveFoul":
-        s = new OffensiveFoul(id, p, location, period);
-        break;
-      case "OffensiveRebound":
-        s = new OffensiveRebound(id, p, location, period);
-        break;
-      case "DefensiveRebound":
-        s = new DefensiveRebound(id, p, location, period);
-        break;
-      case "Steal":
-        s = new Steal(id, p, location, period);
-        break;
-      case "TechnicalFoul":
-        s = new TechnicalFoul(id, p, location, period);
-        break;
-      case "ThreePointer":
-        s = new ThreePointer(id, p, location, period);
-        break;
-      case "Turnover":
-        s = new Turnover(id, p, location, period);
-        break;
-      case "TwoPointer":
-        s = new TwoPointer(id, p, location, period);
-        break;
-      case "Assist":
-        s = new Assist(id, p, location, period);
-        break;
-      default:
-        throw new RuntimeException("Unrecognized statID \"" + statType + "\".");
+    case "Block":
+      s = new Block(id, p, location, period);
+      break;
+    case "DefensiveFoul":
+      s = new DefensiveFoul(id, p, location, period);
+      break;
+    case "FreeThrow":
+      s = new FreeThrow(id, p, location, period);
+      break;
+    case "MissedFreeThrow":
+      s = new MissedFreeThrow(id, p, location, period);
+      break;
+    case "MissedTwoPointer":
+      s = new MissedTwoPointer(id, p, location, period);
+      break;
+    case "MissedThreePointer":
+      s = new MissedThreePointer(id, p, location, period);
+      break;
+    case "OffensiveFoul":
+      s = new OffensiveFoul(id, p, location, period);
+      break;
+    case "OffensiveRebound":
+      s = new OffensiveRebound(id, p, location, period);
+      break;
+    case "DefensiveRebound":
+      s = new DefensiveRebound(id, p, location, period);
+      break;
+    case "Steal":
+      s = new Steal(id, p, location, period);
+      break;
+    case "TechnicalFoul":
+      s = new TechnicalFoul(id, p, location, period);
+      break;
+    case "ThreePointer":
+      s = new ThreePointer(id, p, location, period);
+      break;
+    case "Turnover":
+      s = new Turnover(id, p, location, period);
+      break;
+    case "TwoPointer":
+      s = new TwoPointer(id, p, location, period);
+      break;
+    case "Assist":
+      s = new Assist(id, p, location, period);
+      break;
+    default:
+      throw new RuntimeException("Unrecognized statID \"" + statType + "\".");
     }
 
     return s;
   }
 
-  /**Remover of a stat.
+  /**
+   * Remover of a stat.
    *
    * @param id stat to be removed
    * @return this stat
@@ -178,7 +186,8 @@ public class StatFactory {
     return s;
   }
 
-  /**Getter for all of the stats in the cache.
+  /**
+   * Getter for all of the stats in the cache.
    *
    * @return all present stats.
    */

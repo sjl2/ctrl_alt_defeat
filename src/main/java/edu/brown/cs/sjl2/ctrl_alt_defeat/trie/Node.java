@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-/**The node class used by the Trie.
+/**
+ * The node class used by the Trie.
  *
  * @author nickgoelz
  *
- * @param <T> T was a generic when I first started this project.
- * I ended up leaving it generic because the Nodes do
- * not need to know that they're dealing with Strings/Characters.
+ * @param <T> T was a generic when I first started this project. I ended up
+ *          leaving it generic because the Nodes do not need to know that
+ *          they're dealing with Strings/Characters.
  */
 public class Node<T> {
   private List<T> sequence;
@@ -19,7 +20,8 @@ public class Node<T> {
   private boolean isTerminal;
   private Node<T> parent;
 
-  /**The constructor for a new Node.
+  /**
+   * The constructor for a new Node.
    *
    * @param list The sequence that this Node represents.
    * @param parent The parent node for this Node.
@@ -30,7 +32,9 @@ public class Node<T> {
     this.sequence = list;
     this.isTerminal = true;
   }
-  /** Is this node a terminal node.
+
+  /**
+   * Is this node a terminal node.
    *
    * @return true if this node is terminal, false otherwise
    */
@@ -38,14 +42,17 @@ public class Node<T> {
     return isTerminal;
   }
 
-  /**Getter for the sequence field of the Node.
+  /**
+   * Getter for the sequence field of the Node.
    *
    * @return the sequence.
    */
   public List<T> getSequence() {
     return sequence;
   }
-  /**Returns all words 'under' this Node in the trie.
+
+  /**
+   * Returns all words 'under' this Node in the trie.
    *
    * @return A list of all words which pass through this node in the trie.
    */
@@ -68,15 +75,15 @@ public class Node<T> {
     return toReturn;
   }
 
-  /**A void method which passes a new sequence through this node.
-   * If the sequence entirely contains the sequence given with this node, then
-   * the node is unchanged either a new child is created with the remainded of
-   * the sequence or the remainded of the sequence is passed through the
-   * appropriate child.  If the sequence differs from the Node's sequence
-   * then the Node must be split, so the Node's sequence is changed to a
-   * new, smaller, sequence which has two children (the remainder of the
-   * Node and the Node's old children and a new Node representing the rest
-   * of the input sequence).
+  /**
+   * A void method which passes a new sequence through this node. If the
+   * sequence entirely contains the sequence given with this node, then the node
+   * is unchanged either a new child is created with the remainded of the
+   * sequence or the remainded of the sequence is passed through the appropriate
+   * child. If the sequence differs from the Node's sequence then the Node must
+   * be split, so the Node's sequence is changed to a new, smaller, sequence
+   * which has two children (the remainder of the Node and the Node's old
+   * children and a new Node representing the rest of the input sequence).
    *
    * @param newSequence A new sequence of T's (characters for the Trie).
    */
@@ -150,17 +157,16 @@ public class Node<T> {
 
   }
 
-  /**A method recursively returns all words that are within k
-   * edit distance units of
-   * a query word beneath this node in the tree.
+  /**
+   * A method recursively returns all words that are within k edit distance
+   * units of a query word beneath this node in the tree.
    *
    * @param word the query
    * @param k the distance
-   * @param a an array of ints representing the current state of the
-   * 2D dynamic
-   * programming table that is implicitely constructed here.
-   * @return the list of all words that are beneath this node
-   * within k units of word
+   * @param a an array of ints representing the current state of the 2D dynamic
+   *          programming table that is implicitely constructed here.
+   * @return the list of all words that are beneath this node within k units of
+   *         word
    */
   public List<List<T>> gatherWithinDistance(List<T> word, int k, int[] a) {
     int[] b = new int[a.length];
@@ -207,9 +213,9 @@ public class Node<T> {
     return toReturn;
   }
 
-  /**A setter for the HashMap of children stored at each node.
-   * Also udatees the isTerminal field if the new set of children
-   * is of size 0.
+  /**
+   * A setter for the HashMap of children stored at each node. Also udatees the
+   * isTerminal field if the new set of children is of size 0.
    *
    * @param c A new set of children for the node.
    */
@@ -223,10 +229,11 @@ public class Node<T> {
     }
   }
 
-  /**Returns the full list represented by this node in the tree.
+  /**
+   * Returns the full list represented by this node in the tree.
    *
-   * @return a List of T (character) representing what would be searched
-   * in the trie to arrive at this Node.
+   * @return a List of T (character) representing what would be searched in the
+   *         trie to arrive at this Node.
    */
   public List<T> fullList() {
     List<T> toReturn = new ArrayList<T>();
@@ -243,12 +250,13 @@ public class Node<T> {
     return toReturn;
   }
 
-  /**A recursive search that seeks a Node below (or at) this Node
-   * represented by a given sequence.
+  /**
+   * A recursive search that seeks a Node below (or at) this Node represented by
+   * a given sequence.
    *
    * @param word the sought word
-   * @return the Node represented by word or null if the word is not
-   * beneath this Node.
+   * @return the Node represented by word or null if the word is not beneath
+   *         this Node.
    */
   public Node<T> searchDown(List<T> word) {
     Iterator<T> nodeIt = sequence.iterator();
@@ -274,29 +282,35 @@ public class Node<T> {
       return this;
     }
   }
-  /**A getter for the parent field.
+
+  /**
+   * A getter for the parent field.
    *
    * @return the Node which is the parent of this node.
    */
   public Node<T> getParent() {
     return parent;
   }
-  /**A getter for the children field.
+
+  /**
+   * A getter for the children field.
    *
    * @return the HashMap representing the children of this Node.
    */
   public HashMap<T, Node<T>> getChildren() {
     return children;
   }
-  /**A method returning the string representation of this Node.
+
+  /**
+   * A method returning the string representation of this Node.
    *
    * @return A string representing the sequence, whether the node is terminal,
-   * and all of its children
+   *         and all of its children
    *
    */
   @Override
   public String toString() {
-    return sequence.toString() + isTerminal +  children.toString();
+    return sequence.toString() + isTerminal + children.toString();
   }
 
 }

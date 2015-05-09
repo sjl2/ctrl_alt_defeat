@@ -2,24 +2,28 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-/**A defensive foul stat.
-*
-* @author ngoelz
-*
-*/
+
+/**
+ * A defensive foul stat.
+ *
+ * @author ngoelz
+ *
+ */
 public class DefensiveFoul implements Stat {
   private static final String TYPE = "DefensiveFoul";
   private Location pos;
   private Player player;
   private int id;
   private int period;
-  /**Constructor of a defensive fouls.
-  *
-  * @param id the id of the stat
-  * @param player the player
-  * @param pos the position on the court
-  * @param period the period in the game
-  */
+
+  /**
+   * Constructor of a defensive fouls.
+   *
+   * @param id the id of the stat
+   * @param player the player
+   * @param pos the position on the court
+   * @param period the period in the game
+   */
 
   public DefensiveFoul(int id, Player player, Location pos, int period) {
     this.id = id;

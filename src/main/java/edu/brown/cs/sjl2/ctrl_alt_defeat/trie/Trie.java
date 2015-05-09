@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-/**This is my Trie class, holding words stored such that common prefixes
- * are paths on the tree from the root until the path branches.
+/**
+ * This is my Trie class, holding words stored such that common prefixes are
+ * paths on the tree from the root until the path branches.
  *
- * The class holds a root and also holds a dictionary which is not lightweight
- * - it holds the seen words.  This removes some of the
- * space efficiency of the trie but because the dictionary implements HashMaps,
- * all lookup doesn't suffer.  I included a full dictionary
- * instead of simply pointing to the leaf nodes of the trie to make the
- * dictionary more easily updated (updating which nodes are leaves
- * dynamically as the trie grows seemed unnecessarily complicated to me).
+ * The class holds a root and also holds a dictionary which is not lightweight -
+ * it holds the seen words. This removes some of the space efficiency of the
+ * trie but because the dictionary implements HashMaps, all lookup doesn't
+ * suffer. I included a full dictionary instead of simply pointing to the leaf
+ * nodes of the trie to make the dictionary more easily updated (updating which
+ * nodes are leaves dynamically as the trie grows seemed unnecessarily
+ * complicated to me).
  *
  * @author nickgoelz
  *
@@ -32,7 +33,8 @@ public class Trie {
   private int smartAdd = 4;
   private int smartMult = 10;
 
-  /**This is the default constructor for a trie.
+  /**
+   * This is the default constructor for a trie.
    *
    * It sets the root to null and all user related fields to false or 0.
    */
@@ -44,17 +46,17 @@ public class Trie {
     this.smartRank = false;
     this.k = 0;
   }
-  /**This is a similar operator but it sets the root to a node equivalent to
-   * the initiazation string.
-   * This string is "@$" where '@' serves as a unique character
-   * to start every word to appear in the trie
-   * and '$' appears as a unique termination character.  These
-   * characters ensure that a) the root can be treated
-   * just like every other node and b) all nodes that represent
-   * the end of a word are terminal.
+
+  /**
+   * This is a similar operator but it sets the root to a node equivalent to the
+   * initiazation string. This string is "@$" where '@' serves as a unique
+   * character to start every word to appear in the trie and '$' appears as a
+   * unique termination character. These characters ensure that a) the root can
+   * be treated just like every other node and b) all nodes that represent the
+   * end of a word are terminal.
    *
-   * @param init The intial characters for the trie.  For my tries
-   * it's the string "@$"
+   * @param init The intial characters for the trie. For my tries it's the
+   *          string "@$"
    */
   public Trie(List<Character> init) {
     root = new Node<Character>(init, null);
@@ -76,7 +78,9 @@ public class Trie {
   public String toString() {
     return root.toString();
   }
-  /**Turns on the prefix field.
+
+  /**
+   * Turns on the prefix field.
    *
    * @return returns itself
    */
@@ -84,7 +88,9 @@ public class Trie {
     this.usePrefix = true;
     return this;
   }
-  /**Turns on the edit distance field.
+
+  /**
+   * Turns on the edit distance field.
    *
    * @return returns itself
    */
@@ -92,7 +98,9 @@ public class Trie {
     this.useED = true;
     return this;
   }
-  /**Turns on the whitespace field.
+
+  /**
+   * Turns on the whitespace field.
    *
    * @return returns itself
    */
@@ -100,7 +108,9 @@ public class Trie {
     this.useWhitespace = true;
     return this;
   }
-  /**Turns on the smart ranking feature.
+
+  /**
+   * Turns on the smart ranking feature.
    *
    * @return returns itself
    */
@@ -108,7 +118,9 @@ public class Trie {
     this.smartRank = true;
     return this;
   }
-  /**Sets the k cutoff associated with L.E.D.
+
+  /**
+   * Sets the k cutoff associated with L.E.D.
    *
    * @param n The integer k is to be set to
    * @return returns itself
@@ -117,10 +129,12 @@ public class Trie {
     this.k = n;
     return this;
   }
-  /**Adds a list of words to the trie.
+
+  /**
+   * Adds a list of words to the trie.
    *
    * @param l The list of words, represented as Lists of Characters, to the
-   * trie.
+   *          trie.
    */
   public void addWords(List<List<Character>> l) {
     List<Character> prev = null;
@@ -140,7 +154,8 @@ public class Trie {
     }
   }
 
-  /**Adds a single word to the trie.
+  /**
+   * Adds a single word to the trie.
    *
    * @param word The word to be added.
    * @param prev The previous word (needed for dictionary construction).
@@ -154,7 +169,9 @@ public class Trie {
       dictionary.addWord(word, prev);
     }
   }
-  /**Adds the first word to the dictionary, significant because there's no
+
+  /**
+   * Adds the first word to the dictionary, significant because there's no
    * previous word.
    *
    * @param word the word to be added.
@@ -166,15 +183,15 @@ public class Trie {
     dictionary.addFirstWord(word);
   }
 
-
-  /**Returns a list of pairs of words representing all pairs of words that
-   * could have been intended.
+  /**
+   * Returns a list of pairs of words representing all pairs of words that could
+   * have been intended.
    *
    *
-   * @param word The word to be checked to see if two words are contained
-   * within it.
-   * @return A list of all pairs of words possibly contained in the
-   * examined word.
+   * @param word The word to be checked to see if two words are contained within
+   *          it.
+   * @return A list of all pairs of words possibly contained in the examined
+   *         word.
    */
   public List<Pair<List<Character>, List<Character>>> whitespace(
       List<Character> word) {
@@ -217,7 +234,8 @@ public class Trie {
 
   }
 
-  /**A search to see if a provided word is in the trie.
+  /**
+   * A search to see if a provided word is in the trie.
    *
    * @param word the query
    * @return true is the word is in the trie, false otherwise.
@@ -227,25 +245,26 @@ public class Trie {
     return sought != null && sought.terminal();
   }
 
-  /**Slightly relaxed search: returns true if the provided word is a prefix
-   * to a word in the trie.
-   * It is assumed that the word has been 'treated' already meaning that the
-   * trie will not consider
-   * its own initiating and terminating characters here.
+  /**
+   * Slightly relaxed search: returns true if the provided word is a prefix to a
+   * word in the trie. It is assumed that the word has been 'treated' already
+   * meaning that the trie will not consider its own initiating and terminating
+   * characters here.
    *
    * @param word the word being examined.
-   * @return true if the word is a prefix to any word in the trie,
-   * false otherwise.
+   * @return true if the word is a prefix to any word in the trie, false
+   *         otherwise.
    */
   public boolean isPrefix(List<Character> word) {
     return root.searchDown(word) != null;
   }
 
-  /**Returns a list of all words that contain the prefix provided.
+  /**
+   * Returns a list of all words that contain the prefix provided.
    *
    * @param p the prefix
-   * @return A list of all words, represented as lists of Characters, which
-   * have prefix p
+   * @return A list of all words, represented as lists of Characters, which have
+   *         prefix p
    */
   public List<List<Character>> prefixed(List<Character> p) {
     if (isPrefix(p)) {
@@ -268,16 +287,19 @@ public class Trie {
       return toReturn;
     }
   }
-  /**Getter for the root of the tree.
+
+  /**
+   * Getter for the root of the tree.
    *
    * @return the root of the tree.
    */
   public Node<Character> getRoot() {
     return root;
   }
-  /**Dynamically computes edit distance for prefixes/words in the tree
-   * and returns
-   * words which are within k edit distance of the provided word.
+
+  /**
+   * Dynamically computes edit distance for prefixes/words in the tree and
+   * returns words which are within k edit distance of the provided word.
    *
    * @param word the query.
    * @param inputK the edit distance limit for returned words.
@@ -291,18 +313,18 @@ public class Trie {
     return getRoot().gatherWithinDistance(word, inputK, a);
   }
 
-  /**A private dictionary class used to store all words for information about.
+  /**
+   * A private dictionary class used to store all words for information about.
    * their unigram and bigram counts.
    *
    * @author ngoelz
    *
    */
   public class Dictionary {
-    private HashMap<
-    List<Character>, Pair<HashMap<List<Character>,
-    Pair<List<Character>, Integer>>, Integer>> dictionary;
+    private HashMap<List<Character>, Pair<HashMap<List<Character>, Pair<List<Character>, Integer>>, Integer>> dictionary;
 
-    /**The constructor for a dictionary.
+    /**
+     * The constructor for a dictionary.
      *
      */
     public Dictionary() {
@@ -311,21 +333,22 @@ public class Trie {
           Pair<List<Character>, Integer>>, Integer>>();
     }
 
-    /**How a word is added to the dictionary.
+    /**
+     * How a word is added to the dictionary.
      *
      * @param word the word to be added
      * @param prev the previous word (used for bigram counts)
      */
     public void addWord(List<Character> word, List<Character> prev) {
       if (dictionary.get(word) == null) {
-        HashMap<List<Character>, Pair<List<Character>, Integer>>
-        temp = new HashMap<List<Character>, Pair<List<Character>, Integer>>();
+        HashMap<List<Character>, Pair<List<Character>, Integer>> temp =
+            new HashMap<List<Character>, Pair<List<Character>, Integer>>();
         temp.put(prev, new Pair<List<Character>, Integer>(prev, 1));
         dictionary.put(word, new Pair<HashMap<List<Character>,
             Pair<List<Character>, Integer>>, Integer>(temp, 1));
       } else if (dictionary.get(word).getFirst().get(prev) == null) {
-        HashMap<List<Character>, Pair<List<Character>, Integer>>
-        temp = dictionary.get(word).getFirst();
+        HashMap<List<Character>, Pair<List<Character>, Integer>> temp =
+            dictionary.get(word).getFirst();
         temp.put(prev, new Pair<List<Character>, Integer>(prev, 1));
         dictionary.get(word).setSecond(dictionary.get(word).getSecond() + 1);
       } else {
@@ -335,7 +358,9 @@ public class Trie {
       }
 
     }
-    /**How the first word of a phrase is added.
+
+    /**
+     * How the first word of a phrase is added.
      *
      * @param word only takes the word as input
      */
@@ -347,32 +372,35 @@ public class Trie {
             new Pair<List<Character>, Integer>(new ArrayList<Character>(), 1));
         dictionary.put(word, new Pair<HashMap<List<Character>,
             Pair<List<Character>, Integer>>, Integer>(temp, 1));
-      } else if (
-          dictionary.get(word).getFirst().get(new ArrayList<Character>())
+      } else if (dictionary.get(word).getFirst()
+          .get(new ArrayList<Character>())
           == null) {
-        HashMap<List<Character>, Pair<List<Character>, Integer>>
-        temp = dictionary.get(word).getFirst();
+        HashMap<List<Character>, Pair<List<Character>, Integer>> temp =
+            dictionary.get(word).getFirst();
         temp.put(new ArrayList<Character>(), new Pair<List<Character>,
             Integer>(new ArrayList<Character>(), 1));
         dictionary.get(word).setSecond(dictionary.get(word).getSecond() + 1);
       } else {
         dictionary.get(word).getFirst()
-        .get(new ArrayList<Character>()).setSecond(dictionary.get(word)
-            .getFirst().get(new ArrayList<Character>()).getSecond() + 1);
+            .get(new ArrayList<Character>()).setSecond(dictionary.get(word)
+                .getFirst().get(new ArrayList<Character>()).getSecond() + 1);
         dictionary.get(word).setSecond(dictionary.get(word).getSecond() + 1);
       }
     }
-    /**A getter for the dictionary.
+
+    /**
+     * A getter for the dictionary.
      *
      * @return the mapping of words
      */
     public HashMap<List<Character>, Pair<HashMap<List<Character>,
-      Pair<List<Character>, Integer>>, Integer>> getMap() {
+        Pair<List<Character>, Integer>>, Integer>> getMap() {
       return dictionary;
     }
   }
 
-  /**Getter for the dictionary.
+  /**
+   * Getter for the dictionary.
    *
    * @return the dictionary of the trie.
    */
@@ -380,16 +408,17 @@ public class Trie {
     return dictionary;
   }
 
-/**This is the overall method used by the Main class to analyze words.
- * This method takes in two words as argument and returns the five most likely
- * words that it could be autocorrected to.
- *
- * @param word The input word
- * @param prev The previous word, also provided for bigram scoring
- * @return A list of Pairs of characters and scoring criteria
- */
+  /**
+   * This is the overall method used by the Main class to analyze words. This
+   * method takes in two words as argument and returns the five most likely
+   * words that it could be autocorrected to.
+   *
+   * @param word The input word
+   * @param prev The previous word, also provided for bigram scoring
+   * @return A list of Pairs of characters and scoring criteria
+   */
   public ArrayList<String>
-  evaluateWord(List<Character> word, List<Character> prev) {
+      evaluateWord(List<Character> word, List<Character> prev) {
     PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>> heap =
         new PriorityQueue<Pair<List<Character>, Pair<Integer, Integer>>>(
             5, new ScoringComparator());
@@ -415,7 +444,7 @@ public class Trie {
           } else {
             scores = new Pair<Integer, Integer>(getDictionary().dictionary.
                 get(pfW).getFirst().get(prev).getSecond(), getDictionary().
-                  dictionary.get(pfW).getSecond());
+                dictionary.get(pfW).getSecond());
           }
           if (smartRank && pfW.size() < word.size() + smartAdd) {
             scores.setFirst(scores.getFirst() * 2);
@@ -483,8 +512,7 @@ public class Trie {
       }
 
     }
-    ArrayList<String>
-    toReturn = new ArrayList<String>();
+    ArrayList<String> toReturn = new ArrayList<String>();
 
     while (heap.size() != 0) {
       Pair<List<Character>, Pair<Integer, Integer>> l = heap.poll();
@@ -494,7 +522,8 @@ public class Trie {
     return toReturn;
   }
 
-  /**A helper method to improve the scoring.
+  /**
+   * A helper method to improve the scoring.
    *
    * @param word a word
    * @param pre a prefix of a word
@@ -513,9 +542,10 @@ public class Trie {
     }
   }
 
-  /**A private helper method updating the heap.
-   * Considers the current size of the heap and the proposed addition
-   * to the heap to decide whether to update the heap or not.
+  /**
+   * A private helper method updating the heap. Considers the current size of
+   * the heap and the proposed addition to the heap to decide whether to update
+   * the heap or not.
    *
    * @param heap The heap
    * @param p The proposed addition to the heap

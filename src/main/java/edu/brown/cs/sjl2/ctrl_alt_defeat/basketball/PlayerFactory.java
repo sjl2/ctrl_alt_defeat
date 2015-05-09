@@ -18,6 +18,7 @@ public class PlayerFactory {
   /**
    * Factory object for players to ensure that there is only one object for a
    * player.
+   * 
    * @param db The database manager needed to query for a player
    */
   public PlayerFactory(DBManager db) {
@@ -26,6 +27,7 @@ public class PlayerFactory {
 
   /**
    * Getter for a player from its id.
+   * 
    * @param id The id of a player
    * @return Returns the player object corresponding to the id.
    */
@@ -35,6 +37,7 @@ public class PlayerFactory {
 
   /**
    * Get's a player object with the following parameters.
+   * 
    * @param id The id of the player in the database (must exist before call)
    * @param name The name of the player.
    * @param teamID The player's team id
@@ -58,6 +61,7 @@ public class PlayerFactory {
 
   /**
    * Removes player from the factory cache.
+   * 
    * @param id The id of the player to remove.
    */
   public void removePlayer(int id) {

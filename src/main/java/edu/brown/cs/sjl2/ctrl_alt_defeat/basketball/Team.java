@@ -25,6 +25,7 @@ public class Team {
 
   /**
    * Constructor for a team object.
+   * 
    * @param id The id of the team
    * @param name The name of the team
    * @param coach The name of the team's coach
@@ -41,7 +42,7 @@ public class Team {
       DBManager db) {
 
     this.id = id;
-    this.name =  name;
+    this.name = name;
     this.coach = coach;
     this.primary = primary;
     this.secondary = secondary;
@@ -55,6 +56,7 @@ public class Team {
 
   /**
    * Constructor for a team when the players are already known.
+   * 
    * @param id The id of the team
    * @param name The name of the team
    * @param coach The name of the coach
@@ -71,7 +73,7 @@ public class Team {
       Collection<Player> players) {
 
     this.id = id;
-    this.name =  name;
+    this.name = name;
     this.coach = coach;
     this.primary = primary;
     this.secondary = secondary;
@@ -84,6 +86,7 @@ public class Team {
 
   /**
    * Getter for a team's id.
+   * 
    * @return Returns the int of a team's id.
    */
   public int getID() {
@@ -92,6 +95,7 @@ public class Team {
 
   /**
    * Getter for a team's name.
+   * 
    * @return Returns the name of the team.
    */
   public String getName() {
@@ -100,6 +104,7 @@ public class Team {
 
   /**
    * Getter of the primary color.
+   * 
    * @return Returns the string of the primary color.
    */
   public String getPrimary() {
@@ -108,6 +113,7 @@ public class Team {
 
   /**
    * Getter for the secondary color.
+   * 
    * @return Returns the string of the secondary color.
    */
   public String getSecondary() {
@@ -116,6 +122,7 @@ public class Team {
 
   /**
    * Gets a player on the team by its id.
+   * 
    * @param id The id of the player.
    * @return Returns the player object.
    */
@@ -125,6 +132,7 @@ public class Team {
 
   /**
    * Getter for the players of a team.
+   * 
    * @return Returns a list of players on the team.
    */
   public List<Player> getPlayers() {
@@ -133,6 +141,7 @@ public class Team {
 
   /**
    * Adds a player to the team.
+   * 
    * @param p The player to be added.
    */
   public void addPlayer(Player p) {
@@ -141,6 +150,7 @@ public class Team {
 
   /**
    * Removes a player from the team.
+   * 
    * @param p The player to be removed.
    */
   public void removePlayer(Player p) {
@@ -158,6 +168,7 @@ public class Team {
 
   /**
    * Getter for the coach of the team.
+   * 
    * @return Returns the coach's name.
    */
   public String getCoach() {
@@ -166,6 +177,7 @@ public class Team {
 
   /**
    * Getter for a team's link.
+   * 
    * @return Returns the link for this particular team's page.
    */
   public Link getLink() {

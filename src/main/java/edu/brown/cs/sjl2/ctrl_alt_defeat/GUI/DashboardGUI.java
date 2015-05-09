@@ -41,12 +41,9 @@ public class DashboardGUI {
   /**
    * Constructor for dashboardgui class.
    * 
-   * @param dash
-   *          - Dashboard, a reference.
-   * @param dbManager
-   *          - DBManager, to retrieve data from the database.
-   * @param trie
-   *          - Used for autocorrecting the coach's search bar.
+   * @param dash - Dashboard, a reference.
+   * @param dbManager - DBManager, to retrieve data from the database.
+   * @param trie - Used for autocorrecting the coach's search bar.
    */
   public DashboardGUI(Dashboard dash, DBManager dbManager, Trie trie) {
     this.db = dbManager;

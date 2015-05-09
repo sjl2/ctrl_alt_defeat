@@ -40,10 +40,8 @@ public class WikiGUI {
   /**
    * Constructor for class.
    *
-   * @param dbManager
-   *          - DBManager, used to query database
-   * @param dashboard
-   *          - Dashboard, used to get games
+   * @param dbManager - DBManager, used to query database
+   * @param dashboard - Dashboard, used to get games
    * @author awainger
    */
   public WikiGUI(DBManager dbManager, Dashboard dashboard) {

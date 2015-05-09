@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * A comparator for the score type.
- * The scores are sorted such that the heap exposes the largest score.
+ * A comparator for the score type. The scores are sorted such that the heap
+ * exposes the largest score.
  *
  * @author nickgoelz
  *
@@ -13,16 +13,16 @@ import java.util.List;
 
 public class ScoringComparator implements Comparator<Pair<?, ?>> {
 
-  /**Compares two Pairs of elements.
-   * Casts arguments as appropriate for use and compares them first by the
-   * first integer, then by the second integer, then by the alphabetic order
-   * of the lists of Characters.
+  /**
+   * Compares two Pairs of elements. Casts arguments as appropriate for use and
+   * compares them first by the first integer, then by the second integer, then
+   * by the alphabetic order of the lists of Characters.
    *
    *
    * @param pair The first pair to be compared
    * @param p The second pair to be compared
-   * @return -1 if the first element is greater, 0 if they are equal, 1 if
-   * the second is geater.
+   * @return -1 if the first element is greater, 0 if they are equal, 1 if the
+   *         second is geater.
    *
    */
   @Override
