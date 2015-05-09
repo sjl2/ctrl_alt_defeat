@@ -146,7 +146,7 @@ public class DashboardGUI {
 
   /**
    * Loads form for creating new player.
-   * 
+   *
    * @author sjl2
    */
   public class NewPlayerHandler implements Route {
