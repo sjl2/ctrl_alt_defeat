@@ -12,9 +12,13 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
 
+/**Cache that constructs and stores stats.
+ *
+ * @author ngoelz
+ *
+ */
 public class StatFactory {
 
-  // TODO add back assist
   private static final List<String> types =
       Arrays.asList("Assist", "Block", "DefensiveFoul", "FreeThrow",
           "MissedFreeThrow", "MissedTwoPointer", "MissedThreePointer",
@@ -26,20 +30,42 @@ public class StatFactory {
   private Game game;
   private Map<Integer, Stat> stats;
 
+  /**Constructor for a given game.
+   *
+   * @param db the database
+   * @param game the current game
+   */
   public StatFactory(DBManager db, Game game) {
     this.db = db;
     this.game = game;
     this.stats = new LinkedHashMap<>();
   }
 
+  /**Getter for types of stats.
+   *
+   * @return the types of stats.
+   */
   public static List<String> getTypes() {
     return types;
   }
 
+  /**Getter for a stat by id.
+   *
+   * @param id the id of the stat
+   * @return the stat
+   */
   public Stat getStat(int id) {
     return stats.get(id);
   }
 
+  /**Updater for a stat.
+   *
+   * @param id id of stat to be updated
+   * @param statType the new type
+   * @param p the new player
+   * @param location the new location
+   * @return the new stat
+   */
   public Stat updateStat(int id, String statType, Player p, Location location) {
     Stat s = stats.get(id);
     int period = s.getPeriod();
@@ -53,6 +79,14 @@ public class StatFactory {
     return s;
   }
 
+  /**Adds a stat
+   *
+   * @param statType the type
+   * @param p the player
+   * @param location the location
+   * @param period the period
+   * @return the stat
+   */
   public Stat addStat(String statType, Player p, Location location, int period) {
     int id = db.getNextID("stat");
 
@@ -64,6 +98,15 @@ public class StatFactory {
     return s;
   }
 
+  /**Construtor of a stat (subtly different than addStat).
+   *
+   * @param statType the type
+   * @param id the id of the stat
+   * @param p the player
+   * @param location the location
+   * @param period the period
+   * @return the stat
+   */
   public static Stat newStat(String statType, int id, Player p,
       Location location, int period) {
 
@@ -122,6 +165,12 @@ public class StatFactory {
     return s;
   }
 
+  /**Remover of a stat.
+   *
+   * @param id stat to be removed
+   * @return this stat
+   * @throws GameException if the stat does not exist
+   */
   public Stat removeStat(int id) throws GameException {
     Stat s = getStat(id);
     stats.remove(id);
@@ -129,6 +178,10 @@ public class StatFactory {
     return s;
   }
 
+  /**Getter for all of the stats in the cache.
+   *
+   * @return all present stats.
+   */
   public List<Stat> getAllStats() {
     return new ArrayList<>(stats.values());
   }

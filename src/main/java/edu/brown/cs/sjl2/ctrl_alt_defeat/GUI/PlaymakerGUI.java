@@ -39,7 +39,7 @@ public class PlaymakerGUI {
    * @param dashboard - Dasboard, allows handlers to get game state and teams/players
    * @param db - DBManager, allows handlers to get data
    * @param playmakerDB - PlaymakerDB, allows handlers to get plays from database
-   * @author sjl2
+   * @author ngoelz
    */
   public PlaymakerGUI(Dashboard dashboard, DBManager db,
       PlaymakerDB playmakerDB) {
@@ -51,7 +51,7 @@ public class PlaymakerGUI {
 
   /**
    * Playmaker handler, loads main playmaker class.
-   * @author sjl2
+   * @author ngoelz
    */
   public class PlaymakerHandler implements TemplateViewRoute {
     @Override
@@ -66,7 +66,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads whiteboard feature of playmaker.
-   * @author sjl2
+   * @author ngoelz
    */
   public class WhiteboardHandler implements TemplateViewRoute {
     @Override
@@ -83,7 +83,7 @@ public class PlaymakerGUI {
   /**
    * Save handler, parses play, saves to database, returns list of play ids and
    * names to front end.
-   * @author sjl2
+   * @author ngoelz
    */
   public class SaveHandler implements Route {
     @Override
@@ -117,7 +117,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads a play for the front end.
-   * @author sjl2
+   * @author ngoelz
    */
   public class LoadHandler implements Route {
 
@@ -136,7 +136,7 @@ public class PlaymakerGUI {
 
   /**
    * Handles deletion of a play.
-   * @author sjl2
+   * @author ngoelz
    */
   public class DeleteHandler implements Route {
 
@@ -153,7 +153,7 @@ public class PlaymakerGUI {
 
   /**
    * Loads list of play names for playmaker sidebar.
-   * @author sjl2
+   * @author ngoelz
    */
   public class PlayNamesHandler implements Route {
 
@@ -165,7 +165,7 @@ public class PlaymakerGUI {
 
   /**
    * Get numbers for players on court for playmaker.
-   * @author sjl2
+   * @author ngoelz
    */
   public class PlayerNumberHandler implements Route {
 

@@ -2,7 +2,11 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-
+/**A block stat.
+*
+* @author ngoelz
+*
+*/
 public class Block implements Stat {
 
   private static final String TYPE = "Block";
@@ -10,7 +14,13 @@ public class Block implements Stat {
   private Location pos;
   private Player player;
   private int period;
-
+  /**Constructor of a block.
+  *
+  * @param id the id of the stat
+  * @param player the player
+  * @param pos the position on the court
+  * @param period the period in the game
+  */
   public Block(int id, Player player, Location pos, int period) {
     this.id = id;
     this.pos = pos;
