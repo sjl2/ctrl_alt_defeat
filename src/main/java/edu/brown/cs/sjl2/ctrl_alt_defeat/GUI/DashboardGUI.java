@@ -538,7 +538,7 @@ public class DashboardGUI {
       String searchString = qm.value("searchString");
       List<List<Integer>> ids = db.searchBarResults(searchString);
 
-      if (ids.get(0).isEmpty() && ids.get(1).isEmpty()) {
+      if (ids.get(0).size() == 0 && ids.get(1).size() == 0) {
         return GSON.toJson(new ImmutableMap.Builder<String, Object>().put(
             "errorMessage", "Sorry, no players or teams matched your search.")
             .build());

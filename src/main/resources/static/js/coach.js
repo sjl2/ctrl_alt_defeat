@@ -81,6 +81,7 @@ function textSearch() {
 	console.log(res);
 	if (res.errorMessage.length > 0) {
 	    bootbox.alert(res.errorMessage);
+	    console.log("here");
 	} else {
 		if (res.players.length == 0) {
 			if (res.teams.length == 1) {

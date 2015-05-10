@@ -520,6 +520,7 @@ function endGame() {
 
 function advancePeriod() {
     $.post("/stats/advanceperiod", {}, function(responseJSON) {
+        bootbox.alert("Period has been advanced");
         console.log(responseJSON);
     });
 }
@@ -706,10 +707,16 @@ function setSelectedStat(str) {
 
 function timeout(b) {
     if (b) {
-        $.post("/stats/timeout", {h : true}, function(responseJSON){});
+        $.post("/stats/timeout", {h : true}, function(responseJSON){
+          var obj = JSON.parse(responseJSON);
+          if (obj.errorMessage.length > 0) bootbox.alert(obj.errorMessage);
+        });
     }
     else {
-        $.post("/stats/timeout", {h : false}, function(responseJSON){});
+        $.post("/stats/timeout", {h : false}, function(responseJSON){
+          var obj = JSON.parse(responseJSON);
+          if (obj.errorMessage.length > 0) bootbox.alert(obj.errorMessage);
+        });
     }
 }
 
