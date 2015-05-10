@@ -2,14 +2,14 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
-
+/**
+ * An assist.
+ *
+ * @author ngoelz
+ *
+ */
 public class Assist implements Stat {
-  /**
-   * An assist.
-   *
-   * @author ngoelz
-   *
-   */
+
   private static final String TYPE = "Assist";
   private int id;
   private Location pos;

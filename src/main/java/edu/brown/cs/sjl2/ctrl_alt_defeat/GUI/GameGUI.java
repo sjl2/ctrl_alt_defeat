@@ -29,6 +29,10 @@ public class GameGUI {
   private static final Gson GSON = new Gson();
   private Dashboard dash;
 
+  /**Constructor for the GameGUI class.  Takes in the dashboard.
+   *
+   * @param dash the dashboard associated with the coach who is the user.
+   */
   public GameGUI(Dashboard dash) {
     this.dash = dash;
   }

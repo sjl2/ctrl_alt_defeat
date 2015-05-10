@@ -90,7 +90,8 @@ public class GUIManager {
 
     this.dashboardGUI = new DashboardGUI(dash, database, trie);
     this.gameGUI = new GameGUI(dash);
-    this.playmakerGUI = new PlaymakerGUI(dash, database, database.getPlaymakerDB());
+    this.playmakerGUI =
+        new PlaymakerGUI(dash, database, database.getPlaymakerDB());
     this.statsEntryGUI = new StatsEntryGUI(dash);
     this.wikiGUI = new WikiGUI(database, dash);
     runServer();

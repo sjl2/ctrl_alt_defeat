@@ -305,10 +305,6 @@ $.get("/game/roster", function(responseJSON) {
    });
 
 
-
-
-
-
    sub_paper.subWindow = sub_paper.rect(0, 30, 445, 370).attr({fill : "white", "stroke-width" : 1}).mousemove(function(e) {
        if (!(this.currentMove === undefined)) {
         console.log(sub_paper.subWindow.currentMove);
@@ -348,7 +344,6 @@ $.get("/game/roster", function(responseJSON) {
    home_team_paper.mainBoxes.forEach(function (obj) {
        if (obj.data("bench")) {
            //var benchTemp = sub_paper.circle(80 - (40 * Math.floor(counts.homeBench/5)),140 + 40 * (counts.homeBench % 5),10).attr({fill : "lightblue"});
-           console.log("here");
            var benchTemp = sub_paper.rect(60, 40 + 30 * (counts.homeBench),50,25, 10).attr({"stroke-width":2, fill : makeDarker(obj.attr("fill"))});
            benchTemp.defaultX = 60;
            benchTemp.defaultY = 40 + 30 * (counts.homeBench);
@@ -357,8 +352,7 @@ $.get("/game/roster", function(responseJSON) {
            benchTemp.player = obj.player;
            var tempTexts = sub_paper.text(benchTemp.defaultX + 25, benchTemp.defaultY + 12.5, benchTemp.player.number).attr({"font-family": "Arial", "font-size":16, stroke:obj.t.attr("stroke")});
            $('tspan', tempTexts.node).attr('dy', 3.5);
-           console.log('words: ', tempTexts);
-           console.log('circle: ', benchTemp);
+
            tempTexts.circ = benchTemp;
            benchTemp.number = tempTexts;
            subtexts.push(tempTexts);
@@ -433,15 +427,10 @@ subtexts.forEach(function(obj) {
        sub_paper.subWindow.currentMove.attr({x : sub_paper.subWindow.currentMove.defaultX, y : sub_paper.subWindow.currentMove.defaultY});
        sub_paper.subWindow.currentMove.number.attr({x : sub_paper.subWindow.currentMove.defaultX + 25, y : sub_paper.subWindow.currentMove.defaultY + 12.5});
        starterBoxes.forEach(function (o) {
-            console.log(o.getBBox(), e.x-sub_paper.subWindow.mouseDownSpotX + sub_paper.subWindow.currentMove.defaultX,
-                 e.y- sub_paper.subWindow.mouseDownSpotY + sub_paper.subWindow.currentMove.defaultY);
           if (Raphael.isPointInsideBBox(o.getBBox(), 
             e.x-sub_paper.subWindow.mouseDownSpotX + sub_paper.subWindow.currentMove.defaultX + 25, 
             e.y- sub_paper.subWindow.mouseDownSpotY + sub_paper.subWindow.currentMove.defaultY + 12.5)) {
-            console.log("inside of here");
               if (o.player.teamID == sub_paper.subWindow.currentMove.player.teamID) {
-                 console.log(o.player, obj.circ.player);
-
                  sub(o.player.teamID == home.teamID, sub_paper.subWindow.currentMove.player.number, o.player.number);
 			//sub_paper.subWindow.currentMove.hide();
 
@@ -521,7 +510,6 @@ function endGame() {
 function advancePeriod() {
     $.post("/stats/advanceperiod", {}, function(responseJSON) {
         bootbox.alert("Period has been advanced");
-        console.log(responseJSON);
     });
 }
 
@@ -666,7 +654,6 @@ function addStat() {
 	clickedStat = undefined;
 
 
-	console.log(postParameters);
 
 	$.post("/stats/add", postParameters, function(response) {
        logStat(response);
@@ -677,13 +664,11 @@ function addStat() {
 }
 
 function logStat(res, type) {
-    console.log(res);
     $("#ticker").prepend(res);
 }
 
 
 function makeDarker(h) {
-    console.log(h);
     var r = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(0,2),16);
     var g = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(2,4),16);
     var b = parseInt(((h.charAt(0)=="#") ? h.substring(1,7):h).substring(4,6),16);
@@ -722,11 +707,9 @@ function timeout(b) {
 
 function statEdit(a) {
     if(editingStat == undefined) {
-    	console.log("first case");
        editingStat = a;
        a.className = "btn btn-xs btn-primary pull-right editButton";
        a.childNodes[1].className = "glyphicon glyphicon-floppy-save";
-       console.log(a.parentNode);
        var x = court_paper.width * a.parentNode.getAttribute("data-statX");
        var y = court_paper.height * a.parentNode.getAttribute("data-statY");
        if (!(clickedPoint === undefined)) clickedPoint.remove();
@@ -741,7 +724,6 @@ function statEdit(a) {
        $("#sendStat").prop("disabled", true);
 
    } else if(editingStat != a) {
-      console.log("second case");
       $(".editButton").removeClass("btn-primary").addClass("btn-warning");
       $(".editButton").children().removeClass("glyphicon-floppy-save").addClass("glyphicon-pencil");
       a.className = "btn btn-xs btn-primary pull-right editButton";
@@ -760,7 +742,6 @@ function statEdit(a) {
       setSelectedStat(a.parentNode.getAttribute("data-statType"));
 
   } else {
-    console.log("third case");
 
     $(".editButton").removeClass("btn-primary").addClass("btn-warning");
     a.className = "btn btn-xs btn-warning pull-right editButton";
@@ -774,7 +755,6 @@ function statEdit(a) {
     var changedPlayer = false;
     var player;
 
-    console.log(parent.children);
     postParameters = {
        x : parent.getAttribute("data-statX"),
        y : parent.getAttribute("data-statY"),
@@ -806,9 +786,6 @@ function statEdit(a) {
        clickedPlayer = undefined;
    }
 
-   console.log(parent.children);
-   console.log(parent.children.length);
-
    for (var i = 0; i<parent.children.length; i++) {
        if(changedPlayer && parent.children[i].getAttribute("data-name") == "player") {
           parent.children[i].innerHTML = (player.name + " #" + player.number);
@@ -837,8 +814,7 @@ function statEdit(a) {
 
 function deleteEdit(a) {
     var i = a.parentNode.getAttribute("data-statID");
-    console.log(a.parentNode.attributes);
-    console.log(i);
+
     a.parentNode.parentNode.removeChild(a.parentNode);
     $.post("/stats/delete", {databaseID : i}, function() {});
 }

@@ -3,6 +3,11 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 
+/**Interface used for construction of stats.
+ *
+ * @author ngoelz
+ *
+ */
 public interface Stat {
 
   /**

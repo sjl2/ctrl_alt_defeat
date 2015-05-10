@@ -34,6 +34,10 @@ public class StatsEntryGUI {
   private static final Gson GSON = new Gson();
   private Dashboard dash;
 
+  /**Constructor for the stats entry gui, passes in the dash.
+   *
+   * @param dash dashboard of the user.
+   */
   public StatsEntryGUI(Dashboard dash) {
     this.dash = dash;
   }
@@ -92,7 +96,8 @@ public class StatsEntryGUI {
       try {
         s = dash.getGame().addStat(statID, playerID, new Location(x, y));
       } catch (GameException ex) {
-        return null;
+        HashMap<String, Object> t = new HashMap<String, Object>();
+        return new ModelAndView(t, "stat.ftl");
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -171,10 +176,9 @@ public class StatsEntryGUI {
 
     @Override
     public Object handle(Request request, Response response) {
-      System.out.println("changed possession");
       dash.getGame().flipPossession();
 
-      return null;
+      return "";
     }
   }
 
