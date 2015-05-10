@@ -56,7 +56,7 @@
               <br>
               Select Team:<br>
               <select name="team" id="playerFormTeam">
-                <#list alLTeams as team>
+                <#list allTeams as team>
                   <option value="${team.getID()}" <#if (team.getID() == player.getTeamID())>selected</#if>>${team.getText()}</option>
                 </#list>
               </select>

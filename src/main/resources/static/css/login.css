@@ -36,3 +36,8 @@ body {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+.jumbotron {
+    text-align: center; 
+    background-color: rgba(250, 250, 250, .82);
+}
