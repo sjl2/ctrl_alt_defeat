@@ -1,5 +1,10 @@
 package edu.brown.cs.sjl2.ctrl_alt_defeat.stats;
 
+/**Game Stats class which stores information about the game.
+ *
+ * @author ngoelz
+ *
+ */
 public interface GameStats {
 
   /**

@@ -11,6 +11,11 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.Location;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BasketballPosition;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.playmaker.Play;
 
+/**Database connection class for the play maker.
+ *
+ * @author ngoelz
+ *
+ */
 public class PlaymakerDB {
 
   private Connection conn;
