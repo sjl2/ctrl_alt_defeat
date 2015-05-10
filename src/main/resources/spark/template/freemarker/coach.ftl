@@ -140,14 +140,15 @@
             <li><a href="/dashboard/analytics">Analytics</a></li>
 	    <li><a href="#" data-toggle="modal" data-target="#editUser">Edit Users</a></li>
           </ul>
-
+       <form class="navbar-form navbar-right" id="logoffForm">
+      <button class="navbar-button btn btn-primary navbar-right" id="logoutButton">Logout</button>
+      </form>
           <form class="navbar-form navbar-right" role="search">
             <div class="input-append btn-group">
-              <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeyup = "suggestions(event)" list="suggestions1" id="playerTeamSearch">
+              <input class="span2" size="16" type="text"  placeholder="Search for Player or Team" style = "width : 300px;height:34px; border-color:#2e6da4" autocomplete = "off" onkeyup = "suggestions(event)" list="suggestions1" id="playerTeamSearch" onkeypress = "doNothing(event)">
               <datalist id="suggestions1"></datalist>
               <button type="button" id="searchButton" class="btn btn-primary" style="float:right" onclick="textSearch()">Search</button>
             </div>
-	    <button class="btn btn-primary" id="logoutButton">Logout</button>
           </form>
 
         </div>
