@@ -81,7 +81,7 @@ public class DBManager {
       throw new RuntimeException(e);
     }
 
-    this.pf = new PlayerFactory(this);
+    this.pf = new PlayerFactory();
     this.tf = new TeamFactory(this);
   }
 

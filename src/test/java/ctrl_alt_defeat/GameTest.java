@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Random;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class GameTest {
 
   @Before
   public void setUp() throws Exception {
-    DBManager db = new DBManager("./data/testing/Test.sqlite3");
+    db = new DBManager("./data/testing/Test.sqlite3");
     db.clearDatabase();
 
     home = db.createTeam("Parsnips", "Ankit Shah", "#3333ee", "#33ee33", false);
@@ -44,6 +45,14 @@ public class GameTest {
     }
 
     game = new Game(home, away, db);
+
+
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() throws Exception {
+    DBManager db = new DBManager("./data/testing/Test.sqlite3");
+    db.clearDatabase();
   }
 
   @Test

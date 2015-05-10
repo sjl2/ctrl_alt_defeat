@@ -3,8 +3,6 @@ package edu.brown.cs.sjl2.ctrl_alt_defeat.basketball;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
-
 /**
  * Factory class used to cache player objects in the database manager.
  *
@@ -18,11 +16,8 @@ public class PlayerFactory {
   /**
    * Factory object for players to ensure that there is only one object for a
    * player.
-   *
-   * @param db
-   *          The database manager needed to query for a player
    */
-  public PlayerFactory(DBManager db) {
+  public PlayerFactory() {
     this.players = new HashMap<>();
   }
 

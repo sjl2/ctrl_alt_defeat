@@ -8,7 +8,6 @@ import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.BoxScore;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Player;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.basketball.Team;
 import edu.brown.cs.sjl2.ctrl_alt_defeat.database.DBManager;
-import edu.brown.cs.sjl2.ctrl_alt_defeat.stats.StatFactory;
 
 /**
  * Central Class for Coach Operations. The Dashboard is an interface to the
@@ -21,8 +20,6 @@ public class Dashboard {
   private Game currentGame;
   private DBManager db;
   private Team myTeam;
-
-  private StatFactory sf;
 
   /**
    * Constructor for the dashboard using a basketball database.
