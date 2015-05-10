@@ -1733,7 +1733,7 @@ public class DBManager {
       } else if (scaledValue < 0) {
         return -25 * Math.log10(100 * (-scaledValue) + 1) + 50;
       } else {
-        return 25 * Math.log10((100 * scaledValue) + 1) + 50;
+        return 25 * Math.log10(100 * scaledValue + 1) + 50;
       }
     } catch (SQLException e) {
       close();

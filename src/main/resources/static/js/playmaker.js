@@ -280,7 +280,7 @@ window.onload = function() {
     $("#save_play").on("click", function() {
 	bootbox.prompt({
 	    title: "Enter Play Name",
-	    backdrop: true,
+	    //backdrop: true,
 	    buttons: {
 		confirm: {
 		    label: "Save",
@@ -293,13 +293,12 @@ window.onload = function() {
 		}
 	    },
 	    callback: function(result) {
-		if(result.match(/[^\w\s-.]/)) {
-		    bootbox.alert("Play names can only contain alphanumeric characters (A-Z, a-z, 0-9), dashes (-), underscores (_), periods(.), and spaces");
-		    return false;
-		}
 		if(result === null) {
 		} else if(result == "") {
 		    bootbox.alert("Please Enter a Play Name");
+		    return false;
+		} else if(result.match(/[^\w\s-.]/)) {
+		    bootbox.alert("Play names can only contain alphanumeric characters (A-Z, a-z, 0-9), dashes (-), underscores (_), periods(.), and spaces");
 		    return false;
 		} else if (existingPlays[result] != undefined) {
 		    bootbox.confirm("Are you sure you want to overwrite: " + result, function(r) {

@@ -4,7 +4,7 @@
   <link rel="stylesheet" href="css/login.css">
 
   <form method="POST" action="/login/login" class="form-signin" id="loginForm">
-  <h1 class="form-signin-heading">Welcome to<br>Ctrl-Alt-Defeat</h1>
+  <h1 class="form-signin-heading" width="350px">Welcome to<br><kbd>ctrl + alt + defeat</kbd></h1>
   
     <label for="username" class="sr-only">Username</label>
     <input type="text" name="username" id="username" class="form-control" placeholder="Username" required autofocus>
