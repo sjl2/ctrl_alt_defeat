@@ -22,8 +22,6 @@ public class Dashboard {
   private DBManager db;
   private Team myTeam;
 
-  private StatFactory sf;
-
   /**
    * Constructor for the dashboard using a basketball database.
    *

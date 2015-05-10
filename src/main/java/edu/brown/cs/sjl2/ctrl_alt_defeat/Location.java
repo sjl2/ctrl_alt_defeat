@@ -54,11 +54,11 @@ public class Location {
    */
   private static Location reflect(double x, double y) {
     if (x > .5) {
-      x -= (2 * (x - .5));
+      x -= 2 * (x - .5);
       if (y > .5) {
-        y -= (2 * (y - .5));
+        y -= 2 * (y - .5);
       } else {
-        y += (2 * (.5 - y));
+        y += 2 * (.5 - y);
       }
     }
 
