@@ -47,6 +47,10 @@ $("#logoutButton").on("click", function() {
     });
 });
 
+function doNothing(e) {
+	if (e.which == 13) e.preventDefault();
+}
+
 function suggestions(e) {
     console.log(e);
     if(e.which == 13) {
