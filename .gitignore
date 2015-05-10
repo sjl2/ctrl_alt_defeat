@@ -2,4 +2,5 @@
 .mvn-classpath
 .DS_Store
 /data/*.sqlite3
+/data/testing/*.sqlite3
 *.log
